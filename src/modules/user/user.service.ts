@@ -5,7 +5,6 @@ import { FindConditions } from 'typeorm';
 import { PageMetaDto } from '../../common/dto/PageMetaDto';
 import { FileNotImageException } from '../../exceptions/file-not-image.exception';
 import { IFile } from '../../interfaces/IFile';
-import { AwsS3Service } from '../../shared/services/aws-s3.service';
 import { ValidatorService } from '../../shared/services/validator.service';
 import { UserRegisterDto } from '../auth/dto/UserRegisterDto';
 import { UsersPageDto } from './dto/UsersPageDto';
@@ -18,7 +17,6 @@ export class UserService {
     constructor(
         public readonly userRepository: UserRepository,
         public readonly validatorService: ValidatorService,
-        public readonly awsS3Service: AwsS3Service,
     ) {}
 
     /**
@@ -56,7 +54,7 @@ export class UserService {
         }
 
         if (file) {
-            avatar = await this.awsS3Service.uploadImage(file);
+          // handle file
         }
 
         const user = this.userRepository.create({ ...userRegisterDto, avatar });

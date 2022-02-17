@@ -22,3 +22,4 @@
 - Code Spell Checker
 - JavaScript/TypeScript
 - Git Graph
+- ESLint/TSLint
