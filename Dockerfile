@@ -1,4 +1,4 @@
-FROM node:dubnium AS dist
+FROM node:fermium AS dist
 COPY package.json yarn.lock ./
 
 RUN yarn install
@@ -7,12 +7,12 @@ COPY . ./
 
 RUN yarn build
 
-FROM node:dubnium AS node_modules
+FROM node:fermium AS node_modules
 COPY package.json yarn.lock ./
 
 RUN yarn install --prod
 
-FROM node:dubnium
+FROM node:fermium
 
 ARG PORT=3000
 
