@@ -8,6 +8,7 @@
 ### develop guide
 - start database: `docker-compose up`
 - using config node version: `nvm use`
+- create env file: `cp .development.env.example .development.env`
 - start src code: `npm run start:dev`
 
 ### migration

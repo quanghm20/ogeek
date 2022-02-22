@@ -5,7 +5,7 @@ import { ProfileEntity } from '../infra/database/entities/profile.entity';
 import { ProfileDto } from '../infra/dtos/profile.dto';
 
 export class ProfileMap implements Mapper<Profile> {
-    public static toDTO(profile: Profile): ProfileDto {
+    public static fromDomain(profile: Profile): ProfileDto {
         return {
             id: profile.profileId.id.toString(),
             facebookLink: profile.facebookLink,

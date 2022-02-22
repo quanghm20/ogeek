@@ -44,6 +44,6 @@ export class GetProfileController {
             }
         }
 
-        return ProfileMap.toDTO(result.value.getValue());
+        return ProfileMap.fromDomain(result.value.getValue());
     }
 }
