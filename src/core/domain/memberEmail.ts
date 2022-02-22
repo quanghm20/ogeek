@@ -1,6 +1,6 @@
 import { Guard } from '../logic/Guard';
 import { Result } from '../logic/Result';
-import { ValueObject } from './valueObject';
+import { ValueObject } from './ValueObject';
 
 interface IMemberEmailProps {
     value: string;
