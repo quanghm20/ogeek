@@ -16,3 +16,7 @@ dev_up:
 
 down:
 	docker-compose -f $(DOCKER_FILE) down
+
+deploy-dev:
+	echo "=== Pls use private password ==="
+	caprover deploy -d -h https://captain.o-geek.geekup.io -a api -b main
