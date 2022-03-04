@@ -5,7 +5,7 @@ import { AbstractEntity } from '../../../../../common/abstract.entity';
 @Entity({ name: 'social_profile' })
 export class ProfileEntity extends AbstractEntity {
     @Column({ nullable: false, name: 'id' })
-    id: string;
+    id: number;
 
     @Column({
         nullable: false,
