@@ -13,7 +13,7 @@ export class ValueStreamEntity extends AbstractEntity {
 
     @OneToMany(
         () => ContributedValueEntity,
-        (contributedValue) => contributedValue.id,
+        (contributedValue) => contributedValue.valueStream,
     )
     contributedValues: ContributedValueEntity[];
 }
