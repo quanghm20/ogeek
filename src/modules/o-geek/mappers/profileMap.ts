@@ -1,7 +1,6 @@
-import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
-import { Mapper } from '../../../core/infra/Mapper';
+/*import { Mapper } from '../../../core/infra/Mapper';
 import { Profile } from '../domain/profile';
-import { ProfileEntity } from '../infra/database/entities/profile.entity';
+// import { ProfileEntity } from '../infra/database/entities/profile.entity';
 import { ProfileDto } from '../infra/dtos/profile.dto';
 
 export class ProfileMap implements Mapper<Profile> {
@@ -26,4 +25,4 @@ export class ProfileMap implements Mapper<Profile> {
 
         return profileOrError.isSuccess ? profileOrError.getValue() : null;
     }
-}
+} */
