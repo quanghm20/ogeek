@@ -20,10 +20,3 @@ down:
 deploy-dev:
 	echo "=== Pls use private password ==="
 	caprover deploy -d -h https://captain.o-geek.geekup.io -a api -b main
-
-migrate: 
-	docker rm -f $(docker ps -a -q)
-	docker volume rm $(docker volume ls -q)
-	docker-compose up -d
-	npm run migration:generate create-database
-	npm run migration

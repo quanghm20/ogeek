@@ -39,13 +39,13 @@ export class CommittedWorkloadEntity extends AbstractEntity {
         nullable: false,
         name: 'expired_date',
     })
-    expireDate: Date;
+    expiredDate: Date;
 
     @ManyToOne(() => UserEntity, (user) => user.committedWorkloads)
     @JoinColumn({
-        name: 'pid',
+        name: 'pic_id',
     })
-    pid: UserEntity;
+    picId: UserEntity;
 
     @OneToMany(
         () => PlannedWorkloadEntity,
