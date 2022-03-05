@@ -51,7 +51,7 @@ export class CommittedWorkloadEntity extends AbstractEntity {
     @JoinColumn({
         name: 'id_PIC',
     })
-    pic: UserEntity;
+    idPIC: UserEntity;
 
     @Column({
         nullable: false,
