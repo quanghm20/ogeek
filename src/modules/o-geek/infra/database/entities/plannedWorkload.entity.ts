@@ -8,15 +8,9 @@ import { UserEntity } from './user.entity';
 
 @Entity({ name: 'planned_workload' })
 export class PlannedWorkloadEntity extends AbstractEntity {
-    @Column({
-        nullable: false,
-        name: 'id',
-    })
-    id: number;
-
-    @ManyToOne(() => UserEntity, (user) => user.plannedWorkload)
+    @ManyToOne(() => UserEntity, (user) => user.plannedWorkloads)
     @JoinColumn({
-        name: 'id_user',
+        name: 'user_id',
     })
     user: UserEntity;
 
@@ -25,7 +19,7 @@ export class PlannedWorkloadEntity extends AbstractEntity {
         (contributedValue) => contributedValue.plannedWorkloads,
     )
     @JoinColumn({
-        name: 'id_contributed_value',
+        name: 'contributed_value_id',
     })
     contributedValue: ContributedValueEntity;
 
@@ -34,7 +28,7 @@ export class PlannedWorkloadEntity extends AbstractEntity {
         (committedWorkload) => committedWorkload.plannedWorkloads,
     )
     @JoinColumn({
-        name: 'id_committed_workload',
+        name: 'committed_workload_id',
     })
     committedWorkload: CommittedWorkloadEntity;
 
@@ -49,16 +43,4 @@ export class PlannedWorkloadEntity extends AbstractEntity {
         name: 'start_date',
     })
     startDate: Date;
-
-    @Column({
-        nullable: false,
-        name: 'created_at',
-    })
-    createdAt: Date;
-
-    @Column({
-        nullable: false,
-        name: 'updated_at',
-    })
-    updatedAt: Date;
 }

@@ -7,27 +7,9 @@ import { ContributedValueEntity } from './contributedValue.entity';
 export class ValueStreamEntity extends AbstractEntity {
     @Column({
         nullable: false,
-        name: 'id',
-    })
-    id: number;
-
-    @Column({
-        nullable: false,
         name: 'name',
     })
     name: string;
-
-    @Column({
-        nullable: false,
-        name: 'created_at',
-    })
-    createdAt: Date;
-
-    @Column({
-        nullable: false,
-        name: 'updated_at',
-    })
-    updatedAt: Date;
 
     @OneToMany(
         () => ContributedValueEntity,

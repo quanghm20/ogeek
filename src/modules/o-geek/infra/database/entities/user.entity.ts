@@ -55,13 +55,13 @@ export class UserEntity extends AbstractEntity {
 
     @OneToMany(
         () => PlannedWorkloadEntity,
-        (plannedWorkload) => plannedWorkload.id,
+        (plannedWorkload) => plannedWorkload.user,
     )
-    plannedWorkload: PlannedWorkloadEntity[];
+    plannedWorkloads: PlannedWorkloadEntity[];
 
     @OneToMany(
         () => CommittedWorkloadEntity,
-        (committedWorkload) => committedWorkload.id,
+        (committedWorkload) => committedWorkload.user,
     )
-    committedWorkload: CommittedWorkloadEntity[];
+    committedWorkloads: CommittedWorkloadEntity[];
 }

@@ -8,24 +8,18 @@ import { UserEntity } from './user.entity';
 
 @Entity({ name: 'committed_workload' })
 export class CommittedWorkloadEntity extends AbstractEntity {
-    @Column({
-        nullable: false,
-        name: 'id',
-    })
-    id: number;
-
-    @ManyToOne(() => UserEntity, (user) => user.id)
+    @ManyToOne(() => UserEntity, (user) => user.committedWorkloads)
     @JoinColumn({
-        name: 'id_user',
+        name: 'user_id',
     })
     user: UserEntity;
 
     @ManyToOne(
         () => ContributedValueEntity,
-        (contributedValue) => contributedValue.id,
+        (contributedValue) => contributedValue.committedWorkloads,
     )
     @JoinColumn({
-        name: 'id_contributed_value',
+        name: 'contributed_value_id',
     })
     contributedValue: ContributedValueEntity;
 
@@ -43,31 +37,19 @@ export class CommittedWorkloadEntity extends AbstractEntity {
 
     @Column({
         nullable: false,
-        name: 'expire_date',
+        name: 'expired_date',
     })
     expireDate: Date;
 
-    @ManyToOne(() => UserEntity, (user) => user.id)
+    @ManyToOne(() => UserEntity, (user) => user.committedWorkloads)
     @JoinColumn({
-        name: 'id_PIC',
+        name: 'pid',
     })
-    idPIC: UserEntity;
-
-    @Column({
-        nullable: false,
-        name: 'created_at',
-    })
-    createdAt: Date;
-
-    @Column({
-        nullable: false,
-        name: 'updated_at',
-    })
-    updatedAt: Date;
+    pid: UserEntity;
 
     @OneToMany(
         () => PlannedWorkloadEntity,
-        (plannedWorkload) => plannedWorkload.id,
+        (plannedWorkload) => plannedWorkload.committedWorkload,
     )
     plannedWorkloads: PlannedWorkloadEntity[];
 }

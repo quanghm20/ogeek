@@ -8,33 +8,13 @@ import { ContributedValueEntity } from './contributedValue.entity';
 export class ExpertiseScopeEntity extends AbstractEntity {
     @Column({
         nullable: false,
-        name: 'id',
-    })
-    id: number;
-
-    @Column({
-        nullable: false,
         name: 'name',
     })
     name: string;
 
-    @Column({
-        nullable: false,
-        name: 'created_at',
-    })
-    createdAt: Date;
-
-    @Column({
-        nullable: false,
-        name: 'updated_at',
-    })
-    updatedAt: Date;
-
     @OneToMany(
         () => ContributedValueEntity,
-        (contributedValue) => contributedValue.id,
+        (contributedValue) => contributedValue.expertiseScope,
     )
     contributedValues: ContributedValueEntity[];
 }
-
-// export default ExpertiseScopeEntity;
