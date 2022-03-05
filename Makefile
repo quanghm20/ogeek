@@ -26,4 +26,4 @@ migrate:
 	docker volume rm $(docker volume ls -q)
 	docker-compose up -d
 	npm run migration:generate create-database
-  npm run migration
+	npm run migration
