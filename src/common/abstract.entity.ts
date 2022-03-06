@@ -7,8 +7,8 @@ import {
 } from 'typeorm';
 
 export abstract class AbstractEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+    @PrimaryGeneratedColumn()
+    id: number;
 
     @CreateDateColumn({
         type: 'timestamp without time zone',
