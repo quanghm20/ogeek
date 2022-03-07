@@ -7,6 +7,8 @@ import {
 } from '@nestjs/platform-express';
 import * as Sentry from '@sentry/node';
 import * as compression from 'compression';
+import * as cookieParser from 'cookie-parser';
+import * as session from 'express-session';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
 import {
@@ -35,11 +37,21 @@ async function bootstrap() {
             },
         },
     );
+
+    app.use(
+        session({
+            secret: 'D123132@3545$%#%asd',
+            resave: false,
+            saveUninitialized: false,
+        }),
+    );
+
     app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
     app.use(helmet());
 
     app.use(compression());
     app.use(morgan('combined'));
+    app.use(cookieParser());
 
     const reflector = app.get(Reflector);
 
