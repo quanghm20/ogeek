@@ -36,7 +36,7 @@ export class OauthController {
         return 'login with otable';
     }
 
-    @Get('api/oauth/otable/callback')
+    @Get('oauth/otable/callback')
     @HttpCode(HttpStatus.FOUND)
     @ApiOkResponse()
     @UseGuards(OAuthGuard)
