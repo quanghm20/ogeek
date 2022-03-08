@@ -48,6 +48,7 @@ export class OauthController {
             alias: (req.user as UserDto).username,
         } as UserOAuth2Dto;
         const accessToken = await this.authService.createToken(userOAuth2Dto);
+
         res.cookie(
             'jwt',
             JSON.stringify({
