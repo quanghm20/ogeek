@@ -3,7 +3,7 @@
 import { AbstractEntity } from '../abstract.entity';
 
 export class AbstractDto {
-    id: number;
+    id: string;
     createdAt: Date;
     updatedAt: Date;
 

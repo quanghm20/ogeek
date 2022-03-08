@@ -8,7 +8,7 @@ import {
 
 export abstract class AbstractEntity {
     @PrimaryGeneratedColumn()
-    id: number;
+    id: string;
 
     @CreateDateColumn({
         type: 'timestamp without time zone',

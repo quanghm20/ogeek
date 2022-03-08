@@ -1,13 +1,12 @@
 import { forwardRef, HttpModule, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 
+import { UserRepository } from '../../modules/o-geek/repos';
+import { CreateUserUseCase } from '../../modules/o-geek/useCases/user/createUser/CreateUserUseCase';
 import { SenteService } from '../../shared/services/sente.service';
 import { UserModule } from '../user/user.module';
 // import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './jwt.strategy';
-import { OauthController } from './oauth.controller';
-import { OAuthStrategy } from './oauth.strategy';
 
 @Module({
     imports: [
@@ -16,8 +15,8 @@ import { OAuthStrategy } from './oauth.strategy';
         HttpModule,
         SenteService,
     ],
-    controllers: [OauthController],
-    providers: [AuthService, JwtStrategy, OAuthStrategy],
+    controllers: [],
+    providers: [AuthService, CreateUserUseCase, UserRepository],
     exports: [PassportModule.register({ defaultStrategy: 'jwt' }), AuthService],
 })
 export class AuthModule {}

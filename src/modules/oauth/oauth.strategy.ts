@@ -1,10 +1,10 @@
-import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { HttpService, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { AxiosRequestConfig } from 'axios';
 import { Strategy } from 'passport-oauth2';
 import { map } from 'rxjs/operators';
 
-import { UserDto } from '../../modules/user/dto/UserDto';
+import { UserDto } from '../../modules/o-geek/infra/dtos/user.dto';
 import { ConfigService } from '../../shared/services/config.service';
 
 @Injectable()
@@ -29,12 +29,9 @@ export class OAuthStrategy extends PassportStrategy(Strategy, 'oauth') {
                 Authorization: `Bearer ${accessToken}`,
             },
         };
-        const userPromise = this._httpService
+        return this._httpService
             .get<UserDto>(this._configService.get('USERINFO_URL'), axiosConfig)
             .pipe(map((resp) => resp.data))
             .toPromise();
-        const user = await userPromise;
-        Logger.log(user);
-        return user;
     }
 }

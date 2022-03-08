@@ -7,4 +7,12 @@ export class UserOAuth2Dto {
     @IsString()
     @ApiProperty()
     readonly alias: string;
+
+    @IsString()
+    @ApiProperty()
+    readonly name: string;
+
+    @IsString()
+    @ApiProperty()
+    readonly email: string;
 }
