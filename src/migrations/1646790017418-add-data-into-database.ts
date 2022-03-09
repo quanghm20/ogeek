@@ -2,10 +2,27 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 // eslint-disable-next-line @typescript-eslint/tslint/config
-export class addData1646733641325 implements MigrationInterface {
-    name = 'addData1646733641325';
+export class addDataIntoDatabase1646790017418 implements MigrationInterface {
+    name = 'addDataIntoDatabase1646790017418';
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(
+            'ALTER SEQUENCE committed_workload_id_seq RESTART WITH 1',
+        );
+        await queryRunner.query(
+            'ALTER SEQUENCE contributed_value_id_seq RESTART WITH 1',
+        );
+        await queryRunner.query(
+            'ALTER SEQUENCE expertise_scope_id_seq RESTART WITH 1',
+        );
+        await queryRunner.query(
+            'ALTER SEQUENCE planned_workload_id_seq RESTART WITH 1',
+        );
+        await queryRunner.query('ALTER SEQUENCE user_id_seq RESTART WITH 1');
+        await queryRunner.query(
+            'ALTER SEQUENCE value_stream_id_seq RESTART WITH 1',
+        );
+
         await queryRunner.query(
             `INSERT INTO
 	"user" (
@@ -27,7 +44,7 @@ VALUES
 		'thai.ls@geekup.vn',
 		'https://link1.com',
 		'USER',
-		'PLANNED',
+		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -38,7 +55,7 @@ VALUES
 		'quang.hm@geekup.vn',
 		'https://link1.com',
 		'ADMIN',
-		'PLANNED',
+		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -49,7 +66,7 @@ VALUES
 		'loc.pt@geekup.vn',
 		'https://link1.com',
 		'USER',
-		'PLANNED',
+		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -60,7 +77,7 @@ VALUES
 		'chuong.tk@geekup.vn',
 		'https://link1.com',
 		'USER',
-		'PLANNED',
+		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -71,7 +88,7 @@ VALUES
 		'tuan.lq@geekup.vn',
 		'https://link1.com',
 		'USER',
-		'PLANNED',
+		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -82,7 +99,7 @@ VALUES
 		'tuan.pa@geekup.vn',
 		'https://link1.com',
 		'USER',
-		'PLANNED',
+		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -93,7 +110,7 @@ VALUES
 		'nhi.ny@geekup.vn',
 		'https://link1.com',
 		'USER',
-		'PLANNED',
+		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -104,7 +121,7 @@ VALUES
 		'nam.dp@geekup.vn',
 		'https://link1.com',
 		'ADMIN',
-		'PLANNED',
+		'PLANING',
 		NOW(),
 		NOW()
 	);
@@ -490,11 +507,11 @@ VALUES
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query('DELETE * FROM planned_workload');
-        await queryRunner.query('DELETE * FROM committed_workload');
-        await queryRunner.query('DELETE * FROM contributed_value');
-        await queryRunner.query('DELETE * FROM value_stream');
-        await queryRunner.query('DELETE * FROM expertise_scope');
-        await queryRunner.query('DELETE * FROM user');
+        await queryRunner.query('DELETE FROM "planned_workload"');
+        await queryRunner.query('DELETE FROM "committed_workload"');
+        await queryRunner.query('DELETE FROM "contributed_value"');
+        await queryRunner.query('DELETE FROM "value_stream"');
+        await queryRunner.query('DELETE FROM "expertise_scope"');
+        await queryRunner.query('DELETE FROM "user"');
     }
 }

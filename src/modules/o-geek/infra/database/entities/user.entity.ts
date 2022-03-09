@@ -53,7 +53,7 @@ export class UserEntity extends AbstractEntity {
     @Column({
         type: 'enum',
         enum: Status,
-        default: Status.PLANNED,
+        default: Status.PLANING,
         name: 'week_status',
     })
     weekStatus: Status;
