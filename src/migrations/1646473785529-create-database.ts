@@ -6,6 +6,7 @@ export class createDatabase1646473785529 implements MigrationInterface {
     name = 'createDatabase1646473785529';
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
         await queryRunner.query(
             `CREATE TABLE "expertise_scope" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),

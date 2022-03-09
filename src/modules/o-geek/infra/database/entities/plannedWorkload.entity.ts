@@ -43,4 +43,17 @@ export class PlannedWorkloadEntity extends AbstractEntity {
         name: 'start_date',
     })
     startDate: Date;
+
+    @Column({
+        nullable: false,
+        name: 'status',
+        default: false,
+    })
+    status: boolean;
+
+    @Column({
+        nullable: false,
+        name: 'reason',
+    })
+    reason: string;
 }
