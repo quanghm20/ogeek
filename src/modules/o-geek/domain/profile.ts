@@ -2,7 +2,7 @@ import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
-import { ProfileId } from './profileId';
+import { AggregateId } from './aggregateId';
 
 interface IProfileProps {
     createdAt?: Date;
@@ -10,8 +10,8 @@ interface IProfileProps {
 }
 
 export class Profile extends AggregateRoot<IProfileProps> {
-    get profileId(): ProfileId {
-        return ProfileId.create(this._id).getValue();
+    get profileId(): AggregateId {
+        return AggregateId.create(this._id).getValue();
     }
 
     get facebookLink(): string {

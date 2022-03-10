@@ -9,24 +9,31 @@ import {
     GetProfileUseCase,
 } from './useCases/social/getProfile';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
-import { FindUserByAlias } from './useCases/user/findUserByAlias/findUserByAlias';
+import { GetUserByAliasController } from './useCases/user/GetUserByAlias/GetUserByAliasController';
+import { GetUserByAliasUseCase } from './useCases/user/GetUserByAlias/GetUserByAliasUseCase';
 
 @Module({
     imports: [
         HttpModule,
-        TypeOrmModule.forFeature([ProfileEntity, UserEntity]),
+        TypeOrmModule.forFeature([UserEntity, ProfileEntity]),
     ],
-    controllers: [GetProfileController],
+    controllers: [GetProfileController, GetUserByAliasController],
     providers: [
-        GetProfileUseCase,
-        CreateUserUseCase,
-        FindUserByAlias,
         {
             provide: 'IProfileRepo',
             useClass: ProfileRepository,
         },
         UserRepository,
+        GetProfileUseCase,
+        CreateUserUseCase,
+        GetUserByAliasUseCase,
     ],
-    exports: [CreateUserUseCase, UserRepository, FindUserByAlias],
+    exports: [
+        CreateUserUseCase,
+        GetProfileUseCase,
+        GetUserByAliasUseCase,
+        TypeOrmModule,
+        UserRepository,
+    ],
 })
 export class OGeekModule {}

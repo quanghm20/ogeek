@@ -1,8 +1,9 @@
 'use strict';
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 
+import { RoleType } from '../../../../common/constants/role-type';
 import { AbstractDto } from '../../../../common/dto/AbstractDto';
 
 export class UserDto extends AbstractDto {
@@ -29,4 +30,8 @@ export class UserDto extends AbstractDto {
     @IsString()
     @ApiProperty()
     phone: string;
+
+    @IsEnum(RoleType)
+    @ApiProperty()
+    role: RoleType;
 }

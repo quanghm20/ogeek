@@ -3,6 +3,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
 import { RoleType } from '../../../../../common/constants/role-type';
+import { UserDto } from '../../dtos/user.dto';
 import { CommittedWorkloadEntity } from './committedWorkload.entity';
 import { PlannedWorkloadEntity } from './plannedWorkload.entity';
 // import { UserDto } from './dto/UserDto';
@@ -61,4 +62,8 @@ export class UserEntity extends AbstractEntity {
         (committedWorkload) => committedWorkload.user,
     )
     committedWorkloads: CommittedWorkloadEntity[];
+
+    toDto(): UserDto {
+        return new UserDto(this);
+    }
 }

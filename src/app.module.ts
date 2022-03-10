@@ -6,23 +6,20 @@ import { JwtAuthModule } from './modules/jwt-auth/jwt-auth.module';
 import { OGeekModule } from './modules/o-geek/o-geek.module';
 import { OauthController } from './modules/oauth/oauth.controller';
 import { OauthModule } from './modules/oauth/oauth.module';
-import { UserModule } from './modules/user/user.module';
 import { ConfigService } from './shared/services/config.service';
 import { SharedModule } from './shared/shared.module';
 
 @Module({
     imports: [
         JwtAuthModule,
-        OauthModule,
-        UserModule,
         OGeekModule,
+        OauthModule,
         TypeOrmModule.forRootAsync({
             imports: [SharedModule],
             useFactory: (configService: ConfigService) =>
                 configService.typeOrmConfig,
             inject: [ConfigService],
         }),
-        OauthModule,
     ],
     providers: [],
     controllers: [OauthController],

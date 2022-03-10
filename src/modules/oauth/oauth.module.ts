@@ -1,14 +1,15 @@
 import { HttpModule, Module } from '@nestjs/common';
 
 import { JwtAuthModule } from '../../modules/jwt-auth/jwt-auth.module';
-import { UserRepository } from '../../modules/o-geek/repos';
+import { OGeekModule } from '../../modules/o-geek/o-geek.module';
 import { CreateUserUseCase } from '../../modules/o-geek/useCases/user/createUser/CreateUserUseCase';
-import { FindUserByAlias } from '../../modules/o-geek/useCases/user/findUserByAlias/findUserByAlias';
+import { GetUserByAliasUseCase } from '../../modules/o-geek/useCases/user/GetUserByAlias/GetUserByAliasUseCase';
 import { OauthController } from './oauth.controller';
 import { OAuthStrategy } from './oauth.strategy';
 
 @Module({
     imports: [
+        OGeekModule,
         JwtAuthModule,
         HttpModule.registerAsync({
             useFactory: () => ({
@@ -16,14 +17,8 @@ import { OAuthStrategy } from './oauth.strategy';
                 maxRedirects: 5,
             }),
         }),
-        UserRepository,
     ],
     controllers: [OauthController],
-    providers: [
-        OAuthStrategy,
-        CreateUserUseCase,
-        FindUserByAlias,
-        UserRepository,
-    ],
+    providers: [OAuthStrategy, CreateUserUseCase, GetUserByAliasUseCase],
 })
 export class OauthModule {}

@@ -1,35 +1,38 @@
-/* eslint-disable complexity */
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { User } from '../../../../../modules/o-geek/domain/user';
-import { UserDto } from '../../../../../modules/o-geek/infra/dtos/user.dto';
 import { UserRepository } from '../../../../../modules/o-geek/repos/userRepo';
-import { FailToCreateUserErrors } from './CreateUserErrors';
+import { GetUserByAliasErrors } from './GetUserByAliasErrors';
 
 type Response = Either<
-    AppError.UnexpectedError | FailToCreateUserErrors.FailToCreateUser,
+    AppError.UnexpectedError | GetUserByAliasErrors.UserNotFound,
     Result<User>
 >;
 
 @Injectable()
-export class CreateUserUseCase implements IUseCase<UserDto, Promise<Response>> {
-    constructor(public readonly repo: UserRepository) {}
+export class GetUserByAliasUseCase
+    implements IUseCase< string, Promise<Response> > {
+    constructor(
+        public readonly repo: UserRepository,
+    ) {}
 
-    async execute(userDto: UserDto): Promise<Response> {
+    async execute(alias: string): Promise<Response> {
         try {
-            const user = await this.repo.createUser(userDto);
+            const user = await this.repo.findByAlias(alias);
             if (user) {
                 return right(Result.ok(user));
             }
 
             return left(
-                new FailToCreateUserErrors.FailToCreateUser(),
+                new GetUserByAliasErrors.UserNotFound(alias),
             ) as Response;
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
         }
     }
 }
+

@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { AggregateId } from '../domain/aggregateId';
 import { Profile } from '../domain/profile';
-import { ProfileId } from '../domain/profileId';
 import { ProfileEntity } from '../infra/database/entities/profile.entity';
 import { ProfileMap } from '../mappers/profileMap';
 
 export interface IProfileRepo {
-    findById(id: ProfileId | string): Promise<Profile>;
+    findById(id: AggregateId | string): Promise<Profile>;
 }
 
 @Injectable()
@@ -18,9 +18,9 @@ export class ProfileRepository implements IProfileRepo {
         protected repo: Repository<ProfileEntity>,
     ) {}
 
-    async findById(profileId: ProfileId | string): Promise<Profile> {
+    async findById(profileId: AggregateId | string): Promise<Profile> {
         profileId =
-            profileId instanceof ProfileId
+            profileId instanceof AggregateId
                 ? profileId.id.toString()
                 : profileId;
         const entity = await this.repo.findOne(profileId);
