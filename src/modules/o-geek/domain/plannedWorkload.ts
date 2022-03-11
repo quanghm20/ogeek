@@ -1,23 +1,25 @@
+import { Status } from '../../../common/constants/status';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
+import { CommittedWorkload } from './committedWorkload';
 import { ContributedValue } from './contributedValue';
 import { User } from './user';
 
-interface ICommittedWorkloadProps {
+interface IPlannedWorkloadProps {
     id: number;
     contributedValue: ContributedValue;
     user: User;
-    committedWorkload: number;
+    plannedWorkload: number;
+    committedWorkload: CommittedWorkload;
     startDate: Date;
-    expiredDate: Date;
-    status: boolean;
+    status: Status;
     picId: User;
     createdAt: Date;
     updatedAt: Date;
 }
-export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
-    private constructor(props: ICommittedWorkloadProps) {
+export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
+    private constructor(props: IPlannedWorkloadProps) {
         super(props);
     }
     get userId(): number {
@@ -26,16 +28,13 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     get user(): User {
         return this.props.user;
     }
-    get committedWorkload(): number {
-        return this.props.committedWorkload;
+    get plannedWorkload(): number {
+        return this.props.plannedWorkload;
     }
     get startDate(): Date {
         return this.props.startDate;
     }
-    get expiredDate(): Date {
-        return this.props.expiredDate;
-    }
-    get status(): boolean {
+    get status(): Status {
         return this.props.status;
     }
     get valueStreamName(): string {
@@ -50,22 +49,22 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     get contributedValueId(): number {
         return this.props.contributedValue.contributedValueId;
     }
-    get committedWorkloadId(): number {
+    get plannedWorkloadId(): number {
         return this.props.id;
     }
     public static create(
-        props: ICommittedWorkloadProps,
-    ): Result<CommittedWorkload> {
+        props: IPlannedWorkloadProps,
+    ): Result<PlannedWorkload> {
         const propsResult = Guard.againstNullOrUndefinedBulk([]);
         if (!propsResult.succeeded) {
-            return Result.fail<CommittedWorkload>(propsResult.message);
+            return Result.fail<PlannedWorkload>(propsResult.message);
         }
         const defaultValues = {
             ...props,
         };
         defaultValues.createdAt = new Date();
         defaultValues.updatedAt = new Date();
-        const committedWorkload = new CommittedWorkload(defaultValues);
-        return Result.ok<CommittedWorkload>(committedWorkload);
+        const plannedWorkload = new PlannedWorkload(defaultValues);
+        return Result.ok<PlannedWorkload>(plannedWorkload);
     }
 }

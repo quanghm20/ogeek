@@ -13,8 +13,8 @@ interface IUserProps {
     avatar: string;
     role: string;
     weekStatus: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 export class User extends AggregateRoot<IUserProps> {
     private constructor(props: IUserProps) {
