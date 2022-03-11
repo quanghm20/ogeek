@@ -15,15 +15,19 @@ export interface JwtPayload {
 export class JwtAuthStrategy extends PassportStrategy(Strategy) {
     constructor(configService: ConfigService) {
         function extractJwtFromCookie(req: Request) {
-            let token = '';
-            if (req && req.cookies) {
-                const strJwtObject = req.cookies as { jwt: string };
-                const objectToken = Object.create(
-                    JSON.parse(strJwtObject.jwt),
-                ) as TokenPayloadDto;
-                token = objectToken.accessToken;
+            try {
+                let token = '';
+                if (req && req.cookies) {
+                    const strJwtObject = req.cookies as { jwt: string };
+                    const objectToken = Object.create(
+                        JSON.parse(strJwtObject.jwt),
+                    ) as TokenPayloadDto;
+                    token = objectToken.accessToken;
+                }
+                return token;
+            } catch (error) {
+                throw new UnauthorizedException('Forbiden!!');
             }
-            return token;
         }
 
         super({
