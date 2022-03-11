@@ -37,7 +37,7 @@
         "@nestjs/microservices": "^7.0.8",
         "@nestjs/passport": "^7.0.0",
         "@nestjs/platform-express": "^7.0.8",
-        "@nestjs/swagger": "^4.5.7",
+        "@nestjs/swagger": "^4.8.2",
         "@nestjs/typeorm": "^7.0.0",
         "@sentry/minimal": "^5.24.2",
         "@sentry/node": "^5.9.0",

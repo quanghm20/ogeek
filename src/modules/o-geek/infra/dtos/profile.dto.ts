@@ -1,6 +1,6 @@
-/*import { ApiProperty } from '@nestjs/swagger';
+// import { ApiProperty } from '@nestjs/swagger';
 
-export class ProfileDto {
+/*export class ProfileDto {
     @ApiProperty()
     id: string;
 
