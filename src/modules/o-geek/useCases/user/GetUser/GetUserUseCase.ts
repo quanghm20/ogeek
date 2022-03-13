@@ -28,9 +28,13 @@ export class GetUserUseCase
             if (findUserDto.userID) {
                 user = await this.repo.findByUserID(findUserDto.userID);
                 return right(Result.ok(user));
+
             }
-            user = await this.repo.findByAlias(findUserDto.alias);
-            return right(Result.ok(user));
+            if (findUserDto.alias) {
+                user = await this.repo.findByAlias(findUserDto.alias);
+                return right(Result.ok(user));
+
+            }
 
             return left(
                 new GetUserErrors.UserNotFound(),
