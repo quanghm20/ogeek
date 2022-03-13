@@ -38,9 +38,11 @@ async function bootstrap() {
         },
     );
 
+    const configService = app.select(SharedModule).get(ConfigService);
+
     app.use(
         session({
-            secret: 'D123132@3545$%#%asd',
+            secret: configService.get('JWT_SECRET_KEY'),
             resave: false,
             saveUninitialized: false,
         }),
@@ -73,8 +75,6 @@ async function bootstrap() {
             },
         }),
     );
-
-    const configService = app.select(SharedModule).get(ConfigService);
 
     Sentry.init({
         dsn: configService.get('SENTRY_DNS'),

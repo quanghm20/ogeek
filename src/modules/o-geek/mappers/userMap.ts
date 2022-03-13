@@ -8,7 +8,7 @@ import { UserDto } from '../infra/dtos/user.dto';
 export class UserMap implements Mapper<User> {
     public static fromDomain(user: User): UserDto {
         return {
-            username: user.alias,
+            alias: user.alias,
             name: user.name,
             email: user.email,
             sub: user.id.toString(),
@@ -17,7 +17,7 @@ export class UserMap implements Mapper<User> {
             createdAt: new Date(),
             updatedAt: new Date(),
             role: user.role,
-            id: user.id.toString(),
+            id: user.userId.id.toValue() as number,
         };
     }
 

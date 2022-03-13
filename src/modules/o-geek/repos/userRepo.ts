@@ -19,9 +19,13 @@ export class UserRepository {
         return entity ? UserMap.toDomain(entity) : null;
     }
 
+    async findByUserID(userID: number): Promise<User> {
+        const entity = await this.repo.findOne(userID);
+        return entity ? UserMap.toDomain(entity) : null;
+    }
+
     async createUser(userDto: UserDto): Promise<User> {
         const entity = this.repo.create({
-            alias: userDto.username,
             ...userDto,
         });
         const createdUser = await this.repo.save(entity);

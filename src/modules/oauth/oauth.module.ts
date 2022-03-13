@@ -3,7 +3,7 @@ import { HttpModule, Module } from '@nestjs/common';
 import { JwtAuthModule } from '../../modules/jwt-auth/jwt-auth.module';
 import { OGeekModule } from '../../modules/o-geek/o-geek.module';
 import { CreateUserUseCase } from '../../modules/o-geek/useCases/user/createUser/CreateUserUseCase';
-import { GetUserByAliasUseCase } from '../../modules/o-geek/useCases/user/GetUserByAlias/GetUserByAliasUseCase';
+import { GetUserUseCase } from '../o-geek/useCases/user/GetUser/GetUserUseCase';
 import { OauthController } from './oauth.controller';
 import { OAuthStrategy } from './oauth.strategy';
 
@@ -19,6 +19,6 @@ import { OAuthStrategy } from './oauth.strategy';
         }),
     ],
     controllers: [OauthController],
-    providers: [OAuthStrategy, CreateUserUseCase, GetUserByAliasUseCase],
+    providers: [OAuthStrategy, CreateUserUseCase, GetUserUseCase],
 })
 export class OauthModule {}

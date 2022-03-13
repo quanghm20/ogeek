@@ -3,18 +3,17 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { Strategy } from 'passport-jwt';
 
-import { TokenPayloadDto } from '../../modules/auth/dto/TokenPayloadDto';
 import { ConfigService } from '../../shared/services/config.service';
+import { TokenPayloadDto } from './dto/TokenPayloadDto';
 
 export interface JwtPayload {
-    sub: string;
-    username: string;
+    userID: number;
 }
 
 @Injectable()
 export class JwtAuthStrategy extends PassportStrategy(Strategy) {
     constructor(configService: ConfigService) {
-        function extractJwtFromCookie(req: Request) {
+        function extractJwtFromCookie(req: Request): string {
             try {
                 let token = '';
                 if (req && req.cookies) {
@@ -41,6 +40,6 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
         if (!payload) {
             throw new UnauthorizedException('Forbiden!!');
         }
-        return { alias: payload.username };
+        return payload;
     }
 }

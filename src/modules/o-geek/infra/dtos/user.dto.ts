@@ -9,7 +9,7 @@ import { AbstractDto } from '../../../../common/dto/AbstractDto';
 export class UserDto extends AbstractDto {
     @IsString()
     @ApiProperty()
-    username: string;
+    alias: string;
 
     @IsString()
     @ApiProperty()

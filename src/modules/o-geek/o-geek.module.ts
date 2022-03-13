@@ -9,15 +9,15 @@ import {
     GetProfileUseCase,
 } from './useCases/social/getProfile';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
-import { GetUserByAliasController } from './useCases/user/GetUserByAlias/GetUserByAliasController';
-import { GetUserByAliasUseCase } from './useCases/user/GetUserByAlias/GetUserByAliasUseCase';
+import { GetUserController } from './useCases/user/GetUser/GetUserController';
+import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
 
 @Module({
     imports: [
         HttpModule,
         TypeOrmModule.forFeature([UserEntity, ProfileEntity]),
     ],
-    controllers: [GetProfileController, GetUserByAliasController],
+    controllers: [GetProfileController, GetUserController],
     providers: [
         {
             provide: 'IProfileRepo',
@@ -26,12 +26,12 @@ import { GetUserByAliasUseCase } from './useCases/user/GetUserByAlias/GetUserByA
         UserRepository,
         GetProfileUseCase,
         CreateUserUseCase,
-        GetUserByAliasUseCase,
+        GetUserUseCase,
     ],
     exports: [
         CreateUserUseCase,
         GetProfileUseCase,
-        GetUserByAliasUseCase,
+        GetUserUseCase,
         TypeOrmModule,
         UserRepository,
     ],

@@ -7,10 +7,9 @@ import { JwtPayload } from './jwt-auth.strategy';
 export class JwtAuthService {
     constructor(private _jwtService: JwtService) {}
 
-    signJwt(user: UserDto) {
+    signJwt(user: UserDto): string {
         const payload = {
-            username: user.username,
-            sub: '',
+            userID: user.id,
         } as JwtPayload;
         return this._jwtService.sign(payload);
     }

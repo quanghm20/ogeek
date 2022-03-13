@@ -11,17 +11,18 @@ import {
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 
-import { AuthenUserDto } from '../../../../../modules/jwt-auth/dto/AuthenUser';
-import { JwtAuthGuard } from '../../../../../modules/jwt-auth/jwt-auth-guard';
-import { UserMap } from '../../../../../modules/o-geek/mappers/userMap';
+import { JwtPayload } from '../../../../../modules/jwt-auth/jwt-auth.strategy';
+import { FindUserDto } from '../../../../../modules/o-geek/infra/dtos/findUser.dto';
+import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { UserDto } from '../../../infra/dtos/user.dto';
-import { GetUserByAliasErrors } from './GetUserByAliasErrors';
-import { GetUserByAliasUseCase } from './GetUserByAliasUseCase';
+import { UserMap } from '../../../mappers/userMap';
+import { GetUserErrors } from './GetUserErrors';
+import { GetUserUseCase } from './GetUserUseCase';
 
 @Controller('api/user')
 @ApiTags('User')
-export class GetUserByAliasController {
-    constructor(public readonly useCase: GetUserByAliasUseCase) {}
+export class GetUserController {
+    constructor(public readonly useCase: GetUserUseCase) {}
 
     @UseGuards(JwtAuthGuard)
     @Get()
@@ -30,13 +31,15 @@ export class GetUserByAliasController {
         description: 'get user by alias with jwt token',
     })
     async execute(@Req() req: Request, @Res() res: Response) {
-        const authenuser = req.user as AuthenUserDto;
-        const result = await this.useCase.execute(authenuser.alias);
+        const jwtPyaload = req.user as JwtPayload;
+        const findUserDto = { ...jwtPyaload } as FindUserDto;
+
+        const result = await this.useCase.execute(findUserDto);
         if (result.isLeft()) {
             const error = result.value;
 
             switch (error.constructor) {
-                case GetUserByAliasErrors.UserNotFound:
+                case GetUserErrors.UserNotFound:
                     throw new NotFoundException(
                         error.errorValue(),
                         'Can not get user by alias',

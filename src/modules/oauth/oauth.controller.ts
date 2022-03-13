@@ -9,10 +9,13 @@ import {
 import { Request, Response } from 'express';
 
 import { JwtAuthService } from '../../modules/jwt-auth/jwt-auth.service';
+import { User } from '../../modules/o-geek/domain/user';
+import { FindUserDto } from '../../modules/o-geek/infra/dtos/findUser.dto';
 import { UserDto } from '../../modules/o-geek/infra/dtos/user.dto';
+import { UserMap } from '../../modules/o-geek/mappers/userMap';
 import { CreateUserUseCase } from '../../modules/o-geek/useCases/user/createUser/CreateUserUseCase';
-import { GetUserByAliasUseCase } from '../../modules/o-geek/useCases/user/GetUserByAlias/GetUserByAliasUseCase';
 import { ConfigService } from '../../shared/services/config.service';
+import { GetUserUseCase } from '../o-geek/useCases/user/GetUser/GetUserUseCase';
 import { OAuthGuard } from './oauth.guard';
 
 @Controller('')
@@ -21,7 +24,7 @@ export class OauthController {
         private _configService: ConfigService,
         private _jwtService: JwtAuthService,
         private _createdUserUseCase: CreateUserUseCase,
-        private _getUserByAlias: GetUserByAliasUseCase,
+        private _getUserUseCase: GetUserUseCase,
     ) {}
     // redirect to authen server
     @Get('api/oauth/otable')
@@ -30,18 +33,25 @@ export class OauthController {
         return '';
     }
     // if user is authenticated, they are redirected here
-    @Get('oauth/otable/callback')
-    @UseGuards(OAuthGuard)
+    @Get('api/oauth/otable/callback')
+    // @UseGuards(OAuthGuard)
     async redirectLogin(
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response,
     ) {
-        const user = req.user as UserDto;
-        const jwtToken = this._jwtService.signJwt(user);
-        const findedUser = await this._getUserByAlias.execute(user.username);
-        if (findedUser.isLeft()) {
-            await this._createdUserUseCase.execute(user);
+        const { username } = req.user as { username: string };
+
+        const userDto = { alias: username, ...req.user } as UserDto;
+
+        const findUserDto = { alias: userDto.alias } as FindUserDto;
+        let user = await this._getUserUseCase.execute(findUserDto);
+        if (user.isLeft()) {
+            user = await this._createdUserUseCase.execute(userDto);
         }
+
+        const jwtToken = this._jwtService.signJwt(
+            UserMap.fromDomain(user.value.getValue() as User),
+        );
         const jwtCookie = JSON.stringify({
             accessToken: jwtToken,
             expiresIn: this._configService.getNumber('JWT_EXPIRATION_TIME'),

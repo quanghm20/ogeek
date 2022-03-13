@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { contextMiddleware } from './middlewares';
 import { JwtAuthModule } from './modules/jwt-auth/jwt-auth.module';
 import { OGeekModule } from './modules/o-geek/o-geek.module';
-import { OauthController } from './modules/oauth/oauth.controller';
 import { OauthModule } from './modules/oauth/oauth.module';
 import { ConfigService } from './shared/services/config.service';
 import { SharedModule } from './shared/shared.module';
@@ -22,7 +21,7 @@ import { SharedModule } from './shared/shared.module';
         }),
     ],
     providers: [],
-    controllers: [OauthController],
+    controllers: [],
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
