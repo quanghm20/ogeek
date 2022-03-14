@@ -1,37 +1,39 @@
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
+import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
+import { DomainId } from './domainId';
 import { ExpertiseScope } from './expertiseScope';
 import { ValueStream } from './valueStream';
 
 interface IContributedValueProps {
-    id: number;
     valueStream: ValueStream;
     expertiseScope: ExpertiseScope;
     createdAt: Date;
     updatedAt: Date;
 }
 export class ContributedValue extends AggregateRoot<IContributedValueProps> {
-    private constructor(props: IContributedValueProps) {
-        super(props);
+    private constructor(props: IContributedValueProps, id: UniqueEntityID) {
+        super(props, id);
     }
-    get valueStreamId(): number {
-        return this.props.valueStream.valueStreamId;
+    get valueStream(): ValueStream {
+        return this.props.valueStream;
     }
-    get valueStreamName(): string {
-        return this.props.valueStream.name;
+    set valueStream(valueStream: ValueStream) {
+        this.props.valueStream = valueStream;
     }
-    get expertiseScopeId(): number {
-        return this.props.expertiseScope.expertiseScopeId;
+    get expertiseScope(): ExpertiseScope {
+        return this.props.expertiseScope;
     }
-    get expertiseScopeName(): string {
-        return this.props.expertiseScope.name;
+    set expertiseScope(expertiseScope: ExpertiseScope) {
+        this.props.expertiseScope = expertiseScope;
     }
-    get contributedValueId(): number {
-        return this.props.id;
+    get contributedValueId(): DomainId {
+        return DomainId.create(this._id).getValue();
     }
     public static create(
         props: IContributedValueProps,
+        id: UniqueEntityID,
     ): Result<ContributedValue> {
         const propsResult = Guard.againstNullOrUndefinedBulk([]);
         if (!propsResult.succeeded) {
@@ -42,7 +44,7 @@ export class ContributedValue extends AggregateRoot<IContributedValueProps> {
         };
         defaultValues.createdAt = new Date();
         defaultValues.updatedAt = new Date();
-        const contributedValue = new ContributedValue(defaultValues);
+        const contributedValue = new ContributedValue(defaultValues, id);
         return Result.ok<ContributedValue>(contributedValue);
     }
 }

@@ -1,12 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
-export class ValueStreamDto {
+import { ExpertiseScopeDto } from './expertiseScope.dto';
+import { ValueStreamDto } from './valueStream.dto';
+export class ContributedValueDto {
     @ApiProperty()
     id: UniqueEntityID;
 
     @ApiProperty()
-    name?: string;
+    valueStream: ValueStreamDto;
+
+    @ApiProperty()
+    expertiseScope: ExpertiseScopeDto;
 
     @ApiProperty()
     createdAt?: Date;

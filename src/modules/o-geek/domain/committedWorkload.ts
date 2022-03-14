@@ -1,60 +1,72 @@
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
+import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
+import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
+import { UserEntity } from '../infra/database/entities/user.entity';
 import { ContributedValue } from './contributedValue';
+import { DomainId } from './domainId';
 import { User } from './user';
 
 interface ICommittedWorkloadProps {
-    id: number;
-    contributedValue: ContributedValue;
-    user: User;
+    contributedValue: ContributedValue | ContributedValueEntity;
+    user: User | UserEntity;
     committedWorkload: number;
     startDate: Date;
     expiredDate: Date;
     status: boolean;
-    picId: User;
-    createdAt: Date;
-    updatedAt: Date;
+    picId: User | UserEntity;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
-    private constructor(props: ICommittedWorkloadProps) {
-        super(props);
+    private constructor(props: ICommittedWorkloadProps, id: UniqueEntityID) {
+        super(props, id);
     }
-    get userId(): number {
-        return this.props.user.userId;
+    get committedWorkloadId(): DomainId {
+        return DomainId.create(this._id).getValue();
     }
-    get user(): User {
+    get contributedValue(): ContributedValue | ContributedValueEntity {
+        return this.props.contributedValue;
+    }
+    set contributedValue(
+        contributedValue: ContributedValue | ContributedValueEntity,
+    ) {
+        this.props.contributedValue = contributedValue;
+    }
+    get user(): UserEntity | User {
         return this.props.user;
+    }
+    set user(user: UserEntity | User) {
+        this.props.user = user;
     }
     get committedWorkload(): number {
         return this.props.committedWorkload;
     }
+    set committedWorkload(commit: number) {
+        this.props.committedWorkload = commit;
+    }
     get startDate(): Date {
         return this.props.startDate;
+    }
+    set startDate(startDate: Date) {
+        this.props.startDate = startDate;
     }
     get expiredDate(): Date {
         return this.props.expiredDate;
     }
+    set expiredDate(expiredDate: Date) {
+        this.props.expiredDate = expiredDate;
+    }
     get status(): boolean {
         return this.props.status;
     }
-    get valueStreamName(): string {
-        return this.props.contributedValue.valueStreamName;
-    }
-    get expertiseScopeId(): number {
-        return this.props.contributedValue.expertiseScopeId;
-    }
-    get expertiseScopeName(): string {
-        return this.props.contributedValue.expertiseScopeName;
-    }
-    get contributedValueId(): number {
-        return this.props.contributedValue.contributedValueId;
-    }
-    get committedWorkloadId(): number {
-        return this.props.id;
+    set status(status: boolean) {
+        this.props.status = status;
     }
     public static create(
         props: ICommittedWorkloadProps,
+        id: UniqueEntityID,
     ): Result<CommittedWorkload> {
         const propsResult = Guard.againstNullOrUndefinedBulk([]);
         if (!propsResult.succeeded) {
@@ -65,7 +77,7 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         };
         defaultValues.createdAt = new Date();
         defaultValues.updatedAt = new Date();
-        const committedWorkload = new CommittedWorkload(defaultValues);
+        const committedWorkload = new CommittedWorkload(defaultValues, id);
         return Result.ok<CommittedWorkload>(committedWorkload);
     }
 }

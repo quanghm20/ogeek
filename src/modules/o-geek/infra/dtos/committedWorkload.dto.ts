@@ -1,30 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
-export class UserDto {
+import { ContributedValueDto } from './contributedValue.dto';
+import { UserDto } from './user.dto';
+
+export class CommittedWorkloadDto {
     @ApiProperty()
     id: UniqueEntityID;
 
     @ApiProperty()
-    alias: string;
+    user: UserDto;
 
     @ApiProperty()
-    name?: string;
+    contributedValue: ContributedValueDto;
 
     @ApiProperty()
-    phone?: string;
+    committedWorkload: number;
 
     @ApiProperty()
-    email?: string;
+    startDate: Date;
 
     @ApiProperty()
-    avatar?: string;
+    expiredDate: Date;
 
     @ApiProperty()
-    role: string;
+    status?: boolean;
 
     @ApiProperty()
-    weekStatus: string;
+    picId?: UserDto;
 
     @ApiProperty()
     createdAt?: Date;

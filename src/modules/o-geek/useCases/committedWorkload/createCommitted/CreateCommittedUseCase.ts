@@ -1,5 +1,5 @@
 // import { Injectable } from '@nestjs/common';
-// import { CommittedWorkloadRepo } from 'modules/o-geek/repos/committedWorkload/committedWorkloadRepo';
+// import { CommittedWorkloadRepo } from '../../../repos/committedWorkload/committedWorkloadRepo';
 
 // import { IUseCase } from '../../../../../core/domain/UseCase';
 // import { Either, left, Result, right } from '../../../../../core/logic/Result';

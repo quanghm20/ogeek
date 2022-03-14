@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 export class ExpertiseScopeDto {
     @ApiProperty()
-    id: number;
+    id: UniqueEntityID;
 
     @ApiProperty()
-    name: string;
+    name?: string;
 
     @ApiProperty()
     createdAt?: Date;
