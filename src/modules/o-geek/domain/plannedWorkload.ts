@@ -1,8 +1,12 @@
-import { Status } from '../../../common/constants/status';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
+import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
+import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
+import { ExpertiseScopeEntity } from '../infra/database/entities/expertiseScope.entity';
+import { UserEntity } from '../infra/database/entities/user.entity';
+import { ValueStreamEntity } from '../infra/database/entities/valueStream.entity';
 import { CommittedWorkload } from './committedWorkload';
 import { ContributedValue } from './contributedValue';
 import { DomainId } from './domainId';
@@ -11,24 +15,23 @@ import { User } from './user';
 import { ValueStream } from './valueStream';
 
 interface IPlannedWorkloadProps {
-    contributedValue: ContributedValue;
-    user: User;
+    contributedValue: ContributedValue | ContributedValueEntity;
+    user: User | UserEntity;
     plannedWorkload: number;
-    committedWorkload: CommittedWorkload;
+    committedWorkload: CommittedWorkload | CommittedWorkloadEntity;
     startDate: Date;
-    status: Status;
-    picId: User;
-    createdAt: Date;
-    updatedAt: Date;
+    status: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     private constructor(props: IPlannedWorkloadProps, id: UniqueEntityID) {
         super(props, id);
     }
-    get user(): User {
+    get user(): User | UserEntity {
         return this.props.user;
     }
-    set user(user: User) {
+    set user(user: User | UserEntity) {
         this.props.user = user;
     }
     get plannedWorkload(): number {
@@ -43,13 +46,13 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     set startDate(startDate: Date) {
         this.props.startDate = startDate;
     }
-    get status(): Status {
+    get status(): boolean {
         return this.props.status;
     }
-    get valueStream(): ValueStream {
+    get valueStream(): ValueStream | ValueStreamEntity {
         return this.props.contributedValue.valueStream;
     }
-    get expertiseScope(): ExpertiseScope {
+    get expertiseScope(): ExpertiseScope | ExpertiseScopeEntity {
         return this.props.contributedValue.expertiseScope;
     }
     get plannedWorkloadId(): DomainId {

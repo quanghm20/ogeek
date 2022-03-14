@@ -1,15 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
+import { User } from '../../domain/user';
 import { ContributedValueDto } from './contributedValue.dto';
 import { UserDto } from './user.dto';
 
 export class CommittedWorkloadDto {
     @ApiProperty()
-    id: UniqueEntityID;
+    id: UniqueEntityID | number;
 
     @ApiProperty()
-    user: UserDto;
+    user: UserDto | User;
 
     @ApiProperty()
     contributedValue: ContributedValueDto;

@@ -4,6 +4,7 @@ import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
 import { UserEntity } from '../infra/database/entities/user.entity';
+import { UserDto } from '../infra/dtos/user.dto';
 import { ContributedValue } from './contributedValue';
 import { DomainId } from './domainId';
 import { User } from './user';
@@ -63,6 +64,18 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     }
     set status(status: boolean) {
         this.props.status = status;
+    }
+
+    public getUserDto(): UserDto {
+        const userDto = new UserDto();
+        userDto.name = this.props.user.name;
+        userDto.email = this.props.user.email;
+        userDto.phone = this.props.user.phone;
+        userDto.alias = this.props.user.alias;
+        userDto.role = this.props.user.role;
+        userDto.weekStatus = this.props.user.weekStatus;
+        userDto.id = this.user.id;
+        return userDto;
     }
     public static create(
         props: ICommittedWorkloadProps,

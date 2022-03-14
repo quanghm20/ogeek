@@ -5,7 +5,7 @@ import { ExpertiseScopeDto } from './expertiseScope.dto';
 import { ValueStreamDto } from './valueStream.dto';
 export class ContributedValueDto {
     @ApiProperty()
-    id: UniqueEntityID;
+    id: UniqueEntityID | number;
 
     @ApiProperty()
     valueStream: ValueStreamDto;

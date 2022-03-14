@@ -7,7 +7,7 @@ import { UserDto } from './user.dto';
 
 export class PlannedWorkloadDto {
     @ApiProperty()
-    id: UniqueEntityID;
+    id: UniqueEntityID | number;
 
     @ApiProperty()
     user: UserDto;
