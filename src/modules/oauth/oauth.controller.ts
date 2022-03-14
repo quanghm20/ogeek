@@ -43,7 +43,7 @@ export class OauthController {
 
         const mappedUser = UserMap.fromDomain(user.value.getValue() as User);
         const jwtToken = this._jwtService.signJwt(mappedUser);
-        res.redirect(`http://localhost:8000/?accessToken=${jwtToken}
+        res.redirect(`http://localhost:8000/user/callback/?accessToken=${jwtToken}
                     &expireIn=${
                         Date.now() +
                         this._configService.getNumber('JWT_EXPIRATION_TIME')
