@@ -1,11 +1,4 @@
-import {
-    Controller,
-    Get,
-    HttpStatus,
-    Req,
-    Res,
-    UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { JwtAuthService } from '../../modules/jwt-auth/jwt-auth.service';
@@ -50,11 +43,10 @@ export class OauthController {
 
         const mappedUser = UserMap.fromDomain(user.value.getValue() as User);
         const jwtToken = this._jwtService.signJwt(mappedUser);
-        const jwtCookie = JSON.stringify({
-            accessToken: jwtToken,
-            expiresIn: this._configService.getNumber('JWT_EXPIRATION_TIME'),
-        });
-        res.cookie('jwt', jwtCookie);
-        res.status(HttpStatus.ACCEPTED);
+        res.redirect(`https://localhost:3000/?accessToken=${jwtToken}
+                    &expireIn=${
+                        Date.now() +
+                        this._configService.getNumber('JWT_EXPIRATION_TIME')
+                    }`);
     }
 }
