@@ -11,7 +11,7 @@ export class UserMap implements Mapper<User> {
             alias: user.alias,
             name: user.name,
             email: user.email,
-            sub: user.id.toString(),
+            sub: user.userId.id.toValue().toString(),
             avatar: user.avatar,
             phone: user.phone,
             createdAt: new Date(),

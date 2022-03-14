@@ -34,13 +34,12 @@ export class OauthController {
     }
     // if user is authenticated, they are redirected here
     @Get('api/oauth/otable/callback')
-    // @UseGuards(OAuthGuard)
+    @UseGuards(OAuthGuard)
     async redirectLogin(
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response,
     ) {
         const { username } = req.user as { username: string };
-
         const userDto = { alias: username, ...req.user } as UserDto;
 
         const findUserDto = { alias: userDto.alias } as FindUserDto;
@@ -49,9 +48,8 @@ export class OauthController {
             user = await this._createdUserUseCase.execute(userDto);
         }
 
-        const jwtToken = this._jwtService.signJwt(
-            UserMap.fromDomain(user.value.getValue() as User),
-        );
+        const mappedUser = UserMap.fromDomain(user.value.getValue() as User);
+        const jwtToken = this._jwtService.signJwt(mappedUser);
         const jwtCookie = JSON.stringify({
             accessToken: jwtToken,
             expiresIn: this._configService.getNumber('JWT_EXPIRATION_TIME'),
