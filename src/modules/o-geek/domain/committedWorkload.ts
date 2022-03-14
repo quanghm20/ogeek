@@ -2,21 +2,18 @@ import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
-import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
-import { UserEntity } from '../infra/database/entities/user.entity';
-import { UserDto } from '../infra/dtos/user.dto';
 import { ContributedValue } from './contributedValue';
 import { DomainId } from './domainId';
 import { User } from './user';
 
 interface ICommittedWorkloadProps {
-    contributedValue: ContributedValue | ContributedValueEntity;
-    user: User | UserEntity;
+    contributedValue?: ContributedValue;
+    user?: User;
     committedWorkload: number;
     startDate: Date;
     expiredDate: Date;
     status: boolean;
-    picId: User | UserEntity;
+    picId?: User;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -27,18 +24,16 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     get committedWorkloadId(): DomainId {
         return DomainId.create(this._id).getValue();
     }
-    get contributedValue(): ContributedValue | ContributedValueEntity {
+    get contributedValue(): ContributedValue {
         return this.props.contributedValue;
     }
-    set contributedValue(
-        contributedValue: ContributedValue | ContributedValueEntity,
-    ) {
+    set contributedValue(contributedValue: ContributedValue) {
         this.props.contributedValue = contributedValue;
     }
-    get user(): UserEntity | User {
+    get user(): User {
         return this.props.user;
     }
-    set user(user: UserEntity | User) {
+    set user(user: User) {
         this.props.user = user;
     }
     get committedWorkload(): number {
@@ -66,17 +61,6 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         this.props.status = status;
     }
 
-    public getUserDto(): UserDto {
-        const userDto = new UserDto();
-        userDto.name = this.props.user.name;
-        userDto.email = this.props.user.email;
-        userDto.phone = this.props.user.phone;
-        userDto.alias = this.props.user.alias;
-        userDto.role = this.props.user.role;
-        userDto.weekStatus = this.props.user.weekStatus;
-        userDto.id = this.user.id;
-        return userDto;
-    }
     public static create(
         props: ICommittedWorkloadProps,
         id: UniqueEntityID,

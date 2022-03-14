@@ -7,7 +7,7 @@ import { UserDto } from './user.dto';
 
 export class CommittedWorkloadDto {
     @ApiProperty()
-    id: UniqueEntityID | number;
+    id: UniqueEntityID;
 
     @ApiProperty()
     user: UserDto | User;

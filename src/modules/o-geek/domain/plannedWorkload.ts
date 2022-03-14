@@ -2,11 +2,6 @@ import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
-import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
-import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
-import { ExpertiseScopeEntity } from '../infra/database/entities/expertiseScope.entity';
-import { UserEntity } from '../infra/database/entities/user.entity';
-import { ValueStreamEntity } from '../infra/database/entities/valueStream.entity';
 import { CommittedWorkload } from './committedWorkload';
 import { ContributedValue } from './contributedValue';
 import { DomainId } from './domainId';
@@ -15,10 +10,10 @@ import { User } from './user';
 import { ValueStream } from './valueStream';
 
 interface IPlannedWorkloadProps {
-    contributedValue: ContributedValue | ContributedValueEntity;
-    user: User | UserEntity;
-    plannedWorkload: number;
-    committedWorkload: CommittedWorkload | CommittedWorkloadEntity;
+    contributedValue?: ContributedValue;
+    user?: User;
+    plannedWorkload?: number;
+    committedWorkload?: CommittedWorkload;
     startDate: Date;
     status: boolean;
     createdAt?: Date;
@@ -28,10 +23,10 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     private constructor(props: IPlannedWorkloadProps, id: UniqueEntityID) {
         super(props, id);
     }
-    get user(): User | UserEntity {
+    get user(): User {
         return this.props.user;
     }
-    set user(user: User | UserEntity) {
+    set user(user: User) {
         this.props.user = user;
     }
     get plannedWorkload(): number {
@@ -49,10 +44,10 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     get status(): boolean {
         return this.props.status;
     }
-    get valueStream(): ValueStream | ValueStreamEntity {
+    get valueStream(): ValueStream {
         return this.props.contributedValue.valueStream;
     }
-    get expertiseScope(): ExpertiseScope | ExpertiseScopeEntity {
+    get expertiseScope(): ExpertiseScope {
         return this.props.contributedValue.expertiseScope;
     }
     get plannedWorkloadId(): DomainId {

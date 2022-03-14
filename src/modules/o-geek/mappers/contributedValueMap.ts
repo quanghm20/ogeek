@@ -18,10 +18,7 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
     public static toDomain(raw: ContributedValueEntity): ContributedValue {
         const { id } = raw;
         const profileOrError = ContributedValue.create(
-            {
-                expertiseScope: raw.expertiseScope,
-                valueStream: raw.valueStream,
-            },
+            {},
             new UniqueEntityID(id),
         );
 

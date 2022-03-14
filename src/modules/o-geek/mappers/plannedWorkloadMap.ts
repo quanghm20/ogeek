@@ -23,9 +23,6 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
         const { id } = raw;
         const profileOrError = PlannedWorkload.create(
             {
-                contributedValue: raw.contributedValue,
-                user: raw.user,
-                committedWorkload: raw.committedWorkload,
                 plannedWorkload: raw.plannedWorkload,
                 startDate: raw.startDate,
                 status: raw.status,

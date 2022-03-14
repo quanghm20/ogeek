@@ -24,13 +24,10 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         const { id } = raw;
         const profileOrError = CommittedWorkload.create(
             {
-                contributedValue: raw.contributedValue,
-                user: raw.user,
                 committedWorkload: raw.committedWorkload,
                 startDate: raw.startDate,
                 expiredDate: raw.expiredDate,
                 status: raw.status,
-                picId: raw.picId,
             },
             new UniqueEntityID(id),
         );

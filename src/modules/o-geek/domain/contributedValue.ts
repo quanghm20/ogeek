@@ -2,15 +2,13 @@ import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
-import { ExpertiseScopeEntity } from '../infra/database/entities/expertiseScope.entity';
-import { ValueStreamEntity } from '../infra/database/entities/valueStream.entity';
 import { DomainId } from './domainId';
 import { ExpertiseScope } from './expertiseScope';
 import { ValueStream } from './valueStream';
 
 interface IContributedValueProps {
-    valueStream: ValueStream | ValueStreamEntity;
-    expertiseScope: ExpertiseScope | ExpertiseScopeEntity;
+    valueStream?: ValueStream;
+    expertiseScope?: ExpertiseScope;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -18,16 +16,16 @@ export class ContributedValue extends AggregateRoot<IContributedValueProps> {
     private constructor(props: IContributedValueProps, id: UniqueEntityID) {
         super(props, id);
     }
-    get valueStream(): ValueStream | ValueStreamEntity {
+    get valueStream(): ValueStream {
         return this.props.valueStream;
     }
-    set valueStream(valueStream: ValueStream | ValueStreamEntity) {
+    set valueStream(valueStream: ValueStream) {
         this.props.valueStream = valueStream;
     }
-    get expertiseScope(): ExpertiseScope | ExpertiseScopeEntity {
+    get expertiseScope(): ExpertiseScope {
         return this.props.expertiseScope;
     }
-    set expertiseScope(expertiseScope: ExpertiseScope | ExpertiseScopeEntity) {
+    set expertiseScope(expertiseScope: ExpertiseScope) {
         this.props.expertiseScope = expertiseScope;
     }
     get contributedValueId(): DomainId {
