@@ -6,24 +6,23 @@
 // import { CommittedWorkloadId } from '../domain/committedWorkloadId';
 // import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 
-// export interface CommittedWorkloadRepo {
-//     findById(id: CommittedWorkloadId | number): Promise<CommittedWorkload>;
+// export interface ICommittedWorkloadRepo {
+//     getCommittedWorkload(
+//         id: CommittedWorkloadId | number,
+//     ): Promise<CommittedWorkload>;
 // }
 
 // @Injectable()
-// export class CommittedWorkloadRepository implements CommittedWorkloadRepo {
+// export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
 //     constructor(
 //         @InjectRepository(CommittedWorkloadEntity)
-//         protected repo: Repository<CommittedWorkloadEntity>,
+//         protected committedWorkloadRepo: Repository<CommittedWorkloadEntity>,
 //     ) {}
 
-//     async findById(
-//         committedWorkloadId: CommittedWorkloadId | number,
+//     async getCommittedWorkload(
+//         committedWorkload: CommittedWorkloadDto,
 //     ): Promise<CommittedWorkload> {
-//         committedWorkloadId =
-//             committedWorkloadId instanceof CommittedWorkloadId
-//                 ? committedWorkloadId.id.toValue()
-//                 : committedWorkloadId;
+//         // const result = this.committedWorkloadRepo.
 //         const entity = await this.repo.findOne(CommittedWorkloadId);
 //         return entity ? committedWorkloadId.toDomain(entity) : null;
 //     }

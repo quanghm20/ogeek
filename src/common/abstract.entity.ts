@@ -6,9 +6,11 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 
+import { UniqueEntityID } from '../core/domain/UniqueEntityID';
+
 export abstract class AbstractEntity {
     @PrimaryGeneratedColumn()
-    id: number;
+    id: UniqueEntityID;
 
     @CreateDateColumn({
         type: 'timestamp without time zone',

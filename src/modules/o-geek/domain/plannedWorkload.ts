@@ -3,60 +3,58 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
 
-interface ICommittedWorkloadProps {
+interface IPlannedWorkloadProps {
     userId?: UniqueEntityID;
     contributedValueId?: UniqueEntityID;
     committedWorkloadId?: UniqueEntityID;
-    committedWorkload?: number;
+    plannedWorkload?: number;
     startDate?: Date;
-    expiredDate?: Date;
     isActive?: boolean;
     reason?: string;
 }
 
-export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
+export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     get userId(): UniqueEntityID {
         return this.props.userId;
     }
-    get contributedValueId(): UniqueEntityID {
+    get contributedValue(): UniqueEntityID {
         return this.props.contributedValueId;
     }
     get committedWorkloadId(): UniqueEntityID {
         return this.props.committedWorkloadId;
     }
-    get committedWorkload(): number {
-        return this.props.committedWorkload;
+    get plannedWorkload(): number {
+        return this.props.plannedWorkload;
     }
     get startDate(): Date {
         return this.props.startDate;
     }
-    get expiredDate(): Date {
-        return this.props.expiredDate;
-    }
     get isActive(): boolean {
         return this.props.isActive;
     }
-
-    private constructor(props: ICommittedWorkloadProps, id: UniqueEntityID) {
+    get reason(): string {
+        return this.props.reason;
+    }
+    private constructor(props: IPlannedWorkloadProps, id: UniqueEntityID) {
         super(props, id);
     }
 
     public static create(
-        props: ICommittedWorkloadProps,
+        props: IPlannedWorkloadProps,
         id?: UniqueEntityID,
-    ): Result<CommittedWorkload> {
+    ): Result<PlannedWorkload> {
         const propsResult = Guard.againstNullOrUndefinedBulk([]);
 
         if (!propsResult.succeeded) {
-            return Result.fail<CommittedWorkload>(propsResult.message);
+            return Result.fail<PlannedWorkload>(propsResult.message);
         }
 
         const defaultValues = {
             ...props,
         };
 
-        const committedWorkload = new CommittedWorkload(defaultValues, id);
+        const plannedWorkload = new PlannedWorkload(defaultValues, id);
 
-        return Result.ok<CommittedWorkload>(committedWorkload);
+        return Result.ok<PlannedWorkload>(plannedWorkload);
     }
 }

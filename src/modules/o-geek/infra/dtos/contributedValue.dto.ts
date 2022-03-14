@@ -1,19 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class OverviewDataChart {
+import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
+
+export class ContributedValueDto {
     @ApiProperty()
-    expertiseScope: string;
+    expertiseScopeId: UniqueEntityID;
 
     @ApiProperty()
-    committedWorkload: number;
-
-    @ApiProperty()
-    plannedWorkload: number;
-
-    @ApiProperty()
-    worklog: number;
-
-    /*@ApiProperty();
-    week: number;*/
+    valueStreamId: UniqueEntityID;
 }
-// export default OverviewDataChart;
