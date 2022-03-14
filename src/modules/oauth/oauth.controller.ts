@@ -33,7 +33,7 @@ export class OauthController {
         return '';
     }
     // if user is authenticated, they are redirected here
-    @Get('api/oauth/otable/callback')
+    @Get('oauth/otable/callback')
     @UseGuards(OAuthGuard)
     async redirectLogin(
         @Req() req: Request,
