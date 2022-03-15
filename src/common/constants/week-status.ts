@@ -1,4 +1,4 @@
-export enum Status {
+export enum WeekStatus {
     PLANNED = 'PLANNED',
     PLANING = 'PLANING',
     EXECUTING = 'EXECUTING',

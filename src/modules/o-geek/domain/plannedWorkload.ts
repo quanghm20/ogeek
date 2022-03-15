@@ -1,52 +1,68 @@
+import { WorkloadStatus } from '../../../common/constants/committed-status';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
+import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
 import { CommittedWorkload } from './committedWorkload';
 import { ContributedValue } from './contributedValue';
+import { DomainId } from './domainId';
+import { ExpertiseScope } from './expertiseScope';
 import { User } from './user';
+import { ValueStream } from './valueStream';
 
 interface IPlannedWorkloadProps {
-    id: number;
-    plannedWorkload: number;
-    contributedValue: ContributedValue;
-    committedWorkload: CommittedWorkload;
-    user: User;
+    contributedValue?: ContributedValue;
+    user?: User;
+    plannedWorkload?: number;
+    committedWorkload?: CommittedWorkload;
     startDate: Date;
-    expiredDate: Date;
+    status: WorkloadStatus;
     createdAt?: Date;
     updatedAt?: Date;
 }
-
 export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
-    private constructor(props: IPlannedWorkloadProps) {
-        super(props);
+    private constructor(props: IPlannedWorkloadProps, id: UniqueEntityID) {
+        super(props, id);
     }
-    get plannedWorkloadId(): number {
-        return this.props.id;
+    get user(): User {
+        return this.props.user;
     }
-    get contributedValueId(): number {
-        return this.props.contributedValue.contributedValueId;
+    set user(user: User) {
+        this.props.user = user;
     }
-    get valueStreamId(): number {
-        return this.props.contributedValue.valueStreamId;
+    get plannedWorkload(): number {
+        return this.props.plannedWorkload;
     }
-    get valueStreamName(): string {
-        return this.props.contributedValue.valueStreamName;
+    set plannedWorkload(workload: number) {
+        this.props.plannedWorkload = workload;
     }
-    get expertiseScopeId(): number {
-        return this.props.contributedValue.expertiseScopeId;
+    get startDate(): Date {
+        return this.props.startDate;
     }
-    get expertiseScopeName(): string {
-        return this.props.contributedValue.expertiseScopeName;
+    set startDate(startDate: Date) {
+        this.props.startDate = startDate;
     }
-    get userId(): number {
-        return this.props.user.userId;
+    get status(): WorkloadStatus {
+        return this.props.status;
     }
-    get userName(): string {
-        return this.props.user.name;
+    set status(status: WorkloadStatus) {
+        this.props.status = status;
+    }
+    get valueStream(): ValueStream {
+        return this.props.contributedValue.valueStream;
+    }
+    get expertiseScope(): ExpertiseScope {
+        return this.props.contributedValue.expertiseScope;
+    }
+    get plannedWorkloadId(): DomainId {
+        return DomainId.create(this._id).getValue();
+    }
+    public isActive(): boolean {
+        return this.props.status === WorkloadStatus.ACTIVE;
     }
     public static create(
         props: IPlannedWorkloadProps,
+        id: UniqueEntityID,
     ): Result<PlannedWorkload> {
         const propsResult = Guard.againstNullOrUndefinedBulk([]);
         if (!propsResult.succeeded) {
@@ -57,7 +73,7 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
         };
         defaultValues.createdAt = new Date();
         defaultValues.updatedAt = new Date();
-        const plannedWorkload = new PlannedWorkload(defaultValues);
+        const plannedWorkload = new PlannedWorkload(defaultValues, id);
         return Result.ok<PlannedWorkload>(plannedWorkload);
     }
 }

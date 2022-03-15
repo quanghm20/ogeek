@@ -2,13 +2,10 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 // eslint-disable-next-line @typescript-eslint/tslint/config
-export class addDataIntoDatabase1646790017418 implements MigrationInterface {
-    name = 'addDataIntoDatabase1646790017418';
+export class addDataIntoDatabase1647339475418 implements MigrationInterface {
+    name = 'addDataIntoDatabase1647339475418';
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(
-            'ALTER SEQUENCE committed_workload_id_seq RESTART WITH 1',
-        );
         await queryRunner.query(
             'ALTER SEQUENCE contributed_value_id_seq RESTART WITH 1',
         );
@@ -22,7 +19,9 @@ export class addDataIntoDatabase1646790017418 implements MigrationInterface {
         await queryRunner.query(
             'ALTER SEQUENCE value_stream_id_seq RESTART WITH 1',
         );
-
+        await queryRunner.query(
+            'ALTER SEQUENCE committed_workload_id_seq RESTART WITH 1',
+        );
         await queryRunner.query(
             `INSERT INTO
 	"user" (
@@ -32,7 +31,6 @@ export class addDataIntoDatabase1646790017418 implements MigrationInterface {
 		"email",
 		"avatar",
 		"role",
-		"week_status",
 		"created_at",
 		"updated_at"
 	)
@@ -44,7 +42,6 @@ VALUES
 		'thai.ls@geekup.vn',
 		'https://link1.com',
 		'USER',
-		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -55,7 +52,6 @@ VALUES
 		'quang.hm@geekup.vn',
 		'https://link1.com',
 		'ADMIN',
-		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -66,7 +62,6 @@ VALUES
 		'loc.pt@geekup.vn',
 		'https://link1.com',
 		'USER',
-		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -77,7 +72,6 @@ VALUES
 		'chuong.tk@geekup.vn',
 		'https://link1.com',
 		'USER',
-		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -88,7 +82,6 @@ VALUES
 		'tuan.lq@geekup.vn',
 		'https://link1.com',
 		'USER',
-		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -99,7 +92,6 @@ VALUES
 		'tuan.pa@geekup.vn',
 		'https://link1.com',
 		'USER',
-		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -110,7 +102,6 @@ VALUES
 		'nhi.ny@geekup.vn',
 		'https://link1.com',
 		'USER',
-		'PLANING',
 		NOW(),
 		NOW()
 	),
@@ -121,7 +112,6 @@ VALUES
 		'nam.dp@geekup.vn',
 		'https://link1.com',
 		'ADMIN',
-		'PLANING',
 		NOW(),
 		NOW()
 	);
@@ -187,18 +177,17 @@ VALUES
 		committed_workload,
 		start_date,
 		expired_date,
-		pic_id,
-		status
+		pic_id
 	)
 VALUES
-	(1, 2, 20, '2022-01-01', '2022-04-30', 2, false),
-	(1, 3, 20, '2022-01-03', '2022-04-30', 8, false),
-	(2, 8, 40, '2022-02-05', '2022-04-30', 2, false),
-	(3, 2, 30, '2022-01-01', '2022-04-30', 8, false),
-	(3, 5, 10, '2022-01-01', '2022-04-30', 2, false),
-	(4, 4, 40, '2022-01-08', '2022-04-30', 8, false),
-	(5, 6, 40, '2022-02-05', '2022-04-30', 2, false),
-	(6, 9, 40, '2022-01-01', '2022-04-30', 8, false)
+	(1, 2, 20, '2022-01-01', '2022-04-30', 2),
+	(1, 3, 20, '2022-01-03', '2022-04-30', 8),
+	(2, 8, 40, '2022-02-05', '2022-04-30', 2),
+	(3, 2, 30, '2022-01-01', '2022-04-30', 8),
+	(3, 5, 10, '2022-01-01', '2022-04-30', 2),
+	(4, 4, 40, '2022-01-08', '2022-04-30', 8),
+	(5, 6, 40, '2022-02-05', '2022-04-30', 2),
+	(6, 9, 40, '2022-01-01', '2022-04-30', 8)
             `,
         );
 
@@ -210,7 +199,6 @@ VALUES
 		committed_workload_id,
 		planned_workload,
 		start_date,
-		status,
 		reason
 	)
 VALUES
@@ -220,7 +208,6 @@ VALUES
 		1,
 		20,
 		'2022-01-01',
-		false,
 		'create planned workload1'
 	),
 	(
@@ -229,7 +216,6 @@ VALUES
 		2,
 		20,
 		'2022-01-01',
-		false,
 		'create planned workload2'
 	),
 	(
@@ -238,7 +224,6 @@ VALUES
 		3,
 		40,
 		'2022-02-05',
-		false,
 		'create planned workload3'
 	),
 	(
@@ -247,7 +232,6 @@ VALUES
 		4,
 		30,
 		'2022-01-01',
-		false,
 		'create planned workload4'
 	),
 	(
@@ -256,7 +240,6 @@ VALUES
 		5,
 		10,
 		'2022-01-01',
-		false,
 		'create planned workload5'
 	),
 	(
@@ -265,7 +248,6 @@ VALUES
 		6,
 		40,
 		'2022-01-08',
-		false,
 		'create planned workload6'
 	),
 	(
@@ -274,7 +256,6 @@ VALUES
 		7,
 		40,
 		'2022-02-05',
-		false,
 		'create planned workload7'
 	),
 	(
@@ -283,7 +264,6 @@ VALUES
 		8,
 		40,
 		'2022-01-01',
-		false,
 		'create planned workload8'
 	),
 	(
@@ -292,7 +272,6 @@ VALUES
 		1,
 		20,
 		'2022-01-08',
-		false,
 		'create planned workload9'
 	),
 	(
@@ -301,7 +280,6 @@ VALUES
 		2,
 		20,
 		'2022-01-08',
-		false,
 		'create planned workload10'
 	),
 	(
@@ -310,7 +288,6 @@ VALUES
 		3,
 		40,
 		'2022-02-12',
-		false,
 		'create planned workload11'
 	),
 	(
@@ -319,7 +296,6 @@ VALUES
 		4,
 		30,
 		'2022-01-08',
-		false,
 		'create planned workload12'
 	),
 	(
@@ -328,7 +304,6 @@ VALUES
 		5,
 		10,
 		'2022-01-01',
-		false,
 		'create planned workload13'
 	),
 	(
@@ -337,7 +312,6 @@ VALUES
 		6,
 		40,
 		'2022-01-16',
-		false,
 		'create planned workload14'
 	),
 	(
@@ -346,7 +320,6 @@ VALUES
 		7,
 		40,
 		'2022-02-12',
-		false,
 		'create planned workload15'
 	),
 	(
@@ -355,7 +328,6 @@ VALUES
 		8,
 		40,
 		'2022-01-08',
-		false,
 		'create planned workload16'
 	),
 	(
@@ -364,7 +336,6 @@ VALUES
 		1,
 		20,
 		'2022-01-15',
-		false,
 		'create planned workload17'
 	),
 	(
@@ -373,7 +344,6 @@ VALUES
 		2,
 		20,
 		'2022-01-15',
-		false,
 		'create planned workload18'
 	),
 	(
@@ -382,7 +352,6 @@ VALUES
 		3,
 		40,
 		'2022-02-19',
-		false,
 		'create planned workload19'
 	),
 	(
@@ -391,7 +360,6 @@ VALUES
 		4,
 		30,
 		'2022-01-15',
-		false,
 		'create planned workload20'
 	),
 	(
@@ -400,7 +368,6 @@ VALUES
 		5,
 		10,
 		'2022-01-15',
-		false,
 		'create planned workload21'
 	),
 	(
@@ -409,7 +376,6 @@ VALUES
 		6,
 		40,
 		'2022-01-22',
-		false,
 		'create planned workload22'
 	),
 	(
@@ -418,7 +384,6 @@ VALUES
 		7,
 		40,
 		'2022-02-19',
-		false,
 		'create planned workload23'
 	),
 	(
@@ -427,7 +392,6 @@ VALUES
 		8,
 		40,
 		'2022-01-15',
-		false,
 		'create planned workload24'
 	),
 	(
@@ -436,7 +400,6 @@ VALUES
 		1,
 		20,
 		'2022-01-22',
-		false,
 		'create planned workload25'
 	),
 	(
@@ -445,7 +408,6 @@ VALUES
 		2,
 		20,
 		'2022-01-22',
-		false,
 		'create planned workload26'
 	),
 	(
@@ -454,7 +416,6 @@ VALUES
 		3,
 		40,
 		'2022-02-26',
-		false,
 		'create planned workload27'
 	),
 	(
@@ -463,7 +424,6 @@ VALUES
 		4,
 		30,
 		'2022-01-22',
-		false,
 		'create planned workload28'
 	),
 	(
@@ -472,7 +432,6 @@ VALUES
 		5,
 		10,
 		'2022-01-15',
-		false,
 		'create planned workload29'
 	),
 	(
@@ -481,7 +440,6 @@ VALUES
 		6,
 		40,
 		'2022-01-30',
-		false,
 		'create planned workload30'
 	),
 	(
@@ -490,7 +448,6 @@ VALUES
 		7,
 		40,
 		'2022-02-26',
-		false,
 		'create planned workload31'
 	),
 	(
@@ -499,10 +456,8 @@ VALUES
 		8,
 		40,
 		'2022-01-22',
-		false,
 		'create planned workload32'
-	)
-            `,
+	)`,
         );
     }
 
