@@ -14,13 +14,15 @@ export class ValueStreamMap implements Mapper<ValueStream> {
 
     public static toDomain(raw: ValueStreamEntity): ValueStream {
         const { id } = raw;
-        const profileOrError = ValueStream.create(
+        const valueStreamOrError = ValueStream.create(
             {
                 name: raw.name,
             },
             new UniqueEntityID(id),
         );
 
-        return profileOrError.isSuccess ? profileOrError.getValue() : null;
+        return valueStreamOrError.isSuccess
+            ? valueStreamOrError.getValue()
+            : null;
     }
 }

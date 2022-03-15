@@ -20,7 +20,7 @@ export class UserMap implements Mapper<User> {
 
     public static toDomain(raw: UserEntity): User {
         const { id } = raw;
-        const profileOrError = User.create(
+        const userOrError = User.create(
             {
                 alias: raw.alias,
                 email: raw.email,
@@ -33,6 +33,6 @@ export class UserMap implements Mapper<User> {
             new UniqueEntityID(id),
         );
 
-        return profileOrError.isSuccess ? profileOrError.getValue() : null;
+        return userOrError.isSuccess ? userOrError.getValue() : null;
     }
 }

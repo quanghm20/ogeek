@@ -21,7 +21,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
 
     public static toDomain(raw: CommittedWorkloadEntity): CommittedWorkload {
         const { id } = raw;
-        const profileOrError = CommittedWorkload.create(
+        const committedWorkloadOrError = CommittedWorkload.create(
             {
                 committedWorkload: raw.committedWorkload,
                 startDate: raw.startDate,
@@ -31,6 +31,8 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             new UniqueEntityID(id),
         );
 
-        return profileOrError.isSuccess ? profileOrError.getValue() : null;
+        return committedWorkloadOrError.isSuccess
+            ? committedWorkloadOrError.getValue()
+            : null;
     }
 }

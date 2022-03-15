@@ -17,11 +17,13 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
 
     public static toDomain(raw: ContributedValueEntity): ContributedValue {
         const { id } = raw;
-        const profileOrError = ContributedValue.create(
+        const contributedValueOrError = ContributedValue.create(
             {},
             new UniqueEntityID(id),
         );
 
-        return profileOrError.isSuccess ? profileOrError.getValue() : null;
+        return contributedValueOrError.isSuccess
+            ? contributedValueOrError.getValue()
+            : null;
     }
 }

@@ -16,13 +16,15 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
 
     public static toDomain(raw: ExpertiseScopeEntity): ExpertiseScope {
         const { id } = raw;
-        const profileOrError = ExpertiseScope.create(
+        const expertiseScopeOrError = ExpertiseScope.create(
             {
                 name: raw.name,
             },
             new UniqueEntityID(id),
         );
 
-        return profileOrError.isSuccess ? profileOrError.getValue() : null;
+        return expertiseScopeOrError.isSuccess
+            ? expertiseScopeOrError.getValue()
+            : null;
     }
 }
