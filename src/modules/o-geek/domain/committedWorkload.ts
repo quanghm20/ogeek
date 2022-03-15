@@ -37,13 +37,15 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         return this.props.isActive;
     }
 
-    private constructor(props: ICommittedWorkloadProps, id: UniqueEntityID) {
-        super(props, id);
+    private constructor(
+        props: ICommittedWorkloadProps /* , id: UniqueEntityID*/,
+    ) {
+        super(props /*id*/);
     }
 
     public static create(
         props: ICommittedWorkloadProps,
-        id?: UniqueEntityID,
+        // id?: UniqueEntityID,
     ): Result<CommittedWorkload> {
         const propsResult = Guard.againstNullOrUndefinedBulk([]);
 
@@ -55,7 +57,7 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
             ...props,
         };
 
-        const committedWorkload = new CommittedWorkload(defaultValues, id);
+        const committedWorkload = new CommittedWorkload(defaultValues /*, id*/);
 
         return Result.ok<CommittedWorkload>(committedWorkload);
     }

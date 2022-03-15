@@ -2,14 +2,12 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
-import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
 import { ContributedValueEntity } from './contributedValue.entity';
 import { PlannedWorkloadEntity } from './plannedWorkload.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ name: 'committed_workload' })
 export class CommittedWorkloadEntity extends AbstractEntity {
-    [x: UniqueEntityID]: UniqueEntityID;
     @ManyToOne(() => UserEntity, (user) => user.committedWorkloads)
     @JoinColumn({
         name: 'user_id',

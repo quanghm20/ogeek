@@ -1,4 +1,4 @@
-import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
+// import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
@@ -19,7 +19,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     }
 
     public static toDomain(raw: CommittedWorkloadEntity): CommittedWorkload {
-        const { id } = raw;
+        // const { id } = raw;
 
         const committedWorkloadOrError = CommittedWorkload.create(
             {
@@ -30,7 +30,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
                 expiredDate: raw.expiredDate,
                 isActive: raw.status,
             },
-            new UniqueEntityID(id),
+            // new UniqueEntityID(id),
         );
 
         return committedWorkloadOrError.isSuccess
