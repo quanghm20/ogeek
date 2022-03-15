@@ -12,8 +12,8 @@ interface IUserProps {
     phone: string;
     email: string;
     avatar: string;
-    role: string;
-    weekStatus: string;
+    role: RoleType;
+    weekStatus: WeekStatus;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -54,16 +54,16 @@ export class User extends AggregateRoot<IUserProps> {
     set avatar(avatar: string) {
         this.props.avatar = avatar;
     }
-    get weekStatus(): string {
+    get weekStatus(): WeekStatus {
         return this.props.weekStatus;
     }
-    set weekStatus(weekStatus: string) {
+    set weekStatus(weekStatus: WeekStatus) {
         this.props.weekStatus = weekStatus;
     }
-    get role(): string {
+    get role(): RoleType {
         return this.props.role;
     }
-    set role(role: string) {
+    set role(role: RoleType) {
         this.props.role = role;
     }
     public isAdmin(): boolean {

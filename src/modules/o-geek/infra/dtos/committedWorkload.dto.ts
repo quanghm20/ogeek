@@ -6,33 +6,33 @@ import { ContributedValueDto } from './contributedValue.dto';
 import { UserDto } from './user.dto';
 
 export class CommittedWorkloadDto {
-    @ApiProperty()
+    @ApiProperty({ example: 134 })
     id: UniqueEntityID;
 
-    @ApiProperty()
+    @ApiProperty({ type: UserDto })
     user: UserDto;
 
-    @ApiProperty()
+    @ApiProperty({ type: ContributedValueDto })
     contributedValue: ContributedValueDto;
 
-    @ApiProperty()
+    @ApiProperty({ example: 40 })
     committedWorkload: number;
 
-    @ApiProperty()
+    @ApiProperty({ example: new Date() })
     startDate: Date;
 
-    @ApiProperty()
+    @ApiProperty({ example: new Date() })
     expiredDate: Date;
 
-    @ApiProperty()
+    @ApiProperty({ example: WorkloadStatus.ACTIVE })
     status?: WorkloadStatus;
 
-    @ApiProperty()
+    @ApiProperty({ type: UserDto })
     picId?: UserDto;
 
-    @ApiProperty()
+    @ApiProperty({ example: new Date() })
     createdAt?: Date;
 
-    @ApiProperty()
+    @ApiProperty({ example: new Date() })
     updatedAt?: Date;
 }
