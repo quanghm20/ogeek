@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { WorkloadStatus } from '../../../../common/constants/committed-status';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
-import { User } from '../../domain/user';
 import { ContributedValueDto } from './contributedValue.dto';
 import { UserDto } from './user.dto';
 
@@ -10,7 +10,7 @@ export class CommittedWorkloadDto {
     id: UniqueEntityID;
 
     @ApiProperty()
-    user: UserDto | User;
+    user: UserDto;
 
     @ApiProperty()
     contributedValue: ContributedValueDto;
@@ -25,7 +25,7 @@ export class CommittedWorkloadDto {
     expiredDate: Date;
 
     @ApiProperty()
-    status?: boolean;
+    status?: WorkloadStatus;
 
     @ApiProperty()
     picId?: UserDto;

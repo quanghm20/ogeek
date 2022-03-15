@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
+import { UserEntity } from '../database/entities/user.entity';
 export class UserDto {
     @ApiProperty()
-    id: UniqueEntityID | number;
+    id?: UniqueEntityID;
 
     @ApiProperty()
-    alias: string;
+    alias?: string;
 
     @ApiProperty()
     name?: string;
@@ -21,14 +22,27 @@ export class UserDto {
     avatar?: string;
 
     @ApiProperty()
-    role: string;
+    role?: string;
 
     @ApiProperty()
-    weekStatus: string;
+    weekStatus?: string;
 
     @ApiProperty()
     createdAt?: Date;
 
     @ApiProperty()
     updatedAt?: Date;
+
+    constructor(user: UserEntity) {
+        this.alias = user.alias;
+        this.id = new UniqueEntityID(user.id);
+        this.name = user.name;
+        this.email = user.email;
+        this.phone = user.phone;
+        this.avatar = user.avatar;
+        this.role = user.role;
+        this.weekStatus = user.weekStatus;
+        this.createdAt = user.createdAt;
+        this.updatedAt = user.updatedAt;
+    }
 }

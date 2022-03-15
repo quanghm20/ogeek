@@ -15,7 +15,6 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             committedWorkload: committedWorkload.props.committedWorkload,
             startDate: committedWorkload.props.startDate,
             expiredDate: committedWorkload.props.expiredDate,
-            status: committedWorkload.props.status,
             picId: committedWorkload.props.picId,
         };
     }

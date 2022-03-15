@@ -1,5 +1,5 @@
 import { RoleType } from '../../../common/constants/role-type';
-import { Status } from '../../../common/constants/status';
+import { WeekStatus } from '../../../common/constants/week-status';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
@@ -70,16 +70,16 @@ export class User extends AggregateRoot<IUserProps> {
         return this.props.role === RoleType.ADMIN;
     }
     public isPlaning(): boolean {
-        return this.props.weekStatus === Status.PLANING;
+        return this.props.weekStatus === WeekStatus.PLANING;
     }
     public isPlanned(): boolean {
-        return this.props.weekStatus === Status.PLANNED;
+        return this.props.weekStatus === WeekStatus.PLANNED;
     }
     public isExecuting(): boolean {
-        return this.props.weekStatus === Status.EXECUTING;
+        return this.props.weekStatus === WeekStatus.EXECUTING;
     }
     public isClosed(): boolean {
-        return this.props.weekStatus === Status.CLOSED;
+        return this.props.weekStatus === WeekStatus.CLOSED;
     }
     public static create(props: IUserProps, id?: UniqueEntityID): Result<User> {
         const propsResult = Guard.againstNullOrUndefinedBulk([]);

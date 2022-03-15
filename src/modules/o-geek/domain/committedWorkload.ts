@@ -1,3 +1,4 @@
+import { WorkloadStatus } from '../../../common/constants/committed-status';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
@@ -12,8 +13,8 @@ interface ICommittedWorkloadProps {
     committedWorkload: number;
     startDate: Date;
     expiredDate: Date;
-    status: boolean;
     picId?: User;
+    status?: WorkloadStatus;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -39,8 +40,8 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     get committedWorkload(): number {
         return this.props.committedWorkload;
     }
-    set committedWorkload(commit: number) {
-        this.props.committedWorkload = commit;
+    set committedWorkload(workload: number) {
+        this.props.committedWorkload = workload;
     }
     get startDate(): Date {
         return this.props.startDate;
@@ -54,11 +55,14 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     set expiredDate(expiredDate: Date) {
         this.props.expiredDate = expiredDate;
     }
-    get status(): boolean {
+    get status(): WorkloadStatus {
         return this.props.status;
     }
-    set status(status: boolean) {
+    set status(status: WorkloadStatus) {
         this.props.status = status;
+    }
+    public isActive(): boolean {
+        return this.props.status === WorkloadStatus.ACTIVE;
     }
 
     public static create(
