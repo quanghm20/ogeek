@@ -6,7 +6,7 @@ import { ContributedValueDto } from './contributedValue.dto';
 import { UserDto } from './user.dto';
 
 export class CommittedWorkloadDto {
-    @ApiProperty({ example: 134 })
+    @ApiProperty({ type: UniqueEntityID, example: 134 })
     id: UniqueEntityID;
 
     @ApiProperty({ type: UserDto })
@@ -24,7 +24,7 @@ export class CommittedWorkloadDto {
     @ApiProperty({ example: new Date() })
     expiredDate: Date;
 
-    @ApiProperty({ example: WorkloadStatus.ACTIVE })
+    @ApiProperty({ type: WorkloadStatus, example: WorkloadStatus.ACTIVE })
     status?: WorkloadStatus;
 
     @ApiProperty({ type: UserDto })
