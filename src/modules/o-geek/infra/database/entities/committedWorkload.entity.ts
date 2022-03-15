@@ -2,6 +2,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
+import { WorkloadStatus } from '../../../../../common/constants/committed-status';
 import { ContributedValueEntity } from './contributedValue.entity';
 import { PlannedWorkloadEntity } from './plannedWorkload.entity';
 import { UserEntity } from './user.entity';
@@ -36,17 +37,15 @@ export class CommittedWorkloadEntity extends AbstractEntity {
     startDate: Date;
 
     @Column({
+        default: WorkloadStatus.ACTIVE,
+        name: 'status',
+    })
+    status: WorkloadStatus;
+    @Column({
         nullable: false,
         name: 'expired_date',
     })
     expiredDate: Date;
-
-    @Column({
-        nullable: false,
-        name: 'status',
-        default: false,
-    })
-    status: boolean;
 
     @ManyToOne(() => UserEntity, (user) => user.committedWorkloads)
     @JoinColumn({
