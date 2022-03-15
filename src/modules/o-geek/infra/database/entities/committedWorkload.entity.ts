@@ -41,6 +41,13 @@ export class CommittedWorkloadEntity extends AbstractEntity {
     })
     expiredDate: Date;
 
+    @Column({
+        nullable: false,
+        name: 'status',
+        default: false,
+    })
+    status: boolean;
+
     @ManyToOne(() => UserEntity, (user) => user.committedWorkloads)
     @JoinColumn({
         name: 'pic_id',
