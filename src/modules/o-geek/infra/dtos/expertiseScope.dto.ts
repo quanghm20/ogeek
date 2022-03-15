@@ -3,16 +3,16 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { ExpertiseScopeEntity } from '../database/entities/expertiseScope.entity';
 export class ExpertiseScopeDto {
-    @ApiProperty()
+    @ApiProperty({ type: UniqueEntityID, example: 135 })
     id: UniqueEntityID;
 
-    @ApiProperty()
+    @ApiProperty({ example: 'Product UI' })
     name?: string;
 
-    @ApiProperty()
+    @ApiProperty({ example: new Date() })
     createdAt?: Date;
 
-    @ApiProperty()
+    @ApiProperty({ example: new Date() })
     updatedAt?: Date;
     constructor(expertiseScope: ExpertiseScopeEntity) {
         this.id = new UniqueEntityID(expertiseScope.id);
