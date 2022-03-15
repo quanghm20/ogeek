@@ -6,7 +6,7 @@ export namespace FailToCreateUserErrors {
     export class FailToCreateUser extends Result<UseCaseError> {
         constructor() {
             super(false, {
-                message: 'The user can not create',
+                message: ' Cannot create new user ',
             } as UseCaseError);
         }
     }

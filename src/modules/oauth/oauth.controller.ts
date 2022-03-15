@@ -26,7 +26,7 @@ export class OauthController {
         return '';
     }
     // if user is authenticated, they are redirected here
-    @Get('oauth/otable/callback')
+    @Get('api/oauth/otable/callback')
     @UseGuards(OAuthGuard)
     async redirectLogin(
         @Req() req: Request,
@@ -34,6 +34,10 @@ export class OauthController {
     ) {
         const { username } = req.user as { username: string };
         const userDto = { alias: username, ...req.user } as UserDto;
+        // error from user info server
+        if (!username) {
+            res.redirect('http://localhost:8000/error');
+        }
 
         const findUserDto = { alias: userDto.alias } as FindUserDto;
         let user = await this._getUserUseCase.execute(findUserDto);

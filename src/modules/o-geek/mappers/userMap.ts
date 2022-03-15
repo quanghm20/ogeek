@@ -35,6 +35,6 @@ export class UserMap implements Mapper<User> {
             new UniqueEntityID(id),
         );
 
-        return userOrError.isSuccess ? userOrError.getValue() : undefined;
+        return userOrError.isSuccess ? userOrError.getValue() : null;
     }
 }
