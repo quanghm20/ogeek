@@ -21,6 +21,10 @@ export class CreateUserUseCase implements IUseCase<UserDto, Promise<Response>> {
     async execute(userDto: UserDto): Promise<Response> {
         try {
             const user = await this.repo.createUser(userDto);
+            //
+            //
+            //
+            //
             if (!user) {
                 return left(
                     new FailToCreateUserErrors.FailToCreateUser(),

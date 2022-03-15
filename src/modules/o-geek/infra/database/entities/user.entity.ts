@@ -3,10 +3,10 @@ import { Column, Entity, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
 import { RoleType } from '../../../../../common/constants/role-type';
+import { Status } from '../../../../../common/constants/status';
 import { UserDto } from '../../dtos/user.dto';
 import { CommittedWorkloadEntity } from './committedWorkload.entity';
 import { PlannedWorkloadEntity } from './plannedWorkload.entity';
-// import { UserDto } from './dto/UserDto';
 
 @Entity({ name: 'user' })
 export class UserEntity extends AbstractEntity {
@@ -50,6 +50,14 @@ export class UserEntity extends AbstractEntity {
         default: RoleType.USER,
     })
     role: RoleType;
+
+    @Column({
+        type: 'enum',
+        enum: Status,
+        default: Status.PLANING,
+        name: 'week_status',
+    })
+    weekStatus: Status;
 
     @OneToMany(
         () => PlannedWorkloadEntity,
