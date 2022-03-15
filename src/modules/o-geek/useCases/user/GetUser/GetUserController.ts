@@ -53,6 +53,6 @@ export class GetUserController {
         }
 
         const user = UserMap.fromDomain(result.value.getValue());
-        res.status(HttpStatus.FOUND).json(user);
+        res.status(HttpStatus.OK).json(user);
     }
 }
