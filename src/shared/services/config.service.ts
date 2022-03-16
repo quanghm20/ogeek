@@ -4,7 +4,6 @@ import * as dotenv from 'dotenv';
 
 import { ISenteConfig } from '../../interfaces/ISenteConfig';
 import { SnakeNamingStrategy } from '../../snake-naming.strategy';
-import { UserSubscriber } from '../entity-subscribers/user-subscriber';
 
 export class ConfigService {
     constructor() {
@@ -67,7 +66,6 @@ export class ConfigService {
             username: this.get('DB_USERNAME'),
             password: this.get('DB_PASSWORD'),
             database: this.get('DB_DATABASE'),
-            subscribers: [UserSubscriber],
             migrationsRun: true,
             logging: this.nodeEnv === 'development',
             namingStrategy: new SnakeNamingStrategy(),

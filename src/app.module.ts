@@ -2,17 +2,17 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { contextMiddleware } from './middlewares';
-import { AuthModule } from './modules/auth/auth.module';
+import { JwtAuthModule } from './modules/jwt-auth/jwt-auth.module';
 import { OGeekModule } from './modules/o-geek/o-geek.module';
-import { UserModule } from './modules/user/user.module';
+import { OauthModule } from './modules/oauth/oauth.module';
 import { ConfigService } from './shared/services/config.service';
 import { SharedModule } from './shared/shared.module';
 
 @Module({
     imports: [
+        JwtAuthModule,
         OGeekModule,
-        AuthModule,
-        UserModule,
+        OauthModule,
         TypeOrmModule.forRootAsync({
             imports: [SharedModule],
             useFactory: (configService: ConfigService) =>
@@ -20,6 +20,8 @@ import { SharedModule } from './shared/shared.module';
             inject: [ConfigService],
         }),
     ],
+    providers: [],
+    controllers: [],
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
