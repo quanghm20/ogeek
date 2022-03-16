@@ -8,7 +8,7 @@ import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkloa
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
 
 export interface IPlannedWorkloadRepo {
-    findById(plannedWorkloadId: DomainId | number): Promise<PlannedWorkload>;
+    findByUserId(userId: DomainId | number): Promise<PlannedWorkload>;
 }
 
 @Injectable()
@@ -18,14 +18,10 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
         protected repo: Repository<PlannedWorkloadEntity>,
     ) {}
 
-    async findById(
-        plannedWorkloadId: DomainId | number,
-    ): Promise<PlannedWorkload> {
-        plannedWorkloadId =
-            plannedWorkloadId instanceof DomainId
-                ? Number(plannedWorkloadId.id.toValue())
-                : plannedWorkloadId;
-        const entity = await this.repo.findOne(plannedWorkloadId);
+    async findByUserId(userId: DomainId | number): Promise<PlannedWorkload> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        const entity = await this.repo.findOne(userId);
         return entity ? PlannedWorkloadMap.toDomain(entity) : null;
     }
 }
