@@ -6,7 +6,7 @@ import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { UserEntity } from '../database/entities/user.entity';
 
 export class UserDto {
-    @ApiProperty({ type: () => UniqueEntityID, example: 26 })
+    @ApiProperty({ type: UniqueEntityID, example: 26 })
     id?: UniqueEntityID;
 
     @ApiProperty({ example: 'thai.ls' })
