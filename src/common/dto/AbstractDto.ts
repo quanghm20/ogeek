@@ -1,10 +1,9 @@
 'use strict';
 
-import { UniqueEntityID } from '../../core/domain/UniqueEntityID';
 import { AbstractEntity } from '../abstract.entity';
 
 export class AbstractDto {
-    id: UniqueEntityID;
+    id: number;
     createdAt: Date;
     updatedAt: Date;
 
