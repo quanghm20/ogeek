@@ -1,4 +1,3 @@
-import { RoleType } from '../../../common/constants/role-type';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { User } from '../domain/user';
@@ -8,16 +7,14 @@ import { UserDto } from '../infra/dtos/user.dto';
 export class UserMap implements Mapper<User> {
     public static fromDomain(user: User): UserDto {
         return {
+            id: user.userId.id,
             alias: user.alias,
-            name: user.name,
             email: user.email,
-            sub: user.userId.id.toValue().toString(),
-            avatar: user.avatar,
+            name: user.name,
             phone: user.phone,
-            createdAt: new Date(),
-            updatedAt: new Date(),
             role: user.role,
-            id: user.userId.id.toValue() as number,
+            weekStatus: user.weekStatus,
+            avatar: user.avatar,
         };
     }
 
@@ -26,11 +23,12 @@ export class UserMap implements Mapper<User> {
         const userOrError = User.create(
             {
                 alias: raw.alias,
-                name: raw.name,
                 email: raw.email,
+                name: raw.name,
                 phone: raw.phone,
+                role: raw.role,
+                weekStatus: raw.weekStatus,
                 avatar: raw.avatar,
-                role: RoleType[raw.role],
             },
             new UniqueEntityID(id),
         );

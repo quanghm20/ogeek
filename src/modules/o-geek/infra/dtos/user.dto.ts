@@ -1,37 +1,50 @@
-'use strict';
-
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString } from 'class-validator';
 
 import { RoleType } from '../../../../common/constants/role-type';
-import { AbstractDto } from '../../../../common/dto/AbstractDto';
+import { WeekStatus } from '../../../../common/constants/week-status';
+import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
+import { UserEntity } from '../database/entities/user.entity';
+export class UserDto {
+    @ApiProperty({ type: UniqueEntityID, example: 26 })
+    id?: UniqueEntityID | number;
 
-export class UserDto extends AbstractDto {
-    @IsString()
-    @ApiProperty()
-    alias: string;
+    @ApiProperty({ example: 'thai.ls' })
+    alias?: string;
 
-    @IsString()
-    @ApiProperty()
-    name: string;
+    @ApiProperty({ example: 'Sỹ Thái' })
+    name?: string;
 
-    @IsString()
-    @ApiProperty()
-    email: string;
+    @ApiProperty({ example: '0984786432' })
+    phone?: string;
 
-    @IsString()
-    @ApiProperty()
-    sub: string;
+    @ApiProperty({ example: 'thai.ls@geekup.vn' })
+    email?: string;
 
-    @IsString()
-    @ApiProperty()
-    avatar: string;
+    @ApiProperty({ example: 'http://localhost/avatar' })
+    avatar?: string;
 
-    @IsString()
-    @ApiProperty()
-    phone: string;
+    @ApiProperty({ example: RoleType.ADMIN })
+    role?: RoleType;
 
-    @IsEnum(RoleType)
-    @ApiProperty()
-    role: RoleType;
+    @ApiProperty({ example: WeekStatus.PLANING })
+    weekStatus?: WeekStatus;
+
+    @ApiProperty({ example: new Date() })
+    createdAt?: Date;
+
+    @ApiProperty({ example: new Date() })
+    updatedAt?: Date;
+
+    constructor(user: UserEntity) {
+        this.alias = user.alias;
+        this.id = new UniqueEntityID(user.id);
+        this.name = user.name;
+        this.email = user.email;
+        this.phone = user.phone;
+        this.avatar = user.avatar;
+        this.role = user.role;
+        this.weekStatus = user.weekStatus;
+        this.createdAt = user.createdAt;
+        this.updatedAt = user.updatedAt;
+    }
 }
