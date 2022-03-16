@@ -4,6 +4,7 @@ import { RoleType } from '../../../../common/constants/role-type';
 import { WeekStatus } from '../../../../common/constants/week-status';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { UserEntity } from '../database/entities/user.entity';
+
 export class UserDto {
     @ApiProperty({ type: UniqueEntityID, example: 26 })
     id?: UniqueEntityID | number;
@@ -23,10 +24,10 @@ export class UserDto {
     @ApiProperty({ example: 'http://localhost/avatar' })
     avatar?: string;
 
-    @ApiProperty({ example: RoleType.ADMIN })
+    @ApiProperty({ enum: RoleType, example: RoleType.ADMIN })
     role?: RoleType;
 
-    @ApiProperty({ example: WeekStatus.PLANING })
+    @ApiProperty({ enum: WeekStatus, example: WeekStatus.PLANING })
     weekStatus?: WeekStatus;
 
     @ApiProperty({ example: new Date() })

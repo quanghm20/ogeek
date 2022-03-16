@@ -24,7 +24,7 @@ export class CommittedWorkloadDto {
     @ApiProperty({ example: new Date() })
     expiredDate: Date;
 
-    @ApiProperty({ type: () => WorkloadStatus, example: WorkloadStatus.ACTIVE })
+    @ApiProperty({ enum: WorkloadStatus, example: WorkloadStatus.ACTIVE })
     status?: WorkloadStatus;
 
     @ApiProperty({ type: () => () => UserDto })

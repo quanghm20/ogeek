@@ -14,7 +14,7 @@ export interface IExpertiseScopeRepo {
 @Injectable()
 export class ExpertiseScopeRepository implements IExpertiseScopeRepo {
     constructor(
-        @InjectRepository(ExpertiseScope)
+        @InjectRepository(ExpertiseScopeEntity)
         protected repo: Repository<ExpertiseScopeEntity>,
     ) {}
 
