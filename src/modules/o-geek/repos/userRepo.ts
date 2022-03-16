@@ -14,7 +14,7 @@ export interface IUserRepo {
 @Injectable()
 export class UserRepository implements IUserRepo {
     constructor(
-        @InjectRepository(User)
+        @InjectRepository(UserEntity)
         protected repo: Repository<UserEntity>,
     ) {}
 

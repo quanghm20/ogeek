@@ -19,6 +19,7 @@ import {
     CreateCommittedWorkloadController,
     CreateCommittedWorkloadUseCase,
 } from './useCases/committedWorkload/createCommittedWorkload';
+import { GetContributedValueUseCase } from './useCases/contributedValue/getContributedValue';
 
 @Module({
     imports: [
@@ -35,6 +36,7 @@ import {
     controllers: [CreateCommittedWorkloadController],
     providers: [
         CreateCommittedWorkloadUseCase,
+        GetContributedValueUseCase,
         {
             provide: 'IContributedValueRepo',
             useClass: ContributedValueRepository,

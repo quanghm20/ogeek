@@ -19,7 +19,7 @@ export interface IContributedValueRepo {
 @Injectable()
 export class ContributedValueRepository implements IContributedValueRepo {
     constructor(
-        @InjectRepository(ContributedValue)
+        @InjectRepository(ContributedValueEntity)
         protected repo: Repository<ContributedValueEntity>,
     ) {}
     async findOne(
