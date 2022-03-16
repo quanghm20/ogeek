@@ -155,7 +155,7 @@ module.exports = {
             'error',
         ],
         'arrow-body-style': 'error',
-        'complexity': ['warn', 3],
+        'complexity': ['warn', 7],
         'constructor-super': 'error',
         'curly': 'error',
         'dot-notation': 'error',
@@ -172,7 +172,7 @@ module.exports = {
         'import/order': 'off',
         'max-classes-per-file': [
             'error',
-            1,
+            5,
         ],
         'max-len': [
             'error',
