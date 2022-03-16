@@ -15,11 +15,11 @@ import {
     UserRepository,
     ValueStreamRepository,
 } from './repos/index';
-import {
-    CreateCommittedWorkloadController,
-    CreateCommittedWorkloadUseCase,
-} from './useCases/committedWorkload/createCommittedWorkload';
-import { GetContributedValueUseCase } from './useCases/contributedValue/getContributedValue';
+// import {
+//     CreateCommittedWorkloadController,
+//     CreateCommittedWorkloadUseCase,
+// } from './useCases/committedWorkload/createCommittedWorkload';
+// import { GetContributedValueUseCase } from './useCases/contributedValue/getContributedValue';
 
 @Module({
     imports: [
@@ -33,10 +33,12 @@ import { GetContributedValueUseCase } from './useCases/contributedValue/getContr
             PlannedWorkloadEntity,
         ]),
     ],
-    controllers: [CreateCommittedWorkloadController],
+    controllers: [
+        /*CreateCommittedWorkloadController*/
+    ],
     providers: [
-        CreateCommittedWorkloadUseCase,
-        GetContributedValueUseCase,
+        // CreateCommittedWorkloadUseCase,
+        // GetContributedValueUseCase,
         {
             provide: 'IContributedValueRepo',
             useClass: ContributedValueRepository,
