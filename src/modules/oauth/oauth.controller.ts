@@ -36,7 +36,7 @@ export class OauthController {
         const userDto = { alias: username, ...req.user } as UserDto;
         // error from user info server
         if (!username) {
-            res.redirect('http://localhost:8000/error');
+            res.redirect(`${this._configService.get('HOME_URL')}/error`);
         }
 
         const findUserDto = { alias: userDto.alias } as FindUserDto;
@@ -47,7 +47,9 @@ export class OauthController {
 
         const mappedUser = UserMap.fromDomain(user.value.getValue() as User);
         const jwtToken = this._jwtService.signJwt(mappedUser);
-        res.redirect(`http://localhost:8000/user/callback/?accessToken=${jwtToken}
+        res.redirect(`${this._configService.get(
+            'HOME_URL',
+        )}/user/callback/?accessToken=${jwtToken}
                     &expireIn=${
                         Date.now() +
                         this._configService.getNumber('JWT_EXPIRATION_TIME')
