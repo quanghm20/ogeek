@@ -25,8 +25,8 @@ export class GetUserUseCase
         try {
             let user = null;
 
-            if (findUserDto.userID) {
-                user = await this.repo.findById(findUserDto.userID);
+            if (findUserDto.userId) {
+                user = await this.repo.findById(findUserDto.userId);
             }
             if (findUserDto.alias) {
                 user = await this.repo.findByAlias(findUserDto.alias);

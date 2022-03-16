@@ -6,7 +6,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '../../shared/services/config.service';
 
 export interface JwtPayload {
-    userID: number;
+    userId: number;
 }
 
 @Injectable()

@@ -2,7 +2,7 @@ import { IsString } from 'class-validator';
 
 export class FindUserDto {
     @IsString()
-    userID?: number = null;
+    userId?: number = null;
 
     @IsString()
     alias?: string = null;

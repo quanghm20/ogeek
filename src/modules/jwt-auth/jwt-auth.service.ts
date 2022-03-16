@@ -9,7 +9,7 @@ export class JwtAuthService {
 
     signJwt(user: UserDto): string {
         const payload = {
-            userID: user.id,
+            userId: user.id,
         } as JwtPayload;
         return this._jwtService.sign(payload);
     }
