@@ -48,7 +48,10 @@ export class ContributedValueRepository implements IContributedValueRepo {
         return entity ? ContributedValueMap.toDomain(entity) : null;
     }
     async findAll(): Promise<ContributedValue[]> {
-        const entity = await this.repo.find();
+        const entity = await this.repo.find({
+            relations: ['expertiseScope', 'valueStream'],
+        });
+
         return entity ? ContributedValueMap.toDomainAll(entity) : null;
     }
 }
