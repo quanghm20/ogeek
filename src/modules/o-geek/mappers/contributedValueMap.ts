@@ -17,16 +17,6 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
         };
     }
 
-    // public static fromDomain(
-    //     contributedValue: ContributedValue,
-    // ): ContributedValueDto {
-    //     return {
-    //         id: contributedValue.id,
-    //         valueStream: contributedValue.props.valueStream,
-    //         expertiseScope: contributedValue.props.expertiseScope,
-    //     };
-    // }
-
     public static toDomain(raw: ContributedValueEntity): ContributedValue {
         const { id } = raw;
         const valueStreamId = raw.valueStream.id;
