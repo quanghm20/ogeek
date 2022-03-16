@@ -7,7 +7,7 @@ import { UserEntity } from '../database/entities/user.entity';
 
 export class UserDto {
     @ApiProperty({ type: UniqueEntityID, example: 26 })
-    id?: UniqueEntityID;
+    id?: UniqueEntityID | number;
 
     @ApiProperty({ example: 'thai.ls' })
     alias?: string;

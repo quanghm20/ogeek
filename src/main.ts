@@ -7,6 +7,8 @@ import {
 } from '@nestjs/platform-express';
 import * as Sentry from '@sentry/node';
 import * as compression from 'compression';
+import * as cookieParser from 'cookie-parser';
+import * as session from 'express-session';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
 import {
@@ -35,11 +37,23 @@ async function bootstrap() {
             },
         },
     );
+
+    const configService = app.select(SharedModule).get(ConfigService);
+
+    app.use(
+        session({
+            secret: configService.get('JWT_SECRET_KEY'),
+            resave: false,
+            saveUninitialized: false,
+        }),
+    );
+
     app.enable('trust proxy'); // only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
     app.use(helmet());
 
     app.use(compression());
     app.use(morgan('combined'));
+    app.use(cookieParser());
 
     const reflector = app.get(Reflector);
 
@@ -61,8 +75,6 @@ async function bootstrap() {
             },
         }),
     );
-
-    const configService = app.select(SharedModule).get(ConfigService);
 
     Sentry.init({
         dsn: configService.get('SENTRY_DNS'),

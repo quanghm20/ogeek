@@ -7,16 +7,16 @@ import { ContributedValueDto } from './contributedValue.dto';
 import { UserDto } from './user.dto';
 
 export class PlannedWorkloadDto {
-    @ApiProperty({ type: UniqueEntityID, example: 1692 })
+    @ApiProperty({ type: () => UniqueEntityID, example: 1692 })
     id: UniqueEntityID;
 
-    @ApiProperty({ type: UserDto })
+    @ApiProperty({ type: () => UserDto })
     user: UserDto;
 
-    @ApiProperty({ type: ContributedValueDto })
+    @ApiProperty({ type: () => ContributedValueDto })
     contributedValue: ContributedValueDto;
 
-    @ApiProperty({ type: CommittedWorkloadDto })
+    @ApiProperty({ type: () => CommittedWorkloadDto })
     committedWorkload: CommittedWorkloadDto;
 
     @ApiProperty({ example: 40 })

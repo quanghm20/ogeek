@@ -4,12 +4,12 @@ import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { ExpertiseScopeDto } from './expertiseScope.dto';
 import { ValueStreamDto } from './valueStream.dto';
 export class ContributedValueDto {
-    @ApiProperty({ type: UniqueEntityID, example: 21 })
+    @ApiProperty({ type: () => UniqueEntityID, example: 21 })
     id: UniqueEntityID;
 
-    @ApiProperty({ type: ValueStreamDto })
+    @ApiProperty({ type: () => ValueStreamDto })
     valueStream: ValueStreamDto;
 
-    @ApiProperty({ type: ExpertiseScopeDto })
+    @ApiProperty({ type: () => ExpertiseScopeDto })
     expertiseScope: ExpertiseScopeDto;
 }
