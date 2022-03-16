@@ -1,36 +1,38 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { RoleType } from '../../../../common/constants/role-type';
+import { WeekStatus } from '../../../../common/constants/week-status';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { UserEntity } from '../database/entities/user.entity';
 export class UserDto {
-    @ApiProperty()
+    @ApiProperty({ type: UniqueEntityID, example: 26 })
     id?: UniqueEntityID;
 
-    @ApiProperty()
+    @ApiProperty({ example: 'thai.ls' })
     alias?: string;
 
-    @ApiProperty()
+    @ApiProperty({ example: 'Sỹ Thái' })
     name?: string;
 
-    @ApiProperty()
+    @ApiProperty({ example: '0984786432' })
     phone?: string;
 
-    @ApiProperty()
+    @ApiProperty({ example: 'thai.ls@geekup.vn' })
     email?: string;
 
-    @ApiProperty()
+    @ApiProperty({ example: 'http://localhost/avatar' })
     avatar?: string;
 
-    @ApiProperty()
-    role?: string;
+    @ApiProperty({ type: RoleType, example: RoleType.ADMIN })
+    role?: RoleType;
 
-    @ApiProperty()
-    weekStatus?: string;
+    @ApiProperty({ example: WeekStatus.PLANING })
+    weekStatus?: WeekStatus;
 
-    @ApiProperty()
+    @ApiProperty({ example: new Date() })
     createdAt?: Date;
 
-    @ApiProperty()
+    @ApiProperty({ example: new Date() })
     updatedAt?: Date;
 
     constructor(user: UserEntity) {
