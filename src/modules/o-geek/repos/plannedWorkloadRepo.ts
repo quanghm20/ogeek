@@ -1,26 +1,31 @@
-// import { Injectable } from '@nestjs/common';
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-// import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
-// import { PlannedWorkload } from '../domain/plannedWorkload';
-// import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
-// import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
+import { DomainId } from '../domain/domainId';
+import { PlannedWorkload } from '../domain/plannedWorkload';
+import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
+import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
 
-// export interface IPlannedWorkloadRepo {
-//     getPlannedWorkload(id: UniqueEntityID): Promise<PlannedWorkload>;
-// }
+export interface IPlannedWorkloadRepo {
+    findById(plannedWorkloadId: DomainId | number): Promise<PlannedWorkload>;
+}
 
-// @Injectable()
-// export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
-//     constructor(
-//         @InjectRepository(PlannedWorkloadEntity)
-//         protected plannedWorkloadRepo: Repository<PlannedWorkloadEntity>,
-//     ) {}
+@Injectable()
+export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
+    constructor(
+        @InjectRepository(PlannedWorkload)
+        protected repo: Repository<PlannedWorkloadEntity>,
+    ) {}
 
-//     async getPlannedWorkload(id: UniqueEntityID): Promise<PlannedWorkload> {
-//         // committedWorkloadId = committedWorkloadId instanceof DomainId ? committedWorkloadId.id.
-//         const entity = await this.plannedWorkloadRepo.findOne(id?: UniqueEntityID, );
-//         return entity ? PlannedWorkloadMap.toDomain(entity) : null;
-//     }
-// }
+    async findById(
+        plannedWorkloadId: DomainId | number,
+    ): Promise<PlannedWorkload> {
+        plannedWorkloadId =
+            plannedWorkloadId instanceof DomainId
+                ? Number(plannedWorkloadId.id.toValue())
+                : plannedWorkloadId;
+        const entity = await this.repo.findOne(plannedWorkloadId);
+        return entity ? PlannedWorkloadMap.toDomain(entity) : null;
+    }
+}

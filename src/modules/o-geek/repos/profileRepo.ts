@@ -2,13 +2,13 @@
 // import { InjectRepository } from '@nestjs/typeorm';
 // import { Repository } from 'typeorm';
 
+import { DomainId } from '../domain/domainId';
 import { Profile } from '../domain/profile';
-import { ProfileId } from '../domain/profileId';
 // import { ProfileEntity } from '../infra/database/entities/profile.entity';
 // import { ProfileMap } from '../mappers/profileMap';
 
 export interface IProfileRepo {
-    findById(id: ProfileId | string): Promise<Profile>;
+    findById(id: DomainId | string): Promise<Profile>;
 }
 
 /*@Injectable()

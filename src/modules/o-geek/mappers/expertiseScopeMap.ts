@@ -1,32 +1,30 @@
-// import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
-// import { Mapper } from '../../../core/infra/Mapper';
-// import { ContributedValue } from '../domain/contributedValue';
-// import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
-// import { ContributedValueDto } from '../infra/dtos/contributedValue.dto';
+import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
+import { Mapper } from '../../../core/infra/Mapper';
+import { ExpertiseScope } from '../domain/expertiseScope';
+import { ExpertiseScopeEntity } from '../infra/database/entities/expertiseScope.entity';
+import { ExpertiseScopeDto } from '../infra/dtos/expertiseScope.dto';
 
-// export class ContributedValueMap implements Mapper<ContributedValue> {
-//     public static fromDomain(
-//         contributedValue: ContributedValue,
-//     ): ContributedValueDto {
-//         return {
-//             expertiseScopeId: contributedValue.expertiseScopeId,
-//             valueStreamId: contributedValue.valueStreamId,
-//         };
-//     }
+export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
+    public static fromDomain(
+        expertiseScope: ExpertiseScope,
+    ): ExpertiseScopeDto {
+        return {
+            id: expertiseScope.expertiseScopeId.id,
+            name: expertiseScope.name,
+        };
+    }
 
-//     public static toDomain(raw: ContributedValueEntity): ContributedValue {
-//         const { id } = raw;
+    public static toDomain(raw: ExpertiseScopeEntity): ExpertiseScope {
+        const { id } = raw;
+        const expertiseScopeOrError = ExpertiseScope.create(
+            {
+                name: raw.name,
+            },
+            new UniqueEntityID(id),
+        );
 
-//         const contributedValueOrError = ContributedValue.create(
-//             {
-//                 expertiseScopeId: raw.expertiseScope.id,
-//                 valueStreamId: raw.valueStream.id,
-//             },
-//             new UniqueEntityID(id),
-//         );
-
-//         return contributedValueOrError.isSuccess
-//             ? contributedValueOrError.getValue()
-//             : null;
-//     }
-// }
+        return expertiseScopeOrError.isSuccess
+            ? expertiseScopeOrError.getValue()
+            : null;
+    }
+}

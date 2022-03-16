@@ -1,29 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { WorkloadStatus } from '../../../../common/constants/committed-status';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
+import { ContributedValueDto } from '../../../o-geek/infra/dtos/contributedValue.dto';
+import { CommittedWorkloadDto } from './committedWorkload.dto';
+import { UserDto } from './user.dto';
 
 export class PlannedWorkloadDto {
-    @ApiProperty()
-    id?: UniqueEntityID;
+    @ApiProperty({ type: UniqueEntityID, example: 1692 })
+    id: UniqueEntityID;
 
-    @ApiProperty()
-    userId: UniqueEntityID;
+    @ApiProperty({ type: UserDto })
+    user: UserDto;
 
-    @ApiProperty()
-    contributedValueId?: UniqueEntityID;
+    @ApiProperty({ type: ContributedValueDto })
+    contributedValue: ContributedValueDto;
 
-    @ApiProperty()
-    committedWorkloadId?: UniqueEntityID;
+    @ApiProperty({ type: CommittedWorkloadDto })
+    committedWorkload: CommittedWorkloadDto;
 
-    @ApiProperty()
-    plannedWorkload?: number;
+    @ApiProperty({ example: 40 })
+    plannedWorkload: number;
 
-    @ApiProperty()
-    startDate?: Date;
+    @ApiProperty({ example: new Date() })
+    startDate: Date;
 
-    @ApiProperty()
-    isActive?: boolean;
+    @ApiProperty({ type: WorkloadStatus, example: WorkloadStatus.ACTIVE })
+    status?: WorkloadStatus;
 
-    @ApiProperty()
-    reason?: string;
+    @ApiProperty({ example: new Date() })
+    createdAt?: Date;
+
+    @ApiProperty({ example: new Date() })
+    updatedAt?: Date;
 }

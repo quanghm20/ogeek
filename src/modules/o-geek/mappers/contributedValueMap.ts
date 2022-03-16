@@ -9,19 +9,16 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
         contributedValue: ContributedValue,
     ): ContributedValueDto {
         return {
-            expertiseScopeId: contributedValue.expertiseScopeId,
-            valueStreamId: contributedValue.valueStreamId,
+            id: contributedValue.id,
+            valueStream: contributedValue.props.valueStream,
+            expertiseScope: contributedValue.props.expertiseScope,
         };
     }
 
     public static toDomain(raw: ContributedValueEntity): ContributedValue {
         const { id } = raw;
-
         const contributedValueOrError = ContributedValue.create(
-            {
-                expertiseScopeId: raw.expertiseScope.id,
-                valueStreamId: raw.valueStream.id,
-            },
+            {},
             new UniqueEntityID(id),
         );
 

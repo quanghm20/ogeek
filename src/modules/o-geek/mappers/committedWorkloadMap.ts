@@ -1,4 +1,4 @@
-// import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
+import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
@@ -9,28 +9,26 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         committedWorkload: CommittedWorkload,
     ): CommittedWorkloadDto {
         return {
-            userId: committedWorkload.userId,
-            contributedValueId: committedWorkload.contributedValueId,
-            committedWorkload: committedWorkload.committedWorkload,
-            startDate: committedWorkload.startDate,
-            expiredDate: committedWorkload.expiredDate,
-            isActive: committedWorkload.isActive,
+            id: committedWorkload.committedWorkloadId.id,
+            user: committedWorkload.props.user,
+            contributedValue: committedWorkload.props.contributedValue,
+            committedWorkload: committedWorkload.props.committedWorkload,
+            startDate: committedWorkload.props.startDate,
+            expiredDate: committedWorkload.props.expiredDate,
+            picId: committedWorkload.props.picId,
         };
     }
 
     public static toDomain(raw: CommittedWorkloadEntity): CommittedWorkload {
-        // const { id } = raw;
-
+        const { id } = raw;
         const committedWorkloadOrError = CommittedWorkload.create(
             {
-                userId: raw.user.id,
-                contributedValueId: raw.contributedValue.id,
                 committedWorkload: raw.committedWorkload,
                 startDate: raw.startDate,
                 expiredDate: raw.expiredDate,
-                isActive: raw.status,
+                status: raw.status,
             },
-            // new UniqueEntityID(id),
+            new UniqueEntityID(id),
         );
 
         return committedWorkloadOrError.isSuccess

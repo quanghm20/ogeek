@@ -2,31 +2,30 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { ContributedValue } from '../domain/contributedValue';
+import { DomainId } from '../domain/domainId';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
 import { ContributedValueMap } from '../mappers/contributedValueMap';
 
 export interface IContributedValueRepo {
-    getCommittedWorkload(id: UniqueEntityID): Promise<ContributedValue>;
+    findById(contributedValueId: DomainId | number): Promise<ContributedValue>;
 }
 
 @Injectable()
 export class ContributedValueRepository implements IContributedValueRepo {
     constructor(
-        @InjectRepository(ContributedValueEntity)
-        protected contributedValueRepo: Repository<ContributedValueEntity>,
+        @InjectRepository(ContributedValue)
+        protected repo: Repository<ContributedValueEntity>,
     ) {}
 
-    // Check correction of data type, if it is number, force it to be DomainId
-    async getCommittedWorkload(
+    async findById(
         contributedValueId: DomainId | number,
     ): Promise<ContributedValue> {
-        // contributedValueId = committedWorkloadId instanceof DomainId ? committedWorkloadId.id.
-
-        const entity = await this.contributedValueRepo.findOne(
-            contributedValueId,
-        );
+        contributedValueId =
+            contributedValueId instanceof DomainId
+                ? Number(contributedValueId.id.toValue())
+                : contributedValueId;
+        const entity = await this.repo.findOne(contributedValueId);
         return entity ? ContributedValueMap.toDomain(entity) : null;
     }
 }

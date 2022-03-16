@@ -2,31 +2,32 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { CommittedWorkload } from '../domain/committedWorkload';
+import { DomainId } from '../domain/domainId';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 
 export interface ICommittedWorkloadRepo {
-    getCommittedWorkload(id: UniqueEntityID): Promise<CommittedWorkload>;
+    findById(
+        committedWorkloadId: DomainId | number,
+    ): Promise<CommittedWorkload>;
 }
 
 @Injectable()
 export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     constructor(
-        @InjectRepository(CommittedWorkloadEntity)
-        protected committedWorkloadRepo: Repository<CommittedWorkloadEntity>,
+        @InjectRepository(CommittedWorkload)
+        protected repo: Repository<CommittedWorkloadEntity>,
     ) {}
 
-    // Check correction of data type, if it is number, force it to be DomainId
-    async getCommittedWorkload(
+    async findById(
         committedWorkloadId: DomainId | number,
     ): Promise<CommittedWorkload> {
-        // committedWorkloadId = committedWorkloadId instanceof DomainId ? committedWorkloadId.id.
-
-        const entity = await this.committedWorkloadRepo.findOne(
-            committedWorkloadId,
-        );
+        committedWorkloadId =
+            committedWorkloadId instanceof DomainId
+                ? Number(committedWorkloadId.id.toValue())
+                : committedWorkloadId;
+        const entity = await this.repo.findOne(committedWorkloadId);
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
     }
 }

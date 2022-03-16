@@ -1,60 +1,79 @@
+import { WorkloadStatus } from '../../../common/constants/committed-status';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
+import { CommittedWorkload } from './committedWorkload';
+import { ContributedValue } from './contributedValue';
+import { DomainId } from './domainId';
+import { ExpertiseScope } from './expertiseScope';
+import { User } from './user';
+import { ValueStream } from './valueStream';
 
 interface IPlannedWorkloadProps {
-    userId?: UniqueEntityID;
-    contributedValueId?: UniqueEntityID;
-    committedWorkloadId?: UniqueEntityID;
+    contributedValue?: ContributedValue;
+    user?: User;
     plannedWorkload?: number;
-    startDate?: Date;
-    isActive?: boolean;
-    reason?: string;
+    committedWorkload?: CommittedWorkload;
+    startDate: Date;
+    status: WorkloadStatus;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
-
 export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
-    get userId(): UniqueEntityID {
-        return this.props.userId;
+    private constructor(props: IPlannedWorkloadProps, id: UniqueEntityID) {
+        super(props, id);
     }
-    get contributedValue(): UniqueEntityID {
-        return this.props.contributedValueId;
+    get user(): User {
+        return this.props.user;
     }
-    get committedWorkloadId(): UniqueEntityID {
-        return this.props.committedWorkloadId;
+    set user(user: User) {
+        this.props.user = user;
     }
     get plannedWorkload(): number {
         return this.props.plannedWorkload;
     }
+    set plannedWorkload(workload: number) {
+        this.props.plannedWorkload = workload;
+    }
     get startDate(): Date {
         return this.props.startDate;
     }
-    get isActive(): boolean {
-        return this.props.isActive;
+    set startDate(startDate: Date) {
+        this.props.startDate = startDate;
     }
-    get reason(): string {
-        return this.props.reason;
+    get status(): WorkloadStatus {
+        return this.props.status;
     }
-    private constructor(props: IPlannedWorkloadProps, id: UniqueEntityID) {
-        super(props, id);
+    set status(status: WorkloadStatus) {
+        this.props.status = status;
     }
-
+    get valueStream(): ValueStream {
+        return this.props.contributedValue.valueStream;
+    }
+    get expertiseScope(): ExpertiseScope {
+        return this.props.contributedValue.expertiseScope;
+    }
+    get plannedWorkloadId(): DomainId {
+        return DomainId.create(this._id).getValue();
+    }
+    public isActive(): boolean {
+        return this.props.status === WorkloadStatus.ACTIVE;
+    }
     public static create(
         props: IPlannedWorkloadProps,
-        id?: UniqueEntityID,
+        id: UniqueEntityID,
     ): Result<PlannedWorkload> {
         const propsResult = Guard.againstNullOrUndefinedBulk([]);
-
         if (!propsResult.succeeded) {
             return Result.fail<PlannedWorkload>(propsResult.message);
         }
-
         const defaultValues = {
             ...props,
         };
-
+        defaultValues.createdAt = new Date();
+        defaultValues.updatedAt = new Date();
         const plannedWorkload = new PlannedWorkload(defaultValues, id);
-
         return Result.ok<PlannedWorkload>(plannedWorkload);
     }
 }

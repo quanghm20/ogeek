@@ -9,31 +9,27 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
         plannedWorkload: PlannedWorkload,
     ): PlannedWorkloadDto {
         return {
-            userId: plannedWorkload.userId,
-            contributedValueId: plannedWorkload.contributedValue,
-            committedWorkloadId: plannedWorkload.committedWorkloadId,
-            plannedWorkload: plannedWorkload.plannedWorkload,
-            startDate: plannedWorkload.startDate,
-            isActive: plannedWorkload.isActive,
-            reason: plannedWorkload.reason,
+            id: plannedWorkload.id,
+            user: plannedWorkload.props.user,
+            contributedValue: plannedWorkload.props.contributedValue,
+            committedWorkload: plannedWorkload.props.committedWorkload,
+            plannedWorkload: plannedWorkload.props.plannedWorkload,
+            startDate: plannedWorkload.props.startDate,
+            status: plannedWorkload.props.status,
         };
     }
 
     public static toDomain(raw: PlannedWorkloadEntity): PlannedWorkload {
         const { id } = raw;
-
         const plannedWorkloadOrError = PlannedWorkload.create(
             {
-                userId: raw.user.id,
-                contributedValueId: raw.contributedValue.id,
-                committedWorkloadId: raw.committedWorkload.id,
                 plannedWorkload: raw.plannedWorkload,
                 startDate: raw.startDate,
-                isActive: raw.status,
-                // reason: raw.reason,
+                status: raw.status,
             },
             new UniqueEntityID(id),
         );
+
         return plannedWorkloadOrError.isSuccess
             ? plannedWorkloadOrError.getValue()
             : null;
