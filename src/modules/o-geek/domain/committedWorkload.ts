@@ -10,9 +10,9 @@ import { User } from './user';
 interface ICommittedWorkloadProps {
     contributedValue?: ContributedValue;
     user?: User;
-    committedWorkload: number;
-    startDate: Date;
-    expiredDate: Date;
+    committedWorkload?: number;
+    startDate?: Date;
+    expiredDate?: Date;
     picId?: User;
     status?: WorkloadStatus;
     createdAt?: Date;

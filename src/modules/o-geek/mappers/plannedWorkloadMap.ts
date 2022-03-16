@@ -34,4 +34,19 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
             ? plannedWorkloadOrError.getValue()
             : null;
     }
+
+    public static toArrayDomain(
+        raws: PlannedWorkloadEntity[],
+    ): PlannedWorkload[] {
+        const plannedWorkloadsOrError = Array<PlannedWorkload>();
+        raws.forEach(function get(item) {
+            const { id } = item;
+            const plannedWorkloadOrError = PlannedWorkload.create(
+                {},
+                new UniqueEntityID(id),
+            );
+            plannedWorkloadsOrError.push(plannedWorkloadOrError.getValue());
+        });
+        return plannedWorkloadsOrError ? plannedWorkloadsOrError : null;
+    }
 }

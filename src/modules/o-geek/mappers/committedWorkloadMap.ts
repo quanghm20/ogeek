@@ -35,4 +35,19 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             ? committedWorkloadOrError.getValue()
             : null;
     }
+
+    public static toArrayDomain(
+        raws: CommittedWorkloadEntity[],
+    ): CommittedWorkload[] {
+        const committedWorkloadsOrError = Array<CommittedWorkload>();
+        raws.forEach(function get(item) {
+            const { id } = item;
+            const committedWorkloadOrError = CommittedWorkload.create(
+                {},
+                new UniqueEntityID(id),
+            );
+            committedWorkloadsOrError.push(committedWorkloadOrError.getValue());
+        });
+        return committedWorkloadsOrError ? committedWorkloadsOrError : null;
+    }
 }

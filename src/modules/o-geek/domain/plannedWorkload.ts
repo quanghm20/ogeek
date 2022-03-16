@@ -15,8 +15,8 @@ interface IPlannedWorkloadProps {
     user?: User;
     plannedWorkload?: number;
     committedWorkload?: CommittedWorkload;
-    startDate: Date;
-    status: WorkloadStatus;
+    startDate?: Date;
+    status?: WorkloadStatus;
     createdAt?: Date;
     updatedAt?: Date;
 }
