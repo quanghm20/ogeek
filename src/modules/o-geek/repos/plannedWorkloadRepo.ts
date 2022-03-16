@@ -5,7 +5,6 @@
 // import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 // import { PlannedWorkload } from '../domain/plannedWorkload';
 // import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
-// import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';
 // import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
 
 // export interface IPlannedWorkloadRepo {
@@ -20,6 +19,7 @@
 //     ) {}
 
 //     async getPlannedWorkload(id: UniqueEntityID): Promise<PlannedWorkload> {
+//         // committedWorkloadId = committedWorkloadId instanceof DomainId ? committedWorkloadId.id.
 //         const entity = await this.plannedWorkloadRepo.findOne(id?: UniqueEntityID, );
 //         return entity ? PlannedWorkloadMap.toDomain(entity) : null;
 //     }
