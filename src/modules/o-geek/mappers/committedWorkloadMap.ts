@@ -3,6 +3,8 @@ import { Mapper } from '../../../core/infra/Mapper';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
+import { ContributedValueMap } from './contributedValueMap';
+import { UserMap } from './userMap';
 
 export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     public static fromDomain(
@@ -15,7 +17,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             committedWorkload: committedWorkload.props.committedWorkload,
             startDate: committedWorkload.props.startDate,
             expiredDate: committedWorkload.props.expiredDate,
-            picId: committedWorkload.props.picId,
+            picId: committedWorkload.props.pic,
         };
     }
 
@@ -34,5 +36,24 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         return committedWorkloadOrError.isSuccess
             ? committedWorkloadOrError.getValue()
             : null;
+    }
+
+    public static toEntity(
+        committedWorkload: CommittedWorkload,
+    ): CommittedWorkloadEntity {
+        const entity = new CommittedWorkloadEntity();
+
+        entity.id = Number(committedWorkload.id.toValue());
+        entity.startDate = committedWorkload.startDate;
+        entity.expiredDate = committedWorkload.expiredDate;
+        entity.status = committedWorkload.status;
+        entity.committedWorkload = committedWorkload.committedWorkload;
+        entity.user = UserMap.toEntity(committedWorkload.user);
+        entity.pic = UserMap.toEntity(committedWorkload.pic);
+        entity.contributedValue = ContributedValueMap.toEntity(
+            committedWorkload.contributedValue,
+        );
+
+        return entity;
     }
 }

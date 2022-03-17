@@ -1,0 +1,19 @@
+@baseUrl=http://localhost:3000/api
+###
+GET {{baseUrl}}/planned-workload/plan-workload
+{
+    "startDate": "12-03-2022",
+    "reason": "Late",
+    "plannedWorkloads": [
+        {
+	        "workload": 5,
+            "expertiseScopeId": 5,
+            "valueStreamId": 1
+        },
+        {
+	        "workload": 5,
+            "expertiseScopeId": 4,
+            "valueStreamId": 1
+        }
+    ]
+}

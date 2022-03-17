@@ -25,4 +25,13 @@ export class ValueStreamMap implements Mapper<ValueStream> {
             ? valueStreamOrError.getValue()
             : null;
     }
+
+    public static toEntity(valueStream: ValueStream): ValueStreamEntity {
+        const entity = new ValueStreamEntity();
+
+        entity.id = Number(valueStream.id.toValue());
+        entity.name = valueStream.name;
+
+        return entity;
+    }
 }

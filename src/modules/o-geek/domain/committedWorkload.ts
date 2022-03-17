@@ -13,7 +13,7 @@ interface ICommittedWorkloadProps {
     committedWorkload: number;
     startDate: Date;
     expiredDate: Date;
-    picId?: User;
+    pic?: User;
     status?: WorkloadStatus;
     createdAt?: Date;
     updatedAt?: Date;
@@ -30,6 +30,12 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     }
     set contributedValue(contributedValue: ContributedValue) {
         this.props.contributedValue = contributedValue;
+    }
+    get pic(): User {
+        return this.props.pic;
+    }
+    set pic(pic: User) {
+        this.props.pic = pic;
     }
     get user(): User {
         return this.props.user;
