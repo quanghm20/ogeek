@@ -25,10 +25,7 @@
 //         type: CommittedWorkloadDto,
 //         description: 'Average committed workload of Geek',
 //     })
-//     async execute(
-//         @Param('id') userId: number,
-//         @Param('currentDate') currentDate: Date,
-//     ): Promise<CommittedWorkloadDto> {
+//     async execute(@Param('id') userId: number): Promise<CommittedWorkloadDto> {
 //         const result = await this.useCase.execute(userId);
 //         if (result.isLeft()) {
 //             const error = result.value;

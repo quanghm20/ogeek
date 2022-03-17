@@ -47,6 +47,6 @@ export class GetWeekStatusController {
                     );
             }
         }
-        return UserMap.fromDomain(result.value.getValue());
+        return UserMap.fromDomainWeekStatus(result.value.getValue());
     }
 }
