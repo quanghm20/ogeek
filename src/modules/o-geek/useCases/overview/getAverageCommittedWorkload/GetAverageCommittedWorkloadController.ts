@@ -8,11 +8,11 @@
 //     Param,
 // } from '@nestjs/common';
 // import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-// import { CommittedWorkloadDto } from 'modules/o-geek/infra/dtos/committedWorkload.dto';
-// import { CommittedWorkloadMap } from 'modules/o-geek/mappers/committedWorkloadMap';
-// import { GetAverageCommittedWorkloadUseCase } from 'src/modules/o-geek/useCases/averageCommittedWorkload/averageCommittedWorkload.useCase.ts';
 
-// import { GetAverageCommittedWorkloadErrors } from './averageCommittedWorkload.Error';
+// import { CommittedWorkloadDto } from '../../../infra/dtos/committedWorkload.dto';
+// import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
+// import { GetAverageCommittedWorkloadErrors } from './GetAverageCommittedWorkloadErrors';
+// import { GetAverageCommittedWorkloadUseCase } from './GetAverageCommittedWorkloadUseCase';
 
 // @Controller('average-committed-workload')
 // @ApiTags('Average Committed Workload')
@@ -25,7 +25,10 @@
 //         type: CommittedWorkloadDto,
 //         description: 'Average committed workload of Geek',
 //     })
-//     async execute(@Param('id') userId: number, @Param('currentDate') currentDate: Date): Promise<CommittedWorkloadDto>{
+//     async execute(
+//         @Param('id') userId: number,
+//         @Param('currentDate') currentDate: Date,
+//     ): Promise<CommittedWorkloadDto> {
 //         const result = await this.useCase.execute(userId);
 //         if (result.isLeft()) {
 //             const error = result.value;
@@ -34,7 +37,7 @@
 //                 case GetAverageCommittedWorkloadErrors.NoWorkloadCommitted:
 //                     throw new NotFoundException(
 //                         error.errorValue(),
-//                         'Cannot get average committed workload'
+//                         'Cannot get average committed workload',
 //                     );
 //                 case GetAverageCommittedWorkloadErrors.NoUserFound:
 //                     throw new NotFoundException(

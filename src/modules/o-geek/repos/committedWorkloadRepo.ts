@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
+// import { User } from '../domain/user';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 
@@ -29,5 +30,14 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 : committedWorkloadId;
         const entity = await this.repo.findOne(committedWorkloadId);
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
+    }
+
+    async findByUserId(userId: DomainId | number): Promise<CommittedWorkload> {
+        const entity = await this.repo.find({
+            where: {
+                user: { id: userId },
+            },
+        });
+        return entity ? CommittedWorkloadMap.toDomainAll(entity) : null;
     }
 }
