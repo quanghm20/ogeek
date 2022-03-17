@@ -21,6 +21,23 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
         };
     }
 
+    public static fromDomainList(
+        plannedWorkloadList: PlannedWorkload[],
+    ): PlannedWorkloadDto[] {
+        return plannedWorkloadList.map(
+            (plannedWL) =>
+                ({
+                    id: plannedWL.id,
+                    user: plannedWL.props.user,
+                    contributedValue: plannedWL.props.contributedValue,
+                    committedWorkload: plannedWL.props.committedWorkload,
+                    plannedWorkload: plannedWL.props.plannedWorkload,
+                    startDate: plannedWL.props.startDate,
+                    status: plannedWL.props.status,
+                } as PlannedWorkloadDto),
+        );
+    }
+
     public static toDomain(raw: PlannedWorkloadEntity): PlannedWorkload {
         const { id } = raw;
         const plannedWorkloadOrError = PlannedWorkload.create(

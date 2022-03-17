@@ -14,25 +14,26 @@ import { Request } from 'express';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
 import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkloadsList.dto';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
+import { PlannedWorkloadDto } from '../../../infra/dtos/plannedWorkload.dto';
 import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
 import { PlanWorkloadErrors } from './PlanWorkloadErrors';
 import { PlanWorkloadUseCase } from './PlanWorkloadUseCase';
 
 @Controller('api/planned-workload')
 @ApiTags('Planned Workload')
-export class GetProfileController {
+export class PlanWorkloadController {
     constructor(public readonly useCase: PlanWorkloadUseCase) {}
 
     @Post('plan-workload')
     @HttpCode(HttpStatus.CREATED)
     @ApiOkResponse({
-        type: CreatePlannedWorkloadsListDto,
+        type: [PlannedWorkloadDto],
         description: 'plan workload for Geek',
     })
     async execute(
         @Req() req: Request,
         @Body() createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
-    ): Promise<CreatePlannedWorkloadsListDto> {
+    ): Promise<PlannedWorkloadDto[]> {
         const jwtPyaload = req.user as JwtPayload;
         const findUserDto = { ...jwtPyaload } as FindUserDto;
         const userId = findUserDto.userId;
@@ -58,6 +59,6 @@ export class GetProfileController {
             }
         }
 
-        return PlannedWorkloadMap.fromDomain(result.value.getValue());
+        return PlannedWorkloadMap.fromDomainList(result.value.getValue());
     }
 }

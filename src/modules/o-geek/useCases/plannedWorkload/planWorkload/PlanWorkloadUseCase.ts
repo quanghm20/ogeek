@@ -30,7 +30,6 @@ export class PlanWorkloadUseCase
     @Inject('ICommittedWorkloadRepo') public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
     @Inject('IContributedValueRepo') public readonly contributedValueloadRepo: IContributedValueRepo,
     @Inject('IUserRepo') public readonly userRepo: IUserRepo,
-    // private connection: Connection
   ) { }
 
   async execute(createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto): Promise<Response> {
