@@ -5,7 +5,7 @@ import { Result } from '../../../core/logic/Result';
 import { DomainId } from './domainId';
 
 interface IValueStreamProps {
-    name: string;
+    name?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }

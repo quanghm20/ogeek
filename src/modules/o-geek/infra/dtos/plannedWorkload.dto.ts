@@ -25,7 +25,7 @@ export class PlannedWorkloadDto {
     @ApiProperty({ example: new Date() })
     startDate: Date;
 
-    @ApiProperty({ type: () => WorkloadStatus, example: WorkloadStatus.ACTIVE })
+    @ApiProperty({ enum: WorkloadStatus, example: WorkloadStatus.ACTIVE })
     status?: WorkloadStatus;
 
     @ApiProperty({ example: new Date() })
