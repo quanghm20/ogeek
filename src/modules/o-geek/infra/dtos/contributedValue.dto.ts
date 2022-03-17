@@ -12,10 +12,4 @@ export class ContributedValueDto {
 
     @ApiProperty({ type: () => ExpertiseScopeDto })
     expertiseScope: ExpertiseScopeDto;
-
-    @ApiProperty({ example: new Date() })
-    createdAt?: Date;
-
-    @ApiProperty({ example: new Date() })
-    updatedAt?: Date;
 }

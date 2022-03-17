@@ -14,7 +14,7 @@ export interface IValueStreamRepo {
 @Injectable()
 export class ValueStreamRepository implements IValueStreamRepo {
     constructor(
-        @InjectRepository(ValueStream)
+        @InjectRepository(ValueStreamEntity)
         protected repo: Repository<ValueStreamEntity>,
     ) {}
 
