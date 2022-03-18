@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
+// import { CommittedWorkloadShortDto } from '../infra/dtos/createCommittedWorkload/committedWorkloadShort.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 
 export interface ICommittedWorkloadRepo {
@@ -30,4 +31,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         const entity = await this.repo.findOne(committedWorkloadId);
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
     }
+    // async save(committedWorkload:CommittedWorkloadShortDto) {
+
+    // }
 }

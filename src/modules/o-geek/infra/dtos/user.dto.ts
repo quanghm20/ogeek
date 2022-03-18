@@ -6,7 +6,10 @@ import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { UserEntity } from '../database/entities/user.entity';
 
 export class UserDto {
-    @ApiProperty({ type: () => UniqueEntityID, example: 26 })
+    @ApiProperty({
+        type: () => UniqueEntityID,
+        example: new UniqueEntityID(77),
+    })
     id?: UniqueEntityID;
 
     @ApiProperty({ example: 'thai.ls' })
@@ -36,16 +39,18 @@ export class UserDto {
     @ApiProperty({ example: new Date() })
     updatedAt?: Date;
 
-    constructor(user: UserEntity) {
-        this.alias = user.alias;
-        this.id = new UniqueEntityID(user.id);
-        this.name = user.name;
-        this.email = user.email;
-        this.phone = user.phone;
-        this.avatar = user.avatar;
-        this.role = user.role;
-        this.weekStatus = user.weekStatus;
-        this.createdAt = user.createdAt;
-        this.updatedAt = user.updatedAt;
+    constructor(user?: UserEntity) {
+        if (user) {
+            this.alias = user.alias;
+            this.id = new UniqueEntityID(user.id);
+            this.name = user.name;
+            this.email = user.email;
+            this.phone = user.phone;
+            this.avatar = user.avatar;
+            this.role = user.role;
+            this.weekStatus = user.weekStatus;
+            this.createdAt = user.createdAt;
+            this.updatedAt = user.updatedAt;
+        }
     }
 }

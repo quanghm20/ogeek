@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { ContributedValueDto } from '../../../infra/dtos/contributedValue.dto';
+import { GetContributedValueShortDto } from '../../../infra/dtos/getContributedValue/getContributedValue.dto';
 import { GetContributedValueErrors } from './GetContributedValueErrors';
 import { GetContributedValueUseCase } from './GetContributedValueUseCase';
 
@@ -20,10 +20,11 @@ export class GetContributedValueController {
     @Get('contributed')
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
-        type: ContributedValueDto,
+        type: GetContributedValueShortDto,
+        isArray: true,
         description: 'Get all data contributed value',
     })
-    async getContributed(): Promise<ContributedValueDto[]> {
+    async getContributed(): Promise<GetContributedValueShortDto[]> {
         const result = await this.useCase.execute();
         if (result.isLeft()) {
             const error = result.value;

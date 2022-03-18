@@ -1,16 +1,8 @@
-import {
-    Body,
-    Controller,
-    HttpCode,
-    HttpStatus,
-    InternalServerErrorException,
-    NotFoundException,
-    Post,
-} from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { CommittedWorkloadDto } from '../../../infra/dtos/committedWorkload.dto';
 import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedWorkload.dto';
+import { MessageDto } from '../../../infra/dtos/message.dto';
 import { CreateCommittedWorkloadErrors } from './CreateCommittedWorkloadErrors';
 import { CreateCommittedWorkloadUseCase } from './CreateCommittedWorkloadUseCase';
 
@@ -18,33 +10,32 @@ import { CreateCommittedWorkloadUseCase } from './CreateCommittedWorkloadUseCase
 @ApiTags('API committed workload ')
 export class CreateCommittedWorkloadController {
     constructor(public readonly useCase: CreateCommittedWorkloadUseCase) {}
-
     @Post()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
-        type: CommittedWorkloadDto,
-        description: 'social profile of Geek',
+        type: MessageDto,
+        description: 'Created committed workload',
+    })
+    @ApiBadRequestResponse({
+        type: MessageDto,
+        description: 'Error',
     })
     async execute(
         @Body() body: CreateCommittedWorkloadDto,
-    ): Promise<CommittedWorkloadDto> {
+    ): Promise<MessageDto> {
         const result = await this.useCase.execute(body);
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {
                 case CreateCommittedWorkloadErrors.NotFound:
-                    throw new NotFoundException(
-                        error.errorValue(),
-                        'Can not get all contributed by id',
+                    return new MessageDto(
+                        400,
+                        "Couldn't find user/ value stream / expertise cope !",
                     );
                 default:
-                    throw new InternalServerErrorException(
-                        error.errorValue(),
-                        'Can not search contributed ',
-                    );
+                    new MessageDto(500, "Can't create committed workloads.");
             }
         }
-
-        return result.value.getValue();
+        return new MessageDto(201, 'Create Committed workload successfully !.');
     }
 }

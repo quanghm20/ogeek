@@ -3,7 +3,7 @@ export class WorkloadDto {
     @ApiProperty({ example: 2 })
     valueStreamId: number;
 
-    @ApiProperty({ example: 40 })
+    @ApiProperty({ example: 10 })
     expertiseScopeId: number;
 
     @ApiProperty({ example: 40 })
