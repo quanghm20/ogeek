@@ -9,6 +9,7 @@ import { ValueStreamMap } from '../mappers/valueStreamMap';
 
 export interface IValueStreamRepo {
     findById(valueStreamId: DomainId | number): Promise<ValueStream>;
+    findAll(): Promise<ValueStream[]>;
 }
 
 @Injectable()
@@ -25,5 +26,10 @@ export class ValueStreamRepository implements IValueStreamRepo {
                 : valueStreamId;
         const entity = await this.repo.findOne(valueStreamId);
         return entity ? ValueStreamMap.toDomain(entity) : null;
+    }
+
+    async findAll(): Promise<ValueStream[]> {
+        const entity = await this.repo.find();
+        return entity ? ValueStreamMap.toArrayDomain(entity) : null;
     }
 }

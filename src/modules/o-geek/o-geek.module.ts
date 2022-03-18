@@ -15,6 +15,8 @@ import {
     UserRepository,
     ValueStreamRepository,
 } from './repos/index';
+import { GetOverviewSummaryYearController } from './useCases/overview/summary-year/GetOverviewSummaryYearController';
+import { GetOverviewSummaryYearUseCase } from './useCases/overview/summary-year/GetOverviewSummaryYearUseCase';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
 import { GetUserController } from './useCases/user/GetUser/GetUserController';
 import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
@@ -30,7 +32,7 @@ import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
             PlannedWorkloadEntity,
         ]),
     ],
-    controllers: [GetUserController],
+    controllers: [GetUserController, GetOverviewSummaryYearController],
     providers: [
         {
             provide: 'IContributedValueRepo',
@@ -55,6 +57,7 @@ import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
         },
         GetUserUseCase,
         CreateUserUseCase,
+        GetOverviewSummaryYearUseCase,
     ],
     exports: [UserRepository],
 })
