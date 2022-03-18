@@ -1,27 +1,44 @@
-// import { UniqueEntityID } from 'core/domain/UniqueEntityID';
-// import { Mapper } from '../../../core/infra/Mapper';
-// import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
-// import { Profile } from '../domain/profile';
-// import { ProfileEntity } from '../infra/database/entities/profile.entity';
-// import { ProfileDto } from '../infra/dtos/profile.dto';
+import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
+import { Mapper } from '../../../core/infra/Mapper';
+import { ContributedValue } from '../domain/contributedValue';
+import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
+import { ContributedValueDto } from '../infra/dtos/contributedValue.dto';
+import { ExpertiseScopeMap } from './expertiseScopeMap';
+import { ValueStreamMap } from './valueStreamMap';
 
-// export class ContributeValueMap implements Mapper<any> {
-//     public static fromDomain(contributeValue: ContributeValue): ContributeValueDto {
-//         return {
-//         };
-//     }
+export class ContributedValueMap implements Mapper<ContributedValue> {
+    public static fromDomain(
+        contributedValue: ContributedValue,
+    ): ContributedValueDto {
+        return {
+            id: contributedValue.id,
+            valueStream: ValueStreamMap.fromDomain(
+                contributedValue.props.valueStream,
+            ),
+            expertiseScope: ExpertiseScopeMap.fromDomain(
+                contributedValue.props.expertiseScope,
+            ),
+        };
+    }
 
-//     public static toDomain(raw: ContributedValueEntity): ContributeValue {
-//         const { id } = raw;
+    public static toDomain(
+        contributedValueEntity: ContributedValueEntity,
+    ): ContributedValue {
+        const { id } = contributedValueEntity;
+        const contributedValueOrError = ContributedValue.create(
+            {
+                valueStream: ValueStreamMap.toDomain(
+                    contributedValueEntity.valueStream,
+                ),
+                expertiseScope: ExpertiseScopeMap.toDomain(
+                    contributedValueEntity.expertiseScope,
+                ),
+            },
+            new UniqueEntityID(id),
+        );
 
-//         const profileOrError = Profile.create(
-//             {
-//                 createdAt: raw.createdAt,
-//                 facebookLink: raw.facebookLink,
-//             },
-//             new UniqueEntityID(id),
-//         );
-
-//         return profileOrError.isSuccess ? profileOrError.getValue() : null;
-//     }
-// }
+        return contributedValueOrError.isSuccess
+            ? contributedValueOrError.getValue()
+            : null;
+    }
+}

@@ -2,6 +2,7 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
+import { WorkloadStatus } from '../../../../../common/constants/committed-status';
 import { CommittedWorkloadEntity } from './committedWorkload.entity';
 import { ContributedValueEntity } from './contributedValue.entity';
 import { UserEntity } from './user.entity';
@@ -47,9 +48,9 @@ export class PlannedWorkloadEntity extends AbstractEntity {
     @Column({
         nullable: false,
         name: 'status',
-        default: false,
+        default: WorkloadStatus.ACTIVE,
     })
-    status: boolean;
+    status: WorkloadStatus;
 
     @Column({
         nullable: false,
