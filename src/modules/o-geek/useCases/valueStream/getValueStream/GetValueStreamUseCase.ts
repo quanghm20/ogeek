@@ -15,7 +15,11 @@ import { PlannedWorkloadMap } from '../../../../../modules/o-geek/mappers/planne
 import { UserMap } from '../../../../../modules/o-geek/mappers/userMap';
 import { ValueStreamMap } from '../../../../../modules/o-geek/mappers/valueStreamMap';
 import { ValueStreamsByWeekMap } from '../../../../../modules/o-geek/mappers/valueStreamsByWeekMap';
-import { CommittedWorkloadRepository, PlannedWorkloadRepository, UserRepository } from '../../../../../modules/o-geek/repos';
+import {
+    CommittedWorkloadRepository,
+    PlannedWorkloadRepository,
+    UserRepository,
+} from '../../../../../modules/o-geek/repos';
 import { ValueStreamRepository } from '../../../../../modules/o-geek/repos/valueStreamRepo';
 import { GetValueStreamError } from './GetValueStreamErrors';
 
@@ -24,9 +28,13 @@ type Response = Either<
     Result<ValueStreamsByWeekDto>
 >;
 
+interface ServerResponse {
+    data: ActualPlanAndWorkLogDto[];
+}
+
 @Injectable()
 export class GetValueStreamUseCase
-    implements IUseCase<{userId: number; week: number} , Promise<Response> > {
+    implements IUseCase<{ userId: number; week: number }, Promise<Response>> {
     constructor(
         public readonly valueStreamRepo: ValueStreamRepository,
         public readonly committedWLRepo: CommittedWorkloadRepository,
@@ -37,33 +45,53 @@ export class GetValueStreamUseCase
     async execute(params: InputValueStreamByWeekDto): Promise<Response> {
         try {
             // get actual plans and worklogs
-            const url = `https://mock.o-geek.geekup.io/api/overview/value-stream?userid=${params.userId}&week=${params.week}`;
-            const request = await Axios.get(url, {
+            const url = `${process.env.MOCK_URL}/api/overview/value-stream?userid=${params.userId}&week=${params.week}`;
+            const request = await Axios.get<ServerResponse>(url, {
                 headers: {
-                    'x-api-key': 'API_KEY_EXAMPLE',
+                    'x-api-key': process.env.MOCK_API_KEY,
                 },
             });
-            const actualPlanAndWorkLogDtos = request.data as ActualPlanAndWorkLogDto;
+            const response = request.data.data;
+            const actualPlanAndWorkLogDtos = response;
 
             // eslint-disable-next-line import/namespace
-            moment.updateLocale('en', { week: { dow: 6, doy: 8 } });
-            const startDateOfWeek = moment().clone().startOf('year').add(params.week, 'weeks').toDate();
-            const endDateOfWeek = moment().clone().startOf('year').add((params.week + 1), 'weeks').toDate();
+            moment.updateLocale('en', { week: { dow: 6 } });
+            const dateOfWeek = moment().week(params.week);
+            const numDateOfWeek = moment(dateOfWeek).format('e');
+            const startDateOfWeek = moment(dateOfWeek)
+                .add(-numDateOfWeek, 'days')
+                .toDate();
+            const endDateOfWeek = moment(startDateOfWeek)
+                .add(6, 'days')
+                .toDate();
 
             const user = await this.userRepo.findById(params.userId);
             const valueStreams = await this.valueStreamRepo.findAll();
-            const committedWLs = await this.committedWLRepo.findByUserId(params.userId);
-            const plannedWLs = await this.plannedWLRepo.findByUserId(
-                { startDateOfWeek, endDateOfWeek, userId: params.userId } as InputGetPlanWLDto);
+            const committedWLs = await this.committedWLRepo.findByUserId(
+                params.userId,
+            );
+            const plannedWLs = await this.plannedWLRepo.findByUserId({
+                startDateOfWeek,
+                endDateOfWeek,
+                userId: params.userId,
+            } as InputGetPlanWLDto);
 
-            const committedWLDtos = CommittedWorkloadMap.fromDomainAll(committedWLs);
+            const committedWLDtos =
+                CommittedWorkloadMap.fromDomainAll(committedWLs);
             const plannedWLDtos = PlannedWorkloadMap.fromDomainAll(plannedWLs);
             const valueStreamDtos = ValueStreamMap.fromDomainAll(valueStreams);
             const userDto = UserMap.fromDomain(user);
 
             const valueStreamsByWeekDto = ValueStreamsByWeekMap.combineAllDto(
-                committedWLDtos, plannedWLDtos, actualPlanAndWorkLogDtos,
-                valueStreamDtos, userDto, params.week, startDateOfWeek, endDateOfWeek);
+                committedWLDtos,
+                plannedWLDtos,
+                actualPlanAndWorkLogDtos,
+                valueStreamDtos,
+                userDto,
+                params.week,
+                startDateOfWeek,
+                endDateOfWeek,
+            );
 
             if (!valueStreamsByWeekDto) {
                 return left(
@@ -76,4 +104,3 @@ export class GetValueStreamUseCase
         }
     }
 }
-

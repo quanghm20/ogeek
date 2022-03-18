@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
+import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
+
 export class ActualPlanAndWorkLogDto {
     @ApiProperty()
     @IsString()
@@ -8,7 +10,7 @@ export class ActualPlanAndWorkLogDto {
 
     @ApiProperty()
     @IsNumber()
-    contributedValueId: number;
+    contributedValueId: number | UniqueEntityID;
 
     @ApiProperty()
     @IsString()
@@ -29,4 +31,8 @@ export class ActualPlanAndWorkLogDto {
     @ApiProperty()
     @IsNumber()
     workLog: number;
+
+    @ApiProperty()
+    @IsString()
+    week: string;
 }

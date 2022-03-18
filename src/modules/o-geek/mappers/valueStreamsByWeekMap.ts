@@ -64,21 +64,31 @@ export class ValueStreamsByWeekMap {
         expertiseDto: ExpertiseScopeDto,
         committedWLDto: CommittedWorkloadDto,
         plannedWLDtos: PlannedWorkloadDto[],
-        actualPlanAndWorkLogDtos: ActualPlanAndWorkLogDto,
+        actualPlanAndWorkLog: ActualPlanAndWorkLogDto,
     ): ContributedValueDto[] {
         const plannedWorkload = plannedWLDtos.find(
             (planned) => planned.committedWorkload.id === committedWLDto.id,
         );
+
+        const plannedWorkLoad = plannedWorkload
+            ? plannedWorkload.plannedWorkload
+            : committedWLDto.committedWorkload;
+
+        let actual = plannedWorkLoad;
+        let worklog = 0;
+        if (actualPlanAndWorkLog) {
+            actual = actualPlanAndWorkLog.actualPlan;
+            worklog = actualPlanAndWorkLog.workLog;
+        }
+
         const results = contributedValueDtos;
         contributedValueDtos.push({
+            plannedWorkLoad,
             expertiseScopeId: Number(expertiseDto.id.toString()),
             expertiseScopeName: expertiseDto.name,
             committedWorkLoad: committedWLDto.committedWorkload,
-            plannedWorkLoad: plannedWorkload
-                ? plannedWorkload.plannedWorkload
-                : committedWLDto.committedWorkload,
-            actualPlannedWorkLoad: actualPlanAndWorkLogDtos.actualPlan,
-            workLog: actualPlanAndWorkLogDtos.workLog,
+            actualPlannedWorkLoad: actual,
+            workLog: worklog,
         } as ContributedValueDto);
         return results;
     }
@@ -86,7 +96,7 @@ export class ValueStreamsByWeekMap {
     public static combineAllDto(
         committedWLDtos: CommittedWorkloadDto[],
         plannedWLDtos: PlannedWorkloadDto[],
-        actualPlanAndWorkLogDtos: ActualPlanAndWorkLogDto,
+        actualPlanAndWorkLogDtos: ActualPlanAndWorkLogDto[],
         valueStreamDtos: ValueStreamDto[],
         userDto: UserDto,
         week: number,
@@ -109,6 +119,11 @@ export class ValueStreamsByWeekMap {
                     valueStreamByWeek.id.toValue() ===
                     valueStreamDto.id.toValue(),
             );
+            const actualPlanAndWorkLog = actualPlanAndWorkLogDtos.find(
+                (actualPlan) =>
+                    actualPlan.contributedValueId ===
+                    committedWLDto.contributedValue.id,
+            );
             if (!valueStreamByWeekDto) {
                 let contributedValueDtos = new Array<ContributedValueDto>();
                 contributedValueDtos = this.combineContributedValueDto(
@@ -116,7 +131,7 @@ export class ValueStreamsByWeekMap {
                     expertiseDto,
                     committedWLDto,
                     plannedWLDtos,
-                    actualPlanAndWorkLogDtos,
+                    actualPlanAndWorkLog,
                 );
                 valueStreamByWeekDtos.push({
                     id: valueStreamDto.id,
@@ -134,7 +149,7 @@ export class ValueStreamsByWeekMap {
                     expertiseDto,
                     committedWLDto,
                     plannedWLDtos,
-                    actualPlanAndWorkLogDtos,
+                    actualPlanAndWorkLog,
                 );
                 valueStreamByWeekDto.contributedValues = contributedValueDtos;
             }

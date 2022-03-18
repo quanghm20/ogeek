@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 
 import { WorkloadStatus } from '../../../common/constants/committed-status';
 import { CommittedWorkload } from '../domain/committedWorkload';
@@ -42,6 +42,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             where: {
                 status: WorkloadStatus.ACTIVE,
                 user: userId,
+                expiredDate: MoreThanOrEqual(new Date()),
             },
             relations: [
                 'contributedValue',
@@ -49,6 +50,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.valueStream',
             ],
         });
+
         return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
     }
 }

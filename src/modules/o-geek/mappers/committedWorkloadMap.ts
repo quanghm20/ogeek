@@ -39,6 +39,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     ): CommittedWorkload {
         try {
             const { id } = committedWLEntity;
+
             const committedWorkloadOrError = CommittedWorkload.create(
                 {
                     committedWorkload: committedWLEntity.committedWorkload,

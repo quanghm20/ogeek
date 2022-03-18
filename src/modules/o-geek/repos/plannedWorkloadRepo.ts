@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 
+import { WorkloadStatus } from '../../../common/constants/committed-status';
 import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
@@ -36,13 +37,13 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }
 
     async findByUserId({
-        userId,
         startDateOfWeek,
         endDateOfWeek,
+        userId,
     }: InputGetPlanWLDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: 'active',
+                status: WorkloadStatus.ACTIVE,
                 user: userId,
                 startDate: MoreThanOrEqual(startDateOfWeek),
                 createdAt: LessThanOrEqual(endDateOfWeek),
@@ -51,8 +52,20 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'contributedValue',
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
+                'committedWorkload',
+                'committedWorkload.contributedValue',
+                'committedWorkload.contributedValue.expertiseScope',
+                'committedWorkload.contributedValue.valueStream',
             ],
         });
+        // const entity = await this.repo.findOne({
+        //     order: {
+        //         createdAt: 'DESC',
+        //     },
+        // });
+        // console.log(entities);
+        // console.log(entity);
+
         return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;
     }
 }
