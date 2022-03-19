@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsString } from 'class-validator';
 
 export class ValueStreamShortDto {
+    @IsNumber()
     @ApiProperty({ example: 1 })
     id: number;
 
+    @IsString()
     @ApiProperty({ example: 'Delivery' })
     name?: string;
 

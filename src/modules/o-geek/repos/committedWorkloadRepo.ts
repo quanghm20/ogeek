@@ -45,8 +45,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         const entity = await this.repo.save({
             user: { id: committedWorkload.userId },
             contributedValue: {
-                expertiseScope: { id: committedWorkload.expertiseScopeId },
-                valueStream: { id: committedWorkload.valueStreamId },
+                id: committedWorkload.contributedValueId,
             },
             createdAt: new Date(),
             updatedAt: new Date(),

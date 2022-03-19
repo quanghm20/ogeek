@@ -31,6 +31,7 @@ export class ContributedValueRepository implements IContributedValueRepo {
                 valueStream: { id: valueStreamId },
                 expertiseScope: { id: expertiseScopeId },
             },
+            relations: ['expertiseScope', 'valueStream'],
         });
         return contributedValue
             ? ContributedValueMap.toDomain(contributedValue)

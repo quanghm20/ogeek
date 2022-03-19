@@ -3,6 +3,8 @@ import {
     Controller,
     HttpCode,
     HttpStatus,
+    InternalServerErrorException,
+    NotFoundException,
     Post,
     UsePipes,
     ValidationPipe,
@@ -37,14 +39,17 @@ export class CreateCommittedWorkloadController {
             const error = result.value;
             switch (error.constructor) {
                 case CreateCommittedWorkloadErrors.NotFound:
-                    return new MessageDto(
-                        400,
+                    throw new NotFoundException(
+                        error.errorValue(),
                         "Couldn't find user/ value stream / expertise cope !",
                     );
                 default:
-                    new MessageDto(500, "Can't create committed workloads.");
+                    throw new InternalServerErrorException(
+                        error.errorValue(),
+                        "Can't create committed workloads.",
+                    );
             }
         }
-        return new MessageDto(201, 'Create Committed workload successfully !.');
+        return new MessageDto('Create Committed workload successfully !.');
     }
 }

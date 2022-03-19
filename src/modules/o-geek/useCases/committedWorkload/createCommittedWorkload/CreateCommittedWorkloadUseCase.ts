@@ -24,7 +24,7 @@ export class CreateCommittedWorkloadUseCase
 		@Inject('ICommittedWorkloadRepo') public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
 		@Inject('IContributedValueRepo') public readonly contributedValueRepo: IContributedValueRepo,
 	) { }
-    async execute(body: CreateCommittedWorkloadDto): Promise<Response> {
+	   async execute(body: CreateCommittedWorkloadDto): Promise<Response> {
 		try {
 			const userId = body.userId;
 			const user = await this.userRepo.findById(userId);
@@ -32,38 +32,39 @@ export class CreateCommittedWorkloadUseCase
 			const expiredDate = body.expiredDate;
 			if (!user) {
 				return left(
-                new CreateCommittedWorkloadErrors.NotFound( `Could not find User ${userId}` ),
+                	new CreateCommittedWorkloadErrors.NotFound( `Could not find User ${userId}` ),
 				) as Response;
 			}
 			const committedWorkloads = body.committedWorkloads;
-			await Promise.all(committedWorkloads.map(async (workload) => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const loop = await Promise.all(committedWorkloads.map(async (workload) => {
 				const contribute = await this.contributedValueRepo.findOne(workload.valueStreamId, workload.expertiseScopeId);
 				if (!contribute) {
 					return left(
 						new CreateCommittedWorkloadErrors.NotFound(
 							`Could not find ValueStream with id ${workload.valueStreamId} and ExpertiseScope ${workload.expertiseScopeId}`),
-				) as Response;
+					);
 				}
+				const contributedValue = Number(contribute.id.toValue());
 				const committed = new CommittedWorkloadShortDto(
 					userId,
-					workload.valueStreamId,
-					workload.expertiseScopeId,
+					contributedValue,
 					workload.workload,
 					startDate,
 					expiredDate,
-					);
+				);
 				const newWorkload = await this.committedWorkloadRepo.save(committed, 2);
 				if (!newWorkload) {
-				return left(
+					return left(
 						new CreateCommittedWorkloadErrors.NotFound(
-							`Could not find ValueStream with id ${workload.valueStreamId} and ExpertiseScope ${workload.expertiseScopeId}`),
-				) as Response;
+`Can't not create committed workload with ValueStream ${workload.valueStreamId} and ExpertiseScope ${workload.expertiseScopeId}`),
+					);
 				}
+				return right(Result.ok('Created committed workload!'));
 			}));
 
 		} catch (err) {
 			return left(new AppError.UnexpectedError(err));
 		}
-		return right(Result.ok('Alo alo'));
 	}
 }
