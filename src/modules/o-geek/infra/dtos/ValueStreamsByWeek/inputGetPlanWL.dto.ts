@@ -10,9 +10,9 @@ export class InputGetPlanWLDto {
 
     @ApiProperty()
     @IsDate()
-    startDateOfWeek: Date;
+    startDateOfWeek: string;
 
     @ApiProperty()
     @IsDate()
-    endDateOfWeek: Date;
+    endDateOfWeek: string;
 }

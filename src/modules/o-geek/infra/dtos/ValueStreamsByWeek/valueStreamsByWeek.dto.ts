@@ -10,11 +10,11 @@ export class ValueStreamsByWeekDto {
 
     @ApiProperty()
     @IsDate()
-    startDateOfWeek: Date;
+    startDate: string;
 
     @ApiProperty()
     @IsDate()
-    endDateOfWeek: Date;
+    endDate: string;
 
     @ApiProperty()
     @IsEnum(WeekStatus)
@@ -22,5 +22,5 @@ export class ValueStreamsByWeekDto {
 
     @ApiProperty()
     @IsArray()
-    valueStreamsByWeek: ValueStreamByWeekDto[];
+    valueStreams: ValueStreamByWeekDto[];
 }

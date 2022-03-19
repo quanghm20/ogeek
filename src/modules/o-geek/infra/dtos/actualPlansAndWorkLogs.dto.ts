@@ -18,7 +18,7 @@ export class ActualPlanAndWorkLogDto {
 
     @ApiProperty()
     @IsNumber()
-    valueStreamId: number;
+    valueStreamId: number | UniqueEntityID;
 
     @ApiProperty()
     @IsNumber()
@@ -30,7 +30,7 @@ export class ActualPlanAndWorkLogDto {
 
     @ApiProperty()
     @IsNumber()
-    workLog: number;
+    worklog: number;
 
     @ApiProperty()
     @IsString()

@@ -67,7 +67,9 @@ export class ValueStreamsByWeekMap {
         actualPlanAndWorkLog: ActualPlanAndWorkLogDto,
     ): ContributedValueDto[] {
         const plannedWorkload = plannedWLDtos.find(
-            (planned) => planned.committedWorkload.id === committedWLDto.id,
+            (planned) =>
+                planned.committedWorkload.id.toValue() ===
+                committedWLDto.id.toValue(),
         );
 
         const plannedWorkLoad = plannedWorkload
@@ -78,17 +80,17 @@ export class ValueStreamsByWeekMap {
         let worklog = 0;
         if (actualPlanAndWorkLog) {
             actual = actualPlanAndWorkLog.actualPlan;
-            worklog = actualPlanAndWorkLog.workLog;
+            worklog = actualPlanAndWorkLog.worklog;
         }
 
         const results = contributedValueDtos;
         contributedValueDtos.push({
+            worklog,
             plannedWorkLoad,
             expertiseScopeId: Number(expertiseDto.id.toString()),
-            expertiseScopeName: expertiseDto.name,
+            expertiseScope: expertiseDto.name,
             committedWorkLoad: committedWLDto.committedWorkload,
             actualPlannedWorkLoad: actual,
-            workLog: worklog,
         } as ContributedValueDto);
         return results;
     }
@@ -100,8 +102,8 @@ export class ValueStreamsByWeekMap {
         valueStreamDtos: ValueStreamDto[],
         userDto: UserDto,
         week: number,
-        startDateOfWeek: Date,
-        endDateOfWeek: Date,
+        startDateOfWeek: string,
+        endDateOfWeek: string,
     ): ValueStreamsByWeekDto {
         const currentWeek = moment(new Date()).week();
         const status = ValueStreamsByWeekMap.getStatusValueStream(
@@ -122,7 +124,7 @@ export class ValueStreamsByWeekMap {
             const actualPlanAndWorkLog = actualPlanAndWorkLogDtos.find(
                 (actualPlan) =>
                     actualPlan.contributedValueId ===
-                    committedWLDto.contributedValue.id,
+                    committedWLDto.contributedValue.id.toValue(),
             );
             if (!valueStreamByWeekDto) {
                 let contributedValueDtos = new Array<ContributedValueDto>();
@@ -160,10 +162,10 @@ export class ValueStreamsByWeekMap {
         );
         return {
             week,
-            startDateOfWeek,
-            endDateOfWeek,
             status,
-            valueStreamsByWeek: valueStreamByWeekDtos,
+            startDate: startDateOfWeek,
+            endDate: endDateOfWeek,
+            valueStreams: valueStreamByWeekDtos,
         } as ValueStreamsByWeekDto;
     }
 }

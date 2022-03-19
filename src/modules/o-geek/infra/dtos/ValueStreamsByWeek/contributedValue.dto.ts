@@ -4,7 +4,7 @@ import { IsNumber, IsString } from 'class-validator';
 export class ContributedValueDto {
     @ApiProperty()
     @IsString()
-    expertiseScopeName: string;
+    expertiseScope: string;
 
     @ApiProperty()
     @IsNumber()
@@ -24,5 +24,5 @@ export class ContributedValueDto {
 
     @ApiProperty()
     @IsString()
-    workLog: number;
+    worklog: number;
 }

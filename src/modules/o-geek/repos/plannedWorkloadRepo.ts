@@ -58,13 +58,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'committedWorkload.contributedValue.valueStream',
             ],
         });
-        // const entity = await this.repo.findOne({
-        //     order: {
-        //         createdAt: 'DESC',
-        //     },
-        // });
-        // console.log(entities);
-        // console.log(entity);
 
         return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;
     }

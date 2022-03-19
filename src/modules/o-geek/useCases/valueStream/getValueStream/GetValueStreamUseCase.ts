@@ -56,14 +56,21 @@ export class GetValueStreamUseCase
 
             // eslint-disable-next-line import/namespace
             moment.updateLocale('en', { week: { dow: 6 } });
-            const dateOfWeek = moment().week(params.week);
+            const dateOfWeek = moment()
+                .utcOffset(420)
+                .week(params.week)
+                .format();
             const numDateOfWeek = moment(dateOfWeek).format('e');
             const startDateOfWeek = moment(dateOfWeek)
+                .utcOffset(420)
                 .add(-numDateOfWeek, 'days')
-                .toDate();
+                .startOf('day')
+                .format();
             const endDateOfWeek = moment(startDateOfWeek)
+                .utcOffset(420)
                 .add(6, 'days')
-                .toDate();
+                .endOf('day')
+                .format();
 
             const user = await this.userRepo.findById(params.userId);
             const valueStreams = await this.valueStreamRepo.findAll();
