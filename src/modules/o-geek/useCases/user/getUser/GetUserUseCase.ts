@@ -16,31 +16,26 @@ type Response = Either<
 
 @Injectable()
 export class GetUserUseCase
-    implements IUseCase<FindUserDto , Promise<Response> > {
-    constructor(
-        public readonly repo: UserRepository,
-    ) {}
+    implements IUseCase<FindUserDto, Promise<Response>> {
+    constructor(public readonly repo: UserRepository) {}
 
-    // eslint-disable-next-line complexity
     async execute(findUserDto: FindUserDto): Promise<Response> {
         try {
             let user = null;
 
-            if (findUserDto.userId) {
-                user = await this.repo.findById(findUserDto.userId);
-            }
-            if (findUserDto.alias) {
-                user = await this.repo.findByAlias(findUserDto.alias);
+            user = await this.repo.findById(findUserDto.userId);
+            // if (findUserDto.alias) {
+            //     user = await this.repo.findByAlias(findUserDto.alias);
+
+            // }
+
+            if (user) {
+                return right(Result.ok(user));
             }
 
-            if (user) {return right(Result.ok(user)); }
-
-            return left(
-                new GetUserErrors.UserNotFound(),
-            ) as Response;
+            return left(new GetUserErrors.UserNotFound()) as Response;
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
         }
     }
 }
-

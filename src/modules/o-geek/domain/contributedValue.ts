@@ -36,7 +36,6 @@ export class ContributedValue extends AggregateRoot<IContributedValueProps> {
         id: UniqueEntityID,
     ): Result<ContributedValue> {
         const propsResult = Guard.againstNullOrUndefinedBulk([]);
-
         if (!propsResult.succeeded) {
             return Result.fail<ContributedValue>(propsResult.message);
         }
@@ -45,7 +44,6 @@ export class ContributedValue extends AggregateRoot<IContributedValueProps> {
         };
         defaultValues.createdAt = new Date();
         defaultValues.updatedAt = new Date();
-
         const contributedValue = new ContributedValue(defaultValues, id);
         return Result.ok<ContributedValue>(contributedValue);
     }

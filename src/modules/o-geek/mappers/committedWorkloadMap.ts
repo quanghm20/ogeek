@@ -13,12 +13,14 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     ): CommittedWorkloadDto {
         return {
             id: committedWorkload.id,
+            user: committedWorkload.props.user,
             contributedValue: ContributedValueMap.fromDomain(
                 committedWorkload.props.contributedValue,
             ),
             committedWorkload: committedWorkload.props.committedWorkload,
             startDate: committedWorkload.props.startDate,
             expiredDate: committedWorkload.props.expiredDate,
+            picId: committedWorkload.props.picId,
         };
     }
 

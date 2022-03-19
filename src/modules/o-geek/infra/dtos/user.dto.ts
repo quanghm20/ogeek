@@ -4,6 +4,7 @@ import { RoleType } from '../../../../common/constants/role-type';
 import { WeekStatus } from '../../../../common/constants/week-status';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { UserEntity } from '../database/entities/user.entity';
+
 export class UserDto {
     @ApiProperty({ type: UniqueEntityID, example: 26 })
     id?: UniqueEntityID | number;

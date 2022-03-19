@@ -1,13 +1,15 @@
 import {
     Controller,
     Get,
+    HttpStatus,
     InternalServerErrorException,
     NotFoundException,
     Req,
+    Res,
     UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
@@ -28,7 +30,7 @@ export class GetUserController {
         type: UserDto,
         description: 'get user by alias with jwt token',
     })
-    async execute(@Req() req: Request): Promise<UserDto> {
+    async execute(@Req() req: Request, @Res() res: Response): Promise<void> {
         const jwtPyaload = req.user as JwtPayload;
         const findUserDto = { ...jwtPyaload } as FindUserDto;
 
@@ -50,6 +52,7 @@ export class GetUserController {
             }
         }
 
-        return UserMap.fromDomain(result.value.getValue());
+        const user = UserMap.fromDomain(result.value.getValue());
+        res.status(HttpStatus.OK).json(user);
     }
 }

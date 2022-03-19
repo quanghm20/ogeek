@@ -18,17 +18,17 @@ export class UserMap implements Mapper<User> {
         };
     }
 
-    public static toDomain(userEntity: UserEntity): User {
-        const { id } = userEntity;
+    public static toDomain(raw: UserEntity): User {
+        const { id } = raw;
         const userOrError = User.create(
             {
-                alias: userEntity.alias,
-                email: userEntity.email,
-                name: userEntity.name,
-                phone: userEntity.phone,
-                role: userEntity.role,
-                weekStatus: userEntity.weekStatus,
-                avatar: userEntity.avatar,
+                alias: raw.alias,
+                email: raw.email,
+                name: raw.name,
+                phone: raw.phone,
+                role: raw.role,
+                weekStatus: raw.weekStatus,
+                avatar: raw.avatar,
             },
             new UniqueEntityID(id),
         );
