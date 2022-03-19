@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { WorkloadDto } from './workload.dto';
 
 export class CreateCommittedWorkloadDto {
-    @ApiProperty({ example: 100 })
+    @ApiProperty({ example: 1 })
     userId: number;
 
     @ApiProperty({ type: () => WorkloadDto, isArray: true })

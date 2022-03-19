@@ -9,6 +9,7 @@ import { UserMap } from '../mappers/userMap';
 
 export interface IUserRepo {
     findById(userId: DomainId | number): Promise<User>;
+    findByAlias(alias: string): Promise<User>;
 }
 
 @Injectable()
@@ -17,6 +18,10 @@ export class UserRepository implements IUserRepo {
         @InjectRepository(UserEntity)
         protected repo: Repository<UserEntity>,
     ) {}
+    async findByAlias(alias: string): Promise<User> {
+        const entity = await this.repo.findOne({ where: { alias } });
+        return entity ? UserMap.toDomain(entity) : null;
+    }
 
     async findById(userId: DomainId | number): Promise<User> {
         userId =

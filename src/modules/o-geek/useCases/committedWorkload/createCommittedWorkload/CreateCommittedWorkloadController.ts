@@ -1,4 +1,12 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    HttpCode,
+    HttpStatus,
+    Post,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common';
 import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedWorkload.dto';
@@ -20,6 +28,7 @@ export class CreateCommittedWorkloadController {
         type: MessageDto,
         description: 'Error',
     })
+    @UsePipes(new ValidationPipe({ transform: true }))
     async execute(
         @Body() body: CreateCommittedWorkloadDto,
     ): Promise<MessageDto> {

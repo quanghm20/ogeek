@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 export class WorkloadDto {
-    @ApiProperty({ example: 2 })
+    @ApiProperty({ example: 1 })
     valueStreamId: number;
 
-    @ApiProperty({ example: 10 })
+    @ApiProperty({ example: 3 })
     expertiseScopeId: number;
 
     @ApiProperty({ example: 40 })

@@ -5,7 +5,10 @@ export class CommittedWorkloadShortDto {
     userId: number;
 
     @ApiProperty({ example: 12 })
-    contributedValueId: number;
+    valueStreamId: number;
+
+    @ApiProperty({ example: 11 })
+    expertiseScopeId: number;
 
     @ApiProperty({ example: 4 })
     committedWorkload: number;
@@ -18,13 +21,15 @@ export class CommittedWorkloadShortDto {
 
     constructor(
         userId?: number,
-        contributedValueId?: number,
+        valueStreamId?: number,
+        expertiseScopeId?: number,
         committedWorkload?: number,
         startDate?: Date,
         expiredDate?: Date,
     ) {
         this.userId = userId;
-        this.contributedValueId = contributedValueId;
+        this.valueStreamId = valueStreamId;
+        this.expertiseScopeId = expertiseScopeId;
         this.committedWorkload = committedWorkload;
         this.startDate = startDate;
         this.expiredDate = expiredDate;
