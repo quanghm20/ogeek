@@ -4,13 +4,13 @@ import {
     InternalServerErrorException,
     NotFoundException,
     Req,
-    // UseGuards,
+    UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
-// import { JwtAuthGuard } from '../../../../../modules/jwt-auth/jwt-auth-guard';
-// import { JwtPayload } from '../../../../../modules/jwt-auth/jwt-auth.strategy';
+import { JwtAuthGuard } from '../../../../../modules/jwt-auth/jwt-auth-guard';
+import { JwtPayload } from '../../../../../modules/jwt-auth/jwt-auth.strategy';
 import { InputValueStreamByWeekDto } from '../../../../../modules/o-geek/infra/dtos/ValueStreamsByWeek/inputValueStream.dto';
 import { ValueStreamsByWeekDto } from '../../../../../modules/o-geek/infra/dtos/ValueStreamsByWeek/valueStreamsByWeek.dto';
 import { GetValueStreamError } from './GetValueStreamErrors';
@@ -21,15 +21,14 @@ import { GetValueStreamUseCase } from './GetValueStreamUseCase';
 export class GetValueStreamController {
     constructor(public readonly useCase: GetValueStreamUseCase) {}
 
-    // @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Get(':week')
     @ApiOkResponse({
         type: ValueStreamsByWeekDto,
         description: 'Get all value streams & expertise scopes in a week',
     })
     async execute(@Req() req: Request): Promise<ValueStreamsByWeekDto> {
-        // const { userId } = req.user as JwtPayload;
-        const userId = 1;
+        const { userId } = req.user as JwtPayload;
         const { week } = req.params;
 
         const result = await this.useCase.execute({

@@ -11,7 +11,7 @@ import { CreateUserUseCase } from '../o-geek/useCases/user/createUser/CreateUser
 import { GetUserUseCase } from '../o-geek/useCases/user/getUser/GetUserUseCase';
 import { OAuthGuard } from './oauth.guard';
 
-@Controller('api/oauth/otable')
+@Controller('')
 export class OauthController {
     constructor(
         private _configService: ConfigService,
@@ -21,14 +21,14 @@ export class OauthController {
     ) {}
     // redirect to authen server
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    @Get('')
+    @Get('api/oauth/otable')
     @UseGuards(OAuthGuard)
     login() {
         return '';
     }
     // if user is authenticated, they are redirected here
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    @Get('callback')
+    @Get('oauth/otable/callback')
     @UseGuards(OAuthGuard)
     async redirectLogin(
         @Req() req: Request,
