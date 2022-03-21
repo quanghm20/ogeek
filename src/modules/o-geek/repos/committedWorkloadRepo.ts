@@ -51,6 +51,8 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             ],
         });
 
-        return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
     }
 }

@@ -65,18 +65,19 @@ export class GetValueStreamUseCase
                 .utcOffset(420)
                 .add(-numDateOfWeek, 'days')
                 .startOf('day')
-                .format();
+                .format('MM-DD-YYYY');
             const endDateOfWeek = moment(startDateOfWeek)
                 .utcOffset(420)
                 .add(6, 'days')
                 .endOf('day')
-                .format();
+                .format('MM-DD-YYYY');
 
             const user = await this.userRepo.findById(params.userId);
             const valueStreams = await this.valueStreamRepo.findAll();
             const committedWLs = await this.committedWLRepo.findByUserId(
                 params.userId,
-            );
+            ) ;
+
             const plannedWLs = await this.plannedWLRepo.findByUserId({
                 startDateOfWeek,
                 endDateOfWeek,

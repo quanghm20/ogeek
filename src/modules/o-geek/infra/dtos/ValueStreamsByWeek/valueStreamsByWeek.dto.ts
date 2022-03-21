@@ -4,19 +4,19 @@ import { IsArray, IsDate, IsEnum, IsNumber } from 'class-validator';
 import { WeekStatus } from '../../../../../common/constants/week-status';
 import { ValueStreamByWeekDto } from './valueStream.dto';
 export class ValueStreamsByWeekDto {
-    @ApiProperty()
+    @ApiProperty({ example: 1 })
     @IsNumber()
     week: number;
 
-    @ApiProperty()
+    @ApiProperty({ example: '28/02/2022' })
     @IsDate()
     startDate: string;
 
-    @ApiProperty()
+    @ApiProperty({ example: '04/03/2022' })
     @IsDate()
     endDate: string;
 
-    @ApiProperty()
+    @ApiProperty({ example: WeekStatus.PLANING })
     @IsEnum(WeekStatus)
     status: WeekStatus;
 

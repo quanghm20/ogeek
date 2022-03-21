@@ -59,6 +59,8 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             ],
         });
 
-        return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;
+        return entities
+            ? PlannedWorkloadMap.toDomainAll(entities)
+            : new Array<PlannedWorkload>();
     }
 }

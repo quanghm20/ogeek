@@ -10,7 +10,7 @@ export class CommittedWorkloadDto {
     id: UniqueEntityID;
 
     @ApiProperty({ type: () => UserDto })
-    user?: UserDto;
+    user: UserDto;
 
     @ApiProperty({ type: () => ContributedValueDto })
     contributedValue: ContributedValueDto;
