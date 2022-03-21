@@ -76,7 +76,7 @@ export class GetValueStreamUseCase
             const valueStreams = await this.valueStreamRepo.findAll();
             const committedWLs = await this.committedWLRepo.findByUserId(
                 params.userId,
-            ) ;
+            );
 
             const plannedWLs = await this.plannedWLRepo.findByUserId({
                 startDateOfWeek,
