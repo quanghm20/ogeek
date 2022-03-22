@@ -6,10 +6,10 @@ import { ExpertiseScopeWithinValueStreamDto } from './expertiseScopeWithinValueS
 
 export class ValueStreamByWeekDto {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    @ApiProperty({ type: UniqueEntityID, example: { _value: 1 } })
+    @ApiProperty({ type: UniqueEntityID, example: 1 })
     id: UniqueEntityID | number;
 
-    @ApiProperty({ example: 'delivery' })
+    @ApiProperty({ example: 'Delivery' })
     @IsString()
     name: string;
 
