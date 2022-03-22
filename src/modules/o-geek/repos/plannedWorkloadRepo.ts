@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 
 import { WorkloadStatus } from '../../../common/constants/committed-status';
 import { DomainId } from '../domain/domainId';
@@ -45,8 +45,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             where: {
                 status: WorkloadStatus.ACTIVE,
                 user: userId,
-                startDate: MoreThanOrEqual(startDateOfWeek),
-                createdAt: LessThanOrEqual(endDateOfWeek),
+                startDate: Between(startDateOfWeek, endDateOfWeek),
             },
             relations: [
                 'contributedValue',
