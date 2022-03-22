@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 // import { ExpertiseScopeDto } from 'modules/o-geek/infra/dtos/expertiseScope.dto';
-import moment from 'moment';
+import * as moment from 'moment';
 
 // import { Date } from '../../../../../common/constants/date';
 // import { forEach } from 'lodash';
@@ -39,24 +39,27 @@ export class GetOverviewSummaryYearUseCase
     ) {}
 
     async execute(userId: DomainId | number): Promise<Response> {
-        moment.updateLocale('en', {
-            week: {
-                dow: 6, // Saturday is the first day of the week.
-                doy: 1, // The week that contains Jan 1st is the first week of the year.
-            },
-        });
-        const startDateYear = moment().startOf('year').format('DD-MM-YYYY');
-        const startDateOfYear = moment(startDateYear, 'DD-MM-YYYY').startOf('week').toDate();
-        const endDateOfYear = moment(startDateOfYear, 'DD-MM-YYYY').add(363, 'days').toDate();
         try {
+            // eslint-disable-next-line import/namespace
+            moment.updateLocale('en', {
+                week: {
+                    dow: 6, // Saturday is the first day of the week.
+                    doy: 1, // The week that contains Jan 1st is the first week of the year.
+                },
+            });
+            const startDateYear = moment().startOf('year').format('YYYY-MM-DD');
+            const startDateOfYear = moment(startDateYear, 'YYYY-MM-DD').startOf('week').format('YYYY-MM-DD');
+            const endDateOfYear = moment(startDateOfYear, 'YYYY-MM-DD').add(363, 'days').format('YYYY-MM-DD');
 
             // array domain committedWorkload
             const committedWorkloads = await this.committedWorkloadRepo.findByUserId(userId);
             // array domain plannedWorkload
+            // const plannedWorkloads = await this.plannedWorkloadRepo.findByUserId(userId);
 
             // array domain valueStream
             const valueStream = await this.valueStreamRepo.findAll();
             const valueStreamShortArrayDto = ValueStreamMap.fromArrayDomain(valueStream);
+            // console.log(valueStreamShortArrayDto);
             const data = Array<ValueStreamsDto>();
             valueStreamShortArrayDto.forEach(function(valueStreamItem) {
                 const expertiseScopesDto = Array<ExpertiseScopesDto>();
@@ -74,36 +77,31 @@ export class GetOverviewSummaryYearUseCase
                             0,
                             0,
                         );
-                        expertiseScopesDto.push(expertiseScope);
+                        if (expertiseScopesDto.length !== 0) {
+                            expertiseScopesDto.forEach(function(expertiseScopeItem, index) {
+                            if (expertiseScope.expertiseScope.id === expertiseScopeItem.expertiseScope.id) {
+                                expertiseScopeItem.committedWorkload += expertiseScope.committedWorkload;
+                            }
+                            if (index === expertiseScopesDto.length - 1) {
+                                    expertiseScopesDto.push(expertiseScope);
+                                }
+                            });
+                        } else {
+                            expertiseScopesDto.push(expertiseScope);
+                        }
                     }
                 });
                 const valueStreamDto = new ValueStreamsDto(
                     valueStreamItem,
                     expertiseScopesDto,
-                );
+                    );
                 data.push(valueStreamDto);
-            });
+                });
             // console.log(data);
 
-            // const plannedWorkloadArrayDTO = Array<PlannedWorkloadDto>();
-            // plannedWorkloads.forEach(function(plannedWorkloadItem) {
-            //         const plannedWorkloadItemDTO = PlannedWorkloadMap.fromDomain(plannedWorkloadItem);
-            //         plannedWorkloadArrayDTO.push(plannedWorkloadItemDTO);
-            //     });
-
-                // startDate and endDate of year
-
-            // const overviewSummaryYearArrayDTO = Array<ValueStreamsDto>();
-            // committedWorkloadArrayDTO.forEach(function(committedWorkloadItem) {
-            //         plannedWorkloadArrayDTO.forEach(function(plannedWorkloadItem) {
-            //             if (committedWorkloadItem.contributedValue.id === plannedWorkloadItem.contributedValue.id) {
-            //                 // const startDate = committedWorkloadItem.startDate.getUTCDate();
-            //                 // const ex = new ExpertiseScopesDto();
-            //             }
-            //         });
-                    // const url = `https://mock.o-geek.geekup.io/api/overview/summary-year?userId=${userId}`;
-                    // const response = await fetch(url );
-                // });
+            // const url = `https://mock.o-geek.geekup.io/api/overview/summary-year?userId=${userId}`;
+            // const response = await fetch(url, {  });
+            // });
             if (data) {
                 return right(Result.ok(data));
             }

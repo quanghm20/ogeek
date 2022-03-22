@@ -28,13 +28,14 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
             },
             new UniqueEntityID(valueStreamId),
         );
+        const expertiseScopeId = raw.expertiseScope.id;
         const expertiseScope = ExpertiseScope.create(
             {
                 name: raw.expertiseScope.name,
                 createdAt: raw.expertiseScope.createdAt,
                 updatedAt: raw.expertiseScope.updatedAt,
             },
-            new UniqueEntityID(valueStreamId),
+            new UniqueEntityID(expertiseScopeId),
         );
 
         const contributedValueOrError = ContributedValue.create(

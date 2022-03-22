@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 import { WorkloadStatus } from '../../../common/constants/committed-status';
 // import { Date } from '../../../common/constants/date';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
@@ -77,23 +75,17 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     public getExpertiseScopeName(): string {
         return this.contributedValue.expertiseScope.name;
     }
-    public duration(startDate: Date, endDate: Date): number {
-        if (startDate > endDate) {
-            const duration = moment.duration(
-                moment(endDate, 'DD-MM-YYYY').diff(
-                    moment(startDate, 'DD-MM-YYYY'),
-                ),
+    public durationDay(startDate: Date, endDate: Date): number {
+        if (startDate < endDate) {
+            return Math.floor(
+                (endDate.getTime() - startDate.getTime()) /
+                    (1000 * 60 * 60 * 24 * 7),
             );
-            return (duration.asDays() + 1) / 7;
         }
-        {
-            const duration = moment.duration(
-                moment(startDate, 'DD-MM-YYYY').diff(
-                    moment(endDate, 'DD-MM-YYYY'),
-                ),
-            );
-            return (duration.asDays() + 1) / 7;
-        }
+        return Math.floor(
+            (startDate.getTime() - endDate.getTime()) /
+                (1000 * 60 * 60 * 24 * 7),
+        );
     }
     // startDate < startDateOfYear
     public calculateExpiredDateOne(
@@ -103,9 +95,15 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     ): number {
         // expiredDate <= endDateOfYear
         if (expiredDate <= endDateOfYear) {
-            return this.duration(startDateOfYear, expiredDate);
+            return (
+                this.durationDay(startDateOfYear, expiredDate) *
+                this.committedWorkload
+            );
         }
-        return this.duration(startDateOfYear, endDateOfYear);
+        return (
+            this.durationDay(startDateOfYear, endDateOfYear) *
+            this.committedWorkload
+        );
     }
     // startDate >= startDateOfYear
     public calculateExpiredDateTwo(
@@ -115,24 +113,32 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     ): number {
         // expiredDate <= endDateOfYear
         if (expiredDate <= endDateOfYear) {
-            return this.duration(startDate, expiredDate);
+            return (
+                this.durationDay(startDate, expiredDate) *
+                this.committedWorkload
+            );
         }
         // epxiredDate > endDateOfYear
         if (expiredDate > endDateOfYear) {
-            return this.duration(startDate, endDateOfYear);
+            return (
+                this.durationDay(startDate, endDateOfYear) *
+                this.committedWorkload
+            );
         }
     }
     public calculateCommittedWorkload(
-        startDateOfYear: Date,
-        endDateOfYear: Date,
+        startDateOfYearString: string,
+        endDateOfYearString: string,
     ): number {
+        const startDateOfYear = new Date(startDateOfYearString);
+        const endDateOfYear = new Date(endDateOfYearString);
         if (this.startDate < startDateOfYear) {
             return this.calculateExpiredDateOne(
                 startDateOfYear,
                 endDateOfYear,
                 this.expiredDate,
             );
-        }
+        } // startDate >= startDateOfYear
         return this.calculateExpiredDateTwo(
             this.startDate,
             this.expiredDate,
@@ -156,6 +162,7 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         };
         defaultValues.createdAt = new Date();
         defaultValues.updatedAt = new Date();
+        defaultValues.contributedValue = props.contributedValue;
         const committedWorkload = new CommittedWorkload(defaultValues, id);
         return Result.ok<CommittedWorkload>(committedWorkload);
     }

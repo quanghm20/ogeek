@@ -25,6 +25,11 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entity = await this.repo.find({
             where: { user: { id: userId } },
+            relations: [
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+            ],
         });
         return entity ? CommittedWorkloadMap.toArrayDomain(entity) : null;
     }
