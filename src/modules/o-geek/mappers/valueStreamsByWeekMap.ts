@@ -45,7 +45,8 @@ export class ValueStreamsByWeekMap {
             if (
                 !valueStreamByWeekDtos.find(
                     (valueStreamByWeek) =>
-                        valueStreamByWeek.id === valueStreamDto.id,
+                        Number(valueStreamByWeek.id.toString()) ===
+                        Number(valueStreamDto.id.toString()),
                 )
             ) {
                 valueStreamByWeekDtos.push({
