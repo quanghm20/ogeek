@@ -4,9 +4,9 @@ import { DomainId } from '../../../domain/domainId';
 
 export namespace GetOverviewChartDataErrors {
     export class GetOverviewChartDataFailed extends Result<UseCaseError> {
-        constructor(committedWorkloadId: DomainId | number) {
+        constructor(userId: DomainId | number) {
             super(false, {
-                message: `Failed to get data for overview chart of ${committedWorkloadId.toString()}`,
+                message: `Failed to get data for overview chart of ${userId.toString()}`,
             } as UseCaseError);
         }
     }
