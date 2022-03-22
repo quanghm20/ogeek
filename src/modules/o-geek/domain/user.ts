@@ -70,7 +70,7 @@ export class User extends AggregateRoot<IUserProps> {
         return this.props.role === RoleType.ADMIN;
     }
     public isPlaning(): boolean {
-        return this.props.weekStatus === WeekStatus.PLANING;
+        return this.props.weekStatus === WeekStatus.PLANNING;
     }
     public isPlanned(): boolean {
         return this.props.weekStatus === WeekStatus.PLANNED;

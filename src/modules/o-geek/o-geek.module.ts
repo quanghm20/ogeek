@@ -15,6 +15,9 @@ import {
     UserRepository,
     ValueStreamRepository,
 } from './repos/index';
+import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
+import { GetUserController } from './useCases/user/GetUser/GetUserController';
+import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
 @Module({
     imports: [
         HttpModule,
@@ -27,8 +30,14 @@ import {
             PlannedWorkloadEntity,
         ]),
     ],
-    controllers: [],
+    controllers: [GetUserController],
     providers: [
+        CreateUserUseCase,
+        GetUserUseCase,
+        {
+            provide: 'IUserRepo',
+            useClass: UserRepository,
+        },
         {
             provide: 'IContributedValueRepo',
             useClass: ContributedValueRepository,
@@ -54,5 +63,6 @@ import {
             useClass: ValueStreamRepository,
         },
     ],
+    exports: [CreateUserUseCase, GetUserUseCase],
 })
 export class OGeekModule {}
