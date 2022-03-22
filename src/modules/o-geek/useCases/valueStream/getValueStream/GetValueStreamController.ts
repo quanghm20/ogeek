@@ -16,7 +16,7 @@ import { ValueStreamsByWeekDto } from '../../../../../modules/o-geek/infra/dtos/
 import { GetValueStreamError } from './GetValueStreamErrors';
 import { GetValueStreamUseCase } from './GetValueStreamUseCase';
 
-@Controller('api/valuestream')
+@Controller('api/value-stream')
 @ApiTags('Value Stream card')
 export class GetValueStreamController {
     constructor(public readonly useCase: GetValueStreamUseCase) {}
