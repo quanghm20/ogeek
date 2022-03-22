@@ -2,12 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsString } from 'class-validator';
 
 import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
-import { ContributedValueDto } from './contributedValue.dto';
+import { ExpertiseScopeWithinValueStreamDto } from './expertiseScopeWithinValueStream.dto';
 
 export class ValueStreamByWeekDto {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     @ApiProperty({ type: UniqueEntityID, example: { _value: 1 } })
-    id: UniqueEntityID;
+    id: UniqueEntityID | number;
 
     @ApiProperty({ example: 'delivery' })
     @IsString()
@@ -26,5 +26,5 @@ export class ValueStreamByWeekDto {
         ],
     })
     @IsArray()
-    contributedValues: ContributedValueDto[];
+    expertiseScopes: ExpertiseScopeWithinValueStreamDto[];
 }

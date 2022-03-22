@@ -7,7 +7,7 @@ import { ExpertiseScopeDto } from '../infra/dtos/expertiseScope.dto';
 import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';
 import { UserDto } from '../infra/dtos/user.dto';
 import { ValueStreamDto } from '../infra/dtos/valueStream.dto';
-import { ContributedValueDto } from '../infra/dtos/ValueStreamsByWeek/contributedValue.dto';
+import { ExpertiseScopeWithinValueStreamDto } from '../infra/dtos/ValueStreamsByWeek/expertiseScopeWithinValueStream.dto';
 import { ValueStreamByWeekDto } from '../infra/dtos/ValueStreamsByWeek/valueStream.dto';
 import { ValueStreamsByWeekDto } from '../infra/dtos/ValueStreamsByWeek/valueStreamsByWeek.dto';
 
@@ -45,27 +45,26 @@ export class ValueStreamsByWeekMap {
             if (
                 !valueStreamByWeekDtos.find(
                     (valueStreamByWeek) =>
-                        valueStreamByWeek.id.toValue() ===
-                        valueStreamDto.id.toValue(),
+                        valueStreamByWeek.id === valueStreamDto.id,
                 )
             ) {
                 valueStreamByWeekDtos.push({
                     id: valueStreamDto.id,
                     name: valueStreamDto.name,
-                    contributedValues: [],
+                    expertiseScopes: [],
                 } as ValueStreamByWeekDto);
             }
         });
         return valueStreamByWeekDtos;
     }
 
-    public static combineContributedValueDto(
-        contributedValueDtos: ContributedValueDto[],
+    public static combineExpertiseScopeWithinValueStreamDtos(
+        expertiseScopeWithinValueStreamDtos: ExpertiseScopeWithinValueStreamDto[],
         expertiseDto: ExpertiseScopeDto,
         committedWLDto: CommittedWorkloadDto,
         plannedWLDtos: PlannedWorkloadDto[],
         actualPlanAndWorkLog: ActualPlanAndWorkLogDto,
-    ): ContributedValueDto[] {
+    ): ExpertiseScopeWithinValueStreamDto[] {
         const plannedWLFinded = plannedWLDtos.find(
             (planned) =>
                 planned.committedWorkload.id.toValue() ===
@@ -83,15 +82,17 @@ export class ValueStreamsByWeekMap {
             worklog = actualPlanAndWorkLog.worklog;
         }
 
-        const results = contributedValueDtos;
-        contributedValueDtos.push({
+        const results = expertiseScopeWithinValueStreamDtos;
+        expertiseScopeWithinValueStreamDtos.push({
             worklog,
             plannedWorkload,
-            expertiseScopeId: Number(expertiseDto.id.toString()),
-            expertiseScope: expertiseDto.name,
+            expertiseScope: {
+                id: Number(expertiseDto.id.toString()),
+                name: expertiseDto.name,
+            },
             committedWorkload: committedWLDto.committedWorkload,
             actualPlannedWorkload: actual,
-        } as ContributedValueDto);
+        } as ExpertiseScopeWithinValueStreamDto);
         return results;
     }
 
@@ -118,8 +119,7 @@ export class ValueStreamsByWeekMap {
             const expertiseDto = committedWLDto.contributedValue.expertiseScope;
             const valueStreamByWeekDto = valueStreamByWeekDtos.find(
                 (valueStreamByWeek) =>
-                    valueStreamByWeek.id.toValue() ===
-                    valueStreamDto.id.toValue(),
+                    valueStreamByWeek.id === valueStreamDto.id,
             );
             const actualPlanAndWorkLog = actualPlanAndWorkLogDtos.find(
                 (actualPlan) =>
@@ -127,33 +127,38 @@ export class ValueStreamsByWeekMap {
                     committedWLDto.contributedValue.id.toValue(),
             );
             if (!valueStreamByWeekDto) {
-                let contributedValueDtos = new Array<ContributedValueDto>();
-                contributedValueDtos = this.combineContributedValueDto(
-                    contributedValueDtos,
-                    expertiseDto,
-                    committedWLDto,
-                    plannedWLDtos,
-                    actualPlanAndWorkLog,
-                );
+                let expertiseScopeWithinValueStreamDtos =
+                    new Array<ExpertiseScopeWithinValueStreamDto>();
+                expertiseScopeWithinValueStreamDtos =
+                    this.combineExpertiseScopeWithinValueStreamDtos(
+                        expertiseScopeWithinValueStreamDtos,
+                        expertiseDto,
+                        committedWLDto,
+                        plannedWLDtos,
+                        actualPlanAndWorkLog,
+                    );
                 valueStreamByWeekDtos.push({
                     id: valueStreamDto.id,
                     name: valueStreamDto.name,
-                    contributedValues: contributedValueDtos,
+                    expertiseScopes: expertiseScopeWithinValueStreamDtos,
                 } as ValueStreamByWeekDto);
             } else {
-                let contributedValueDtos =
-                    valueStreamByWeekDto.contributedValues;
-                if (!valueStreamByWeekDto.contributedValues) {
-                    contributedValueDtos = new Array<ContributedValueDto>();
+                let expertiseScopeWithinValueStreamDtos =
+                    valueStreamByWeekDto.expertiseScopes;
+                if (!valueStreamByWeekDto.expertiseScopes) {
+                    expertiseScopeWithinValueStreamDtos =
+                        new Array<ExpertiseScopeWithinValueStreamDto>();
                 }
-                contributedValueDtos = this.combineContributedValueDto(
-                    contributedValueDtos,
-                    expertiseDto,
-                    committedWLDto,
-                    plannedWLDtos,
-                    actualPlanAndWorkLog,
-                );
-                valueStreamByWeekDto.contributedValues = contributedValueDtos;
+                expertiseScopeWithinValueStreamDtos =
+                    this.combineExpertiseScopeWithinValueStreamDtos(
+                        expertiseScopeWithinValueStreamDtos,
+                        expertiseDto,
+                        committedWLDto,
+                        plannedWLDtos,
+                        actualPlanAndWorkLog,
+                    );
+                valueStreamByWeekDto.expertiseScopes =
+                    expertiseScopeWithinValueStreamDtos;
             }
         });
         ValueStreamsByWeekMap.addValueStreamEmpty(

@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
-export class ContributedValueDto {
-    @ApiProperty({ example: 'Product Backend' })
-    @IsString()
-    expertiseScope: string;
+import { ExpertiseScopeDto } from '../expertiseScope.dto';
 
-    @ApiProperty({ example: '1' })
-    @IsNumber()
-    expertiseScopeId: number;
+export class ExpertiseScopeWithinValueStreamDto {
+    @ApiProperty({
+        type: () => ExpertiseScopeDto,
+        example: { id: 1, name: 'Product Backend' },
+    })
+    expertiseScope: ExpertiseScopeDto;
 
     @ApiProperty({ example: '20' })
     @IsNumber()
