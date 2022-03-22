@@ -20,7 +20,7 @@ export class ValueStreamByWeekDto {
                 expertiseScopeId: 1,
                 committedWorkload: 20,
                 plannedWorkload: 12,
-                actualPlannedWorkLoad: 12,
+                actualPlannedWorkload: 12,
                 worklog: 10,
             },
         ],

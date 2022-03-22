@@ -19,21 +19,21 @@ export class GetUserUseCase
     implements IUseCase<FindUserDto, Promise<Response>> {
     constructor(public readonly repo: UserRepository) {}
 
+    async helperExecute(findUserDto: FindUserDto): Promise<Response> {
+        if (findUserDto.alias) {
+            return right(Result.ok(await this.repo.findByAlias(findUserDto.alias)));
+        }
+
+        if (findUserDto.userId) {
+            return right(Result.ok(await this.repo.findById(findUserDto.userId)));
+        }
+
+        return left(new GetUserErrors.UserNotFound()) as Response;
+    }
+
     async execute(findUserDto: FindUserDto): Promise<Response> {
         try {
-            let user = null;
-
-            user = await this.repo.findById(findUserDto.userId);
-            // if (findUserDto.alias) {
-            //     user = await this.repo.findByAlias(findUserDto.alias);
-
-            // }
-
-            if (user) {
-                return right(Result.ok(user));
-            }
-
-            return left(new GetUserErrors.UserNotFound()) as Response;
+            return await this.helperExecute(findUserDto);
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
         }

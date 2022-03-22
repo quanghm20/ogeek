@@ -13,11 +13,11 @@ export class ValueStreamMap implements Mapper<ValueStream> {
     }
 
     public static fromDomainAll(valueStreams: ValueStream[]): ValueStreamDto[] {
-        const arrValueStreamDto = new Array<ValueStreamDto>();
+        const valueStreamArrayDto = new Array<ValueStreamDto>();
         valueStreams.forEach((valueStream) => {
-            arrValueStreamDto.push(ValueStreamMap.fromDomain(valueStream));
+            valueStreamArrayDto.push(ValueStreamMap.fromDomain(valueStream));
         });
-        return arrValueStreamDto;
+        return valueStreamArrayDto;
     }
 
     public static toDomain(raw: ValueStreamEntity): ValueStream {
@@ -37,16 +37,16 @@ export class ValueStreamMap implements Mapper<ValueStream> {
     public static toDomainAll(
         valueStreams: ValueStreamEntity[],
     ): ValueStream[] {
-        const arrValueStream = new Array<ValueStream>();
+        const valueStreamArray = new Array<ValueStream>();
         valueStreams.forEach((valueStream) => {
             const valueStreamOrError = ValueStreamMap.toDomain(valueStream);
             if (valueStreamOrError) {
-                arrValueStream.push(valueStreamOrError);
+                valueStreamArray.push(valueStreamOrError);
             } else {
                 return null;
             }
         });
 
-        return arrValueStream;
+        return valueStreamArray;
     }
 }

@@ -24,10 +24,10 @@ export class UserDto {
     @ApiProperty({ example: 'http://localhost/avatar' })
     avatar?: string;
 
-    @ApiProperty({ example: RoleType.ADMIN })
+    @ApiProperty({ enum: RoleType, example: RoleType.ADMIN })
     role?: RoleType;
 
-    @ApiProperty({ example: WeekStatus.PLANING })
+    @ApiProperty({ enum: WeekStatus, example: WeekStatus.PLANING })
     weekStatus?: WeekStatus;
 
     @ApiProperty({ example: new Date() })

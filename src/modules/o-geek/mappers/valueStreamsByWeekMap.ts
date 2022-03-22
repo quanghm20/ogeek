@@ -66,17 +66,17 @@ export class ValueStreamsByWeekMap {
         plannedWLDtos: PlannedWorkloadDto[],
         actualPlanAndWorkLog: ActualPlanAndWorkLogDto,
     ): ContributedValueDto[] {
-        const plannedWorkload = plannedWLDtos.find(
+        const plannedWLFinded = plannedWLDtos.find(
             (planned) =>
                 planned.committedWorkload.id.toValue() ===
                 committedWLDto.id.toValue(),
         );
 
-        const plannedWorkLoad = plannedWorkload
-            ? plannedWorkload.plannedWorkload
+        const plannedWorkload = plannedWLFinded
+            ? plannedWLFinded.plannedWorkload
             : committedWLDto.committedWorkload;
 
-        let actual = plannedWorkLoad;
+        let actual = plannedWorkload;
         let worklog = 0;
         if (actualPlanAndWorkLog) {
             actual = actualPlanAndWorkLog.actualPlan;
@@ -86,11 +86,11 @@ export class ValueStreamsByWeekMap {
         const results = contributedValueDtos;
         contributedValueDtos.push({
             worklog,
-            plannedWorkLoad,
+            plannedWorkload,
             expertiseScopeId: Number(expertiseDto.id.toString()),
             expertiseScope: expertiseDto.name,
-            committedWorkLoad: committedWLDto.committedWorkload,
-            actualPlannedWorkLoad: actual,
+            committedWorkload: committedWLDto.committedWorkload,
+            actualPlannedWorkload: actual,
         } as ContributedValueDto);
         return results;
     }
