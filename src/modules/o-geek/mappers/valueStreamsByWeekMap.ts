@@ -84,12 +84,12 @@ export class ValueStreamsByWeekMap {
         expertiseScopeWithinValueStreamDtos.push({
             worklog,
             plannedWorkload,
+            committedWorkload: committedWLDto.committedWorkload,
+            actualPlannedWorkload: actual,
             expertiseScope: {
                 id: Number(expertiseDto.id.toString()),
                 name: expertiseDto.name,
             },
-            committedWorkload: committedWLDto.committedWorkload,
-            actualPlannedWorkload: actual,
         } as ExpertiseScopeWithinValueStreamDto);
         return results;
     }
