@@ -51,4 +51,11 @@ export class ValueStreamMap implements Mapper<ValueStream> {
         });
         return contributedValuesOrError ? contributedValuesOrError : null;
     }
+    public static toEntity(valueStream: ValueStream): ValueStreamEntity {
+        const valueStreamEntity = new ValueStreamEntity();
+        valueStreamEntity.id = Number(valueStream.id.toValue());
+        valueStreamEntity.name = valueStream.name;
+
+        return valueStreamEntity;
+    }
 }

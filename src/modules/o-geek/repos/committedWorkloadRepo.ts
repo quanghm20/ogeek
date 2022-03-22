@@ -6,7 +6,6 @@ import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
-import { CommittedWorkloadShortDto } from '../infra/dtos/createCommittedWorkload/committedWorkloadShort.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 
 export interface ICommittedWorkloadRepo {
@@ -14,8 +13,7 @@ export interface ICommittedWorkloadRepo {
         committedWorkloadId: DomainId | number,
     ): Promise<CommittedWorkload>;
     save(
-        committedWorkload: CommittedWorkloadShortDto,
-        picId: number,
+        committedWorkload: CommittedWorkloadEntity,
     ): Promise<CommittedWorkload>;
 }
 
@@ -39,21 +37,9 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
     }
     async save(
-        committedWorkload: CommittedWorkloadShortDto,
-        picId: number,
+        committedWorkload: CommittedWorkloadEntity,
     ): Promise<CommittedWorkload> {
-        const entity = await this.repo.save({
-            user: { id: committedWorkload.userId },
-            contributedValue: {
-                id: committedWorkload.contributedValueId,
-            },
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            committedWorkload: committedWorkload.committedWorkload,
-            startDate: committedWorkload.startDate,
-            expiredDate: committedWorkload.expiredDate,
-            picId: { id: picId },
-        });
+        const entity = await this.repo.save(committedWorkload);
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
     }
 }

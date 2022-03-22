@@ -3,6 +3,8 @@ import { Mapper } from '../../../core/infra/Mapper';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
+import { ContributedValueMap } from './contributedValueMap';
+import { UserMap } from './userMap';
 
 export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     public static fromDomain(
@@ -34,5 +36,22 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         return committedWorkloadOrError.isSuccess
             ? committedWorkloadOrError.getValue()
             : null;
+    }
+    public static toEntity(
+        committedWorkload: CommittedWorkload,
+    ): CommittedWorkloadEntity {
+        const user = UserMap.toEntity(committedWorkload.user);
+        const contributedValue = ContributedValueMap.toEntity(
+            committedWorkload.contributedValue,
+        );
+        const pic = UserMap.toEntity(committedWorkload.picId);
+        return new CommittedWorkloadEntity(
+            user,
+            contributedValue,
+            committedWorkload.committedWorkload,
+            committedWorkload.startDate,
+            committedWorkload.expiredDate,
+            pic,
+        );
     }
 }

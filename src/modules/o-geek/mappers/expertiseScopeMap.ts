@@ -36,4 +36,13 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
             ? expertiseScopeOrError.getValue()
             : null;
     }
+    public static toEntity(
+        expertiseScope: ExpertiseScope,
+    ): ExpertiseScopeEntity {
+        const expertiseScopeEntity = new ExpertiseScopeEntity();
+        expertiseScopeEntity.id = Number(expertiseScope.id.toValue());
+        expertiseScopeEntity.name = expertiseScope.name;
+
+        return expertiseScopeEntity;
+    }
 }

@@ -93,4 +93,18 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
         });
         return contributedValuesOrError ? contributedValuesOrError : null;
     }
+    public static toEntity(
+        contributed: ContributedValue,
+    ): ContributedValueEntity {
+        const valueStream = ValueStreamMap.toEntity(contributed.valueStream);
+        const expertiseScope = ExpertiseScopeMap.toEntity(
+            contributed.expertiseScope,
+        );
+        const contributedValueEntity = new ContributedValueEntity();
+        contributedValueEntity.expertiseScope = expertiseScope;
+        contributedValueEntity.valueStream = valueStream;
+        contributedValueEntity.id = Number(contributedValueEntity.id);
+
+        return contributedValueEntity;
+    }
 }

@@ -3,9 +3,12 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
-import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { Either, left, Result } from '../../../../../core/logic/Result';
+import { CommittedWorkloadEntity } from '../../../infra/database/entities/committedWorkload.entity';
 import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedWorkload.dto';
-import { CommittedWorkloadShortDto } from '../../../infra/dtos/createCommittedWorkload/committedWorkloadShort.dto';
+// import { CommittedWorkloadShortDto } from '../../../infra/dtos/createCommittedWorkload/committedWorkloadShort.dto';
+import { ContributedValueMap } from '../../../mappers/contributedValueMap';
+import { UserMap } from '../../../mappers/userMap';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IContributedValueRepo } from '../../../repos/contributedValueRepo';
 // import { UserMap } from '../../../mappers/userMap';
@@ -35,32 +38,39 @@ export class CreateCommittedWorkloadUseCase
                 	new CreateCommittedWorkloadErrors.NotFound( `Could not find User ${userId}` ),
 				) as Response;
 			}
+			const userEntity = UserMap.toEntity(user);
 			const committedWorkloads = body.committedWorkloads;
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const loop = await Promise.all(committedWorkloads.map(async (workload) => {
-				const contribute = await this.contributedValueRepo.findOne(workload.valueStreamId, workload.expertiseScopeId);
+			const committees = Array<CommittedWorkloadEntity>();
+
+			await Promise.all(committedWorkloads.map(async (workload) => {
+				const contribute = await this.contributedValueRepo.findOne(
+					workload.valueStreamId,
+					workload.expertiseScopeId);
 				if (!contribute) {
 					return left(
 						new CreateCommittedWorkloadErrors.NotFound(
 							`Could not find ValueStream with id ${workload.valueStreamId} and ExpertiseScope ${workload.expertiseScopeId}`),
 					);
 				}
-				const contributedValue = Number(contribute.id.toValue());
-				const committed = new CommittedWorkloadShortDto(
-					userId,
-					contributedValue,
+				const contributedEntity = ContributedValueMap.toEntity(contribute);
+				const committed = new CommittedWorkloadEntity(
+					userEntity,
+					contributedEntity,
 					workload.workload,
 					startDate,
 					expiredDate,
+					userEntity,
 				);
-				const newWorkload = await this.committedWorkloadRepo.save(committed, 2);
-				if (!newWorkload) {
-					return left(
-						new CreateCommittedWorkloadErrors.NotFound(
-`Can't not create committed workload with ValueStream ${workload.valueStreamId} and ExpertiseScope ${workload.expertiseScopeId}`),
-					);
-				}
-				return right(Result.ok('Created committed workload!'));
+				committees.push(committed);
+				// 				const newWorkload = await this.committedWorkloadRepo.save(committed);
+				// 				if (!newWorkload) {
+				// 					return left(
+				// 						new CreateCommittedWorkloadErrors.NotFound(
+				// `Can't not create committed workload with ValueStream ${workload.valueStreamId} and ExpertiseScope ${workload.expertiseScopeId}`),
+				// 					);
+				// 				}
+				// 				return right(Result.ok('Created committed workload!'));
+
 			}));
 
 		} catch (err) {
