@@ -13,14 +13,33 @@ export interface IContributedValueRepo {
         expertiseScopeId: DomainId | number,
         valueStreamId: DomainId | number,
     ): Promise<ContributedValue>;
+    findOne(
+        valueStreamId: number,
+        expertiseScopeId: number,
+    ): Promise<ContributedValue>;
+    findAll(): Promise<ContributedValue[]>;
 }
 
 @Injectable()
 export class ContributedValueRepository implements IContributedValueRepo {
     constructor(
-        @InjectRepository(ContributedValue)
+        @InjectRepository(ContributedValueEntity)
         protected repo: Repository<ContributedValueEntity>,
     ) {}
+    async findOne(
+        valueStreamId?: number,
+        expertiseScopeId?: number,
+    ): Promise<ContributedValue> {
+        const contributedValue = await this.repo.findOne({
+            where: {
+                valueStream: { id: valueStreamId },
+                expertiseScope: { id: expertiseScopeId },
+            },
+        });
+        return contributedValue
+            ? ContributedValueMap.toDomain(contributedValue)
+            : null;
+    }
 
     async findById(
         contributedValueId: DomainId | number,
@@ -60,5 +79,10 @@ export class ContributedValueRepository implements IContributedValueRepo {
             },
         });
         return entity ? ContributedValueMap.toDomain(entity) : null;
+    }
+
+    async findAll(): Promise<ContributedValue[]> {
+        const entity = await this.repo.find();
+        return entity ? ContributedValueMap.toDomainAll(entity) : null;
     }
 }

@@ -16,7 +16,7 @@ export interface ICommittedWorkloadRepo {
 @Injectable()
 export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     constructor(
-        @InjectRepository(CommittedWorkload)
+        @InjectRepository(CommittedWorkloadEntity)
         protected repo: Repository<CommittedWorkloadEntity>,
     ) {}
 

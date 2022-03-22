@@ -19,9 +19,7 @@ import {
     ValueStreamRepository,
 } from './repos';
 import { PlanWorkloadController } from './useCases/plannedWorkload/planWorkload';
-import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
 import { GetUserController } from './useCases/user/GetUser/GetUserController';
-import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
 
 @Module({
     imports: [
@@ -59,12 +57,13 @@ import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
             useClass: PlannedWorkloadRepository,
         },
         {
+            provide: 'IUserRepo',
+            useClass: UserRepository,
+        },
+        {
             provide: 'IValueStreamRepo',
             useClass: ValueStreamRepository,
         },
-        CreateUserUseCase,
-        GetUserUseCase,
     ],
-    exports: [CreateUserUseCase, GetUserUseCase, TypeOrmModule, UserRepository],
 })
 export class OGeekModule {}

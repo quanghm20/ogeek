@@ -16,7 +16,7 @@ export interface IPlannedWorkloadRepo {
 @Injectable()
 export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     constructor(
-        @InjectRepository(PlannedWorkload)
+        @InjectRepository(PlannedWorkloadEntity)
         protected repo: Repository<PlannedWorkloadEntity>,
         private _connection: Connection,
     ) {}
