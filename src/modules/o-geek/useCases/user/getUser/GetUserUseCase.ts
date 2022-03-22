@@ -21,25 +21,26 @@ export class GetUserUseCase
         @Inject('IUserRepo') public readonly repo: IUserRepo,
     ) {}
 
+    async helperExecute(findUserDto: FindUserDto): Promise<User> {
+        if (findUserDto.alias) {
+            return this.repo.findByAlias(findUserDto.alias);
+        }
+
+        if (findUserDto.userId) {
+            return this.repo.findById(findUserDto.userId);
+        }
+        return null;
+    }
+
     async execute(findUserDto: FindUserDto): Promise<Response> {
         try {
-            let user = null;
-
-            if (findUserDto.userId) {
-                user = await this.repo.findById(findUserDto.userId);
+            const user = await this.helperExecute(findUserDto);
+            if (user) {
+                return right(Result.ok(user));
             }
-            if (findUserDto.alias) {
-                user = await this.repo.findByAlias(findUserDto.alias);
-            }
-
-            if (user) {return right(Result.ok(user)); }
-
-            return left(
-                new GetUserErrors.UserNotFound(),
-            ) as Response;
+            return left(new GetUserErrors.UserNotFound()) as Response;
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
         }
     }
 }
-

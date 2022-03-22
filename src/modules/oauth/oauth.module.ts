@@ -1,4 +1,5 @@
 import { HttpModule, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { JwtAuthModule } from '../../modules/jwt-auth/jwt-auth.module';
 import { OGeekModule } from '../../modules/o-geek/o-geek.module';
@@ -9,6 +10,7 @@ import { OAuthStrategy } from './oauth.strategy';
     imports: [
         OGeekModule,
         JwtAuthModule,
+        TypeOrmModule,
         HttpModule.registerAsync({
             useFactory: () => ({
                 timeout: 5000,
