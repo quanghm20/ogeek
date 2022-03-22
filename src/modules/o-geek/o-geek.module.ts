@@ -14,7 +14,7 @@ import {
     PlannedWorkloadRepository,
     UserRepository,
     ValueStreamRepository,
-} from './repos/index';
+} from './repos';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
 import { GetUserController } from './useCases/user/GetUser/GetUserController';
 import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
