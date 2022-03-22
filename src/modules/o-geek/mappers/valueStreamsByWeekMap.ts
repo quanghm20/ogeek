@@ -17,7 +17,7 @@ export class ValueStreamsByWeekMap {
     ): WeekStatus {
         return plannedWLDtos.length > 0
             ? WeekStatus.PLANNED
-            : WeekStatus.PLANING;
+            : WeekStatus.PLANNING;
     }
 
     public static getStatusValueStream(
