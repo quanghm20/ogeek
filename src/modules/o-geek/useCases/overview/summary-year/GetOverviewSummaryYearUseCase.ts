@@ -76,13 +76,16 @@ export class GetOverviewSummaryYearUseCase
                             0,
                             0,
                             0,
-                        );
+                            );
+                        // console.log(expertiseScopesDto);
                         if (expertiseScopesDto.length !== 0) {
-                            expertiseScopesDto.forEach(function(expertiseScopeItem, index) {
-                            if (expertiseScope.expertiseScope.id === expertiseScopeItem.expertiseScope.id) {
+                            expertiseScopesDto.every(function(expertiseScopeItem, index) {
+                                if (expertiseScope.expertiseScope.id === expertiseScopeItem.expertiseScope.id) {
                                 expertiseScopeItem.committedWorkload += expertiseScope.committedWorkload;
+                                return;
                             }
-                            if (index === expertiseScopesDto.length - 1) {
+                                expertiseScopesDto.push(expertiseScope);
+                                if (index === expertiseScopesDto.length - 1) {
                                     expertiseScopesDto.push(expertiseScope);
                                 }
                             });
