@@ -54,7 +54,7 @@ export class GetOverviewSummaryYearUseCase
             // array domain committedWorkload
             const committedWorkloads = await this.committedWorkloadRepo.findByUserId(userId);
             // array domain plannedWorkload
-            // const plannedWorkloads = await this.plannedWorkloadRepo.findByUserId(userId);
+            const plannedWorkloads = await this.plannedWorkloadRepo.findByUserId(userId, startDateOfYear, endDateOfYear);
 
             // array domain valueStream
             const valueStream = await this.valueStreamRepo.findAll();
@@ -66,6 +66,9 @@ export class GetOverviewSummaryYearUseCase
                 committedWorkloads.forEach(function(committedWorkloadItem) {
                     if (committedWorkloadItem.getValueStreamId() === valueStreamItem.id) {
                         const committedWorkload = committedWorkloadItem.calculateCommittedWorkload(startDateOfYear, endDateOfYear);
+                        const plannedWorkload = plannedWorkloads.reduce((preTotalPlannedWL, currentPlannedWL) =>
+                            preTotalPlannedWL + (currentPlannedWL.committedWorkload.id === committedWorkloadItem.id
+                                    ? currentPlannedWL.plannedWorkload : 0), 0);
                         const expertiseScopeShortDto = new ExpertiseScopeShortDto(
                             committedWorkloadItem.getExpertiseScopeId(),
                             committedWorkloadItem.contributedValue.expertiseScope.name,
@@ -73,24 +76,17 @@ export class GetOverviewSummaryYearUseCase
                         const expertiseScope = new ExpertiseScopesDto(
                             expertiseScopeShortDto,
                             committedWorkload,
-                            0,
-                            0,
-                            0,
-                            );
-                        // console.log(expertiseScopesDto);
-                        if (expertiseScopesDto.length !== 0) {
-                            expertiseScopesDto.every(function(expertiseScopeItem, index) {
-                                if (expertiseScope.expertiseScope.id === expertiseScopeItem.expertiseScope.id) {
-                                expertiseScopeItem.committedWorkload += expertiseScope.committedWorkload;
-                                return;
-                            }
-                                expertiseScopesDto.push(expertiseScope);
-                                if (index === expertiseScopesDto.length - 1) {
-                                    expertiseScopesDto.push(expertiseScope);
-                                }
-                            });
-                        } else {
+                            plannedWorkload,
+                            0, // actual plan
+                            0, // worklog
+                        );
+                        const findExp = expertiseScopesDto.find((expertiseScopeItem) =>
+                            expertiseScope.expertiseScope.id === expertiseScopeItem.expertiseScope.id);
+                        if (!findExp) {
                             expertiseScopesDto.push(expertiseScope);
+                        } else {
+                            const pos = expertiseScopesDto.indexOf(findExp);
+                            expertiseScopesDto[pos].committedWorkload += expertiseScope.committedWorkload;
                         }
                     }
                 });

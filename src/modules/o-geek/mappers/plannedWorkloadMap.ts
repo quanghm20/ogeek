@@ -3,6 +3,7 @@ import { Mapper } from '../../../core/infra/Mapper';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
 import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';
+import { CommittedWorkloadMap } from './committedWorkloadMap';
 
 export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     public static fromDomain(
@@ -39,10 +40,14 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
         raws: PlannedWorkloadEntity[],
     ): PlannedWorkload[] {
         const plannedWorkloadsOrError = Array<PlannedWorkload>();
-        raws.forEach(function get(item) {
-            const { id } = item;
+        raws.forEach(function get(raw) {
+            const { id } = raw;
             const plannedWorkloadOrError = PlannedWorkload.create(
-                {},
+                {
+                    committedWorkload: CommittedWorkloadMap.toDomain(
+                        raw.committedWorkload,
+                    ),
+                },
                 new UniqueEntityID(id),
             );
             plannedWorkloadsOrError.push(plannedWorkloadOrError.getValue());

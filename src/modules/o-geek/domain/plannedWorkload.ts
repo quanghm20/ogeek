@@ -36,6 +36,12 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     set plannedWorkload(workload: number) {
         this.props.plannedWorkload = workload;
     }
+    get committedWorkload(): CommittedWorkload {
+        return this.props.committedWorkload;
+    }
+    set committedWorkload(committedWorkload: CommittedWorkload) {
+        this.props.committedWorkload = committedWorkload;
+    }
     get startDate(): Date {
         return this.props.startDate;
     }

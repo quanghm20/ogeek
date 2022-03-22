@@ -146,9 +146,6 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         );
     }
 
-    // calculate planned workload (query sum theo contributed, committed, condition: userId = id truyen vao, group by theo contributedId, committedId)
-    // truyen expertise scope id, value stream id qua server mock
-
     public static create(
         props: ICommittedWorkloadProps,
         id: UniqueEntityID,
