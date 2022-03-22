@@ -1,10 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import Axios from 'axios';
-import { ICommittedWorkloadRepo } from 'modules/o-geek/repos/committedWorkloadRepo';
-import { IPlannedWorkloadRepo } from 'modules/o-geek/repos/plannedWorkloadRepo';
-import { IUserRepo } from 'modules/o-geek/repos/userRepo';
 import * as moment from 'moment';
 
 import { IUseCase } from '../../../../../core/domain/UseCase';
@@ -19,12 +15,10 @@ import { PlannedWorkloadMap } from '../../../../../modules/o-geek/mappers/planne
 import { UserMap } from '../../../../../modules/o-geek/mappers/userMap';
 import { ValueStreamMap } from '../../../../../modules/o-geek/mappers/valueStreamMap';
 import { ValueStreamsByWeekMap } from '../../../../../modules/o-geek/mappers/valueStreamsByWeekMap';
-import {
-    CommittedWorkloadRepository,
-    PlannedWorkloadRepository,
-    UserRepository,
-} from '../../../../../modules/o-geek/repos';
-import { IValueStreamRepo, ValueStreamRepository } from '../../../../../modules/o-geek/repos/valueStreamRepo';
+import { ICommittedWorkloadRepo } from '../../../../../modules/o-geek/repos/committedWorkloadRepo';
+import { IPlannedWorkloadRepo } from '../../../../../modules/o-geek/repos/plannedWorkloadRepo';
+import { IUserRepo } from '../../../../../modules/o-geek/repos/userRepo';
+import { IValueStreamRepo } from '../../../../../modules/o-geek/repos/valueStreamRepo';
 import { GetValueStreamError } from './GetValueStreamErrors';
 
 type Response = Either<
