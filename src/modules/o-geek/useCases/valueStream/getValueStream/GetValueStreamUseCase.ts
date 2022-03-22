@@ -1,6 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import Axios from 'axios';
+import { ICommittedWorkloadRepo } from 'modules/o-geek/repos/committedWorkloadRepo';
+import { IPlannedWorkloadRepo } from 'modules/o-geek/repos/plannedWorkloadRepo';
+import { IUserRepo } from 'modules/o-geek/repos/userRepo';
 import * as moment from 'moment';
 
 import { IUseCase } from '../../../../../core/domain/UseCase';
@@ -20,7 +24,7 @@ import {
     PlannedWorkloadRepository,
     UserRepository,
 } from '../../../../../modules/o-geek/repos';
-import { ValueStreamRepository } from '../../../../../modules/o-geek/repos/valueStreamRepo';
+import { IValueStreamRepo, ValueStreamRepository } from '../../../../../modules/o-geek/repos/valueStreamRepo';
 import { GetValueStreamError } from './GetValueStreamErrors';
 
 type Response = Either<
@@ -36,10 +40,14 @@ interface ServerResponse {
 export class GetValueStreamUseCase
     implements IUseCase<{ userId: number; week: number }, Promise<Response>> {
     constructor(
-        public readonly valueStreamRepo: ValueStreamRepository,
-        public readonly committedWLRepo: CommittedWorkloadRepository,
-        public readonly plannedWLRepo: PlannedWorkloadRepository,
-        public readonly userRepo: UserRepository,
+        @Inject('IValueStreamRepo')
+        public readonly valueStreamRepo: IValueStreamRepo,
+        @Inject('ICommittedWorkloadRepo')
+        public readonly committedWLRepo: ICommittedWorkloadRepo,
+        @Inject('IPlannedWorkloadRepo')
+        public readonly plannedWLRepo: IPlannedWorkloadRepo,
+        @Inject('IUserRepo')
+        public readonly userRepo: IUserRepo,
     ) {}
 
     async execute(params: InputValueStreamByWeekDto): Promise<Response> {

@@ -30,12 +30,11 @@ export class GetValueStreamController {
     })
     async execute(
         @Req() req: Request,
-        @Param('week') inputvalueStreamByWeek: InputValueStreamByWeekDto,
+        @Param('week') week: number,
     ): Promise<ValueStreamsByWeekDto> {
         const { userId } = req.user as JwtPayload;
-        inputvalueStreamByWeek.userId = userId;
-
-        const result = await this.useCase.execute(inputvalueStreamByWeek);
+        const inputValueStream = new InputValueStreamByWeekDto(userId, week);
+        const result = await this.useCase.execute(inputValueStream);
         if (result.isLeft()) {
             const error = result.value;
 

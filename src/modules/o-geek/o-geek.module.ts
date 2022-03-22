@@ -34,13 +34,13 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
     ],
     controllers: [GetUserController, GetValueStreamController],
     providers: [
-        UserRepository,
-        ValueStreamRepository,
-        CommittedWorkloadRepository,
-        PlannedWorkloadRepository,
         CreateUserUseCase,
         GetUserUseCase,
         GetValueStreamUseCase,
+        {
+            provide: 'IUserRepo',
+            useClass: UserRepository,
+        },
         {
             provide: 'IContributedValueRepo',
             useClass: ContributedValueRepository,
@@ -71,10 +71,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetUserUseCase,
         GetValueStreamUseCase,
         TypeOrmModule,
-        PlannedWorkloadRepository,
-        CommittedWorkloadRepository,
-        UserRepository,
-        ValueStreamRepository,
     ],
 })
 export class OGeekModule {}

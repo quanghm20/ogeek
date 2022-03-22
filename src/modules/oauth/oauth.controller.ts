@@ -23,7 +23,7 @@ export class OauthController {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     @Get('api/oauth/otable')
     @UseGuards(OAuthGuard)
-    login() {
+    login(): string {
         return '';
     }
     // if user is authenticated, they are redirected here
@@ -33,7 +33,7 @@ export class OauthController {
     async redirectLogin(
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response,
-    ) {
+    ): Promise<void> {
         const { username } = req.user as { username: string };
         const userDto = { alias: username, ...req.user } as UserDto;
         // error from user info server

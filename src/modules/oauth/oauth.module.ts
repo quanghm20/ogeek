@@ -1,9 +1,8 @@
 import { HttpModule, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { JwtAuthModule } from '../../modules/jwt-auth/jwt-auth.module';
 import { OGeekModule } from '../../modules/o-geek/o-geek.module';
-import { CreateUserUseCase } from '../o-geek/useCases/user/createUser/CreateUserUseCase';
-import { GetUserUseCase } from '../o-geek/useCases/user/getUser/GetUserUseCase';
 import { OauthController } from './oauth.controller';
 import { OAuthStrategy } from './oauth.strategy';
 
@@ -11,6 +10,7 @@ import { OAuthStrategy } from './oauth.strategy';
     imports: [
         OGeekModule,
         JwtAuthModule,
+        TypeOrmModule,
         HttpModule.registerAsync({
             useFactory: () => ({
                 timeout: 5000,
@@ -19,6 +19,6 @@ import { OAuthStrategy } from './oauth.strategy';
         }),
     ],
     controllers: [OauthController],
-    providers: [OAuthStrategy, CreateUserUseCase, GetUserUseCase],
+    providers: [OAuthStrategy],
 })
 export class OauthModule {}
