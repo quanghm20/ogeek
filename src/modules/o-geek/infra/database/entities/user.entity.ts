@@ -55,7 +55,7 @@ export class UserEntity extends AbstractEntity {
     @Column({
         type: 'enum',
         enum: WeekStatus,
-        default: WeekStatus.PLANING,
+        default: WeekStatus.PLANNING,
         name: 'week_status',
     })
     weekStatus: WeekStatus;
