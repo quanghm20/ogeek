@@ -3,6 +3,7 @@ import {
     Get,
     InternalServerErrorException,
     NotFoundException,
+    Param,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -27,14 +28,14 @@ export class GetValueStreamController {
         type: ValueStreamsByWeekDto,
         description: 'Get all value streams & expertise scopes in a week',
     })
-    async execute(@Req() req: Request): Promise<ValueStreamsByWeekDto> {
+    async execute(
+        @Req() req: Request,
+        @Param('week') inputvalueStreamByWeek: InputValueStreamByWeekDto,
+    ): Promise<ValueStreamsByWeekDto> {
         const { userId } = req.user as JwtPayload;
-        const { week } = req.params;
+        inputvalueStreamByWeek.userId = userId;
 
-        const result = await this.useCase.execute({
-            userId,
-            week: Number(week),
-        } as InputValueStreamByWeekDto);
+        const result = await this.useCase.execute(inputvalueStreamByWeek);
         if (result.isLeft()) {
             const error = result.value;
 
