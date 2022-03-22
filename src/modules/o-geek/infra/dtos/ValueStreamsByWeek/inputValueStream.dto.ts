@@ -1,4 +1,4 @@
-import { IsNumber, Max, Min } from 'class-validator';
+import { IsNumber, IsPositive, Max, Min } from 'class-validator';
 
 export class InputValueStreamByWeekDto {
     @IsNumber()
@@ -7,5 +7,6 @@ export class InputValueStreamByWeekDto {
     @IsNumber()
     @Min(1)
     @Max(52)
+    @IsPositive()
     week: number;
 }
