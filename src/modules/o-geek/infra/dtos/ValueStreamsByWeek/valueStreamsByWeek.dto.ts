@@ -16,7 +16,7 @@ export class ValueStreamsByWeekDto {
     @IsDate()
     endDate: string;
 
-    @ApiProperty({ example: WeekStatus.PLANING })
+    @ApiProperty({ example: WeekStatus.PLANNING})
     @IsEnum(WeekStatus)
     status: WeekStatus;
 
