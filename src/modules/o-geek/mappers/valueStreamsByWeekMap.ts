@@ -138,7 +138,7 @@ export class ValueStreamsByWeekMap {
                         actualPlanAndWorkLog,
                     );
                 valueStreamByWeekDtos.push({
-                    id: valueStreamDto.id,
+                    id: Number(valueStreamDto.id),
                     name: valueStreamDto.name,
                     expertiseScopes: expertiseScopeWithinValueStreamDtos,
                 } as ValueStreamByWeekDto);
