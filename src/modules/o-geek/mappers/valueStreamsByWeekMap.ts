@@ -68,8 +68,8 @@ export class ValueStreamsByWeekMap {
     ): ExpertiseScopeWithinValueStreamDto[] {
         const plannedWLFinded = plannedWLDtos.find(
             (planned) =>
-                planned.committedWorkload.id.toValue() ===
-                committedWLDto.id.toValue(),
+                Number(planned.committedWorkload.id.toValue()) ===
+                Number(committedWLDto.id.toValue()),
         );
 
         const plannedWorkload = plannedWLFinded
@@ -77,6 +77,7 @@ export class ValueStreamsByWeekMap {
             : committedWLDto.committedWorkload;
 
         let actual = plannedWorkload;
+
         let worklog = 0;
         if (actualPlanAndWorkLog) {
             actual = actualPlanAndWorkLog.actualPlan;
@@ -120,12 +121,13 @@ export class ValueStreamsByWeekMap {
             const expertiseDto = committedWLDto.contributedValue.expertiseScope;
             const valueStreamByWeekDto = valueStreamByWeekDtos.find(
                 (valueStreamByWeek) =>
-                    valueStreamByWeek.id === valueStreamDto.id,
+                    Number(valueStreamByWeek.id.toString()) ===
+                    Number(valueStreamDto.id.toString()),
             );
             const actualPlanAndWorkLog = actualPlanAndWorkLogDtos.find(
                 (actualPlan) =>
-                    actualPlan.contributedValueId ===
-                    committedWLDto.contributedValue.id,
+                    Number(actualPlan.contributedValueId.toString()) ===
+                    Number(committedWLDto.contributedValue.id.toString()),
             );
             if (!valueStreamByWeekDto) {
                 let expertiseScopeWithinValueStreamDtos =
