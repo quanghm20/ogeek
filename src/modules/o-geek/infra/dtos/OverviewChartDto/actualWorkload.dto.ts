@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
+import { DomainId } from '../../../domain/domainId';
+
 export class ActualWorkloadDto {
     @ApiProperty()
     @IsString()
@@ -8,7 +10,7 @@ export class ActualWorkloadDto {
 
     @ApiProperty()
     @IsNumber()
-    contributedValueId: number | UniqueEntityID;
+    contributedValueId: number | DomainId;
 
     @ApiProperty()
     @IsString()
@@ -16,7 +18,7 @@ export class ActualWorkloadDto {
 
     @ApiProperty()
     @IsNumber()
-    valueStreamId: number | UniqueEntityID;
+    valueStreamId: number | DomainId;
 
     @ApiProperty()
     @IsNumber()

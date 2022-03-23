@@ -8,7 +8,7 @@ export class GetWeekStatusDto {
     // @ApiProperty({ type: UniqueEntityID, example: 26 })
     // id?: UniqueEntityID | number;
 
-    @ApiProperty({ enum: WeekStatus, example: WeekStatus.PLANING })
+    @ApiProperty({ enum: WeekStatus, example: WeekStatus.PLANNING })
     weekStatus?: WeekStatus;
 
     constructor(user: UserEntity) {
