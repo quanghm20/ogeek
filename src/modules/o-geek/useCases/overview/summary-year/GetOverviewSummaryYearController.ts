@@ -8,17 +8,18 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
-import { ValueStreamsDto } from '../../../infra/dtos/summaryYearDTO/valueStreams.dto';
+import { DataResponseDto } from '../../../infra/dtos/summaryYearDTO/dataResponse.dto';
 import { GetOverviewSummaryYearErrors } from './GetOverviewSummaryYearErrors';
 import { GetOverviewSummaryYearUseCase } from './GetOverviewSummaryYearUseCase';
 
 @Controller('api/overview/summary-year')
 @ApiTags('API overview summary year ')
+@ApiBearerAuth()
 export class GetOverviewSummaryYearController {
     constructor(public readonly useCase: GetOverviewSummaryYearUseCase) {}
 
@@ -26,13 +27,13 @@ export class GetOverviewSummaryYearController {
     @Get()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
-        type: ValueStreamsDto,
+        type: DataResponseDto,
         isArray: true,
         description: 'Get overview summary year',
     })
     async getOverviewSummaryYear(
         @Req() req: Request,
-    ): Promise<ValueStreamsDto[]> {
+    ): Promise<DataResponseDto> {
         const jwtPayload = req.user as JwtPayload;
 
         const result = await this.useCase.execute(jwtPayload.userId);

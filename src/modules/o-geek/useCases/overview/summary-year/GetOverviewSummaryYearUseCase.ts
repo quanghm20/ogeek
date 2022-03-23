@@ -8,6 +8,7 @@ import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { DomainId } from '../../../domain/domainId';
+import { DataResponseDto } from '../../../infra/dtos/summaryYearDTO/dataResponse.dto';
 import { ExpertiseScopesDto } from '../../../infra/dtos/summaryYearDTO/expertiseScopes.dto';
 import { ExpertiseScopeShortDto } from '../../../infra/dtos/summaryYearDTO/expertiseScopeShort.dto';
 import { ValueStreamsDto } from '../../../infra/dtos/summaryYearDTO/valueStreams.dto';
@@ -19,7 +20,7 @@ import { GetOverviewSummaryYearErrors } from './GetOverviewSummaryYearErrors';
 
 type Response = Either<
     AppError.UnexpectedError | GetOverviewSummaryYearErrors.UserNotFound,
-    Result<ValueStreamsDto[]>
+    Result<DataResponseDto>
 >;
 
 interface ServerResponse {
@@ -100,9 +101,10 @@ export class GetOverviewSummaryYearUseCase
             });
 
             const response = request.data;
+            const dataResponse = new DataResponseDto(response, true);
 
-            if (response) {
-                return right(Result.ok(response));
+            if (dataResponse) {
+                return right(Result.ok(dataResponse));
             }
 
             return left(
