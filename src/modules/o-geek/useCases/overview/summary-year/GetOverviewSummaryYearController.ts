@@ -5,9 +5,14 @@ import {
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
+    Req,
+    UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 
+import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
+import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
 import { ValueStreamsDto } from '../../../infra/dtos/summaryYearDTO/valueStreams.dto';
 import { GetOverviewSummaryYearErrors } from './GetOverviewSummaryYearErrors';
 import { GetOverviewSummaryYearUseCase } from './GetOverviewSummaryYearUseCase';
@@ -17,6 +22,7 @@ import { GetOverviewSummaryYearUseCase } from './GetOverviewSummaryYearUseCase';
 export class GetOverviewSummaryYearController {
     constructor(public readonly useCase: GetOverviewSummaryYearUseCase) {}
 
+    @UseGuards(JwtAuthGuard)
     @Get()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
@@ -24,8 +30,12 @@ export class GetOverviewSummaryYearController {
         isArray: true,
         description: 'Get overview summary year',
     })
-    async getOverviewSummaryYear(): Promise<ValueStreamsDto[]> {
-        const result = await this.useCase.execute(1);
+    async getOverviewSummaryYear(
+        @Req() req: Request,
+    ): Promise<ValueStreamsDto[]> {
+        const jwtPayload = req.user as JwtPayload;
+
+        const result = await this.useCase.execute(jwtPayload.userId);
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {

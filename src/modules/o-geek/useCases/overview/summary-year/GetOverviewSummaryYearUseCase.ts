@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
+import Axios from 'axios';
 // import { ExpertiseScopeDto } from 'modules/o-geek/infra/dtos/expertiseScope.dto';
 import * as moment from 'moment';
 
@@ -28,6 +29,10 @@ type Response = Either<
     AppError.UnexpectedError | GetOverviewSummaryYearErrors.UserNotFound,
     Result<ValueStreamsDto[]>
 >;
+
+interface ServerResponse {
+    data: ValueStreamsDto[];
+}
 
 @Injectable()
 export class GetOverviewSummaryYearUseCase
@@ -67,8 +72,8 @@ export class GetOverviewSummaryYearUseCase
                     if (committedWorkloadItem.getValueStreamId() === valueStreamItem.id) {
                         const committedWorkload = committedWorkloadItem.calculateCommittedWorkload(startDateOfYear, endDateOfYear);
                         const plannedWorkload = plannedWorkloads.reduce((preTotalPlannedWL, currentPlannedWL) =>
-                            preTotalPlannedWL + (currentPlannedWL.committedWorkload.id === committedWorkloadItem.id
-                                    ? currentPlannedWL.plannedWorkload : 0), 0);
+                            preTotalPlannedWL + (currentPlannedWL.committedWorkload.id.toValue() === committedWorkloadItem.id.toValue()
+                            ? currentPlannedWL.plannedWorkload : 0), 0);
                         const expertiseScopeShortDto = new ExpertiseScopeShortDto(
                             committedWorkloadItem.getExpertiseScopeId(),
                             committedWorkloadItem.contributedValue.expertiseScope.name,
@@ -96,13 +101,19 @@ export class GetOverviewSummaryYearUseCase
                     );
                 data.push(valueStreamDto);
                 });
-            // console.log(data);
 
-            // const url = `https://mock.o-geek.geekup.io/api/overview/summary-year?userId=${userId}`;
-            // const response = await fetch(url, {  });
-            // });
-            if (data) {
-                return right(Result.ok(data));
+            // get actual plans and worklogs
+            const url = `http://localhost:3011/api/overview/summary-year?userId=${1}`;
+            const request = await Axios.post<ValueStreamsDto[]>(url, data, {
+                headers: {
+                    'x-api-key': process.env.MOCK_API_KEY,
+                },
+            });
+
+            const response = request.data;
+
+            if (response) {
+                return right(Result.ok(response));
             }
 
             return left(

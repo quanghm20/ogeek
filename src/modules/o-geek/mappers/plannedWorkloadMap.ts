@@ -47,6 +47,7 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
                     committedWorkload: CommittedWorkloadMap.toDomain(
                         raw.committedWorkload,
                     ),
+                    plannedWorkload: raw.plannedWorkload,
                 },
                 new UniqueEntityID(id),
             );
