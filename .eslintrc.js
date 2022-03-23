@@ -172,7 +172,7 @@ module.exports = {
         'import/order': 'off',
         'max-classes-per-file': [
             'error',
-            1,
+            5,
         ],
         'max-len': [
             'error',
