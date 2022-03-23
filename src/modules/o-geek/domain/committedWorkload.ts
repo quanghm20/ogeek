@@ -1,5 +1,5 @@
 import { WorkloadStatus } from '../../../common/constants/committed-status';
-// import { Date } from '../../../common/constants/date';
+import { DateRange } from '../../../common/constants/date-range';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
@@ -79,12 +79,12 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         if (startDate < endDate) {
             return Math.floor(
                 (endDate.getTime() - startDate.getTime()) /
-                    (1000 * 60 * 60 * 24 * 7),
+                    (DateRange.MILLISECONDS_IN_DAY * DateRange.DAY_OF_WEEK),
             );
         }
         return Math.floor(
             (startDate.getTime() - endDate.getTime()) /
-                (1000 * 60 * 60 * 24 * 7),
+                (DateRange.MILLISECONDS_IN_DAY * DateRange.DAY_OF_WEEK),
         );
     }
     // startDate < startDateOfYear

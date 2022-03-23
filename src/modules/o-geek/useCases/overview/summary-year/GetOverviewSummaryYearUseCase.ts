@@ -1,24 +1,16 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 import Axios from 'axios';
-// import { ExpertiseScopeDto } from 'modules/o-geek/infra/dtos/expertiseScope.dto';
 import * as moment from 'moment';
 
-// import { Date } from '../../../../../common/constants/date';
-// import { forEach } from 'lodash';
+import { DateRange } from '../../../../../common/constants/date-range';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
-// import { CommittedWorkload } from '../../../domain/committedWorkload';
 import { DomainId } from '../../../domain/domainId';
-// import { PlannedWorkload } from '../../../domain/plannedWorkload';
-// import { CommittedWorkloadDto } from '../../../infra/dtos/committedWorkload.dto';
-// import { PlannedWorkloadDto } from '../../../infra/dtos/plannedWorkload.dto';
 import { ExpertiseScopesDto } from '../../../infra/dtos/summaryYearDTO/expertiseScopes.dto';
 import { ExpertiseScopeShortDto } from '../../../infra/dtos/summaryYearDTO/expertiseScopeShort.dto';
 import { ValueStreamsDto } from '../../../infra/dtos/summaryYearDTO/valueStreams.dto';
-// import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
-// import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
 import { ValueStreamMap } from '../../../mappers/valueStreamMap';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
@@ -54,7 +46,7 @@ export class GetOverviewSummaryYearUseCase
             });
             const startDateYear = moment().startOf('year').format('YYYY-MM-DD');
             const startDateOfYear = moment(startDateYear, 'YYYY-MM-DD').startOf('week').format('YYYY-MM-DD');
-            const endDateOfYear = moment(startDateOfYear, 'YYYY-MM-DD').add(363, 'days').format('YYYY-MM-DD');
+            const endDateOfYear = moment(startDateOfYear, 'YYYY-MM-DD').add(DateRange.DAY_OF_YEAR, 'days').format('YYYY-MM-DD');
 
             // array domain committedWorkload
             const committedWorkloads = await this.committedWorkloadRepo.findByUserIdOverview(userId);
@@ -82,8 +74,8 @@ export class GetOverviewSummaryYearUseCase
                             expertiseScopeShortDto,
                             committedWorkload,
                             plannedWorkload,
-                            0, // actual plan
-                            0, // worklog
+                            0,
+                            0,
                         );
                         const findExp = expertiseScopesDto.find((expertiseScopeItem) =>
                             expertiseScope.expertiseScope.id === expertiseScopeItem.expertiseScope.id);
@@ -103,7 +95,7 @@ export class GetOverviewSummaryYearUseCase
                 });
 
             // get actual plans and worklogs
-            const url = `http://localhost:3011/api/overview/summary-year?userId=${1}`;
+            const url = `${process.env.MOCK_URL}overview/summary-year?userId=${userId.toString()}`;
             const request = await Axios.post<ValueStreamsDto[]>(url, data, {
                 headers: {
                     'x-api-key': process.env.MOCK_API_KEY,
