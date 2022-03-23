@@ -6,9 +6,9 @@ import { User } from '../../modules/o-geek/domain/user';
 import { FindUserDto } from '../../modules/o-geek/infra/dtos/findUser.dto';
 import { UserDto } from '../../modules/o-geek/infra/dtos/user.dto';
 import { UserMap } from '../../modules/o-geek/mappers/userMap';
-import { CreateUserUseCase } from '../../modules/o-geek/useCases/user/createUser/CreateUserUseCase';
 import { ConfigService } from '../../shared/services/config.service';
-import { GetUserUseCase } from '../o-geek/useCases/user/GetUser/GetUserUseCase';
+import { CreateUserUseCase } from '../o-geek/useCases/user/createUser/CreateUserUseCase';
+import { GetUserUseCase } from '../o-geek/useCases/user/getUser/GetUserUseCase';
 import { OAuthGuard } from './oauth.guard';
 
 @Controller('')
@@ -20,18 +20,20 @@ export class OauthController {
         private _getUserUseCase: GetUserUseCase,
     ) {}
     // redirect to authen server
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     @Get('api/oauth/otable')
     @UseGuards(OAuthGuard)
-    login() {
+    login(): string {
         return '';
     }
     // if user is authenticated, they are redirected here
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     @Get('oauth/otable/callback')
     @UseGuards(OAuthGuard)
     async redirectLogin(
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response,
-    ) {
+    ): Promise<void> {
         const { username } = req.user as { username: string };
         const userDto = { alias: username, ...req.user } as UserDto;
         // error from user info server

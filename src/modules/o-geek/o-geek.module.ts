@@ -18,8 +18,11 @@ import {
 import { GetOverviewSummaryYearController } from './useCases/overview/summary-year/GetOverviewSummaryYearController';
 import { GetOverviewSummaryYearUseCase } from './useCases/overview/summary-year/GetOverviewSummaryYearUseCase';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
-import { GetUserController } from './useCases/user/GetUser/GetUserController';
-import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
+import { GetUserController } from './useCases/user/getUser/GetUserController';
+import { GetUserUseCase } from './useCases/user/getUser/GetUserUseCase';
+import { GetValueStreamController } from './useCases/valueStream/getValueStream/GetValueStreamController';
+import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/GetValueStreamUseCase';
+
 @Module({
     imports: [
         HttpModule,
@@ -32,8 +35,19 @@ import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
             PlannedWorkloadEntity,
         ]),
     ],
-    controllers: [GetUserController, GetOverviewSummaryYearController],
+    controllers: [
+        GetUserController,
+        GetOverviewSummaryYearController,
+        GetValueStreamController,
+    ],
     providers: [
+        CreateUserUseCase,
+        GetUserUseCase,
+        GetValueStreamUseCase,
+        {
+            provide: 'IUserRepo',
+            useClass: UserRepository,
+        },
         {
             provide: 'IContributedValueRepo',
             useClass: ContributedValueRepository,
@@ -59,6 +73,12 @@ import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
         CreateUserUseCase,
         GetOverviewSummaryYearUseCase,
     ],
-    exports: [UserRepository],
+    exports: [
+        UserRepository,
+        CreateUserUseCase,
+        GetUserUseCase,
+        GetValueStreamUseCase,
+        TypeOrmModule,
+    ],
 })
 export class OGeekModule {}

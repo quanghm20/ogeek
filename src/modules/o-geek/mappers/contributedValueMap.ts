@@ -5,6 +5,8 @@ import { ExpertiseScope } from '../domain/expertiseScope';
 import { ValueStream } from '../domain/valueStream';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
 import { ContributedValueDto } from '../infra/dtos/contributedValue.dto';
+import { ExpertiseScopeMap } from './expertiseScopeMap';
+import { ValueStreamMap } from './valueStreamMap';
 
 export class ContributedValueMap implements Mapper<ContributedValue> {
     public static fromDomain(
@@ -12,12 +14,18 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
     ): ContributedValueDto {
         return {
             id: contributedValue.id,
-            valueStream: contributedValue.props.valueStream,
-            expertiseScope: contributedValue.props.expertiseScope,
+            valueStream: ValueStreamMap.fromDomain(
+                contributedValue.props.valueStream,
+            ),
+            expertiseScope: ExpertiseScopeMap.fromDomain(
+                contributedValue.props.expertiseScope,
+            ),
         };
     }
 
-    public static toDomain(raw: ContributedValueEntity): ContributedValue {
+    public static toDomainOverview(
+        raw: ContributedValueEntity,
+    ): ContributedValue {
         const { id } = raw;
         const valueStreamId = raw.valueStream.id;
         const valueStream = ValueStream.create(
@@ -54,6 +62,27 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
             : null;
     }
 
+    public static toDomain(
+        contributedValueEntity: ContributedValueEntity,
+    ): ContributedValue {
+        const { id } = contributedValueEntity;
+        const contributedValueOrError = ContributedValue.create(
+            {
+                valueStream: ValueStreamMap.toDomain(
+                    contributedValueEntity.valueStream,
+                ),
+                expertiseScope: ExpertiseScopeMap.toDomain(
+                    contributedValueEntity.expertiseScope,
+                ),
+            },
+            new UniqueEntityID(id),
+        );
+
+        return contributedValueOrError.isSuccess
+            ? contributedValueOrError.getValue()
+            : null;
+    }
+
     public static toDomainAll(
         raw: ContributedValueEntity[],
     ): ContributedValue[] {
@@ -69,13 +98,14 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
                 },
                 new UniqueEntityID(valueStreamId),
             );
+            const expertiseScopeId = item.expertiseScope.id;
             const expertiseScope = ExpertiseScope.create(
                 {
                     name: item.expertiseScope.name,
                     createdAt: item.expertiseScope.createdAt,
                     updatedAt: item.expertiseScope.updatedAt,
                 },
-                new UniqueEntityID(valueStreamId),
+                new UniqueEntityID(expertiseScopeId),
             );
 
             const contributedValueOrError = ContributedValue.create(
