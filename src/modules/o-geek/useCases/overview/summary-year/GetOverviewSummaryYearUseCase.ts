@@ -48,15 +48,12 @@ export class GetOverviewSummaryYearUseCase
             const startDateOfYear = moment(startDateYear, 'YYYY-MM-DD').startOf('week').format('YYYY-MM-DD');
             const endDateOfYear = moment(startDateOfYear, 'YYYY-MM-DD').add(DateRange.DAY_OF_YEAR, 'days').format('YYYY-MM-DD');
 
-            // array domain committedWorkload
             const committedWorkloads = await this.committedWorkloadRepo.findByUserIdOverview(userId);
-            // array domain plannedWorkload
             const plannedWorkloads = await this.plannedWorkloadRepo.findByUserIdOverview(userId, startDateOfYear, endDateOfYear);
 
-            // array domain valueStream
             const valueStream = await this.valueStreamRepo.findAllOverview();
             const valueStreamShortArrayDto = ValueStreamMap.fromArrayDomain(valueStream);
-            // console.log(valueStreamShortArrayDto);
+
             const data = Array<ValueStreamsDto>();
             valueStreamShortArrayDto.forEach(function(valueStreamItem) {
                 const expertiseScopesDto = Array<ExpertiseScopesDto>();
