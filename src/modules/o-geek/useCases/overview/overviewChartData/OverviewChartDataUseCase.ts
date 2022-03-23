@@ -66,14 +66,16 @@
 //                     'x-api-key': 'API_KEY_EXAMPLE',
 //                 },
 //             });
+//             console.log(responseFromMockServer);
 
 //             const newWorkloadData = new Array<WorkloadOverviewDto>();
 //             plannedWorkloadDtos.forEach((plannedWLs) => {
-//                 newWorkloadData.push(
-//                     plannedWLs.plannedWorkload,
-//                     //actualworkload
-//                     moment(plannedWLs.startDate).week(),
-//                 ),
+//                 newWorkloadData.push({
+//                     plannedWorkload: plannedWLs.plannedWorkload,
+//                     // actualworkload
+//                     week: moment(plannedWLs.startDate).week(),
+//                 } as WorkloadOverviewDto,
+//                 );
 //             });
 
 //             const newOverviewChartDtos = new Array<OverviewChartDataDto>();
@@ -82,17 +84,20 @@
 //             expertiseScopeDtos.forEach((exScopes) => {
 //                 newWorkloadData.forEach((workloads) => {
 //                     newOverviewChartDtos.push({
-//                         contributedValues: {
+//                         expertiseScopes: {
 //                             plannedWorkload: workloads.plannedWorkload,
 //                             actualWorkload: workloads.actualWorkload,
 //                             week: workloads.week,
-//                         }
-//                     })
+//                         },
+//                         expertiseScope: exScopes.name,
+
+//                     });
 //                 }),
-//                 newOverviewChartDtos.push(
-//                     expertiseScope: exScopes.name,
-//                 )
-//             })
+//                 // newOverviewChartDtos.push(
+//                 //     {
+//                 //     }
+//                 // );
+//             });
 
 //             const returnedData = new OverviewChartDataDto();
 //             newOverviewChartDtos.push(returnedData);

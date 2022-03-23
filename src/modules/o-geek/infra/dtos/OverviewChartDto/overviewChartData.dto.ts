@@ -14,7 +14,7 @@ export class OverviewChartDataDto {
         ],
     })
     @IsArray()
-    contributedValues: WorkloadOverviewDto[];
+    expertiseScopes: WorkloadOverviewDto[];
 
     @ApiProperty({ example: 'Product Backend' })
     @IsString()

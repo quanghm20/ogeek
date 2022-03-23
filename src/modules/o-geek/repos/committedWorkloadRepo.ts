@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
 // import { User } from '../domain/user';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
+import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface ICommittedWorkloadRepo {
     findById(
@@ -34,15 +35,32 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
 
     async findByUserId(
         userId: DomainId | number,
+        startDateInWeek: Date,
     ): Promise<CommittedWorkload[]> {
         userId =
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
-        const entity = await this.repo.find({
+        const entities = await this.repo.find({
             where: {
                 user: { id: userId },
+                startDate:
+                    MoreThanOrEqual(
+                        MomentService.shiftFirstDateChart(startDateInWeek),
+                    ) &&
+                    LessThanOrEqual(
+                        MomentService.shiftLastDateChart(startDateInWeek),
+                    ),
             },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'committedWorkload',
+                'committedWorkload.contributedValue',
+                'committedWorkload.contributedValue.expertiseScope',
+            ],
         });
-        return entity ? CommittedWorkloadMap.toDomainAll(entity) : null;
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
     }
 
     async findAverageCommittedWorkloadBy(
