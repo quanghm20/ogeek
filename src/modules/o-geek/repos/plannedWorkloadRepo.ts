@@ -6,17 +6,15 @@ import { WorkloadStatus } from '../../../common/constants/committed-status';
 import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
-import { InputGetOverviewChartDataDto } from '../infra/dtos/OverviewChartDto/inputGetOverviewChartData.dto';
 import { InputGetPlanWLDto } from '../infra/dtos/ValueStreamsByWeek/inputGetPlanWL.dto';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
-import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface IPlannedWorkloadRepo {
     findById(plannedWorkloadId: DomainId | number): Promise<PlannedWorkload>;
-    findByIdWithTimeRange({
-        userId,
-        startDateInWeek,
-    }: InputGetOverviewChartDataDto): Promise<PlannedWorkload[]>;
+    findByIdWithTimeRange(
+        userId: DomainId | number,
+        startDate: Date,
+    ): Promise<PlannedWorkload[]>;
     findByUserId({
         userId,
         startDateOfWeek,
@@ -68,31 +66,26 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             : new Array<PlannedWorkload>();
     }
 
-    async findByIdWithTimeRange({
-        userId,
-        startDateInWeek,
-    }: InputGetOverviewChartDataDto): Promise<PlannedWorkload[]> {
+    async findByIdWithTimeRange(
+        userId: DomainId | number,
+        startDate: Date,
+    ): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
                 user: userId,
                 startDate:
-                    MoreThanOrEqual(
-                        MomentService.shiftFirstDateChart(startDateInWeek),
-                    ) &&
-                    LessThanOrEqual(
-                        MomentService.shiftLastDateChart(startDateInWeek),
-                    ),
+                    MoreThanOrEqual(startDate) && LessThanOrEqual(startDate),
             },
             relations: [
                 'contributedValue',
                 'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
                 'committedWorkload',
                 'committedWorkload.contributedValue',
                 'committedWorkload.contributedValue.expertiseScope',
+                'committedWorkload.contributedValue.valueStream',
             ],
         });
-        return entities
-            ? PlannedWorkloadMap.toDomainAll(entities)
-            : new Array<PlannedWorkload>();
+        return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;
     }
 }

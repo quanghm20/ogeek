@@ -5,12 +5,20 @@ import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { DomainId } from '../domain/domainId';
 import { ExpertiseScope } from '../domain/expertiseScope';
 import { ExpertiseScopeEntity } from '../infra/database/entities/expertiseScope.entity';
-import { InputGetOverviewChartDataDto } from '../infra/dtos/OverviewChartDto/inputGetOverviewChartData.dto';
 import { ExpertiseScopeMap } from '../mappers/expertiseScopeMap';
 import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface IExpertiseScopeRepo {
     findById(expertiseScopeId: DomainId | number): Promise<ExpertiseScope>;
+    findByIdWithTimeRange(
+        userId: DomainId | number,
+        startDate: Date,
+    ): Promise<ExpertiseScope[]>;
+    findByIdInPrecedingWeeks(
+        userId: DomainId | number,
+        startDate: Date,
+    ): Promise<ExpertiseScope[]>;
+    findAll(): Promise<ExpertiseScope[]>;
 }
 
 @Injectable()
@@ -31,20 +39,15 @@ export class ExpertiseScopeRepository implements IExpertiseScopeRepo {
         return entity ? ExpertiseScopeMap.toDomain(entity) : null;
     }
 
-    async findByIdWithTimeRange({
-        userId,
-        startDateInWeek,
-    }: InputGetOverviewChartDataDto): Promise<ExpertiseScope[]> {
+    async findByIdWithTimeRange(
+        userId: DomainId | number,
+        startDate: Date,
+    ): Promise<ExpertiseScope[]> {
         const entities = await this.repo.find({
             where: {
                 user: userId,
                 startDate:
-                    MoreThanOrEqual(
-                        MomentService.shiftFirstDateChart(startDateInWeek),
-                    ) &&
-                    LessThanOrEqual(
-                        MomentService.shiftLastDateChart(startDateInWeek),
-                    ),
+                    MoreThanOrEqual(startDate) && LessThanOrEqual(startDate),
             },
             relations: [
                 'contributedValue',
@@ -54,8 +57,33 @@ export class ExpertiseScopeRepository implements IExpertiseScopeRepo {
                 'committedWorkload.contributedValue.expertiseScope',
             ],
         });
-        return entities
-            ? ExpertiseScopeMap.toDomainAll(entities)
-            : new Array<ExpertiseScope>();
+        return entities ? ExpertiseScopeMap.toDomainAll(entities) : null;
+    }
+
+    async findByIdInPrecedingWeeks(
+        userId: DomainId | number,
+        startDate: Date,
+    ): Promise<ExpertiseScope[]> {
+        const entities = await this.repo.find({
+            where: {
+                user: userId,
+                startDate: MoreThanOrEqual(
+                    MomentService.shiftFirstDateChart(startDate),
+                ),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'committedWorkload',
+                'committedWorkload.contributedValue',
+                'committedWorkload.contributedValue.expertiseScope',
+            ],
+        });
+        return entities ? ExpertiseScopeMap.toDomainAll(entities) : null;
+    }
+
+    async findAll(): Promise<ExpertiseScope[]> {
+        const entities = await this.repo.find();
+        return entities ? ExpertiseScopeMap.toDomainAll(entities) : null;
     }
 }
