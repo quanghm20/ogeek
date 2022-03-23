@@ -1,19 +1,17 @@
 import {
     Controller,
     Get,
-    HttpStatus,
     InternalServerErrorException,
     NotFoundException,
     Req,
-    Res,
     UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 
-import { JwtPayload } from '../../../../../modules/jwt-auth/jwt-auth.strategy';
-import { FindUserDto } from '../../../../../modules/o-geek/infra/dtos/findUser.dto';
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
+import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
+import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { UserDto } from '../../../infra/dtos/user.dto';
 import { UserMap } from '../../../mappers/userMap';
 import { GetUserErrors } from './GetUserErrors';
@@ -30,9 +28,9 @@ export class GetUserController {
         type: UserDto,
         description: 'get user by alias with jwt token',
     })
-    async execute(@Req() req: Request, @Res() res: Response) {
-        const jwtPyaload = req.user as JwtPayload;
-        const findUserDto = { ...jwtPyaload } as FindUserDto;
+    async execute(@Req() req: Request): Promise<UserDto> {
+        const jwtPayload = req.user as JwtPayload;
+        const findUserDto = { ...jwtPayload } as FindUserDto;
 
         const result = await this.useCase.execute(findUserDto);
         if (result.isLeft()) {
@@ -52,7 +50,6 @@ export class GetUserController {
             }
         }
 
-        const user = UserMap.fromDomain(result.value.getValue());
-        res.status(HttpStatus.OK).json(user);
+        return UserMap.fromDomain(result.value.getValue());
     }
 }

@@ -10,7 +10,7 @@ export class fixStatusEnum1646789893657 implements MigrationInterface {
             'ALTER TYPE "public"."user_week_status_enum" RENAME TO "user_week_status_enum_old"',
         );
         await queryRunner.query(
-            "CREATE TYPE \"public\".\"user_week_status_enum\" AS ENUM('PLANNED', 'PLANING', 'EXECUTING', 'CLOSED')",
+            "CREATE TYPE \"public\".\"user_week_status_enum\" AS ENUM('PLANNED', 'PLANNING', 'EXECUTING', 'CLOSED')",
         );
         await queryRunner.query(
             'ALTER TABLE "user" ALTER COLUMN "week_status" DROP DEFAULT',
@@ -20,7 +20,7 @@ export class fixStatusEnum1646789893657 implements MigrationInterface {
             TYPE "public"."user_week_status_enum" USING "week_status"::"text"::"public"."user_week_status_enum"`,
         );
         await queryRunner.query(
-            'ALTER TABLE "user" ALTER COLUMN "week_status" SET DEFAULT \'PLANING\'',
+            'ALTER TABLE "user" ALTER COLUMN "week_status" SET DEFAULT \'PLANNING\'',
         );
         await queryRunner.query(
             'DROP TYPE "public"."user_week_status_enum_old"',

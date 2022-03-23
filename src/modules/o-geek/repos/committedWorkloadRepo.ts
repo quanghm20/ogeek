@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 
+import { WorkloadStatus } from '../../../common/constants/committed-status';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
 // import { User } from '../domain/user';
@@ -13,6 +14,14 @@ export interface ICommittedWorkloadRepo {
     findById(
         committedWorkloadId: DomainId | number,
     ): Promise<CommittedWorkload>;
+    findByUserId(userId: DomainId | number): Promise<CommittedWorkload[]>;
+    findByUserIdInTimeRange(
+        userId: DomainId | number,
+        startDateInWeek: Date,
+    ): Promise<CommittedWorkload[]>;
+    findAverageCommittedWorkloadBy(
+        userId: DomainId | number,
+    ): Promise<CommittedWorkload[]>;
 }
 
 @Injectable()
@@ -34,6 +43,29 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     }
 
     async findByUserId(
+        userId: DomainId | number,
+    ): Promise<CommittedWorkload[]> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        const entities = await this.repo.find({
+            where: {
+                status: WorkloadStatus.ACTIVE,
+                user: userId,
+                expiredDate: MoreThanOrEqual(new Date()),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+            ],
+        });
+
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
+    }
+
+    async findByUserIdInTimeRange(
         userId: DomainId | number,
         startDateInWeek: Date,
     ): Promise<CommittedWorkload[]> {

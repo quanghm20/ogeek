@@ -1,6 +1,6 @@
 export enum WeekStatus {
     PLANNED = 'PLANNED',
-    PLANING = 'PLANING',
+    PLANNING = 'PLANNING',
     EXECUTING = 'EXECUTING',
     CLOSED = 'CLOSED',
 }

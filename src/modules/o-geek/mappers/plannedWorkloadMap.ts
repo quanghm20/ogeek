@@ -3,6 +3,8 @@ import { Mapper } from '../../../core/infra/Mapper';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
 import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';
+import { CommittedWorkloadMap } from './committedWorkloadMap';
+import { ContributedValueMap } from './contributedValueMap';
 
 export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     public static fromDomain(
@@ -10,9 +12,12 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     ): PlannedWorkloadDto {
         return {
             id: plannedWorkload.id,
-            user: plannedWorkload.props.user,
-            contributedValue: plannedWorkload.props.contributedValue,
-            committedWorkload: plannedWorkload.props.committedWorkload,
+            contributedValue: ContributedValueMap.fromDomain(
+                plannedWorkload.props.contributedValue,
+            ),
+            committedWorkload: CommittedWorkloadMap.fromDomain(
+                plannedWorkload.props.committedWorkload,
+            ),
             plannedWorkload: plannedWorkload.props.plannedWorkload,
             startDate: plannedWorkload.props.startDate,
             status: plannedWorkload.props.status,
@@ -20,16 +25,15 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     }
 
     public static fromDomainAll(
-        plannedWorkloads: PlannedWorkload[],
+        plannedWLs: PlannedWorkload[],
     ): PlannedWorkloadDto[] {
-        const listPlannedWorkloadsDto = new Array<PlannedWorkloadDto>();
-        plannedWorkloads.forEach((plannedWL) => {
-            listPlannedWorkloadsDto.push(
-                PlannedWorkloadMap.fromDomain(plannedWL),
-            );
+        const arrPlannedWLDto = new Array<PlannedWorkloadDto>();
+        plannedWLs.forEach((plannedWL) => {
+            arrPlannedWLDto.push(PlannedWorkloadMap.fromDomain(plannedWL));
         });
-        return listPlannedWorkloadsDto;
+        return arrPlannedWLDto;
     }
+
     public static toDomain(raw: PlannedWorkloadEntity): PlannedWorkload {
         const { id } = raw;
         const plannedWorkloadOrError = PlannedWorkload.create(
@@ -37,6 +41,12 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
                 plannedWorkload: raw.plannedWorkload,
                 startDate: raw.startDate,
                 status: raw.status,
+                contributedValue: ContributedValueMap.toDomain(
+                    raw.contributedValue,
+                ),
+                committedWorkload: CommittedWorkloadMap.toDomain(
+                    raw.committedWorkload,
+                ),
             },
             new UniqueEntityID(id),
         );
@@ -47,19 +57,18 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     }
 
     public static toDomainAll(
-        plannedWorkloads: PlannedWorkloadEntity[],
+        plannedWLs: PlannedWorkloadEntity[],
     ): PlannedWorkload[] {
-        const listPlannedWorkloads = new Array<PlannedWorkload>();
-        plannedWorkloads.forEach((plannedWL) => {
-            const plannedWorkloadOrError =
-                PlannedWorkloadMap.toDomain(plannedWL);
-            if (plannedWorkloadOrError) {
-                listPlannedWorkloads.push(plannedWorkloadOrError);
+        const arrPlannedWL = new Array<PlannedWorkload>();
+        plannedWLs.forEach((plannedWL) => {
+            const plannedWLOrError = PlannedWorkloadMap.toDomain(plannedWL);
+            if (plannedWLOrError) {
+                arrPlannedWL.push(plannedWLOrError);
             } else {
                 return null;
             }
         });
 
-        return listPlannedWorkloads;
+        return arrPlannedWL;
     }
 }
