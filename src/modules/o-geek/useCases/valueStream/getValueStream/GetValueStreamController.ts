@@ -7,7 +7,7 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../../modules/jwt-auth/jwt-auth-guard';
@@ -23,6 +23,7 @@ export class GetValueStreamController {
     constructor(public readonly useCase: GetValueStreamUseCase) {}
 
     @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Get(':week')
     @ApiOkResponse({
         type: ValueStreamsByWeekDto,
