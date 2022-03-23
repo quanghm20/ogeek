@@ -23,6 +23,9 @@ import {
     GetContributedValueController,
     GetContributedValueUseCase,
 } from './useCases/contributedValue/getContributedValue';
+import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
+import { GetUserController } from './useCases/user/GetUser/GetUserController';
+import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
 
 @Module({
     imports: [
@@ -39,10 +42,13 @@ import {
     controllers: [
         CreateCommittedWorkloadController,
         GetContributedValueController,
+        GetUserController,
     ],
     providers: [
-        CreateCommittedWorkloadUseCase,
+        CreateUserUseCase,
+        GetUserUseCase,
         GetContributedValueUseCase,
+        CreateCommittedWorkloadUseCase,
         {
             provide: 'IContributedValueRepo',
             useClass: ContributedValueRepository,
@@ -68,5 +74,6 @@ import {
             useClass: ValueStreamRepository,
         },
     ],
+    exports: [CreateUserUseCase, GetUserUseCase],
 })
 export class OGeekModule {}

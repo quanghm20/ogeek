@@ -30,7 +30,7 @@ export class UserDto {
     @ApiProperty({ enum: RoleType, example: RoleType.ADMIN })
     role?: RoleType;
 
-    @ApiProperty({ enum: WeekStatus, example: WeekStatus.PLANING })
+    @ApiProperty({ enum: WeekStatus, example: WeekStatus.PLANNING })
     weekStatus?: WeekStatus;
 
     @ApiProperty({ example: new Date() })

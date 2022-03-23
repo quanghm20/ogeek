@@ -3,10 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { ValueStreamEntity } from '../database/entities/valueStream.entity';
 export class ValueStreamDto {
-    @ApiProperty({
-        type: () => UniqueEntityID,
-        example: new UniqueEntityID(2291),
-    })
+    @ApiProperty({ type: UniqueEntityID, example: 122 })
     id: UniqueEntityID;
 
     @ApiProperty({ example: 'Delivery' })

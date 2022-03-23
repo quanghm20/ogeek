@@ -4,9 +4,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
-import { GetContributedValueShortDto } from '../../..//infra/dtos/getContributedValue/getContributedValue.dto';
 import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedWorkload.dto';
 import { ExpertiseScopeShortDto } from '../../../infra/dtos/getContributedValue/expertiseScopeShort.dto';
+import { ValueStreamShortDto } from '../../../infra/dtos/getContributedValue/valueStreamShort.dto';
 import { ContributedValueMap } from '../../../mappers/contributedValueMap';
 import { ValueStreamMap } from '../../../mappers/valueStreamMap';
 import { IContributedValueRepo } from '../../../repos/contributedValueRepo';
@@ -15,7 +15,7 @@ import { GetContributedValueErrors } from './GetContributedValueErrors';
 
 type Response = Either<
     AppError.UnexpectedError | GetContributedValueErrors.NotFound,
-     Result<GetContributedValueShortDto[]>
+     Result<ValueStreamShortDto[]>
 >;
 @Injectable()
 export class GetContributedValueUseCase
@@ -34,7 +34,7 @@ export class GetContributedValueUseCase
 				) as Response;
 			}
 			const valueStreamDomain = await this.valueStreamRepo.findAll();
-			const getContributedValues = Array<GetContributedValueShortDto>();
+			const valueStreamDto = Array<ValueStreamShortDto>();
 
 			const contributedDto = ContributedValueMap.fromDomainShortAll(contributedValue);
 
@@ -46,12 +46,11 @@ export class GetContributedValueUseCase
 						expertiseScopes.push(contribute.expertiseScope);
 					}
 				});
-
-				const getContribute = new GetContributedValueShortDto(valueStream, expertiseScopes);
-				getContributedValues.push(getContribute);
+				valueStream.expertiseScopes = expertiseScopes;
+				valueStreamDto.push(valueStream);
 			});
 
-			return right(Result.ok(getContributedValues));
+			return right(Result.ok(valueStreamDto));
 		} catch (error) {
 			return left(new AppError.UnexpectedError(error));
 

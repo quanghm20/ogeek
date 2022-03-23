@@ -6,11 +6,15 @@ import {
     InternalServerErrorException,
     NotFoundException,
     Post,
+    UseGuards,
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+import { RoleType } from '../../../../../common/constants/role-type';
+import { Roles } from '../../../../../decorators/roles.decorator';
+import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedWorkload.dto';
 import { MessageDto } from '../../../infra/dtos/message.dto';
 import { CreateCommittedWorkloadErrors } from './CreateCommittedWorkloadErrors';
@@ -18,17 +22,17 @@ import { CreateCommittedWorkloadUseCase } from './CreateCommittedWorkloadUseCase
 
 @Controller('api/committed-workloads')
 @ApiTags('API committed workload ')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 export class CreateCommittedWorkloadController {
     constructor(public readonly useCase: CreateCommittedWorkloadUseCase) {}
+
     @Post()
     @HttpCode(HttpStatus.OK)
+    @Roles(RoleType.ADMIN)
     @ApiOkResponse({
         type: MessageDto,
         description: 'Created committed workload',
-    })
-    @ApiBadRequestResponse({
-        type: MessageDto,
-        description: 'Error',
     })
     @UsePipes(new ValidationPipe({ transform: true }))
     async execute(
@@ -39,17 +43,11 @@ export class CreateCommittedWorkloadController {
             const error = result.value;
             switch (error.constructor) {
                 case CreateCommittedWorkloadErrors.NotFound:
-                    throw new NotFoundException(
-                        error.errorValue(),
-                        "Couldn't find user/ value stream / expertise cope !",
-                    );
+                    throw new NotFoundException(error.errorValue());
                 default:
-                    throw new InternalServerErrorException(
-                        error.errorValue(),
-                        "Can't create committed workloads.",
-                    );
+                    throw new InternalServerErrorException(error.errorValue());
             }
         }
-        return new MessageDto('Create Committed workload successfully !.');
+        return result.value;
     }
 }

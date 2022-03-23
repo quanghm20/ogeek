@@ -18,6 +18,7 @@ export class ValueStreamMap implements Mapper<ValueStream> {
         return {
             id: Number(valueStream.valueStreamId.id.toValue()),
             name: valueStream.name,
+            expertiseScopes: [],
         };
     }
     public static fromDomainShortAll(

@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsString } from 'class-validator';
+
+import { ExpertiseScopeShortDto } from './expertiseScopeShort.dto';
 
 export class ValueStreamShortDto {
     @IsNumber()
@@ -10,8 +12,17 @@ export class ValueStreamShortDto {
     @ApiProperty({ example: 'Delivery' })
     name?: string;
 
-    constructor(id?: number, name?: string) {
+    @IsArray()
+    @ApiProperty({ type: ExpertiseScopeShortDto, isArray: true })
+    expertiseScopes?: ExpertiseScopeShortDto[];
+
+    constructor(
+        id?: number,
+        name?: string,
+        expertiseScopes?: ExpertiseScopeShortDto[],
+    ) {
         this.id = id;
         this.name = name;
+        this.expertiseScopes = expertiseScopes;
     }
 }

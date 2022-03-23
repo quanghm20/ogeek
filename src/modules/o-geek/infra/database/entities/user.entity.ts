@@ -8,7 +8,6 @@ import { WeekStatus } from '../../../../../common/constants/week-status';
 import { UserDto } from '../../dtos/user.dto';
 import { CommittedWorkloadEntity } from './committedWorkload.entity';
 import { PlannedWorkloadEntity } from './plannedWorkload.entity';
-// import { UserDto } from './dto/UserDto';
 
 @Entity({ name: 'user' })
 export class UserEntity extends AbstractEntity {
@@ -48,6 +47,7 @@ export class UserEntity extends AbstractEntity {
     @Column({
         type: 'enum',
         enum: RoleType,
+        nullable: false,
         default: RoleType.USER,
     })
     role: RoleType;
@@ -55,13 +55,10 @@ export class UserEntity extends AbstractEntity {
     @Column({
         type: 'enum',
         enum: WeekStatus,
-        default: WeekStatus.PLANING,
+        default: WeekStatus.PLANNING,
         name: 'week_status',
     })
     weekStatus: WeekStatus;
-    toDto(): UserDto {
-        return new UserDto(this);
-    }
 
     @OneToMany(
         () => PlannedWorkloadEntity,
@@ -74,4 +71,8 @@ export class UserEntity extends AbstractEntity {
         (committedWorkload) => committedWorkload.user,
     )
     committedWorkloads: CommittedWorkloadEntity[];
+
+    toDto(): UserDto {
+        return new UserDto(this);
+    }
 }
