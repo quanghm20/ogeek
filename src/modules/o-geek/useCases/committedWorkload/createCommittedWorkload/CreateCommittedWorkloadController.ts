@@ -6,15 +6,18 @@ import {
     InternalServerErrorException,
     NotFoundException,
     Post,
+    Req,
     UseGuards,
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 
 import { RoleType } from '../../../../../common/constants/role-type';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
+import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
 import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedWorkload.dto';
 import { MessageDto } from '../../../infra/dtos/message.dto';
 import { CreateCommittedWorkloadErrors } from './CreateCommittedWorkloadErrors';
@@ -37,7 +40,11 @@ export class CreateCommittedWorkloadController {
     @UsePipes(new ValidationPipe({ transform: true }))
     async execute(
         @Body() body: CreateCommittedWorkloadDto,
+        @Req() req: Request,
     ): Promise<MessageDto> {
+        const pic = req.user as JwtPayload;
+        const picId = pic.userId;
+        body.picId = picId;
         const result = await this.useCase.execute(body);
         if (result.isLeft()) {
             const error = result.value;

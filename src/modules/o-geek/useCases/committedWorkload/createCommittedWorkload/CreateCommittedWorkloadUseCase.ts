@@ -25,12 +25,14 @@ export class CreateCommittedWorkloadUseCase
 		@Inject('ICommittedWorkloadRepo') public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
 		@Inject('IContributedValueRepo') public readonly contributedValueRepo: IContributedValueRepo,
 	) { }
-		  async execute(body: CreateCommittedWorkloadDto): Promise<Response> {
+	   async execute(body: CreateCommittedWorkloadDto,
+	): Promise<Response> {
 			try {
 				const userId = body.userId;
 				const user = await this.userRepo.findById(userId);
 				const startDate = body.startDate;
 				const expiredDate = body.expiredDate;
+				const picId = body.picId;
 				if (!user) {
 					return left(
 						new CreateCommittedWorkloadErrors.NotFound( `Could not find User ${userId}` ),
@@ -42,7 +44,7 @@ export class CreateCommittedWorkloadUseCase
 					return left(new CreateCommittedWorkloadErrors.NotFound(check )) as Response;
 				}
 				const result = await this.committedWorkloadRepo.saveCommits(committedWorkloads, userId, startDate,
-					expiredDate, 2);
+					expiredDate, picId);
 
 				switch (result) {
 					case '500':

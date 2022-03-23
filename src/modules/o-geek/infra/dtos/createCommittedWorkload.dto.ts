@@ -20,4 +20,6 @@ export class CreateCommittedWorkloadDto {
     @IsDateString()
     @ApiProperty({ example: new Date() })
     expiredDate: Date;
+
+    picId?: number;
 }
