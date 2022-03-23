@@ -92,7 +92,7 @@ export class GetOverviewSummaryYearUseCase
                 });
 
             // get actual plans and worklogs
-            const url = `${process.env.MOCK_URL}overview/summary-year?userId=${userId.toString()}`;
+            const url = `${process.env.MOCK_URL}/overview/summary-year?userId=${userId.toString()}`;
             const request = await Axios.post<ValueStreamsDto[]>(url, data, {
                 headers: {
                     'x-api-key': process.env.MOCK_API_KEY,
