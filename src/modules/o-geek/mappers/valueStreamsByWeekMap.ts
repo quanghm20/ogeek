@@ -77,6 +77,7 @@ export class ValueStreamsByWeekMap {
             : committedWLDto.committedWorkload;
 
         let actual = plannedWorkload;
+
         let worklog = 0;
         if (actualPlanAndWorkLog) {
             actual = actualPlanAndWorkLog.actualPlan;
