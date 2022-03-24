@@ -22,7 +22,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             committedWorkload: committedWorkload.props.committedWorkload,
             startDate: committedWorkload.props.startDate,
             expiredDate: committedWorkload.props.expiredDate,
-            picId: committedWorkload.props.picId,
+            picId: committedWorkload.props.pic,
         };
     }
 
@@ -53,7 +53,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         const contributedValue = ContributedValueMap.toEntity(
             committedWorkload.contributedValue,
         );
-        const pic = UserMap.toEntity(committedWorkload.picId);
+        const pic = UserMap.toEntity(committedWorkload.pic);
         return new CommittedWorkloadEntity(
             user,
             contributedValue,

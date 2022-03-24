@@ -52,7 +52,7 @@ export class CommittedWorkloadEntity extends AbstractEntity {
     @JoinColumn({
         name: 'pic_id',
     })
-    picId: UserEntity;
+    pic: UserEntity;
 
     @OneToMany(
         () => PlannedWorkloadEntity,
@@ -66,7 +66,7 @@ export class CommittedWorkloadEntity extends AbstractEntity {
         committedWorkload: number,
         startDate: Date,
         expiredDate: Date,
-        picId: UserEntity,
+        pic: UserEntity,
     ) {
         super();
         this.user = user;
@@ -74,6 +74,6 @@ export class CommittedWorkloadEntity extends AbstractEntity {
         this.committedWorkload = committedWorkload;
         this.startDate = startDate;
         this.expiredDate = expiredDate;
-        this.picId = picId;
+        this.pic = pic;
     }
 }

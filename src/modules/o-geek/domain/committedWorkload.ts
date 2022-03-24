@@ -14,7 +14,7 @@ interface ICommittedWorkloadProps {
     committedWorkload?: number;
     startDate?: Date;
     expiredDate?: Date;
-    picId?: User;
+    pic?: User;
     status?: WorkloadStatus;
     createdAt?: Date;
     updatedAt?: Date;
@@ -63,11 +63,11 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     set status(status: WorkloadStatus) {
         this.props.status = status;
     }
-    set picId(picId: User) {
-        this.props.picId = picId;
+    set pic(pic: User) {
+        this.props.pic = pic;
     }
-    get picId(): User {
-        return this.props.picId;
+    get pic(): User {
+        return this.props.pic;
     }
     public isActive(): boolean {
         return this.props.status === WorkloadStatus.ACTIVE;
