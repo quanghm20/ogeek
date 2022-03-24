@@ -42,7 +42,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     ): CommittedWorkloadEntity {
         const entity = new CommittedWorkloadEntity();
 
-        // entity.id = Number(committedWorkload.id.toValue());
+        entity.id = Number(committedWorkload.committedWorkloadId.id.toValue());
         entity.startDate = committedWorkload.startDate;
         entity.expiredDate = committedWorkload.expiredDate;
         entity.status = committedWorkload.status;

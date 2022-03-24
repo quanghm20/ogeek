@@ -61,7 +61,6 @@ export class PlanWorkloadUseCase
         );
 
         const plannedWorkloadEntity = PlannedWorkloadMap.toEntity(plannedWorkload.getValue());
-        // console.log(plannedWorkloadEntity)
         plannedWorkloadEntitiesList.push(plannedWorkloadEntity);
       }
       const savedPlannedWorkloads = await this.plannedWorkloadRepo.createMany(plannedWorkloadEntitiesList);
