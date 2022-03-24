@@ -10,4 +10,11 @@ export namespace CreateCommittedWorkloadErrors {
             } as UseCaseError);
         }
     }
+    export class Forbidden extends Result<UseCaseError> {
+        constructor() {
+            super(false, {
+                message: 'Forbidden !!! ',
+            } as UseCaseError);
+        }
+    }
 }

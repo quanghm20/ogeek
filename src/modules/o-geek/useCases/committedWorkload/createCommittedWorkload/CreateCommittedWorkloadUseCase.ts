@@ -2,6 +2,7 @@
 /* eslint-disable prettier/prettier */
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 
+import { RoleType } from '../../../../../common/constants/role-type';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, right } from '../../../../../core/logic/Result';
@@ -36,6 +37,11 @@ export class CreateCommittedWorkloadUseCase
 				if (!user) {
 					return left(
 						new CreateCommittedWorkloadErrors.NotFound( `Could not find User ${userId}` ),
+					) as Response;
+				}
+				if (user.role !== RoleType.ADMIN) {
+					return left(
+						new CreateCommittedWorkloadErrors.Forbidden(),
 					) as Response;
 				}
 				const committedWorkloads = body.committedWorkloads;

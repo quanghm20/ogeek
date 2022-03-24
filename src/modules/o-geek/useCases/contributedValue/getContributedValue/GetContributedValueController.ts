@@ -12,7 +12,7 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { RoleType } from '../../../../../common/constants/role-type';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
-import { ValueStreamShortDto } from '../../../infra/dtos/getContributedValue/valueStreamShort.dto';
+import { ValueStreamShortInsertDto } from '../../../infra/dtos/getContributedValue/valueStreamShort.dto';
 import { GetContributedValueErrors } from './GetContributedValueErrors';
 import { GetContributedValueUseCase } from './GetContributedValueUseCase';
 
@@ -27,11 +27,11 @@ export class GetContributedValueController {
     @Roles(RoleType.ADMIN)
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
-        type: ValueStreamShortDto,
+        type: ValueStreamShortInsertDto,
         isArray: true,
         description: 'Get all data contributed value',
     })
-    async getContributed(): Promise<ValueStreamShortDto[]> {
+    async getContributed(): Promise<ValueStreamShortInsertDto[]> {
         const result = await this.useCase.execute();
         if (result.isLeft()) {
             const error = result.value;
@@ -48,7 +48,6 @@ export class GetContributedValueController {
                     );
             }
         }
-
         return result.value.getValue();
     }
 }

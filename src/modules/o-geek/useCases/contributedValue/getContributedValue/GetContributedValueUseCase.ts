@@ -6,7 +6,7 @@ import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedWorkload.dto';
 import { ExpertiseScopeShortDto } from '../../../infra/dtos/getContributedValue/expertiseScopeShort.dto';
-import { ValueStreamShortDto } from '../../../infra/dtos/getContributedValue/valueStreamShort.dto';
+import { ValueStreamShortInsertDto } from '../../../infra/dtos/getContributedValue/valueStreamShort.dto';
 import { ContributedValueMap } from '../../../mappers/contributedValueMap';
 import { ValueStreamMap } from '../../../mappers/valueStreamMap';
 import { IContributedValueRepo } from '../../../repos/contributedValueRepo';
@@ -15,7 +15,7 @@ import { GetContributedValueErrors } from './GetContributedValueErrors';
 
 type Response = Either<
     AppError.UnexpectedError | GetContributedValueErrors.NotFound,
-     Result<ValueStreamShortDto[]>
+     Result<ValueStreamShortInsertDto[]>
 >;
 @Injectable()
 export class GetContributedValueUseCase
@@ -34,12 +34,12 @@ export class GetContributedValueUseCase
 				) as Response;
 			}
 			const valueStreamDomain = await this.valueStreamRepo.findAll();
-			const valueStreamDto = Array<ValueStreamShortDto>();
+			const valueStreamDto = Array<ValueStreamShortInsertDto>();
 
 			const contributedDto = ContributedValueMap.fromDomainShortAll(contributedValue);
 
 			valueStreamDomain.forEach(function(value) {
-				const valueStream = ValueStreamMap.fromDomainShort(value);
+				const valueStream = ValueStreamMap.fromDomainShortInsert(value);
 				const expertiseScopes = Array<ExpertiseScopeShortDto>();
 				contributedDto.forEach(function(contribute) {
 					if (valueStream.id === contribute.valueStream.id) {

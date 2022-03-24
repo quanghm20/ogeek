@@ -15,8 +15,12 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
     ): ContributedValueDto {
         return {
             id: contributedValue.id,
-            valueStream: contributedValue.props.valueStream,
-            expertiseScope: contributedValue.props.expertiseScope,
+            valueStream: ValueStreamMap.fromDomain(
+                contributedValue.props.valueStream,
+            ),
+            expertiseScope: ExpertiseScopeMap.fromDomain(
+                contributedValue.props.expertiseScope,
+            ),
         };
     }
 
@@ -46,7 +50,9 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
         return contributedValuesOrError ? contributedValuesOrError : null;
     }
 
-    public static toDomain(raw: ContributedValueEntity): ContributedValue {
+    public static toDomainOverview(
+        raw: ContributedValueEntity,
+    ): ContributedValue {
         const { id } = raw;
         const valueStreamId = raw.valueStream.id;
         const valueStream = ValueStream.create(
@@ -77,6 +83,27 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
         contributedValueOrError.getValue().valueStream = valueStream.getValue();
         contributedValueOrError.getValue().expertiseScope =
             expertiseScope.getValue();
+
+        return contributedValueOrError.isSuccess
+            ? contributedValueOrError.getValue()
+            : null;
+    }
+
+    public static toDomain(
+        contributedValueEntity: ContributedValueEntity,
+    ): ContributedValue {
+        const { id } = contributedValueEntity;
+        const contributedValueOrError = ContributedValue.create(
+            {
+                valueStream: ValueStreamMap.toDomain(
+                    contributedValueEntity.valueStream,
+                ),
+                expertiseScope: ExpertiseScopeMap.toDomain(
+                    contributedValueEntity.expertiseScope,
+                ),
+            },
+            new UniqueEntityID(id),
+        );
 
         return contributedValueOrError.isSuccess
             ? contributedValueOrError.getValue()

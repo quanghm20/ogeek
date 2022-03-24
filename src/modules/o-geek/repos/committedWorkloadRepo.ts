@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, Repository } from 'typeorm';
+import { getConnection, MoreThanOrEqual, Repository } from 'typeorm';
 
+import { WorkloadStatus } from '../../../common/constants/committed-status';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
@@ -24,6 +25,10 @@ export interface ICommittedWorkloadRepo {
         expiredDate: Date,
         picId: number,
     ): Promise<string>;
+    findByUserId(userId: DomainId | number): Promise<CommittedWorkload[]>;
+    findByUserIdOverview(
+        userId: DomainId | number,
+    ): Promise<CommittedWorkload[]>;
 }
 
 @Injectable()
@@ -34,6 +39,22 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         @InjectRepository(ContributedValueEntity)
         protected repoContributed: Repository<ContributedValueEntity>,
     ) {}
+
+    async findByUserIdOverview(
+        userId: DomainId | number,
+    ): Promise<CommittedWorkload[]> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        const entity = await this.repo.find({
+            where: { user: { id: userId } },
+            relations: [
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+            ],
+        });
+        return entity ? CommittedWorkloadMap.toArrayDomain(entity) : null;
+    }
 
     async findById(
         committedWorkloadId: DomainId | number,
@@ -91,5 +112,27 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             await queryRunner.rollbackTransaction();
             return '500';
         }
+    }
+    async findByUserId(
+        userId: DomainId | number,
+    ): Promise<CommittedWorkload[]> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        const entities = await this.repo.find({
+            where: {
+                status: WorkloadStatus.ACTIVE,
+                user: userId,
+                expiredDate: MoreThanOrEqual(new Date()),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+            ],
+        });
+
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
     }
 }

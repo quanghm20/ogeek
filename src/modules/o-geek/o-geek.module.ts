@@ -23,9 +23,13 @@ import {
     GetContributedValueController,
     GetContributedValueUseCase,
 } from './useCases/contributedValue/getContributedValue';
+import { GetOverviewSummaryYearController } from './useCases/overview/summary-year/GetOverviewSummaryYearController';
+import { GetOverviewSummaryYearUseCase } from './useCases/overview/summary-year/GetOverviewSummaryYearUseCase';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
-import { GetUserController } from './useCases/user/GetUser/GetUserController';
-import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
+import { GetUserController } from './useCases/user/getUser/GetUserController';
+import { GetUserUseCase } from './useCases/user/getUser/GetUserUseCase';
+import { GetValueStreamController } from './useCases/valueStream/getValueStream/GetValueStreamController';
+import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/GetValueStreamUseCase';
 
 @Module({
     imports: [
@@ -43,12 +47,20 @@ import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
         CreateCommittedWorkloadController,
         GetContributedValueController,
         GetUserController,
+        GetUserController,
+        GetOverviewSummaryYearController,
+        GetValueStreamController,
     ],
     providers: [
         CreateUserUseCase,
         GetUserUseCase,
         GetContributedValueUseCase,
         CreateCommittedWorkloadUseCase,
+        GetValueStreamUseCase,
+        {
+            provide: 'IUserRepo',
+            useClass: UserRepository,
+        },
         {
             provide: 'IContributedValueRepo',
             useClass: ContributedValueRepository,
@@ -65,15 +77,21 @@ import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
             provide: 'IPlannedWorkloadRepo',
             useClass: PlannedWorkloadRepository,
         },
-        {
-            provide: 'IUserRepo',
-            useClass: UserRepository,
-        },
+        UserRepository,
         {
             provide: 'IValueStreamRepo',
             useClass: ValueStreamRepository,
         },
+        GetUserUseCase,
+        CreateUserUseCase,
+        GetOverviewSummaryYearUseCase,
     ],
-    exports: [CreateUserUseCase, GetUserUseCase],
+    exports: [
+        UserRepository,
+        CreateUserUseCase,
+        GetUserUseCase,
+        GetValueStreamUseCase,
+        TypeOrmModule,
+    ],
 })
 export class OGeekModule {}

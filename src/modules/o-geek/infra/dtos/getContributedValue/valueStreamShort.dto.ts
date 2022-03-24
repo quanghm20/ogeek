@@ -3,7 +3,7 @@ import { IsArray, IsNumber, IsString } from 'class-validator';
 
 import { ExpertiseScopeShortDto } from './expertiseScopeShort.dto';
 
-export class ValueStreamShortDto {
+export class ValueStreamShortInsertDto {
     @IsNumber()
     @ApiProperty({ example: 1 })
     id: number;

@@ -41,6 +41,7 @@ export class CommittedWorkloadEntity extends AbstractEntity {
         name: 'status',
     })
     status: WorkloadStatus;
+
     @Column({
         nullable: false,
         name: 'expired_date',

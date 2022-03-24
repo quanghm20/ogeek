@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    ForbiddenException,
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
@@ -38,6 +39,7 @@ export class CreateCommittedWorkloadController {
         description: 'Created committed workload',
     })
     @UsePipes(new ValidationPipe({ transform: true }))
+    // eslint-disable-next-line complexity
     async execute(
         @Body() body: CreateCommittedWorkloadDto,
         @Req() req: Request,
@@ -49,6 +51,8 @@ export class CreateCommittedWorkloadController {
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {
+                case CreateCommittedWorkloadErrors.Forbidden:
+                    throw new ForbiddenException(error.errorValue());
                 case CreateCommittedWorkloadErrors.NotFound:
                     throw new NotFoundException(error.errorValue());
                 default:

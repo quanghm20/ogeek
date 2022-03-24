@@ -14,7 +14,7 @@ export class PlannedWorkloadDto {
     id: UniqueEntityID;
 
     @ApiProperty({ type: () => UserDto })
-    user: UserDto;
+    user?: UserDto;
 
     @ApiProperty({ type: () => ContributedValueDto })
     contributedValue: ContributedValueDto;
@@ -28,7 +28,7 @@ export class PlannedWorkloadDto {
     @ApiProperty({ example: new Date() })
     startDate: Date;
 
-    @ApiProperty({ enum: WorkloadStatus, example: WorkloadStatus.ACTIVE })
+    @ApiProperty({ type: () => WorkloadStatus, example: WorkloadStatus.ACTIVE })
     status?: WorkloadStatus;
 
     @ApiProperty({ example: new Date() })
