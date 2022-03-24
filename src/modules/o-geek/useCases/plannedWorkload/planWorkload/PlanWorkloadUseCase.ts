@@ -37,7 +37,15 @@ export class PlanWorkloadUseCase
 
     const plannedWorkloadEntitiesList = [] as PlannedWorkloadEntity[];
     const user = await this.userRepo.findById(userId);
+
     try {
+      // deactive all planned workload of current user
+      await this.plannedWorkloadRepo.updateMany(
+        { user: { id: userId } },
+        { status: WorkloadStatus.INACTIVE },
+      );
+
+      // create new planned workloads
       for (const plannedWorkloadDto of plannedWorkloads) {
         const { contributedValueId, committedWorkloadId, workload } = plannedWorkloadDto;
 

@@ -1,5 +1,5 @@
 @baseUrl=http://localhost:3000/api
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTY0ODEyMDkwNCwiZXhwIjoxNjUwNzEyOTA0fQ.eD3ZPzfJmbYtmP3Fdt_9QrYyAkZQLYf2dlEM1Tsv7JM
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTY0ODE0MDc5OSwiZXhwIjoxNjUwNzMyNzk5fQ.cS3yD6WjYzjjlPx8C2yORRqC1z-RYmGbP-9nt_VIAZ0
 ###
 POST {{baseUrl}}/planned-workload/plan-workload
 Authorization: Bearer {{token}}
@@ -10,12 +10,12 @@ Content-Type: application/json
     "reason": "Early Bird",
     "plannedWorkloads": [
         {
-	        "workload": 5,
+	        "workload": 20,
             "contributedValueId": 1,
             "committedWorkloadId": 1
         },
         {
-	        "workload": 10,
+	        "workload": 8,
             "contributedValueId": 2,
             "committedWorkloadId": 1
         }
