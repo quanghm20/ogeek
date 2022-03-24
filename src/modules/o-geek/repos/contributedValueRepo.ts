@@ -30,15 +30,13 @@ export class ContributedValueRepository implements IContributedValueRepo {
         valueStreamId?: number,
         expertiseScopeId?: number,
     ): Promise<ContributedValue> {
-        const contributedValue = await this.repo.findOne({
+        const entity = await this.repo.findOne({
             where: {
                 valueStream: { id: valueStreamId },
                 expertiseScope: { id: expertiseScopeId },
             },
         });
-        return contributedValue
-            ? ContributedValueMap.toDomain(contributedValue)
-            : null;
+        return entity ? ContributedValueMap.toDomain(entity) : null;
     }
 
     async findById(
@@ -48,7 +46,9 @@ export class ContributedValueRepository implements IContributedValueRepo {
             contributedValueId instanceof DomainId
                 ? Number(contributedValueId.id.toValue())
                 : contributedValueId;
-        const entity = await this.repo.findOne(contributedValueId);
+        const entity = await this.repo.findOne(contributedValueId, {
+            relations: ['expertiseScope', 'valueStream'],
+        });
         return entity ? ContributedValueMap.toDomain(entity) : null;
     }
 

@@ -26,9 +26,9 @@ export class UserRepository implements IUserRepo {
     }
 
     async findById(userId: DomainId | number): Promise<User> {
-        userId =
+        const id =
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
-        const entity = await this.repo.findOne(userId);
+        const entity = await this.repo.findOne(id);
         return entity ? UserMap.toDomain(entity) : null;
     }
 

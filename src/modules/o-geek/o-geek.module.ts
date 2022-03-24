@@ -18,6 +18,10 @@ import {
     UserRepository,
     ValueStreamRepository,
 } from './repos';
+import {
+    PlanWorkloadController,
+    PlanWorkloadUseCase,
+} from './useCases/plannedWorkload/planWorkload';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
 import { GetUserController } from './useCases/user/GetUser/GetUserController';
 import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
@@ -35,10 +39,11 @@ import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
             ValueStreamEntity,
         ]),
     ],
-    controllers: [GetUserController],
+    controllers: [GetUserController, PlanWorkloadController],
     providers: [
         CreateUserUseCase,
         GetUserUseCase,
+        PlanWorkloadUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

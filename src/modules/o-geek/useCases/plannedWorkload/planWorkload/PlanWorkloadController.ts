@@ -7,10 +7,12 @@ import {
     NotFoundException,
     Post,
     Req,
+    UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
+import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
 import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkloadsList.dto';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
@@ -24,18 +26,20 @@ import { PlanWorkloadUseCase } from './PlanWorkloadUseCase';
 export class PlanWorkloadController {
     constructor(public readonly useCase: PlanWorkloadUseCase) {}
 
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Post('plan-workload')
     @HttpCode(HttpStatus.CREATED)
     @ApiOkResponse({
         type: [PlannedWorkloadDto],
-        description: 'plan workload for Geek',
+        description: 'Plan workload for Geek',
     })
     async execute(
         @Req() req: Request,
         @Body() createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
     ): Promise<PlannedWorkloadDto[]> {
-        const jwtPyaload = req.user as JwtPayload;
-        const findUserDto = { ...jwtPyaload } as FindUserDto;
+        const jwtPayload = req.user as JwtPayload;
+        const findUserDto = { ...jwtPayload } as FindUserDto;
         const userId = findUserDto.userId;
         createPlannedWorkloadsListDto.userId = userId;
 
@@ -54,7 +58,7 @@ export class PlanWorkloadController {
                 default:
                     throw new InternalServerErrorException(
                         error.errorValue(),
-                        'Some thing when wrong',
+                        'Something when wrong',
                     );
             }
         }

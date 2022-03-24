@@ -36,15 +36,17 @@ export class PlanWorkloadUseCase
     const { startDate, reason, plannedWorkloads, userId } = createPlannedWorkloadsListDto;
 
     const plannedWorkloadEntitiesList = [] as PlannedWorkloadEntity[];
+    const user = await this.userRepo.findById(userId);
     try {
       for (const plannedWorkloadDto of plannedWorkloads) {
-        const { expertiseScopeId, valueStreamId, committedWorloadId, workload } = plannedWorkloadDto;
-        const contributedValue =
-          await this.contributedValueloadRepo.findByExpertiseScopeAndValueStream(
-            expertiseScopeId, valueStreamId,
-          );
-        const user = await this.userRepo.findById(userId);
-        const committedWorkload = await this.committedWorkloadRepo.findById(committedWorloadId);
+        const { contributedValueId, committedWorkloadId, workload } = plannedWorkloadDto;
+        // const contributedValue =
+        //   await this.contributedValueloadRepo.findByExpertiseScopeAndValueStream(
+        //     expertiseScopeId, valueStreamId,
+        //   );
+        const committedWorkload = await this.committedWorkloadRepo.findById(committedWorkloadId);
+        const contributedValue = await this.contributedValueloadRepo.findById(contributedValueId);
+
         const plannedWorkload = PlannedWorkload.create(
           {
             startDate,
@@ -57,7 +59,9 @@ export class PlanWorkloadUseCase
           },
           new UniqueEntityID(uuidv4()),
         );
+
         const plannedWorkloadEntity = PlannedWorkloadMap.toEntity(plannedWorkload.getValue());
+        // console.log(plannedWorkloadEntity)
         plannedWorkloadEntitiesList.push(plannedWorkloadEntity);
       }
       const savedPlannedWorkloads = await this.plannedWorkloadRepo.createMany(plannedWorkloadEntitiesList);

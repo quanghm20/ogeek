@@ -1,19 +1,24 @@
 @baseUrl=http://localhost:3000/api
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTY0ODA3OTUwNiwiZXhwIjoxNjQ4MDgzMTA2fQ.TvPQv_KV7LjelQfPS0doQ2bmBYf8SHxkl5wndPyUurc
 ###
-GET {{baseUrl}}/planned-workload/plan-workload
+POST {{baseUrl}}/planned-workload/plan-workload
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
 {
     "startDate": "12-03-2022",
     "reason": "Late",
     "plannedWorkloads": [
         {
 	        "workload": 5,
-            "expertiseScopeId": 5,
-            "valueStreamId": 1
+            "contributedValueId": 1,
+            "committedWorkloadId": 1
         },
         {
-	        "workload": 5,
-            "expertiseScopeId": 4,
-            "valueStreamId": 1
+	        "workload": 10,
+            "contributedValueId": 2,
+            "committedWorkloadId": 1
         }
     ]
 }
+

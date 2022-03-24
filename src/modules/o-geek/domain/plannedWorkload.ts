@@ -61,6 +61,9 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     get contributedValue(): ContributedValue {
         return this.props.contributedValue;
     }
+    get committedWorkload(): CommittedWorkload {
+        return this.props.committedWorkload;
+    }
     get reason(): string {
         return this.props.reason;
     }

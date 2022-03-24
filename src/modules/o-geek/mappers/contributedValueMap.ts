@@ -6,13 +6,14 @@ import { ValueStream } from '../domain/valueStream';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
 import { ContributedValueDto } from '../infra/dtos/contributedValue.dto';
 import { ExpertiseScopeMap } from './expertiseScopeMap';
+import { ValueStreamMap } from './valueStreamMap';
 
 export class ContributedValueMap implements Mapper<ContributedValue> {
     public static fromDomain(
         contributedValue: ContributedValue,
     ): ContributedValueDto {
         return {
-            id: contributedValue.id,
+            id: contributedValue.contributedValueId.id,
             valueStream: contributedValue.props.valueStream,
             expertiseScope: contributedValue.props.expertiseScope,
         };
@@ -37,7 +38,6 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
             },
             new UniqueEntityID(valueStreamId),
         );
-
         const contributedValueOrError = ContributedValue.create(
             {
                 createdAt: raw.createdAt,
@@ -59,9 +59,13 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
     ): ContributedValueEntity {
         const entity = new ContributedValueEntity();
 
-        entity.id = Number(contributedValue.id.toValue());
+        // entity.id = Number(contributedValue.id.toValue());
         entity.expertiseScope = ExpertiseScopeMap.toEntity(
             contributedValue.expertiseScope,
+        );
+
+        entity.valueStream = ValueStreamMap.toEntity(
+            contributedValue.valueStream,
         );
 
         return entity;

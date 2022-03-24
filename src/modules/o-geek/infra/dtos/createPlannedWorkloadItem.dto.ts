@@ -5,11 +5,8 @@ export class CreatePlannedWorkloadItemDto {
     workload?: number;
 
     @ApiProperty()
-    committedWorloadId?: number;
+    committedWorkloadId?: number;
 
     @ApiProperty()
-    expertiseScopeId?: number;
-
-    @ApiProperty()
-    valueStreamId?: number;
+    contributedValueId?: number;
 }
