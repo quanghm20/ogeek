@@ -34,6 +34,8 @@ import { GetOverviewSummaryYearUseCase } from './useCases/overview/summary-year/
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
 import { GetUserController } from './useCases/user/getUser/GetUserController';
 import { GetUserUseCase } from './useCases/user/getUser/GetUserUseCase';
+import { GetUsersController } from './useCases/user/getUsers/GetUsersController';
+import { GetUsersUseCase } from './useCases/user/getUsers/GetUsersUseCase';
 import { GetValueStreamController } from './useCases/valueStream/getValueStream/GetValueStreamController';
 import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/GetValueStreamUseCase';
 
@@ -60,6 +62,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetAverageActualWorkloadController,
         GetOverviewSummaryYearController,
         GetValueStreamController,
+        GetUsersController,
     ],
     providers: [
         CreateUserUseCase,
@@ -71,6 +74,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetUserUseCase,
         GetValueStreamUseCase,
         GetWeekStatusUseCase,
+        GetUsersUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

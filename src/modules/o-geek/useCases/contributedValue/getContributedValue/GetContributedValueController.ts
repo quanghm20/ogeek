@@ -12,6 +12,7 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { RoleType } from '../../../../../common/constants/role-type';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
+import { GetContributedValueShortDto } from '../../../infra/dtos/getContributedValue/getContributedValue.dto';
 import { ValueStreamShortInsertDto } from '../../../infra/dtos/getContributedValue/valueStreamShort.dto';
 import { GetContributedValueErrors } from './GetContributedValueErrors';
 import { GetContributedValueUseCase } from './GetContributedValueUseCase';
@@ -31,7 +32,7 @@ export class GetContributedValueController {
         isArray: true,
         description: 'Get all data contributed value',
     })
-    async getContributed(): Promise<ValueStreamShortInsertDto[]> {
+    async getContributed(): Promise<GetContributedValueShortDto> {
         const result = await this.useCase.execute();
         if (result.isLeft()) {
             const error = result.value;
@@ -42,6 +43,6 @@ export class GetContributedValueController {
                     throw new InternalServerErrorException(error.errorValue());
             }
         }
-        return result.value.getValue();
+        return new GetContributedValueShortDto(result.value.getValue());
     }
 }

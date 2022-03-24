@@ -2,6 +2,7 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { User } from '../domain/user';
 import { UserEntity } from '../infra/database/entities/user.entity';
+import { UserShortDto } from '../infra/dtos/getUsers/getUsersDto';
 import { GetWeekStatusDto } from '../infra/dtos/getWeekStatus.dto';
 import { UserDto } from '../infra/dtos/user.dto';
 
@@ -41,6 +42,15 @@ export class UserMap implements Mapper<User> {
 
         return userOrError.isSuccess ? userOrError.getValue() : null;
     }
+
+    public static toArrayDomain(raws: UserEntity[]): User[] {
+        const arrayDomain = Array<User>();
+        raws.forEach((user) => {
+            arrayDomain.push(this.toDomain(user));
+        });
+        return arrayDomain;
+    }
+
     public static toEntity(user: User): UserEntity {
         const userEntity = new UserEntity();
         userEntity.alias = user.alias;
@@ -53,5 +63,18 @@ export class UserMap implements Mapper<User> {
         userEntity.avatar = user.avatar;
 
         return userEntity;
+    }
+
+    public static toUserShort(user: User): UserShortDto {
+        const id = Number(user.id.toValue());
+        return new UserShortDto(id, user.alias);
+    }
+
+    public static toArrayUserShort(users: User[]): UserShortDto[] {
+        const arrayUserShort = new Array<UserShortDto>();
+        users.forEach((user) => {
+            arrayUserShort.push(this.toUserShort(user));
+        });
+        return arrayUserShort;
     }
 }
