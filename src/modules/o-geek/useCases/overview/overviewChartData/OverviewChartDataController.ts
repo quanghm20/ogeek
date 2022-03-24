@@ -6,17 +6,26 @@ import {
     InternalServerErrorException,
     NotFoundException,
     Req,
+    UseGuards,
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiOkResponse,
+    ApiTags,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 import * as moment from 'moment';
 
+import { JwtAuthGuard } from '../../../../../modules/jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
 import { InputGetOverviewChartDto } from '../../../infra/dtos/OverviewChartDto/inputGetOverviewChart.dto';
 import { OverviewChartDataDto } from '../../../infra/dtos/OverviewChartDto/overviewChartData.dto';
 import { GetOverviewChartDataErrors } from './OverviewChartDataErrors';
 import { GetOverviewChartDataUseCase } from './OverviewChartDataUseCase';
 
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @Controller('api/overview/overview-chart')
 @ApiTags('Overview Chart')
 export class OverviewChartDataController {

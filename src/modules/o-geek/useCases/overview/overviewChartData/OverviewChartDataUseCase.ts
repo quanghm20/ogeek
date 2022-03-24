@@ -28,7 +28,7 @@ interface ServerResponse {
 }
 
 @Injectable()
-export class GetOverviewChartDataUseCase implements IUseCase< InputGetOverviewChartDto, Promise<Response>> {
+export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewChartDto, Promise<Response>> {
     constructor(
         @Inject('IUserRepo')
         public readonly userRepo: IUserRepo,
@@ -38,11 +38,10 @@ export class GetOverviewChartDataUseCase implements IUseCase< InputGetOverviewCh
 
         @Inject('IPlannedWorkloadRepo')
         public readonly plannedWorkloadRepo: IPlannedWorkloadRepo,
-    ) {}
+    ) { }
 
     async execute(input: InputGetOverviewChartDto): Promise<Response> {
         try {
-            // console.log(input.week);
             const url = `https://mock.o-geek.geekup.io/api/overview/actual-workload?userId=${input.userId.toString()}&week=${input.week}`;
             const request = await Axios.get<ServerResponse>(url, {
                 headers: {
@@ -74,7 +73,7 @@ export class GetOverviewChartDataUseCase implements IUseCase< InputGetOverviewCh
 
                     if (exId === id) {
                         const actualWorkLog = foundWorklog.find(actualWL =>
-                               name === actualWL.expertiseScope);
+                            name === actualWL.expertiseScope);
 
                         contributedValue.push({
                             week,
@@ -83,10 +82,13 @@ export class GetOverviewChartDataUseCase implements IUseCase< InputGetOverviewCh
                         } as WorkloadOverviewDto);
                     }
                 }
-                if (contributedValue.length !== 0) {overviewChartDataDtos.push({
-                    expertiseScopes: contributedValue,
-                    expertiseScope: expertiseScope.name,
-                } as OverviewChartDataDto); }
+
+                if (contributedValue.length !== 0) {
+                    overviewChartDataDtos.push({
+                        expertiseScopes: contributedValue,
+                        expertiseScope: expertiseScope.name,
+                    } as OverviewChartDataDto);
+                }
             });
 
             if (overviewChartDataDtos) {

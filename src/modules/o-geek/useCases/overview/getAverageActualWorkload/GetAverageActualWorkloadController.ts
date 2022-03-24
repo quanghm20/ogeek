@@ -7,16 +7,20 @@ import {
     NotFoundException,
     Param,
     Req,
+    UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
+import { JwtAuthGuard } from '../../../../../modules/jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
 import { AverageActualWorkloadDto } from '../../../infra/dtos/GetAverageActualWorkload/averageActualWorkload.dto';
 import { InputGetAverageActualWorkloadDto } from '../../../infra/dtos/GetAverageActualWorkload/inputAverageActualWorkload.dto';
 import { GetAverageActualWorkloadErrors } from './GetAverageActualWorkloadErrors';
 import { GetAverageActualWorkloadUseCase as GetAverageActualWorkloadUseCase } from './GetAverageActualWorkloadUseCase';
 
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @Controller('/api/overview/average-actual-workload')
 @ApiTags('Average Actual Workload')
 export class GetAverageActualWorkloadController {

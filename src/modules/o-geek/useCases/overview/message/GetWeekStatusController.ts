@@ -6,16 +6,25 @@ import {
     InternalServerErrorException,
     NotFoundException,
     Req,
+    UseGuards,
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiOkResponse,
+    ApiTags,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 
+import { JwtAuthGuard } from '../../../../../modules/jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
 import { GetWeekStatusDto } from '../../../infra/dtos/getWeekStatus.dto';
 import { UserMap } from '../../../mappers/userMap';
 import { GetWeekStatusErrors } from './GetWeekStatusErrors';
 import { GetWeekStatusUseCase } from './GetWeekStatusUseCase';
 
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @Controller('/api/overview/week-status')
 @ApiTags('Week Status')
 export class GetWeekStatusController {
