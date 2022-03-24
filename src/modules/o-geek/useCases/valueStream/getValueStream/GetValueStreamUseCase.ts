@@ -57,7 +57,7 @@ export class GetValueStreamUseCase
             const actualPlanAndWorkLogDtos = response;
 
             // eslint-disable-next-line import/namespace
-            moment.updateLocale('en', { week: { dow: 6 } });
+            // moment.updateLocale('en', { week: { dow: 6 } });
             const dateOfWeek = moment()
                 .utcOffset(420)
                 .week(params.week)

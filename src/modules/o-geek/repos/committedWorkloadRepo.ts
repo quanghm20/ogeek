@@ -1,15 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, MoreThanOrEqual, Repository } from 'typeorm';
+import {
+    getConnection,
+    LessThan,
+    LessThanOrEqual,
+    MoreThanOrEqual,
+    Repository,
+} from 'typeorm';
 
 import { WorkloadStatus } from '../../../common/constants/committed-status';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
+// import { User } from '../domain/user';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
 import { UserEntity } from '../infra/database/entities/user.entity';
 import { WorkloadDto } from '../infra/dtos/workload.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
+import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface ICommittedWorkloadRepo {
     findById(
@@ -25,6 +33,14 @@ export interface ICommittedWorkloadRepo {
         expiredDate: Date,
         picId: number,
     ): Promise<string>;
+    findByUserIdInTimeRange(
+        userId: DomainId | number,
+        startDateInWeek: Date,
+    ): Promise<CommittedWorkload[]>;
+    findByIdInPrecedingWeeks(
+        userId: DomainId | number,
+        startDate: Date,
+    ): Promise<CommittedWorkload[]>;
     findByUserId(userId: DomainId | number): Promise<CommittedWorkload[]>;
     findByUserIdOverview(
         userId: DomainId | number,
@@ -39,6 +55,28 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         @InjectRepository(ContributedValueEntity)
         protected repoContributed: Repository<ContributedValueEntity>,
     ) {}
+    async findByUserId(
+        userId: DomainId | number,
+    ): Promise<CommittedWorkload[]> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        const entities = await this.repo.find({
+            where: {
+                status: WorkloadStatus.ACTIVE,
+                user: userId,
+                expiredDate: MoreThanOrEqual(new Date()),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+            ],
+        });
+
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
+    }
 
     async findByUserIdOverview(
         userId: DomainId | number,
@@ -113,26 +151,58 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             return '500';
         }
     }
-    async findByUserId(
+    async findByUserIdInTimeRange(
         userId: DomainId | number,
+        startDateInWeek: Date,
     ): Promise<CommittedWorkload[]> {
         userId =
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entities = await this.repo.find({
             where: {
-                status: WorkloadStatus.ACTIVE,
-                user: userId,
-                expiredDate: MoreThanOrEqual(new Date()),
+                user: { id: userId },
+                startDate:
+                    MoreThanOrEqual(
+                        MomentService.shiftFirstDateChart(startDateInWeek),
+                    ) &&
+                    LessThanOrEqual(
+                        MomentService.shiftLastDateChart(startDateInWeek),
+                    ),
             },
             relations: [
                 'contributedValue',
                 'contributedValue.expertiseScope',
-                'contributedValue.valueStream',
+                'committedWorkload',
+                'committedWorkload.contributedValue',
+                'committedWorkload.contributedValue.expertiseScope',
             ],
         });
-
         return entities
             ? CommittedWorkloadMap.toDomainAll(entities)
             : new Array<CommittedWorkload>();
+    }
+
+    async findByIdInPrecedingWeeks(
+        userId: DomainId | number,
+        startDate: Date,
+    ): Promise<CommittedWorkload[]> {
+        const entities = await this.repo.find({
+            where: {
+                user: userId,
+                startDate: MoreThanOrEqual(
+                    MomentService.shiftFirstDateChart(startDate),
+                ),
+                expiredDate: LessThan(
+                    MomentService.getFirstDateOfWeek(startDate),
+                ),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'committedWorkload',
+                'committedWorkload.contributedValue',
+                'committedWorkload.contributedValue.expertiseScope',
+            ],
+        });
+        return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
     }
 }

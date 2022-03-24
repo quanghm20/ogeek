@@ -89,13 +89,7 @@ export class ValueStreamsByWeekMap {
             worklog,
             plannedWorkload,
             actualPlannedWorkload: actual,
-            contributedValueId: Number(
-                committedWLDto.contributedValue.id.toString(),
-            ),
-            committedWorkload: {
-                id: Number(committedWLDto.id.toString()),
-                committedWorkload: committedWLDto.committedWorkload,
-            } as CommittedWorkloadDto,
+            committedWorkload: committedWLDto.committedWorkload,
             expertiseScope: {
                 id: Number(expertiseDto.id.toString()),
                 name: expertiseDto.name,

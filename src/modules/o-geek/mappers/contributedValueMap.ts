@@ -93,6 +93,7 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
         contributedValueEntity: ContributedValueEntity,
     ): ContributedValue {
         const { id } = contributedValueEntity;
+
         const contributedValueOrError = ContributedValue.create(
             {
                 valueStream: ValueStreamMap.toDomain(

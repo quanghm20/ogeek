@@ -62,6 +62,7 @@ export class ValueStreamMap implements Mapper<ValueStream> {
 
     public static toDomain(raw: ValueStreamEntity): ValueStream {
         const { id } = raw;
+
         const valueStreamOrError = ValueStream.create(
             {
                 name: raw.name,

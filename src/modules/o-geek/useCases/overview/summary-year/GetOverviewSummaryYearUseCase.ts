@@ -38,15 +38,10 @@ export class GetOverviewSummaryYearUseCase
 
     async execute(userId: DomainId | number): Promise<Response> {
         try {
-            // eslint-disable-next-line import/namespace
-            moment.updateLocale('en', {
-                week: {
-                    dow: 6, // Saturday is the first day of the week.
-                    doy: 1, // The week that contains Jan 1st is the first week of the year.
-                },
-            });
+
             const startDateYear = moment().startOf('year').format('YYYY-MM-DD');
             const startDateOfYear = moment(startDateYear, 'YYYY-MM-DD').startOf('week').format('YYYY-MM-DD');
+
             const endDateOfYear = moment(startDateOfYear, 'YYYY-MM-DD').add(DateRange.DAY_OF_YEAR, 'days').format('YYYY-MM-DD');
 
             const committedWorkloads = await this.committedWorkloadRepo.findByUserIdOverview(userId);

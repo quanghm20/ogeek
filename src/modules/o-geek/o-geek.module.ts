@@ -23,6 +23,12 @@ import {
     GetContributedValueController,
     GetContributedValueUseCase,
 } from './useCases/contributedValue/getContributedValue';
+import { GetAverageActualWorkloadController } from './useCases/overview/getAverageActualWorkload/GetAverageActualWorkloadController';
+import { GetAverageActualWorkloadUseCase } from './useCases/overview/getAverageActualWorkload/GetAverageActualWorkloadUseCase';
+import { GetWeekStatusController } from './useCases/overview/message/GetWeekStatusController';
+import { GetWeekStatusUseCase } from './useCases/overview/message/GetWeekStatusUseCase';
+import { OverviewChartDataController } from './useCases/overview/overviewChartData/OverviewChartDataController';
+import { GetOverviewChartDataUseCase } from './useCases/overview/overviewChartData/OverviewChartDataUseCase';
 import { GetOverviewSummaryYearController } from './useCases/overview/summary-year/GetOverviewSummaryYearController';
 import { GetOverviewSummaryYearUseCase } from './useCases/overview/summary-year/GetOverviewSummaryYearUseCase';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
@@ -48,15 +54,23 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetContributedValueController,
         GetUserController,
         GetUserController,
+        GetValueStreamController,
+        GetWeekStatusController,
+        OverviewChartDataController,
+        GetAverageActualWorkloadController,
         GetOverviewSummaryYearController,
         GetValueStreamController,
     ],
     providers: [
         CreateUserUseCase,
-        GetUserUseCase,
-        GetContributedValueUseCase,
         CreateCommittedWorkloadUseCase,
+        GetAverageActualWorkloadUseCase,
+        GetContributedValueUseCase,
+        GetOverviewSummaryYearUseCase,
+        GetOverviewChartDataUseCase,
+        GetUserUseCase,
         GetValueStreamUseCase,
+        GetWeekStatusUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,
@@ -82,9 +96,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             provide: 'IValueStreamRepo',
             useClass: ValueStreamRepository,
         },
-        GetUserUseCase,
-        CreateUserUseCase,
-        GetOverviewSummaryYearUseCase,
     ],
     exports: [
         UserRepository,

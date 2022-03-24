@@ -44,4 +44,13 @@ export class UserRepository implements IUserRepo {
         const createdUser = await this.repo.save(entity);
         return createdUser ? UserMap.toDomain(entity) : null;
     }
+
+    // async getWeekStatus(userId: DomainId | number): Promise<WeekStatus> {
+    //     userId =
+    //         userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+    //     const weekStatus = await this.repo
+    //     .createQueryBuilder("week_status").where('id' = userId);
+
+    //     return weekStatus ? UserMap.toDomain(weekStatus) : null;
+    // }
 }

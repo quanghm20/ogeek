@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
-import { CommittedWorkloadDto } from '../committedWorkload.dto';
 import { ExpertiseScopeDto } from '../expertiseScope.dto';
 
 export class ExpertiseScopeWithinValueStreamDto {
@@ -11,16 +10,8 @@ export class ExpertiseScopeWithinValueStreamDto {
     })
     expertiseScope: ExpertiseScopeDto;
 
-    @ApiProperty({
-        example: {
-            id: 1,
-            committedWorkload: 20,
-        },
-    })
-    committedWorkload: CommittedWorkloadDto;
-
     @ApiProperty({ example: 1 })
-    contributedValueId: number;
+    committedWorkload: number;
 
     @ApiProperty({ example: '12' })
     @IsNumber()

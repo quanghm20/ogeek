@@ -6,6 +6,8 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 
+// import { UniqueEntityID } from '../core/domain/UniqueEntityID';
+
 export abstract class AbstractEntity {
     @PrimaryGeneratedColumn()
     id: number;
