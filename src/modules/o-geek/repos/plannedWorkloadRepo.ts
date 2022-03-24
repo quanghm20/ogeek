@@ -10,6 +10,12 @@ import { InputGetPlanWLDto } from '../infra/dtos/ValueStreamsByWeek/inputGetPlan
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
 
 export interface IPlannedWorkloadRepo {
+    findByUserIdOverview(
+        userId: DomainId | number,
+        startDateOfYear: string,
+        endDateOfYear: string,
+    ): Promise<PlannedWorkload[]>;
+
     findById(plannedWorkloadId: DomainId | number): Promise<PlannedWorkload>;
     findByIdWithTimeRange(
         userId: DomainId | number,
@@ -28,6 +34,30 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
         @InjectRepository(PlannedWorkloadEntity)
         protected repo: Repository<PlannedWorkloadEntity>,
     ) {}
+
+    async findByUserIdOverview(
+        userId: DomainId | number,
+        startDateOfYear: string,
+        endDateOfYear: string,
+    ): Promise<PlannedWorkload[]> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        const entity = await this.repo.find({
+            where: {
+                user: { id: userId },
+                startDate: Between(startDateOfYear, endDateOfYear),
+            },
+            relations: [
+                'committedWorkload',
+                'contributedValue',
+                'committedWorkload.contributedValue',
+                'committedWorkload.contributedValue.valueStream',
+                'committedWorkload.contributedValue.expertiseScope',
+            ],
+        });
+
+        return entity ? PlannedWorkloadMap.toArrayDomain(entity) : null;
+    }
 
     async findById(
         plannedWorkloadId: DomainId | number,

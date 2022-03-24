@@ -56,6 +56,26 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
             : null;
     }
 
+    public static toArrayDomain(
+        raws: PlannedWorkloadEntity[],
+    ): PlannedWorkload[] {
+        const plannedWorkloadsOrError = Array<PlannedWorkload>();
+        raws.forEach(function get(raw) {
+            const { id } = raw;
+            const plannedWorkloadOrError = PlannedWorkload.create(
+                {
+                    committedWorkload: CommittedWorkloadMap.toDomain(
+                        raw.committedWorkload,
+                    ),
+                    plannedWorkload: raw.plannedWorkload,
+                },
+                new UniqueEntityID(id),
+            );
+            plannedWorkloadsOrError.push(plannedWorkloadOrError.getValue());
+        });
+        return plannedWorkloadsOrError ? plannedWorkloadsOrError : null;
+    }
+
     public static toDomainAll(
         plannedWLs: PlannedWorkloadEntity[],
     ): PlannedWorkload[] {
@@ -68,7 +88,6 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
                 return null;
             }
         });
-
         return arrPlannedWL;
     }
 }

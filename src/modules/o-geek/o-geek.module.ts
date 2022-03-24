@@ -21,6 +21,8 @@ import { GetWeekStatusController } from './useCases/overview/message/GetWeekStat
 import { GetWeekStatusUseCase } from './useCases/overview/message/GetWeekStatusUseCase';
 import { OverviewChartDataController } from './useCases/overview/overviewChartData/OverviewChartDataController';
 import { GetOverviewChartDataUseCase } from './useCases/overview/overviewChartData/OverviewChartDataUseCase';
+import { GetOverviewSummaryYearController } from './useCases/overview/summary-year/GetOverviewSummaryYearController';
+import { GetOverviewSummaryYearUseCase } from './useCases/overview/summary-year/GetOverviewSummaryYearUseCase';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
 import { GetUserController } from './useCases/user/getUser/GetUserController';
 import { GetUserUseCase } from './useCases/user/getUser/GetUserUseCase';
@@ -45,6 +47,8 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetWeekStatusController,
         OverviewChartDataController,
         GetAverageActualWorkloadController,
+        GetOverviewSummaryYearController,
+        GetValueStreamController,
     ],
     providers: [
         CreateUserUseCase,
@@ -73,16 +77,17 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             provide: 'IPlannedWorkloadRepo',
             useClass: PlannedWorkloadRepository,
         },
-        {
-            provide: 'IUserRepo',
-            useClass: UserRepository,
-        },
+        UserRepository,
         {
             provide: 'IValueStreamRepo',
             useClass: ValueStreamRepository,
         },
+        GetUserUseCase,
+        CreateUserUseCase,
+        GetOverviewSummaryYearUseCase,
     ],
     exports: [
+        UserRepository,
         CreateUserUseCase,
         GetUserUseCase,
         GetValueStreamUseCase,

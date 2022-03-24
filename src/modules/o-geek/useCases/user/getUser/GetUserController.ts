@@ -6,7 +6,7 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
@@ -23,6 +23,7 @@ export class GetUserController {
     constructor(public readonly useCase: GetUserUseCase) {}
 
     @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Get()
     @ApiOkResponse({
         type: UserDto,

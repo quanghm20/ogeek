@@ -26,6 +26,9 @@ export interface ICommittedWorkloadRepo {
         startDate: Date,
     ): Promise<CommittedWorkload[]>;
     findByUserId(userId: DomainId | number): Promise<CommittedWorkload[]>;
+    findByUserIdOverview(
+        userId: DomainId | number,
+    ): Promise<CommittedWorkload[]>;
 }
 
 @Injectable()
@@ -57,6 +60,22 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             : new Array<CommittedWorkload>();
     }
 
+    async findByUserIdOverview(
+        userId: DomainId | number,
+    ): Promise<CommittedWorkload[]> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        const entity = await this.repo.find({
+            where: { user: { id: userId } },
+            relations: [
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+            ],
+        });
+        return entity ? CommittedWorkloadMap.toArrayDomain(entity) : null;
+    }
+
     async findById(
         committedWorkloadId: DomainId | number,
     ): Promise<CommittedWorkload> {
@@ -67,7 +86,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         const entity = await this.repo.findOne(committedWorkloadId);
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
     }
-
     async findByUserIdInTimeRange(
         userId: DomainId | number,
         startDateInWeek: Date,

@@ -23,6 +23,45 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
         };
     }
 
+    public static toDomainOverview(
+        raw: ContributedValueEntity,
+    ): ContributedValue {
+        const { id } = raw;
+        const valueStreamId = raw.valueStream.id;
+        const valueStream = ValueStream.create(
+            {
+                name: raw.valueStream.name,
+                createdAt: raw.valueStream.createdAt,
+                updatedAt: raw.valueStream.updatedAt,
+            },
+            new UniqueEntityID(valueStreamId),
+        );
+        const expertiseScopeId = raw.expertiseScope.id;
+        const expertiseScope = ExpertiseScope.create(
+            {
+                name: raw.expertiseScope.name,
+                createdAt: raw.expertiseScope.createdAt,
+                updatedAt: raw.expertiseScope.updatedAt,
+            },
+            new UniqueEntityID(expertiseScopeId),
+        );
+
+        const contributedValueOrError = ContributedValue.create(
+            {
+                createdAt: raw.createdAt,
+                updatedAt: raw.updatedAt,
+            },
+            new UniqueEntityID(id),
+        );
+        contributedValueOrError.getValue().valueStream = valueStream.getValue();
+        contributedValueOrError.getValue().expertiseScope =
+            expertiseScope.getValue();
+
+        return contributedValueOrError.isSuccess
+            ? contributedValueOrError.getValue()
+            : null;
+    }
+
     public static toDomain(
         contributedValueEntity: ContributedValueEntity,
     ): ContributedValue {

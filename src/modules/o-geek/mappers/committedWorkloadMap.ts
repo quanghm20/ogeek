@@ -25,6 +25,26 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         };
     }
 
+    public static toDomainOverview(
+        raw: CommittedWorkloadEntity,
+    ): CommittedWorkload {
+        const { id } = raw;
+        const committedWorkloadOrError = CommittedWorkload.create(
+            {
+                contributedValue: ContributedValueMap.toDomain(
+                    raw.contributedValue,
+                ),
+                committedWorkload: raw.committedWorkload,
+                startDate: raw.startDate,
+                expiredDate: raw.expiredDate,
+                status: raw.status,
+            },
+            new UniqueEntityID(id),
+        );
+        return committedWorkloadOrError.isSuccess
+            ? committedWorkloadOrError.getValue()
+            : null;
+    }
     public static fromDomainAll(
         committedWLs: CommittedWorkload[],
     ): CommittedWorkloadDto[] {
@@ -77,5 +97,17 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             }
         });
         return arrCommittedWL;
+    }
+
+    public static toArrayDomain(
+        raws: CommittedWorkloadEntity[],
+    ): CommittedWorkload[] {
+        const committedWorkloadsOrError = Array<CommittedWorkload>();
+        raws.forEach(function get(item) {
+            const committedWorkloadOrError =
+                CommittedWorkloadMap.toDomain(item);
+            committedWorkloadsOrError.push(committedWorkloadOrError);
+        });
+        return committedWorkloadsOrError ? committedWorkloadsOrError : null;
     }
 }
