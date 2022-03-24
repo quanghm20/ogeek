@@ -2,11 +2,11 @@ import { Result } from '../../../../../core/logic/Result';
 import { UseCaseError } from '../../../../../core/logic/UseCaseError';
 import { DomainId } from '../../../domain/domainId';
 
-export namespace GetAverageCommittedWorkloadErrors {
-    export class NoWorkloadCommitted extends Result<UseCaseError> {
-        constructor(committedWorkloadId: DomainId | number) {
+export namespace GetAverageActualWorkloadErrors {
+    export class NoWorkloadLogged extends Result<UseCaseError> {
+        constructor(userId: DomainId | number) {
             super(false, {
-                message: `User has not committed ${committedWorkloadId.toString()} workload for any expertise scope`,
+                message: `User ${userId.toString()} has not logged workload for any expertise scope`,
             } as UseCaseError);
         }
     }

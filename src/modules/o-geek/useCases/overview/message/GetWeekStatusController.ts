@@ -5,21 +5,23 @@ import {
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
-    Param,
+    Req,
 } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 
+import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
 import { GetWeekStatusDto } from '../../../infra/dtos/getWeekStatus.dto';
 import { UserMap } from '../../../mappers/userMap';
 import { GetWeekStatusErrors } from './GetWeekStatusErrors';
 import { GetWeekStatusUseCase } from './GetWeekStatusUseCase';
 
-@Controller('week-status')
+@Controller('/api/overview/week-status')
 @ApiTags('Week Status')
 export class GetWeekStatusController {
     constructor(public readonly useCase: GetWeekStatusUseCase) {}
 
-    @Get('id')
+    @Get()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: GetWeekStatusDto,
@@ -29,7 +31,8 @@ export class GetWeekStatusController {
         type: GetWeekStatusDto,
         description: 'No week status to show',
     })
-    async execute(@Param('id') userId: number): Promise<GetWeekStatusDto> {
+    async execute(@Req() req: Request): Promise<GetWeekStatusDto> {
+        const { userId } = req.user as JwtPayload;
         const result = await this.useCase.execute(userId);
         if (result.isLeft()) {
             const error = result.value;

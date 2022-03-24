@@ -5,7 +5,6 @@ import { Mapper } from '../../../core/infra/Mapper';
 import { CommittedWorkload } from '../domain/committedWorkload';
 // import { ContributedValue } from '../domain/contributedValue';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
-import { AverageCommittedWorkloadDto } from '../infra/dtos/averageCommittedWorkload.dto';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { ContributedValueMap } from './contributedValueMap';
 
@@ -23,15 +22,6 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             startDate: committedWorkload.props.startDate,
             expiredDate: committedWorkload.props.expiredDate,
             picId: committedWorkload.props.picId,
-        };
-    }
-    public static fromDomainAverageCommittedWorkload(
-        committedWorkload: CommittedWorkload,
-    ): AverageCommittedWorkloadDto {
-        return {
-            committedWorkload: committedWorkload.props.committedWorkload,
-            expertiseScope:
-                committedWorkload.props.contributedValue.expertiseScope.name,
         };
     }
 

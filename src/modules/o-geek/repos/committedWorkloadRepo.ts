@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import {
+    LessThan,
+    LessThanOrEqual,
+    MoreThanOrEqual,
+    Repository,
+} from 'typeorm';
 
 import { WorkloadStatus } from '../../../common/constants/committed-status';
 import { CommittedWorkload } from '../domain/committedWorkload';
@@ -11,17 +16,16 @@ import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface ICommittedWorkloadRepo {
-    findById(
-        committedWorkloadId: DomainId | number,
-    ): Promise<CommittedWorkload>;
-    findByUserId(userId: DomainId | number): Promise<CommittedWorkload[]>;
+    findById(committedWorkloadId: DomainId | number);
     findByUserIdInTimeRange(
         userId: DomainId | number,
         startDateInWeek: Date,
     ): Promise<CommittedWorkload[]>;
-    findAverageCommittedWorkloadBy(
+    findByIdInPrecedingWeeks(
         userId: DomainId | number,
+        startDate: Date,
     ): Promise<CommittedWorkload[]>;
+    findByUserId(userId: DomainId | number): Promise<CommittedWorkload[]>;
 }
 
 @Injectable()
@@ -30,18 +34,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         @InjectRepository(CommittedWorkloadEntity)
         protected repo: Repository<CommittedWorkloadEntity>,
     ) {}
-
-    async findById(
-        committedWorkloadId: DomainId | number,
-    ): Promise<CommittedWorkload> {
-        committedWorkloadId =
-            committedWorkloadId instanceof DomainId
-                ? Number(committedWorkloadId.id.toValue())
-                : committedWorkloadId;
-        const entity = await this.repo.findOne(committedWorkloadId);
-        return entity ? CommittedWorkloadMap.toDomain(entity) : null;
-    }
-
     async findByUserId(
         userId: DomainId | number,
     ): Promise<CommittedWorkload[]> {
@@ -51,7 +43,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             where: {
                 status: WorkloadStatus.ACTIVE,
                 user: userId,
-                expiredDate: MoreThanOrEqual(new Date()),
+                startDate: MoreThanOrEqual(new Date()),
             },
             relations: [
                 'contributedValue',
@@ -63,6 +55,17 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         return entities
             ? CommittedWorkloadMap.toDomainAll(entities)
             : new Array<CommittedWorkload>();
+    }
+
+    async findById(
+        committedWorkloadId: DomainId | number,
+    ): Promise<CommittedWorkload> {
+        committedWorkloadId =
+            committedWorkloadId instanceof DomainId
+                ? Number(committedWorkloadId.id.toValue())
+                : committedWorkloadId;
+        const entity = await this.repo.findOne(committedWorkloadId);
+        return entity ? CommittedWorkloadMap.toDomain(entity) : null;
     }
 
     async findByUserIdInTimeRange(
@@ -95,17 +98,28 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             : new Array<CommittedWorkload>();
     }
 
-    async findAverageCommittedWorkloadBy(
+    async findByIdInPrecedingWeeks(
         userId: DomainId | number,
+        startDate: Date,
     ): Promise<CommittedWorkload[]> {
-        userId =
-            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
-        const entity = await this.repo.find({
+        const entities = await this.repo.find({
             where: {
-                user: { id: userId },
+                user: userId,
+                startDate: MoreThanOrEqual(
+                    MomentService.shiftFirstDateChart(startDate),
+                ),
+                expiredDate: LessThan(
+                    MomentService.getFirstDateOfWeek(startDate),
+                ),
             },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'committedWorkload',
+                'committedWorkload.contributedValue',
+                'committedWorkload.contributedValue.expertiseScope',
+            ],
         });
-
-        return entity ? CommittedWorkloadMap.toDomainAll(entity) : null;
+        return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
     }
 }

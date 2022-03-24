@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import moment from 'moment';
+import * as moment from 'moment';
 
 @Injectable()
 export class MomentService {
     moment(): moment.Moment {
+        // eslint-disable-next-line import/namespace
         moment.updateLocale('en', { week: { dow: 6, doy: 8 } });
         return this.moment();
     }
