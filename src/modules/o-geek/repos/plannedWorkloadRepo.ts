@@ -21,10 +21,7 @@ export interface IPlannedWorkloadRepo {
         startDateOfYear: string,
         endDateOfYear: string,
     ): Promise<PlannedWorkload[]>;
-
     findById(plannedWorkloadId: DomainId | number): Promise<PlannedWorkload>;
-    create(entity: PlannedWorkloadEntity): Promise<PlannedWorkload>;
-    createMany(entities: PlannedWorkloadEntity[]): Promise<PlannedWorkload[]>;
     findByIdWithTimeRange(
         userId: DomainId | number,
         startDate: Date,
@@ -34,6 +31,9 @@ export interface IPlannedWorkloadRepo {
         startDateOfWeek,
         endDateOfWeek,
     }: InputGetPlanWLDto): Promise<PlannedWorkload[]>;
+    create(entity: PlannedWorkloadEntity): Promise<PlannedWorkload>;
+    createMany(entities: PlannedWorkloadEntity[]): Promise<PlannedWorkload[]>;
+    updateMany(condition: any, update: any): Promise<void>;
 }
 
 @Injectable()
@@ -157,5 +157,9 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             ],
         });
         return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;
+    }
+
+    async updateMany(condition: any, update: any): Promise<void> {
+        await this.repo.update(condition, update);
     }
 }
