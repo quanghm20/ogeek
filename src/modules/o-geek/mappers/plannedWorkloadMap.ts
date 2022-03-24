@@ -11,18 +11,18 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     public static fromDomain(
         plannedWorkload: PlannedWorkload,
     ): PlannedWorkloadDto {
-        return {
-            id: plannedWorkload.id,
-            contributedValue: ContributedValueMap.fromDomain(
-                plannedWorkload.props.contributedValue,
-            ),
-            committedWorkload: CommittedWorkloadMap.fromDomain(
-                plannedWorkload.props.committedWorkload,
-            ),
-            plannedWorkload: plannedWorkload.props.plannedWorkload,
-            startDate: plannedWorkload.props.startDate,
-            status: plannedWorkload.props.status,
-        };
+        const dto = new PlannedWorkloadDto();
+        dto.id = plannedWorkload.id;
+        dto.contributedValue = ContributedValueMap.fromDomain(
+            plannedWorkload.props.contributedValue,
+        );
+        dto.committedWorkload = CommittedWorkloadMap.fromDomain(
+            plannedWorkload.props.committedWorkload,
+        );
+        dto.plannedWorkload = plannedWorkload.props.plannedWorkload;
+        dto.startDate = plannedWorkload.props.startDate;
+        dto.status = plannedWorkload.props.status;
+        return dto;
     }
 
     public static fromDomainList(
@@ -80,7 +80,6 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     ): PlannedWorkloadEntity {
         const entity = new PlannedWorkloadEntity();
 
-        // entity.id = Number(plannedWorkload.plannedWorkloadId.id.toValue());
         entity.status = plannedWorkload.status;
         entity.user = UserMap.toEntity(plannedWorkload.user);
         entity.reason = plannedWorkload.reason;

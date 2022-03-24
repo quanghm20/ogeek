@@ -13,15 +13,16 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
     public static fromDomain(
         contributedValue: ContributedValue,
     ): ContributedValueDto {
-        return {
-            id: contributedValue.id,
-            valueStream: ValueStreamMap.fromDomain(
-                contributedValue.props.valueStream,
-            ),
-            expertiseScope: ExpertiseScopeMap.fromDomain(
-                contributedValue.props.expertiseScope,
-            ),
-        };
+        const dto = new ContributedValueDto();
+
+        dto.id = contributedValue.id;
+        dto.valueStream = ValueStreamMap.fromDomain(
+            contributedValue.props.valueStream,
+        );
+        dto.expertiseScope = ExpertiseScopeMap.fromDomain(
+            contributedValue.props.expertiseScope,
+        );
+        return dto;
     }
 
     public static fromDomainShort(

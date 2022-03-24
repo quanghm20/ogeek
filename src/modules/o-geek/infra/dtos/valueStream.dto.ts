@@ -15,7 +15,7 @@ export class ValueStreamDto {
     @ApiProperty({ example: new Date() })
     updatedAt?: Date;
 
-    constructor(valueStream: ValueStreamEntity) {
+    constructor(valueStream?: ValueStreamEntity) {
         this.id = new UniqueEntityID(valueStream.id);
         this.name = valueStream.name;
         this.createdAt = valueStream.createdAt;

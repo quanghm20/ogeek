@@ -8,27 +8,27 @@ import { ValueStreamDto } from '../infra/dtos/valueStream.dto';
 
 export class ValueStreamMap implements Mapper<ValueStream> {
     public static fromDomain(valueStream: ValueStream): ValueStreamDto {
-        return {
-            id: valueStream.valueStreamId.id,
-            name: valueStream.name,
-        };
+        const dto = new ValueStreamDto();
+        dto.id = valueStream.valueStreamId.id;
+        dto.name = valueStream.name;
+        return dto;
     }
 
     public static fromDomainShort(
         valueStream: ValueStream,
     ): ValueStreamShortDto {
-        return {
-            id: Number(valueStream.valueStreamId.id.toValue()),
-            name: valueStream.name,
-        };
+        const dto = new ValueStreamShortDto();
+        dto.id = Number(valueStream.valueStreamId.id.toValue());
+        dto.name = valueStream.name;
+        return dto;
     }
     public static fromDomainShortInsert(
         valueStream: ValueStream,
     ): ValueStreamShortInsertDto {
-        return {
-            id: Number(valueStream.valueStreamId.id.toValue()),
-            name: valueStream.name,
-        };
+        const dto = new ValueStreamShortInsertDto();
+        dto.id = Number(valueStream.valueStreamId.id.toValue());
+        dto.name = valueStream.name;
+        return dto;
     }
     public static fromDomainShortAll(
         raw: ValueStream[],

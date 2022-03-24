@@ -8,16 +8,17 @@ import { UserDto } from '../infra/dtos/user.dto';
 
 export class UserMap implements Mapper<User> {
     public static fromDomain(user: User): UserDto {
-        return {
-            id: new UniqueEntityID(user.userId.id.toValue()),
-            alias: user.alias,
-            email: user.email,
-            name: user.name,
-            phone: user.phone,
-            role: user.role,
-            weekStatus: user.weekStatus,
-            avatar: user.avatar,
-        };
+        const dto = new UserDto();
+        dto.id = new UniqueEntityID(user.userId.id.toValue());
+        dto.alias = user.alias;
+        dto.email = user.email;
+        dto.name = user.name;
+        dto.phone = user.phone;
+        dto.role = user.role;
+        dto.weekStatus = user.weekStatus;
+        dto.avatar = user.avatar;
+        dto.weekStatus = user.weekStatus;
+        return dto;
     }
     public static fromDomainWeekStatus(user: User): GetWeekStatusDto {
         return {

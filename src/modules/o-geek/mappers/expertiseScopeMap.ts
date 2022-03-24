@@ -9,10 +9,10 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
     public static fromDomain(
         expertiseScope: ExpertiseScope,
     ): ExpertiseScopeDto {
-        return {
-            id: expertiseScope.expertiseScopeId.id,
-            name: expertiseScope.name,
-        };
+        const dto = new ExpertiseScopeDto();
+        dto.id = expertiseScope.expertiseScopeId.id;
+        dto.name = expertiseScope.name;
+        return dto;
     }
     public static fromDomainShort(
         expertiseScope: ExpertiseScope,
