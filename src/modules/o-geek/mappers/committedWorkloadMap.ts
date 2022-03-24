@@ -56,8 +56,6 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         entity.expiredDate = committedWorkload.expiredDate;
         entity.status = committedWorkload.status;
         entity.committedWorkload = committedWorkload.committedWorkload;
-        // entity.user = UserMap.toEntity(committedWorkload.user);
-        // entity.pic = UserMap.toEntity(committedWorkload.pic);
         entity.contributedValue = ContributedValueMap.toEntity(
             committedWorkload.contributedValue,
         );
