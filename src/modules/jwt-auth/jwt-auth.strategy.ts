@@ -27,7 +27,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
         });
     }
 
-    validate(payload: JwtPayload) {
+    validate(payload: JwtPayload): JwtPayload {
         if (!payload) {
             throw new UnauthorizedException('Forbidden!!');
         }

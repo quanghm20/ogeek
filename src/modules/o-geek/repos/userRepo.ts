@@ -30,9 +30,9 @@ export class UserRepository implements IUserRepo {
     }
 
     async findById(userId: DomainId | number): Promise<User> {
-        userId =
+        const id =
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
-        const entity = await this.repo.findOne(userId);
+        const entity = await this.repo.findOne(id);
         return entity ? UserMap.toDomain(entity) : null;
     }
 
@@ -49,13 +49,4 @@ export class UserRepository implements IUserRepo {
         const createdUser = await this.repo.save(entity);
         return createdUser ? UserMap.toDomain(entity) : null;
     }
-
-    // async getWeekStatus(userId: DomainId | number): Promise<WeekStatus> {
-    //     userId =
-    //         userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
-    //     const weekStatus = await this.repo
-    //     .createQueryBuilder("week_status").where('id' = userId);
-
-    //     return weekStatus ? UserMap.toDomain(weekStatus) : null;
-    // }
 }

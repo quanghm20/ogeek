@@ -82,12 +82,14 @@ export class ValueStreamMap implements Mapper<ValueStream> {
         });
         return contributedValuesOrError ? contributedValuesOrError : null;
     }
-    public static toEntity(valueStream: ValueStream): ValueStreamEntity {
-        const valueStreamEntity = new ValueStreamEntity();
-        valueStreamEntity.id = Number(valueStream.id.toValue());
-        valueStreamEntity.name = valueStream.name;
 
-        return valueStreamEntity;
+    public static toEntity(valueStream: ValueStream): ValueStreamEntity {
+        const entity = new ValueStreamEntity();
+
+        entity.id = Number(valueStream.id.toValue());
+        entity.name = valueStream.name;
+
+        return entity;
     }
 
     public static toArrayDomain(raws: ValueStreamEntity[]): ValueStream[] {

@@ -13,7 +13,6 @@ import { RoleType } from '../../../../../common/constants/role-type';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { GetContributedValueShortDto } from '../../../infra/dtos/getContributedValue/getContributedValue.dto';
-import { ValueStreamShortInsertDto } from '../../../infra/dtos/getContributedValue/valueStreamShort.dto';
 import { GetContributedValueErrors } from './GetContributedValueErrors';
 import { GetContributedValueUseCase } from './GetContributedValueUseCase';
 
@@ -24,12 +23,11 @@ import { GetContributedValueUseCase } from './GetContributedValueUseCase';
 export class GetContributedValueController {
     constructor(public readonly useCase: GetContributedValueUseCase) {}
 
-    @Get('contributed')
+    @Get()
     @Roles(RoleType.ADMIN)
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
-        type: ValueStreamShortInsertDto,
-        isArray: true,
+        type: GetContributedValueShortDto,
         description: 'Get all data contributed value',
     })
     async getContributed(): Promise<GetContributedValueShortDto> {

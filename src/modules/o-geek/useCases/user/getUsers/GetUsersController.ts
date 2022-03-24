@@ -8,8 +8,7 @@ import {
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
-import { UserShortDto } from '../../../infra/dtos/getUsers/getUsersDto';
-import { UserDto } from '../../../infra/dtos/user.dto';
+import { DataUserShortDto } from '../../../infra/dtos/getUsers/getUsersDto';
 import { GetUserErrors } from './GetUsersErrors';
 import { GetUsersUseCase } from './GetUsersUseCase';
 
@@ -22,10 +21,10 @@ export class GetUsersController {
     @ApiBearerAuth()
     @Get()
     @ApiOkResponse({
-        type: UserDto,
+        type: DataUserShortDto,
         description: 'Get all user',
     })
-    async execute(): Promise<UserShortDto[]> {
+    async execute(): Promise<DataUserShortDto> {
         const result = await this.useCase.execute();
         if (result.isLeft()) {
             const error = result.value;
@@ -37,6 +36,6 @@ export class GetUsersController {
             }
         }
 
-        return result.value.getValue();
+        return new DataUserShortDto(result.value.getValue());
     }
 }

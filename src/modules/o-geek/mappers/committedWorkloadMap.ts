@@ -22,7 +22,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             committedWorkload: committedWorkload.props.committedWorkload,
             startDate: committedWorkload.props.startDate,
             expiredDate: committedWorkload.props.expiredDate,
-            picId: committedWorkload.props.pic,
+            pic: committedWorkload.props.pic,
         };
     }
 
@@ -54,7 +54,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             committedWorkload.contributedValue,
         );
         const pic = UserMap.toEntity(committedWorkload.pic);
-        return new CommittedWorkloadEntity(
+        const entity = new CommittedWorkloadEntity(
             user,
             contributedValue,
             committedWorkload.committedWorkload,
@@ -62,7 +62,12 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             committedWorkload.expiredDate,
             pic,
         );
+        entity.contributedValue = ContributedValueMap.toEntity(
+            committedWorkload.contributedValue,
+        );
+        return entity;
     }
+
     public static fromDomainAll(
         committedWLs: CommittedWorkload[],
     ): CommittedWorkloadDto[] {
@@ -87,9 +92,11 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
                     startDate: committedWLEntity.startDate,
                     expiredDate: committedWLEntity.expiredDate,
                     status: committedWLEntity.status,
-                    contributedValue: ContributedValueMap.toDomain(
-                        committedWLEntity.contributedValue,
-                    ),
+                    contributedValue: committedWLEntity.contributedValue
+                        ? ContributedValueMap.toDomain(
+                              committedWLEntity.contributedValue,
+                          )
+                        : null,
                 },
                 new UniqueEntityID(id),
             );

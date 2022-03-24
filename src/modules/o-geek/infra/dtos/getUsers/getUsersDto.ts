@@ -12,3 +12,10 @@ export class UserShortDto {
         this.alias = alias;
     }
 }
+export class DataUserShortDto {
+    @ApiProperty({ type: UserShortDto, isArray: true })
+    data?: UserShortDto[];
+    constructor(data?: UserShortDto[]) {
+        this.data = data;
+    }
+}

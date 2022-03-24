@@ -19,7 +19,7 @@ export namespace CreateCommittedWorkloadErrors {
     export class DateError extends Result<UseCaseError> {
         constructor() {
             super(false, {
-                message: 'Date is not a valid !!!',
+                message: 'StartDate or ExpiredDate is not valid !',
             } as UseCaseError);
         }
     }

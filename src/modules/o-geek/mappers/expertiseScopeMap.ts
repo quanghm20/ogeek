@@ -57,6 +57,7 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
 
         return expertiseScopeEntity;
     }
+
     public static toDomainAll(
         expertiseScopes: ExpertiseScopeEntity[],
     ): ExpertiseScope[] {

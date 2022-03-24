@@ -33,6 +33,12 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     set contributedValue(contributedValue: ContributedValue) {
         this.props.contributedValue = contributedValue;
     }
+    get pic(): User {
+        return this.props.pic;
+    }
+    set pic(pic: User) {
+        this.props.pic = pic;
+    }
     get user(): User {
         return this.props.user;
     }
@@ -62,12 +68,6 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     }
     set status(status: WorkloadStatus) {
         this.props.status = status;
-    }
-    set pic(pic: User) {
-        this.props.pic = pic;
-    }
-    get pic(): User {
-        return this.props.pic;
     }
     public isActive(): boolean {
         return this.props.status === WorkloadStatus.ACTIVE;

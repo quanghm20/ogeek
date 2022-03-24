@@ -8,6 +8,7 @@ import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { UserShortDto } from '../../../infra/dtos/getUsers/getUsersDto';
 import { UserMap } from '../../../mappers/userMap';
 import { IUserRepo } from '../../../repos/userRepo';
+import { GetUserErrors } from './GetUsersErrors';
 
 type Response = Either<
     AppError.UnexpectedError,
@@ -25,7 +26,7 @@ export class GetUsersUseCase
         try {
             const users = await this.repo.findAllUser();
             if (!users) {
-                return left(new AppError.UnexpectedError('No users were found'));
+                return left(new GetUserErrors.NoUsers());
             }
             const data = UserMap.toArrayUserShort(users);
             return right(Result.ok(data));

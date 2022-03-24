@@ -16,6 +16,7 @@ interface IPlannedWorkloadProps {
     plannedWorkload?: number;
     committedWorkload?: CommittedWorkload;
     startDate?: Date;
+    reason?: string;
     status?: WorkloadStatus;
     createdAt?: Date;
     updatedAt?: Date;
@@ -62,6 +63,12 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     }
     get plannedWorkloadId(): DomainId {
         return DomainId.create(this._id).getValue();
+    }
+    get contributedValue(): ContributedValue {
+        return this.props.contributedValue;
+    }
+    get reason(): string {
+        return this.props.reason;
     }
     public isActive(): boolean {
         return this.props.status === WorkloadStatus.ACTIVE;

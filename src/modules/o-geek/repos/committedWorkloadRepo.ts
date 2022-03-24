@@ -100,7 +100,9 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             committedWorkloadId instanceof DomainId
                 ? Number(committedWorkloadId.id.toValue())
                 : committedWorkloadId;
-        const entity = await this.repo.findOne(committedWorkloadId);
+        const entity = await this.repo.findOne(committedWorkloadId, {
+            relations: ['contributedValue'],
+        });
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
     }
     async save(
@@ -121,25 +123,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         try {
             const user = new UserEntity(userId);
             const pic = new UserEntity(picId);
-            let gap = 0;
 
-            if (startDate > expiredDate) {
-                gap = Math.ceil(
-                    (startDate.getTime() - expiredDate.getTime()) /
-                        (24 * 60 * 60 * 1000),
-                );
-                const temp = startDate;
-                startDate = expiredDate;
-                expiredDate = temp;
-            } else {
-                gap = Math.ceil(
-                    (expiredDate.getTime() - startDate.getTime()) /
-                        (24 * 60 * 60 * 1000),
-                );
-            }
-            if (gap < 7 || gap % 7 !== 0) {
-                return HttpStatus.BAD_REQUEST;
-            }
             await queryRunner.startTransaction();
             for await (const workload of committedWorkload) {
                 const contributes = await this.repoContributed.find({
