@@ -5,7 +5,7 @@ import * as moment from 'moment';
 export class MomentService {
     moment(): moment.Moment {
         // eslint-disable-next-line import/namespace
-        moment.updateLocale('en', { week: { dow: 6, doy: 8 } });
+        moment.updateLocale('en', { week: { dow: 6 } });
         return this.moment();
     }
 

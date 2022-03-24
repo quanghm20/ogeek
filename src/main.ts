@@ -10,6 +10,7 @@ import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
 import * as helmet from 'helmet';
+import * as moment from 'moment';
 import * as morgan from 'morgan';
 import {
     initializeTransactionalContext,
@@ -37,6 +38,13 @@ async function bootstrap() {
             },
         },
     );
+    // eslint-disable-next-line import/namespace
+    moment.updateLocale('en', {
+        week: {
+            dow: 6, // Saturday is the first day of the week.
+            // doy: 1, // The week that contains Jan 1st is the first week of the year.
+        },
+    });
 
     const configService = app.select(SharedModule).get(ConfigService);
 

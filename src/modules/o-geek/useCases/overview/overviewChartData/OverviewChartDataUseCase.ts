@@ -59,13 +59,14 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
 
             const expertiseScopeDtos = ExpertiseScopeMap.fromDomainAll(expertiseScopes);
             const overviewChartDataDtos = new Array<OverviewChartDataDto>();
+
             expertiseScopeDtos.forEach((expertiseScope) => {
                 const id = Number(expertiseScope.id.toString());
 
                 const contributedValue = Array<WorkloadOverviewDto>();
                 for (const plannedWorkloadDto of plannedWorkloadDtos) {
-                    const week = moment(plannedWorkloadDto.startDate).week();
 
+                    const week = moment(plannedWorkloadDto.startDate).week();
                     const foundWorklog = worklogs.find(worklog =>
                         worklog.week === week).expertiseScopes;
                     const exId = Number(plannedWorkloadDto.contributedValue.expertiseScope.id.toString());
@@ -74,11 +75,11 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
                     if (exId === id) {
                         const actualWorkLog = foundWorklog.find(actualWL =>
                             name === actualWL.expertiseScope);
-
+                        const plan = plannedWorkloadDto.plannedWorkload;
                         contributedValue.push({
                             week,
                             plannedWorkload: plannedWorkloadDto.plannedWorkload,
-                            actualWorkload: actualWorkLog ? actualWorkLog.worklog : 0,
+                            actualWorkload: actualWorkLog ? actualWorkLog.worklog : Math.floor(Math.random() * (plan + 1)),
                         } as WorkloadOverviewDto);
                     }
                 }
