@@ -7,22 +7,23 @@ import { CommittedWorkload } from '../domain/committedWorkload';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { ContributedValueMap } from './contributedValueMap';
+import { UserMap } from './userMap';
 
 export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     public static fromDomain(
         committedWorkload: CommittedWorkload,
     ): CommittedWorkloadDto {
-        return {
-            id: committedWorkload.id,
-            user: committedWorkload.props.user,
-            contributedValue: ContributedValueMap.fromDomain(
-                committedWorkload.props.contributedValue,
-            ),
-            committedWorkload: committedWorkload.props.committedWorkload,
-            startDate: committedWorkload.props.startDate,
-            expiredDate: committedWorkload.props.expiredDate,
-            pic: committedWorkload.props.pic,
-        };
+        const dto = new CommittedWorkloadDto();
+        dto.id = committedWorkload.id;
+        dto.user = committedWorkload.props.user;
+        dto.contributedValue = ContributedValueMap.fromDomain(
+            committedWorkload.props.contributedValue,
+        );
+        dto.committedWorkload = committedWorkload.props.committedWorkload;
+        dto.startDate = committedWorkload.props.startDate;
+        dto.expiredDate = committedWorkload.props.expiredDate;
+        dto.pic = committedWorkload.props.pic;
+        return dto;
     }
 
     public static toDomainOverview(
@@ -45,21 +46,25 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             ? committedWorkloadOrError.getValue()
             : null;
     }
-
     public static toEntity(
         committedWorkload: CommittedWorkload,
     ): CommittedWorkloadEntity {
-        const entity = new CommittedWorkloadEntity();
-
-        entity.id = Number(committedWorkload.committedWorkloadId.id.toValue());
-        entity.startDate = committedWorkload.startDate;
-        entity.expiredDate = committedWorkload.expiredDate;
-        entity.status = committedWorkload.status;
-        entity.committedWorkload = committedWorkload.committedWorkload;
+        const user = UserMap.toEntity(committedWorkload.user);
+        const contributedValue = ContributedValueMap.toEntity(
+            committedWorkload.contributedValue,
+        );
+        const pic = UserMap.toEntity(committedWorkload.pic);
+        const entity = new CommittedWorkloadEntity(
+            user,
+            contributedValue,
+            committedWorkload.committedWorkload,
+            committedWorkload.startDate,
+            committedWorkload.expiredDate,
+            pic,
+        );
         entity.contributedValue = ContributedValueMap.toEntity(
             committedWorkload.contributedValue,
         );
-
         return entity;
     }
 
@@ -68,9 +73,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     ): CommittedWorkloadDto[] {
         const arrCommittedWLDto = new Array<CommittedWorkloadDto>();
         committedWLs.forEach((committedWL) => {
-            arrCommittedWLDto.push(
-                CommittedWorkloadMap.fromDomain(committedWL),
-            );
+            arrCommittedWLDto.push(this.fromDomain(committedWL));
         });
         return arrCommittedWLDto;
     }
@@ -80,7 +83,6 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     ): CommittedWorkload {
         try {
             const { id } = committedWLEntity;
-
             const committedWorkloadOrError = CommittedWorkload.create(
                 {
                     committedWorkload: committedWLEntity.committedWorkload,
@@ -109,7 +111,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     ): CommittedWorkload[] {
         const arrCommittedWL = new Array<CommittedWorkload>();
         committedWLs.forEach((committedWL) => {
-            const committedOrError = CommittedWorkloadMap.toDomain(committedWL);
+            const committedOrError = this.toDomain(committedWL);
             if (committedOrError) {
                 arrCommittedWL.push(committedOrError);
             } else {

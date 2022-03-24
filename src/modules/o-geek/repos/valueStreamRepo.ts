@@ -28,10 +28,9 @@ export class ValueStreamRepository implements IValueStreamRepo {
         const entity = await this.repo.findOne(valueStreamId);
         return entity ? ValueStreamMap.toDomain(entity) : null;
     }
-
     async findAll(): Promise<ValueStream[]> {
-        const entities = await this.repo.find();
-        return entities ? ValueStreamMap.toDomainAll(entities) : null;
+        const entity = await this.repo.find({});
+        return entity ? ValueStreamMap.toDomainAll(entity) : null;
     }
 
     async findAllOverview(): Promise<ValueStream[]> {

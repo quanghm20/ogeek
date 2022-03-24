@@ -5,6 +5,7 @@ import { ExpertiseScope } from '../domain/expertiseScope';
 import { ValueStream } from '../domain/valueStream';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
 import { ContributedValueDto } from '../infra/dtos/contributedValue.dto';
+import { ContributedValueShortDto } from '../infra/dtos/getContributedValue/contributedValueShort.dto';
 import { ExpertiseScopeMap } from './expertiseScopeMap';
 import { ValueStreamMap } from './valueStreamMap';
 
@@ -12,15 +13,42 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
     public static fromDomain(
         contributedValue: ContributedValue,
     ): ContributedValueDto {
-        return {
-            id: contributedValue.id,
-            valueStream: ValueStreamMap.fromDomain(
-                contributedValue.props.valueStream,
-            ),
-            expertiseScope: ExpertiseScopeMap.fromDomain(
-                contributedValue.props.expertiseScope,
-            ),
-        };
+        const dto = new ContributedValueDto();
+
+        dto.id = contributedValue.id;
+        dto.valueStream = ValueStreamMap.fromDomain(
+            contributedValue.props.valueStream,
+        );
+        dto.expertiseScope = ExpertiseScopeMap.fromDomain(
+            contributedValue.props.expertiseScope,
+        );
+        return dto;
+    }
+
+    public static fromDomainShort(
+        contributedValue: ContributedValue,
+    ): ContributedValueShortDto {
+        const valueStream = ValueStreamMap.fromDomainShort(
+            contributedValue.valueStream,
+        );
+        const expertiseScope = ExpertiseScopeMap.fromDomainShort(
+            contributedValue.expertiseScope,
+        );
+        return new ContributedValueShortDto(
+            Number(contributedValue.id.toValue()),
+            valueStream,
+            expertiseScope,
+        );
+    }
+    public static fromDomainShortAll(
+        raw: ContributedValue[],
+    ): ContributedValueShortDto[] {
+        const contributedValuesOrError = Array<ContributedValueShortDto>();
+        raw.forEach(function get(item) {
+            const contributed = ContributedValueMap.fromDomainShort(item);
+            contributedValuesOrError.push(contributed);
+        });
+        return contributedValuesOrError ? contributedValuesOrError : null;
     }
 
     public static toDomainOverview(
@@ -109,38 +137,8 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
     ): ContributedValue[] {
         const contributedValuesOrError = Array<ContributedValue>();
         raw.forEach(function get(item) {
-            const { id } = item;
-            const valueStreamId = item.valueStream.id;
-            const valueStream = ValueStream.create(
-                {
-                    name: item.valueStream.name,
-                    createdAt: item.valueStream.createdAt,
-                    updatedAt: item.valueStream.updatedAt,
-                },
-                new UniqueEntityID(valueStreamId),
-            );
-            const expertiseScopeId = item.expertiseScope.id;
-            const expertiseScope = ExpertiseScope.create(
-                {
-                    name: item.expertiseScope.name,
-                    createdAt: item.expertiseScope.createdAt,
-                    updatedAt: item.expertiseScope.updatedAt,
-                },
-                new UniqueEntityID(expertiseScopeId),
-            );
-
-            const contributedValueOrError = ContributedValue.create(
-                {
-                    createdAt: item.createdAt,
-                    updatedAt: item.updatedAt,
-                },
-                new UniqueEntityID(id),
-            );
-            contributedValueOrError.getValue().valueStream =
-                valueStream.getValue();
-            contributedValueOrError.getValue().expertiseScope =
-                expertiseScope.getValue();
-            contributedValuesOrError.push(contributedValueOrError.getValue());
+            const contributed = ContributedValueMap.toDomain(item);
+            contributedValuesOrError.push(contributed);
         });
         return contributedValuesOrError ? contributedValuesOrError : null;
     }

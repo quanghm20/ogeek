@@ -165,6 +165,9 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         };
         defaultValues.createdAt = new Date();
         defaultValues.updatedAt = new Date();
+        if (defaultValues.startDate < defaultValues.createdAt) {
+            defaultValues.status = WorkloadStatus.INACTIVE;
+        }
         defaultValues.contributedValue = props.contributedValue;
         const committedWorkload = new CommittedWorkload(defaultValues, id);
         return Result.ok<CommittedWorkload>(committedWorkload);

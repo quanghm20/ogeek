@@ -18,7 +18,7 @@ import { GetUserErrors } from './GetUserErrors';
 import { GetUserUseCase } from './GetUserUseCase';
 
 @Controller('api/user')
-@ApiTags('User')
+@ApiTags('Users')
 export class GetUserController {
     constructor(public readonly useCase: GetUserUseCase) {}
 
@@ -27,7 +27,7 @@ export class GetUserController {
     @Get()
     @ApiOkResponse({
         type: UserDto,
-        description: 'get user by alias with jwt token',
+        description: 'Get user by alias with jwt token',
     })
     async execute(@Req() req: Request): Promise<UserDto> {
         const jwtPayload = req.user as JwtPayload;

@@ -6,7 +6,7 @@ import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { User } from '../../../../../modules/o-geek/domain/user';
 import { UserDto } from '../../../../../modules/o-geek/infra/dtos/user.dto';
-import { IUserRepo } from '../../../../../modules/o-geek/repos/userRepo';
+import { UserRepository } from '../../../../../modules/o-geek/repos/userRepo';
 import { FailToCreateUserErrors } from './CreateUserErrors';
 
 type Response = Either<
@@ -16,7 +16,7 @@ type Response = Either<
 
 @Injectable()
 export class CreateUserUseCase implements IUseCase<UserDto, Promise<Response>> {
-    constructor(@Inject('IUserRepo') public readonly repo: IUserRepo) {}
+    constructor(@Inject('IUserRepo') public readonly repo: UserRepository) {}
 
     async execute(userDto: UserDto): Promise<Response> {
         try {

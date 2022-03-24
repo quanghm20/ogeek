@@ -3,13 +3,22 @@ import { Mapper } from '../../../core/infra/Mapper';
 import { ExpertiseScope } from '../domain/expertiseScope';
 import { ExpertiseScopeEntity } from '../infra/database/entities/expertiseScope.entity';
 import { ExpertiseScopeDto } from '../infra/dtos/expertiseScope.dto';
+import { ExpertiseScopeShortDto } from '../infra/dtos/getContributedValue/expertiseScopeShort.dto';
 
 export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
     public static fromDomain(
         expertiseScope: ExpertiseScope,
     ): ExpertiseScopeDto {
+        const dto = new ExpertiseScopeDto();
+        dto.id = expertiseScope.expertiseScopeId.id;
+        dto.name = expertiseScope.name;
+        return dto;
+    }
+    public static fromDomainShort(
+        expertiseScope: ExpertiseScope,
+    ): ExpertiseScopeShortDto {
         return {
-            id: expertiseScope.expertiseScopeId.id,
+            id: Number(expertiseScope.expertiseScopeId.id),
             name: expertiseScope.name,
         };
     }
@@ -39,16 +48,14 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
             ? expertiseScopeOrError.getValue()
             : null;
     }
-
     public static toEntity(
         expertiseScope: ExpertiseScope,
     ): ExpertiseScopeEntity {
-        const entity = new ExpertiseScopeEntity();
+        const expertiseScopeEntity = new ExpertiseScopeEntity();
+        expertiseScopeEntity.id = Number(expertiseScope.id.toValue());
+        expertiseScopeEntity.name = expertiseScope.name;
 
-        entity.id = Number(expertiseScope.id.toValue());
-        entity.name = expertiseScope.name;
-
-        return entity;
+        return expertiseScopeEntity;
     }
 
     public static toDomainAll(

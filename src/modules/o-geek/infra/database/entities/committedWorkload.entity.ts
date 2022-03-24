@@ -59,4 +59,21 @@ export class CommittedWorkloadEntity extends AbstractEntity {
         (plannedWorkload) => plannedWorkload.committedWorkload,
     )
     plannedWorkloads: PlannedWorkloadEntity[];
+
+    constructor(
+        user: UserEntity,
+        contributedValue: ContributedValueEntity,
+        committedWorkload: number,
+        startDate: Date,
+        expiredDate: Date,
+        pic: UserEntity,
+    ) {
+        super();
+        this.user = user;
+        this.contributedValue = contributedValue;
+        this.committedWorkload = committedWorkload;
+        this.startDate = startDate;
+        this.expiredDate = expiredDate;
+        this.pic = pic;
+    }
 }

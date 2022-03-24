@@ -2,24 +2,43 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { ValueStream } from '../domain/valueStream';
 import { ValueStreamEntity } from '../infra/database/entities/valueStream.entity';
+import { ValueStreamShortInsertDto } from '../infra/dtos/getContributedValue/valueStreamShort.dto';
 import { ValueStreamShortDto } from '../infra/dtos/summaryYearDTO/valueStreamShort.dto';
 import { ValueStreamDto } from '../infra/dtos/valueStream.dto';
 
 export class ValueStreamMap implements Mapper<ValueStream> {
     public static fromDomain(valueStream: ValueStream): ValueStreamDto {
-        return {
-            id: valueStream.valueStreamId.id,
-            name: valueStream.name,
-        };
+        const dto = new ValueStreamDto();
+        dto.id = valueStream.valueStreamId.id;
+        dto.name = valueStream.name;
+        return dto;
     }
 
     public static fromDomainShort(
         valueStream: ValueStream,
     ): ValueStreamShortDto {
-        return {
-            id: Number(valueStream.valueStreamId.id.toValue()),
-            name: valueStream.name,
-        };
+        const dto = new ValueStreamShortDto();
+        dto.id = Number(valueStream.valueStreamId.id.toValue());
+        dto.name = valueStream.name;
+        return dto;
+    }
+    public static fromDomainShortInsert(
+        valueStream: ValueStream,
+    ): ValueStreamShortInsertDto {
+        const dto = new ValueStreamShortInsertDto();
+        dto.id = Number(valueStream.valueStreamId.id.toValue());
+        dto.name = valueStream.name;
+        return dto;
+    }
+    public static fromDomainShortAll(
+        raw: ValueStream[],
+    ): ValueStreamShortInsertDto[] {
+        const contributedValuesOrError = Array<ValueStreamShortInsertDto>();
+        raw.forEach(function get(item) {
+            const valueStream = ValueStreamMap.fromDomainShort(item);
+            contributedValuesOrError.push(valueStream);
+        });
+        return contributedValuesOrError ? contributedValuesOrError : null;
     }
 
     public static fromArrayDomain(
@@ -55,6 +74,14 @@ export class ValueStreamMap implements Mapper<ValueStream> {
             ? valueStreamOrError.getValue()
             : null;
     }
+    public static toDomainAll(raw: ValueStreamEntity[]): ValueStream[] {
+        const contributedValuesOrError = Array<ValueStream>();
+        raw.forEach(function get(item) {
+            const valueStream = ValueStreamMap.toDomain(item);
+            contributedValuesOrError.push(valueStream);
+        });
+        return contributedValuesOrError ? contributedValuesOrError : null;
+    }
 
     public static toEntity(valueStream: ValueStream): ValueStreamEntity {
         const entity = new ValueStreamEntity();
@@ -72,21 +99,5 @@ export class ValueStreamMap implements Mapper<ValueStream> {
             valueStreamsOrError.push(valueStream);
         });
         return valueStreamsOrError ? valueStreamsOrError : null;
-    }
-
-    public static toDomainAll(
-        valueStreams: ValueStreamEntity[],
-    ): ValueStream[] {
-        const valueStreamArray = new Array<ValueStream>();
-        valueStreams.forEach((valueStream) => {
-            const valueStreamOrError = ValueStreamMap.toDomain(valueStream);
-            if (valueStreamOrError) {
-                valueStreamArray.push(valueStreamOrError);
-            } else {
-                return null;
-            }
-        });
-
-        return valueStreamArray;
     }
 }

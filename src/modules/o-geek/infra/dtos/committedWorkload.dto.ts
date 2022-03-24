@@ -6,13 +6,13 @@ import { ContributedValueDto } from './contributedValue.dto';
 import { UserDto } from './user.dto';
 
 export class CommittedWorkloadDto {
-    @ApiProperty({ type: () => UniqueEntityID, example: 134 })
+    @ApiProperty({ type: UniqueEntityID, example: 134 })
     id: UniqueEntityID | number;
 
-    @ApiProperty({ type: () => UserDto })
+    @ApiProperty({ type: UserDto })
     user?: UserDto;
 
-    @ApiProperty({ type: () => ContributedValueDto })
+    @ApiProperty({ type: ContributedValueDto })
     contributedValue?: ContributedValueDto;
 
     @ApiProperty({ example: 40 })
