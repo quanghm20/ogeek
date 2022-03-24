@@ -13,13 +13,19 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
         contributedValue: ContributedValue,
     ): ContributedValueDto {
         return {
-            id: contributedValue.contributedValueId.id,
-            valueStream: contributedValue.props.valueStream,
-            expertiseScope: contributedValue.props.expertiseScope,
+            id: contributedValue.id,
+            valueStream: ValueStreamMap.fromDomain(
+                contributedValue.props.valueStream,
+            ),
+            expertiseScope: ExpertiseScopeMap.fromDomain(
+                contributedValue.props.expertiseScope,
+            ),
         };
     }
 
-    public static toDomain(raw: ContributedValueEntity): ContributedValue {
+    public static toDomainOverview(
+        raw: ContributedValueEntity,
+    ): ContributedValue {
         const { id } = raw;
         const valueStreamId = raw.valueStream.id;
         const valueStream = ValueStream.create(
@@ -30,13 +36,14 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
             },
             new UniqueEntityID(valueStreamId),
         );
+        const expertiseScopeId = raw.expertiseScope.id;
         const expertiseScope = ExpertiseScope.create(
             {
                 name: raw.expertiseScope.name,
                 createdAt: raw.expertiseScope.createdAt,
                 updatedAt: raw.expertiseScope.updatedAt,
             },
-            new UniqueEntityID(valueStreamId),
+            new UniqueEntityID(expertiseScopeId),
         );
         const contributedValueOrError = ContributedValue.create(
             {
@@ -69,6 +76,32 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
         );
 
         return entity;
+    }
+
+    public static toDomain(
+        contributedValueEntity: ContributedValueEntity,
+    ): ContributedValue {
+        const { id } = contributedValueEntity;
+
+        const contributedValueOrError = ContributedValue.create(
+            {
+                valueStream: contributedValueEntity.valueStream
+                    ? ValueStreamMap.toDomain(
+                          contributedValueEntity.valueStream,
+                      )
+                    : null,
+                expertiseScope: contributedValueEntity.expertiseScope
+                    ? ExpertiseScopeMap.toDomain(
+                          contributedValueEntity.expertiseScope,
+                      )
+                    : null,
+            },
+            new UniqueEntityID(id),
+        );
+
+        return contributedValueOrError.isSuccess
+            ? contributedValueOrError.getValue()
+            : null;
     }
 
     public static toDomainAll(

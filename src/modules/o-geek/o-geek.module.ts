@@ -17,14 +17,24 @@ import {
     PlannedWorkloadRepository,
     UserRepository,
     ValueStreamRepository,
-} from './repos';
+} from './repos/index';
+import { GetAverageActualWorkloadController } from './useCases/overview/getAverageActualWorkload/GetAverageActualWorkloadController';
+import { GetAverageActualWorkloadUseCase } from './useCases/overview/getAverageActualWorkload/GetAverageActualWorkloadUseCase';
+import { GetWeekStatusController } from './useCases/overview/message/GetWeekStatusController';
+import { GetWeekStatusUseCase } from './useCases/overview/message/GetWeekStatusUseCase';
+import { OverviewChartDataController } from './useCases/overview/overviewChartData/OverviewChartDataController';
+import { GetOverviewChartDataUseCase } from './useCases/overview/overviewChartData/OverviewChartDataUseCase';
+import { GetOverviewSummaryYearController } from './useCases/overview/summary-year/GetOverviewSummaryYearController';
+import { GetOverviewSummaryYearUseCase } from './useCases/overview/summary-year/GetOverviewSummaryYearUseCase';
 import {
     PlanWorkloadController,
     PlanWorkloadUseCase,
 } from './useCases/plannedWorkload/planWorkload';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
-import { GetUserController } from './useCases/user/GetUser/GetUserController';
-import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
+import { GetUserController } from './useCases/user/getUser/GetUserController';
+import { GetUserUseCase } from './useCases/user/getUser/GetUserUseCase';
+import { GetValueStreamController } from './useCases/valueStream/getValueStream/GetValueStreamController';
+import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/GetValueStreamUseCase';
 
 @Module({
     imports: [
@@ -39,11 +49,26 @@ import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
             ValueStreamEntity,
         ]),
     ],
-    controllers: [GetUserController, PlanWorkloadController],
+    controllers: [
+        GetUserController,
+        GetValueStreamController,
+        GetWeekStatusController,
+        OverviewChartDataController,
+        GetAverageActualWorkloadController,
+        GetOverviewSummaryYearController,
+        GetValueStreamController,
+        PlanWorkloadController,
+    ],
     providers: [
         CreateUserUseCase,
         GetUserUseCase,
         PlanWorkloadUseCase,
+        CreateUserUseCase,
+        GetUserUseCase,
+        GetValueStreamUseCase,
+        GetWeekStatusUseCase,
+        GetOverviewChartDataUseCase,
+        GetAverageActualWorkloadUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,
@@ -68,15 +93,21 @@ import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
             provide: 'IPlannedWorkloadRepo',
             useClass: PlannedWorkloadRepository,
         },
-        {
-            provide: 'IUserRepo',
-            useClass: UserRepository,
-        },
+        UserRepository,
         {
             provide: 'IValueStreamRepo',
             useClass: ValueStreamRepository,
         },
+        GetUserUseCase,
+        CreateUserUseCase,
+        GetOverviewSummaryYearUseCase,
     ],
-    exports: [CreateUserUseCase, GetUserUseCase],
+    exports: [
+        UserRepository,
+        CreateUserUseCase,
+        GetUserUseCase,
+        GetValueStreamUseCase,
+        TypeOrmModule,
+    ],
 })
 export class OGeekModule {}

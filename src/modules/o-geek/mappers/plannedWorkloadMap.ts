@@ -13,9 +13,12 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     ): PlannedWorkloadDto {
         return {
             id: plannedWorkload.id,
-            user: plannedWorkload.props.user,
-            contributedValue: plannedWorkload.props.contributedValue,
-            committedWorkload: plannedWorkload.props.committedWorkload,
+            contributedValue: ContributedValueMap.fromDomain(
+                plannedWorkload.props.contributedValue,
+            ),
+            committedWorkload: CommittedWorkloadMap.fromDomain(
+                plannedWorkload.props.committedWorkload,
+            ),
             plannedWorkload: plannedWorkload.props.plannedWorkload,
             startDate: plannedWorkload.props.startDate,
             status: plannedWorkload.props.status,
@@ -39,13 +42,30 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
         );
     }
 
+    public static fromDomainAll(
+        plannedWLs: PlannedWorkload[],
+    ): PlannedWorkloadDto[] {
+        const arrPlannedWLDto = new Array<PlannedWorkloadDto>();
+        plannedWLs.forEach((plannedWL) => {
+            arrPlannedWLDto.push(PlannedWorkloadMap.fromDomain(plannedWL));
+        });
+        return arrPlannedWLDto;
+    }
+
     public static toDomain(raw: PlannedWorkloadEntity): PlannedWorkload {
         const { id } = raw;
+
         const plannedWorkloadOrError = PlannedWorkload.create(
             {
                 plannedWorkload: raw.plannedWorkload,
                 startDate: raw.startDate,
                 status: raw.status,
+                contributedValue: ContributedValueMap.toDomain(
+                    raw.contributedValue,
+                ),
+                committedWorkload: CommittedWorkloadMap.toDomain(
+                    raw.committedWorkload,
+                ),
             },
             new UniqueEntityID(id),
         );
@@ -77,29 +97,38 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
         return entity;
     }
 
-    public static toDomainAll(
+    public static toArrayDomain(
         raws: PlannedWorkloadEntity[],
     ): PlannedWorkload[] {
-        const plannedWorkloadsOrError = [] as PlannedWorkload[];
-
-        if (raws.length === 0) {
-            return plannedWorkloadsOrError;
-        }
-        for (const raw of raws) {
+        const plannedWorkloadsOrError = Array<PlannedWorkload>();
+        raws.forEach(function get(raw) {
             const { id } = raw;
             const plannedWorkloadOrError = PlannedWorkload.create(
                 {
+                    committedWorkload: CommittedWorkloadMap.toDomain(
+                        raw.committedWorkload,
+                    ),
                     plannedWorkload: raw.plannedWorkload,
-                    startDate: raw.startDate,
-                    status: raw.status,
                 },
                 new UniqueEntityID(id),
             );
-            if (!plannedWorkloadOrError.isSuccess) {
+            plannedWorkloadsOrError.push(plannedWorkloadOrError.getValue());
+        });
+        return plannedWorkloadsOrError ? plannedWorkloadsOrError : null;
+    }
+
+    public static toDomainAll(
+        plannedWLs: PlannedWorkloadEntity[],
+    ): PlannedWorkload[] {
+        const arrPlannedWL = new Array<PlannedWorkload>();
+        plannedWLs.forEach((plannedWL) => {
+            const plannedWLOrError = PlannedWorkloadMap.toDomain(plannedWL);
+            if (plannedWLOrError) {
+                arrPlannedWL.push(plannedWLOrError);
+            } else {
                 return null;
             }
-            plannedWorkloadsOrError.push(plannedWorkloadOrError.getValue());
-        }
-        return plannedWorkloadsOrError;
+        });
+        return arrPlannedWL;
     }
 }

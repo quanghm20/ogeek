@@ -1,5 +1,5 @@
 @baseUrl=http://localhost:3000/api
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTY0ODA4MTY1MywiZXhwIjoxNjQ4MDg1MjUzfQ.d6zRop8xvsk4FOxjk5Bevco0cwSCyQd0y7UREulkzPI
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTY0ODEyMDkwNCwiZXhwIjoxNjUwNzEyOTA0fQ.eD3ZPzfJmbYtmP3Fdt_9QrYyAkZQLYf2dlEM1Tsv7JM
 ###
 POST {{baseUrl}}/planned-workload/plan-workload
 Authorization: Bearer {{token}}

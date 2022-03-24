@@ -15,9 +15,9 @@ interface IPlannedWorkloadProps {
     user?: User;
     plannedWorkload?: number;
     committedWorkload?: CommittedWorkload;
-    startDate: Date;
+    startDate?: Date;
     reason?: string;
-    status: WorkloadStatus;
+    status?: WorkloadStatus;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -36,6 +36,12 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     }
     set plannedWorkload(workload: number) {
         this.props.plannedWorkload = workload;
+    }
+    get committedWorkload(): CommittedWorkload {
+        return this.props.committedWorkload;
+    }
+    set committedWorkload(committedWorkload: CommittedWorkload) {
+        this.props.committedWorkload = committedWorkload;
     }
     get startDate(): Date {
         return this.props.startDate;
@@ -61,9 +67,6 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     get contributedValue(): ContributedValue {
         return this.props.contributedValue;
     }
-    get committedWorkload(): CommittedWorkload {
-        return this.props.committedWorkload;
-    }
     get reason(): string {
         return this.props.reason;
     }
@@ -83,6 +86,7 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
         };
         defaultValues.createdAt = new Date();
         defaultValues.updatedAt = new Date();
+
         const plannedWorkload = new PlannedWorkload(defaultValues, id);
         return Result.ok<PlannedWorkload>(plannedWorkload);
     }
