@@ -2,6 +2,7 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { User } from '../domain/user';
 import { UserEntity } from '../infra/database/entities/user.entity';
+import { GetWeekStatusDto } from '../infra/dtos/getWeekStatus.dto';
 import { UserDto } from '../infra/dtos/user.dto';
 
 export class UserMap implements Mapper<User> {
@@ -15,6 +16,11 @@ export class UserMap implements Mapper<User> {
             role: user.role,
             weekStatus: user.weekStatus,
             avatar: user.avatar,
+        };
+    }
+    public static fromDomainWeekStatus(user: User): GetWeekStatusDto {
+        return {
+            weekStatus: user.weekStatus,
         };
     }
 

@@ -9,9 +9,9 @@ import {
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { JwtPayload } from '../../../../../modules/jwt-auth/jwt-auth.strategy';
-import { FindUserDto } from '../../../../../modules/o-geek/infra/dtos/findUser.dto';
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
+import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
+import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { UserDto } from '../../../infra/dtos/user.dto';
 import { UserMap } from '../../../mappers/userMap';
 import { GetUserErrors } from './GetUserErrors';

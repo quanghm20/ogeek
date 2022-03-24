@@ -14,10 +14,13 @@ import {
     PlannedWorkloadRepository,
     UserRepository,
     ValueStreamRepository,
-} from './repos';
+} from './repos/index';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
-import { GetUserController } from './useCases/user/GetUser/GetUserController';
-import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
+import { GetUserController } from './useCases/user/getUser/GetUserController';
+import { GetUserUseCase } from './useCases/user/getUser/GetUserUseCase';
+import { GetValueStreamController } from './useCases/valueStream/getValueStream/GetValueStreamController';
+import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/GetValueStreamUseCase';
+
 @Module({
     imports: [
         HttpModule,
@@ -30,10 +33,11 @@ import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
             PlannedWorkloadEntity,
         ]),
     ],
-    controllers: [GetUserController],
+    controllers: [GetUserController, GetValueStreamController],
     providers: [
         CreateUserUseCase,
         GetUserUseCase,
+        GetValueStreamUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,
@@ -63,6 +67,11 @@ import { GetUserUseCase } from './useCases/user/GetUser/GetUserUseCase';
             useClass: ValueStreamRepository,
         },
     ],
-    exports: [CreateUserUseCase, GetUserUseCase],
+    exports: [
+        CreateUserUseCase,
+        GetUserUseCase,
+        GetValueStreamUseCase,
+        TypeOrmModule,
+    ],
 })
 export class OGeekModule {}

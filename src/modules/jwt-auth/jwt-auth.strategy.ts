@@ -16,7 +16,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
             try {
                 return ExtractJwt.fromAuthHeaderAsBearerToken()(req);
             } catch (error) {
-                throw new UnauthorizedException('Forbiden!!');
+                throw new UnauthorizedException('Forbidden!!');
             }
         }
 
@@ -29,7 +29,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
 
     validate(payload: JwtPayload) {
         if (!payload) {
-            throw new UnauthorizedException('Forbiden!!');
+            throw new UnauthorizedException('Forbidden!!');
         }
         return payload;
     }

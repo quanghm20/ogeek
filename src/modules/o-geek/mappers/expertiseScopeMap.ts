@@ -14,6 +14,18 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
         };
     }
 
+    public static fromDomainAll(
+        expertiseScopes: ExpertiseScope[],
+    ): ExpertiseScopeDto[] {
+        const listExpertiseScopesDto = new Array<ExpertiseScopeDto>();
+        expertiseScopes.forEach((expertiseScope) => {
+            listExpertiseScopesDto.push(
+                ExpertiseScopeMap.fromDomain(expertiseScope),
+            );
+        });
+        return listExpertiseScopesDto;
+    }
+
     public static toDomain(raw: ExpertiseScopeEntity): ExpertiseScope {
         const { id } = raw;
         const expertiseScopeOrError = ExpertiseScope.create(
@@ -26,5 +38,22 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
         return expertiseScopeOrError.isSuccess
             ? expertiseScopeOrError.getValue()
             : null;
+    }
+
+    public static toDomainAll(
+        expertiseScopes: ExpertiseScopeEntity[],
+    ): ExpertiseScope[] {
+        const listExpertiseScopes = new Array<ExpertiseScope>();
+        expertiseScopes.forEach((expertiseScope) => {
+            const expertiseScopesOrError =
+                ExpertiseScopeMap.toDomain(expertiseScope);
+            if (expertiseScopesOrError) {
+                listExpertiseScopes.push(expertiseScopesOrError);
+            } else {
+                return null;
+            }
+        });
+
+        return listExpertiseScopes;
     }
 }
