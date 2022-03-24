@@ -37,15 +37,9 @@ export class GetContributedValueController {
             const error = result.value;
             switch (error.constructor) {
                 case GetContributedValueErrors.NotFound:
-                    throw new NotFoundException(
-                        error.errorValue(),
-                        'Can not get all contributed by id',
-                    );
+                    throw new NotFoundException(error.errorValue());
                 default:
-                    throw new InternalServerErrorException(
-                        error.errorValue(),
-                        'Can not search contributed ',
-                    );
+                    throw new InternalServerErrorException(error.errorValue());
             }
         }
         return result.value.getValue();
