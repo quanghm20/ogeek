@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
     getConnection,
@@ -11,7 +11,6 @@ import {
 import { WorkloadStatus } from '../../../common/constants/committed-status';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
-// import { User } from '../domain/user';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
 import { UserEntity } from '../infra/database/entities/user.entity';
@@ -32,7 +31,7 @@ export interface ICommittedWorkloadRepo {
         startDate: Date,
         expiredDate: Date,
         picId: number,
-    ): Promise<string>;
+    ): Promise<number>;
     findByUserIdInTimeRange(
         userId: DomainId | number,
         startDateInWeek: Date,
@@ -116,12 +115,31 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         startDate: Date,
         expiredDate: Date,
         picId: number,
-    ): Promise<string> {
+    ): Promise<number> {
         const queryRunner = getConnection().createQueryRunner();
         await queryRunner.connect();
         try {
             const user = new UserEntity(userId);
             const pic = new UserEntity(picId);
+            let gap = 0;
+
+            if (startDate > expiredDate) {
+                gap = Math.ceil(
+                    (startDate.getTime() - expiredDate.getTime()) /
+                        (24 * 60 * 60 * 1000),
+                );
+                const temp = startDate;
+                startDate = expiredDate;
+                expiredDate = temp;
+            } else {
+                gap = Math.ceil(
+                    (expiredDate.getTime() - startDate.getTime()) /
+                        (24 * 60 * 60 * 1000),
+                );
+            }
+            if (gap < 7 || gap % 7 !== 0) {
+                return HttpStatus.BAD_REQUEST;
+            }
             await queryRunner.startTransaction();
             for await (const workload of committedWorkload) {
                 const contributes = await this.repoContributed.find({
@@ -145,10 +163,10 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 await queryRunner.manager.save(committed);
             }
             await queryRunner.commitTransaction();
-            return 'ok';
+            return HttpStatus.CREATED;
         } catch (error) {
             await queryRunner.rollbackTransaction();
-            return '500';
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
     }
     async findByUserIdInTimeRange(

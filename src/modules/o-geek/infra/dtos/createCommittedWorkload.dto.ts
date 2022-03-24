@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsDateString, IsNumber } from 'class-validator';
 
-// import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { WorkloadDto } from './workload.dto';
 
 export class CreateCommittedWorkloadDto {

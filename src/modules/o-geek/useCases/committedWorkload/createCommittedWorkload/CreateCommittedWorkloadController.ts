@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     ForbiddenException,
@@ -55,6 +56,8 @@ export class CreateCommittedWorkloadController {
                     throw new ForbiddenException(error.errorValue());
                 case CreateCommittedWorkloadErrors.NotFound:
                     throw new NotFoundException(error.errorValue());
+                case CreateCommittedWorkloadErrors.DateError:
+                    throw new BadRequestException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(error.errorValue());
             }

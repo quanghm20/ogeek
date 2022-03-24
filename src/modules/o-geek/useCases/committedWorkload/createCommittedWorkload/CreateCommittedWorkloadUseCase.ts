@@ -44,6 +44,7 @@ export class CreateCommittedWorkloadUseCase
 						new CreateCommittedWorkloadErrors.Forbidden(),
 					) as Response;
 				}
+
 				const committedWorkloads = body.committedWorkloads;
 				const check = await this.checkContributed(committedWorkloads);
 				if (check !== 'ok') {
@@ -53,27 +54,27 @@ export class CreateCommittedWorkloadUseCase
 					expiredDate, picId);
 
 				switch (result) {
-					case '500':
+					case HttpStatus.INTERNAL_SERVER_ERROR:
 						return left(new AppError.UnexpectedError('Internal Server Error Exception'));
-					case 'ok':
+					case HttpStatus.CREATED:
 						return right(new MessageDto(HttpStatus.CREATED, 'Created committed workload !'));
-					default:
-						return left(new CreateCommittedWorkloadErrors.NotFound(result )) as Response;
+					case HttpStatus.BAD_REQUEST:
+						return left(new CreateCommittedWorkloadErrors.DateError());
 				}
 
 			} catch (err) {
 				return left(err);
 		}
 	}
-		  async checkContributed(committedWorkload: WorkloadDto[]): Promise<string> {
-			for await (const workload of committedWorkload) {
-				const contribute = await this.contributedValueRepo.findOne(workload.valueStreamId, workload.expertiseScopeId);
-				if (!contribute) {
-					return `Cannot get value stream with id ${workload.valueStreamId} and expertise scope with id ${workload.expertiseScopeId}`;
-				}
+	   async checkContributed(committedWorkload: WorkloadDto[]): Promise<string> {
+		for await (const workload of committedWorkload) {
+			const contribute = await this.contributedValueRepo.findOne(workload.valueStreamId, workload.expertiseScopeId);
+			if (!contribute) {
+				return `Cannot get value stream with id ${workload.valueStreamId} and expertise scope with id ${workload.expertiseScopeId}`;
 			}
-			return 'ok';
+		}
+		return 'ok';
 
-		  }
+	}
 
 }
