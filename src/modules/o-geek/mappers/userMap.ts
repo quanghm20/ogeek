@@ -41,4 +41,19 @@ export class UserMap implements Mapper<User> {
 
         return userOrError.isSuccess ? userOrError.getValue() : null;
     }
+
+    public static toEntity(user: User): UserEntity {
+        const entity = new UserEntity();
+
+        entity.id = Number(user.userId.id.toValue());
+        entity.alias = user.alias;
+        entity.email = user.email;
+        entity.name = user.name;
+        entity.phone = user.phone;
+        entity.role = user.role;
+        entity.weekStatus = user.weekStatus;
+        entity.avatar = user.avatar;
+
+        return entity;
+    }
 }

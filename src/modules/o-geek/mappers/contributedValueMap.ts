@@ -45,7 +45,6 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
             },
             new UniqueEntityID(expertiseScopeId),
         );
-
         const contributedValueOrError = ContributedValue.create(
             {
                 createdAt: raw.createdAt,
@@ -62,6 +61,23 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
             : null;
     }
 
+    public static toEntity(
+        contributedValue: ContributedValue,
+    ): ContributedValueEntity {
+        const entity = new ContributedValueEntity();
+
+        entity.id = Number(contributedValue.contributedValueId.id.toValue());
+        entity.expertiseScope = ExpertiseScopeMap.toEntity(
+            contributedValue.expertiseScope,
+        );
+
+        entity.valueStream = ValueStreamMap.toEntity(
+            contributedValue.valueStream,
+        );
+
+        return entity;
+    }
+
     public static toDomain(
         contributedValueEntity: ContributedValueEntity,
     ): ContributedValue {
@@ -69,12 +85,16 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
 
         const contributedValueOrError = ContributedValue.create(
             {
-                valueStream: ValueStreamMap.toDomain(
-                    contributedValueEntity.valueStream,
-                ),
-                expertiseScope: ExpertiseScopeMap.toDomain(
-                    contributedValueEntity.expertiseScope,
-                ),
+                valueStream: contributedValueEntity.valueStream
+                    ? ValueStreamMap.toDomain(
+                          contributedValueEntity.valueStream,
+                      )
+                    : null,
+                expertiseScope: contributedValueEntity.expertiseScope
+                    ? ExpertiseScopeMap.toDomain(
+                          contributedValueEntity.expertiseScope,
+                      )
+                    : null,
             },
             new UniqueEntityID(id),
         );

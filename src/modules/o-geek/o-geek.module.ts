@@ -1,12 +1,15 @@
 import { HttpModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { CommittedWorkloadEntity } from './infra/database/entities/committedWorkload.entity';
-import { ContributedValueEntity } from './infra/database/entities/contributedValue.entity';
-import { ExpertiseScopeEntity } from './infra/database/entities/expertiseScope.entity';
-import { PlannedWorkloadEntity } from './infra/database/entities/plannedWorkload.entity';
-import { UserEntity } from './infra/database/entities/user.entity';
-import { ValueStreamEntity } from './infra/database/entities/valueStream.entity';
+import {
+    CommittedWorkloadEntity,
+    ContributedValueEntity,
+    ExpertiseScopeEntity,
+    PlannedWorkloadEntity,
+    ProfileEntity,
+    UserEntity,
+    ValueStreamEntity,
+} from './infra/database/entities';
 import {
     CommittedWorkloadRepository,
     ContributedValueRepository,
@@ -23,6 +26,10 @@ import { OverviewChartDataController } from './useCases/overview/overviewChartDa
 import { GetOverviewChartDataUseCase } from './useCases/overview/overviewChartData/OverviewChartDataUseCase';
 import { GetOverviewSummaryYearController } from './useCases/overview/summary-year/GetOverviewSummaryYearController';
 import { GetOverviewSummaryYearUseCase } from './useCases/overview/summary-year/GetOverviewSummaryYearUseCase';
+import {
+    PlanWorkloadController,
+    PlanWorkloadUseCase,
+} from './useCases/plannedWorkload/planWorkload';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
 import { GetUserController } from './useCases/user/getUser/GetUserController';
 import { GetUserUseCase } from './useCases/user/getUser/GetUserUseCase';
@@ -37,8 +44,9 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             CommittedWorkloadEntity,
             ContributedValueEntity,
             ExpertiseScopeEntity,
-            ValueStreamEntity,
             PlannedWorkloadEntity,
+            ProfileEntity,
+            ValueStreamEntity,
         ]),
     ],
     controllers: [
@@ -49,8 +57,12 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetAverageActualWorkloadController,
         GetOverviewSummaryYearController,
         GetValueStreamController,
+        PlanWorkloadController,
     ],
     providers: [
+        CreateUserUseCase,
+        GetUserUseCase,
+        PlanWorkloadUseCase,
         CreateUserUseCase,
         GetUserUseCase,
         GetValueStreamUseCase,
@@ -62,12 +74,16 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             useClass: UserRepository,
         },
         {
-            provide: 'IContributedValueRepo',
-            useClass: ContributedValueRepository,
+            provide: 'IUserRepo',
+            useClass: UserRepository,
         },
         {
             provide: 'ICommittedWorkloadRepo',
             useClass: CommittedWorkloadRepository,
+        },
+        {
+            provide: 'IContributedValueRepo',
+            useClass: ContributedValueRepository,
         },
         {
             provide: 'IExpertiseScopeRepo',

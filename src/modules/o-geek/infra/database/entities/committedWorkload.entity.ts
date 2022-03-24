@@ -52,7 +52,7 @@ export class CommittedWorkloadEntity extends AbstractEntity {
     @JoinColumn({
         name: 'pic_id',
     })
-    picId: UserEntity;
+    pic: UserEntity;
 
     @OneToMany(
         () => PlannedWorkloadEntity,

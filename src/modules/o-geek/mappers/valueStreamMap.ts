@@ -56,6 +56,15 @@ export class ValueStreamMap implements Mapper<ValueStream> {
             : null;
     }
 
+    public static toEntity(valueStream: ValueStream): ValueStreamEntity {
+        const entity = new ValueStreamEntity();
+
+        entity.id = Number(valueStream.id.toValue());
+        entity.name = valueStream.name;
+
+        return entity;
+    }
+
     public static toArrayDomain(raws: ValueStreamEntity[]): ValueStream[] {
         const valueStreamsOrError = Array<ValueStream>();
         raws.forEach(function get(item) {

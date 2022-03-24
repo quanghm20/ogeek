@@ -1,0 +1,24 @@
+@baseUrl=http://localhost:3000/api
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTY0ODEyMDkwNCwiZXhwIjoxNjUwNzEyOTA0fQ.eD3ZPzfJmbYtmP3Fdt_9QrYyAkZQLYf2dlEM1Tsv7JM
+###
+POST {{baseUrl}}/planned-workload/plan-workload
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "startDate": "12-03-2022",
+    "reason": "Early Bird",
+    "plannedWorkloads": [
+        {
+	        "workload": 5,
+            "contributedValueId": 1,
+            "committedWorkloadId": 1
+        },
+        {
+	        "workload": 10,
+            "contributedValueId": 2,
+            "committedWorkloadId": 1
+        }
+    ]
+}
+

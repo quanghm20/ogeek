@@ -24,11 +24,11 @@ export class CommittedWorkloadDto {
     @ApiProperty({ example: new Date() })
     expiredDate?: Date;
 
-    @ApiProperty({ type: () => WorkloadStatus, example: WorkloadStatus.ACTIVE })
+    @ApiProperty({ enum: WorkloadStatus, example: WorkloadStatus.ACTIVE })
     status?: WorkloadStatus;
 
-    @ApiProperty({ type: () => () => UserDto })
-    picId?: UserDto;
+    @ApiProperty({ type: UserDto })
+    pic?: UserDto;
 
     @ApiProperty({ example: new Date() })
     createdAt?: Date;

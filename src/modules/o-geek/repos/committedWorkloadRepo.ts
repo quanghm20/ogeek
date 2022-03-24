@@ -16,7 +16,9 @@ import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface ICommittedWorkloadRepo {
-    findById(committedWorkloadId: DomainId | number);
+    findById(
+        committedWorkloadId: DomainId | number,
+    ): Promise<CommittedWorkload>;
     findByUserIdInTimeRange(
         userId: DomainId | number,
         startDateInWeek: Date,
@@ -83,9 +85,12 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             committedWorkloadId instanceof DomainId
                 ? Number(committedWorkloadId.id.toValue())
                 : committedWorkloadId;
-        const entity = await this.repo.findOne(committedWorkloadId);
+        const entity = await this.repo.findOne(committedWorkloadId, {
+            relations: ['contributedValue'],
+        });
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
     }
+
     async findByUserIdInTimeRange(
         userId: DomainId | number,
         startDateInWeek: Date,

@@ -21,7 +21,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             committedWorkload: committedWorkload.props.committedWorkload,
             startDate: committedWorkload.props.startDate,
             expiredDate: committedWorkload.props.expiredDate,
-            picId: committedWorkload.props.picId,
+            pic: committedWorkload.props.pic,
         };
     }
 
@@ -45,6 +45,24 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             ? committedWorkloadOrError.getValue()
             : null;
     }
+
+    public static toEntity(
+        committedWorkload: CommittedWorkload,
+    ): CommittedWorkloadEntity {
+        const entity = new CommittedWorkloadEntity();
+
+        entity.id = Number(committedWorkload.committedWorkloadId.id.toValue());
+        entity.startDate = committedWorkload.startDate;
+        entity.expiredDate = committedWorkload.expiredDate;
+        entity.status = committedWorkload.status;
+        entity.committedWorkload = committedWorkload.committedWorkload;
+        entity.contributedValue = ContributedValueMap.toEntity(
+            committedWorkload.contributedValue,
+        );
+
+        return entity;
+    }
+
     public static fromDomainAll(
         committedWLs: CommittedWorkload[],
     ): CommittedWorkloadDto[] {
@@ -69,9 +87,11 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
                     startDate: committedWLEntity.startDate,
                     expiredDate: committedWLEntity.expiredDate,
                     status: committedWLEntity.status,
-                    contributedValue: ContributedValueMap.toDomain(
-                        committedWLEntity.contributedValue,
-                    ),
+                    contributedValue: committedWLEntity.contributedValue
+                        ? ContributedValueMap.toDomain(
+                              committedWLEntity.contributedValue,
+                          )
+                        : null,
                 },
                 new UniqueEntityID(id),
             );
