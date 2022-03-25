@@ -16,8 +16,8 @@ import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
 import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkloadsList.dto';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
+import { MessageDto } from '../../../infra/dtos/message.dto';
 import { PlannedWorkloadDto } from '../../../infra/dtos/plannedWorkload.dto';
-import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
 import { PlanWorkloadErrors } from './PlanWorkloadErrors';
 import { PlanWorkloadUseCase } from './PlanWorkloadUseCase';
 
@@ -37,7 +37,7 @@ export class PlanWorkloadController {
     async execute(
         @Req() req: Request,
         @Body() createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
-    ): Promise<PlannedWorkloadDto[]> {
+    ): Promise<MessageDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
         const userId = findUserDto.userId;
@@ -63,6 +63,9 @@ export class PlanWorkloadController {
             }
         }
 
-        return PlannedWorkloadMap.fromDomainList(result.value.getValue());
+        return {
+            statusCode: HttpStatus.CREATED,
+            message: 'CREATED',
+        } as MessageDto;
     }
 }

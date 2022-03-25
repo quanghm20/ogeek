@@ -12,6 +12,7 @@ export interface IUserRepo {
     findById(userId: DomainId | number): Promise<User>;
     findByAlias(alias: string): Promise<User>;
     findAllUser(): Promise<User[]>;
+    update(condition: any, update: any): Promise<void>;
 }
 
 @Injectable()
@@ -48,5 +49,9 @@ export class UserRepository implements IUserRepo {
         });
         const createdUser = await this.repo.save(entity);
         return createdUser ? UserMap.toDomain(entity) : null;
+    }
+
+    async update(condition: any, update: any): Promise<void> {
+        await this.repo.update(condition, update);
     }
 }
