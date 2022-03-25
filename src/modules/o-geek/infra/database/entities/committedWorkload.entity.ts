@@ -66,7 +66,7 @@ export class CommittedWorkloadEntity extends AbstractEntity {
         committedWorkload: number,
         startDate: Date,
         expiredDate: Date,
-        pic: UserEntity,
+        pic?: UserEntity,
     ) {
         super();
         this.user = user;

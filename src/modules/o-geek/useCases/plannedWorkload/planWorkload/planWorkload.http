@@ -10,7 +10,7 @@ Content-Type: application/json
     "reason": "Early Bird",
     "plannedWorkloads": [
         {
-	        "workload": 20,
+	        "workload": 28,
             "contributedValueId": 1,
             "committedWorkloadId": 1
         },

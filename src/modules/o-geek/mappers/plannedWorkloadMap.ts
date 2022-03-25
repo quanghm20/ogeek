@@ -85,11 +85,13 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
         entity.reason = plannedWorkload.reason;
         entity.startDate = plannedWorkload.startDate;
         entity.plannedWorkload = plannedWorkload.plannedWorkload;
+
         entity.contributedValue = ContributedValueMap.toEntity(
             plannedWorkload.contributedValue,
         );
         plannedWorkload.committedWorkload.contributedValue =
             plannedWorkload.contributedValue;
+        plannedWorkload.committedWorkload.user = plannedWorkload.user;
         entity.committedWorkload = CommittedWorkloadMap.toEntity(
             plannedWorkload.committedWorkload,
         );
