@@ -16,9 +16,11 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         const dto = new CommittedWorkloadDto();
         dto.id = committedWorkload.id;
         dto.user = committedWorkload.props.user;
-        dto.contributedValue = ContributedValueMap.fromDomain(
-            committedWorkload.props.contributedValue,
-        );
+        dto.contributedValue = committedWorkload.props.contributedValue
+            ? ContributedValueMap.fromDomain(
+                  committedWorkload.props.contributedValue,
+              )
+            : null;
         dto.committedWorkload = committedWorkload.props.committedWorkload;
         dto.startDate = committedWorkload.props.startDate;
         dto.expiredDate = committedWorkload.props.expiredDate;

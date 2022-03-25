@@ -90,6 +90,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.expertiseScope',
             ],
         });
+
         return entity ? CommittedWorkloadMap.toArrayDomain(entity) : null;
     }
 
