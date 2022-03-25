@@ -1,5 +1,4 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import moment from 'moment';
 
 import { RoleType } from '../../../../../common/constants/role-type';
 import { IUseCase } from '../../../../../core/domain/UseCase';
@@ -46,13 +45,6 @@ export class CreateCommittedWorkloadUseCase
                         userId.toString(),
                     ),
                 ) as Response;
-            }
-            const start = moment(startDate);
-            const end = moment(expiredDate);
-            const gap = moment.duration(start.diff(end)).asDays();
-
-            if (gap < 7 || gap % 7 !== 0) {
-                return left(new CreateCommittedWorkloadErrors.DateError());
             }
             const committedWorkloads = body.committedWorkloads;
             const check = await this.checkContributed(committedWorkloads);
