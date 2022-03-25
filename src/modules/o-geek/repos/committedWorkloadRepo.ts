@@ -127,19 +127,18 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
 
             await queryRunner.startTransaction();
             for await (const workload of committedWorkload) {
-                const contributes = await this.repoContributed.find({
+                const contribute = await this.repoContributed.findOne({
                     where: {
                         valueStream: {
                             id: workload.valueStreamId,
                         },
                         expertiseScope: { id: workload.expertiseScopeId },
                     },
-                    take: 1,
                 });
 
                 const committed = new CommittedWorkloadEntity(
                     user,
-                    contributes[0],
+                    contribute,
                     workload.workload,
                     startDate,
                     expiredDate,
@@ -152,6 +151,8 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         } catch (error) {
             await queryRunner.rollbackTransaction();
             return HttpStatus.INTERNAL_SERVER_ERROR;
+        } finally {
+            await queryRunner.release();
         }
     }
     async findByUserIdInTimeRange(

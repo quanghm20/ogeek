@@ -1,6 +1,5 @@
-/* eslint-disable complexity */
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import * as moment from 'moment';
+import moment from 'moment';
 
 import { RoleType } from '../../../../../common/constants/role-type';
 import { IUseCase } from '../../../../../core/domain/UseCase';
@@ -20,7 +19,8 @@ type Response = Either<
 
 @Injectable()
 export class CreateCommittedWorkloadUseCase
-    implements IUseCase<CreateCommittedWorkloadDto | number, Promise<Response>> {
+    implements IUseCase<CreateCommittedWorkloadDto | number, Promise<Response>>
+{
     constructor(
         @Inject('IUserRepo') public readonly userRepo: IUserRepo,
         @Inject('ICommittedWorkloadRepo')
@@ -43,13 +43,12 @@ export class CreateCommittedWorkloadUseCase
             if (!user) {
                 return left(
                     new CreateCommittedWorkloadErrors.NotFound(
-                        `Could not find User ${userId}`,
+                        userId.toString(),
                     ),
                 ) as Response;
             }
             const start = moment(startDate);
             const end = moment(expiredDate);
-            // eslint-disable-next-line import/namespace
             const gap = moment.duration(start.diff(end)).asDays();
 
             if (gap < 7 || gap % 7 !== 0) {

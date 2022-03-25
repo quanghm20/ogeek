@@ -5,7 +5,7 @@ export namespace CreateCommittedWorkloadErrors {
     export class NotFound extends Result<UseCaseError> {
         constructor(message: string) {
             super(false, {
-                message: `${message} .`,
+                message: `Could not find User ${message} .`,
             } as UseCaseError);
         }
     }
