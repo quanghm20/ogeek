@@ -18,6 +18,8 @@ import {
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
 import { GetUserController } from './useCases/user/getUser/GetUserController';
 import { GetUserUseCase } from './useCases/user/getUser/GetUserUseCase';
+import { GetWorkloadListController } from './useCases/user/getWorkloadList/GetWorkloadListController';
+import { GetWorkloadListUseCase } from './useCases/user/getWorkloadList/GetWorkloadListUseCase';
 import { GetValueStreamController } from './useCases/valueStream/getValueStream/GetValueStreamController';
 import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/GetValueStreamUseCase';
 @Module({
@@ -32,11 +34,16 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             PlannedWorkloadEntity,
         ]),
     ],
-    controllers: [GetUserController, GetValueStreamController],
+    controllers: [
+        GetUserController,
+        GetValueStreamController,
+        GetWorkloadListController,
+    ],
     providers: [
         CreateUserUseCase,
         GetUserUseCase,
         GetValueStreamUseCase,
+        GetWorkloadListUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,
@@ -70,6 +77,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         CreateUserUseCase,
         GetUserUseCase,
         GetValueStreamUseCase,
+        GetWorkloadListUseCase,
         TypeOrmModule,
     ],
 })

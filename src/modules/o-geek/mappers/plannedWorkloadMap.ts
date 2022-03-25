@@ -5,6 +5,7 @@ import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkloa
 import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';
 import { CommittedWorkloadMap } from './committedWorkloadMap';
 import { ContributedValueMap } from './contributedValueMap';
+import { UserMap } from './userMap';
 
 export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     public static fromDomain(
@@ -12,6 +13,7 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     ): PlannedWorkloadDto {
         return {
             id: plannedWorkload.id,
+            user: plannedWorkload.props.user,
             contributedValue: ContributedValueMap.fromDomain(
                 plannedWorkload.props.contributedValue,
             ),
@@ -36,8 +38,10 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
 
     public static toDomain(raw: PlannedWorkloadEntity): PlannedWorkload {
         const { id } = raw;
+
         const plannedWorkloadOrError = PlannedWorkload.create(
             {
+                user: UserMap.toDomain(raw.user),
                 plannedWorkload: raw.plannedWorkload,
                 startDate: raw.startDate,
                 status: raw.status,

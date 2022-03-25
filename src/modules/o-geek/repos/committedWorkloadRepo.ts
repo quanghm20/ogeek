@@ -9,6 +9,7 @@ import { CommittedWorkloadEntity } from '../infra/database/entities/committedWor
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 
 export interface ICommittedWorkloadRepo {
+    findAll(): Promise<CommittedWorkload[]>;
     findById(
         committedWorkloadId: DomainId | number,
     ): Promise<CommittedWorkload>;
@@ -48,6 +49,25 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue',
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
+            ],
+        });
+
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
+    }
+
+    async findAll(): Promise<CommittedWorkload[]> {
+        const entities = await this.repo.find({
+            where: {
+                status: WorkloadStatus.ACTIVE,
+                // expiredDate: MoreThanOrEqual(new Date()),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'user',
             ],
         });
 

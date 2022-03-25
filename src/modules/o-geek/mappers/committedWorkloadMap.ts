@@ -6,6 +6,7 @@ import { CommittedWorkload } from '../domain/committedWorkload';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { ContributedValueMap } from './contributedValueMap';
+import { UserMap } from './userMap';
 
 export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     public static fromDomain(
@@ -44,6 +45,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
 
             const committedWorkloadOrError = CommittedWorkload.create(
                 {
+                    user: UserMap.toDomain(committedWLEntity.user),
                     committedWorkload: committedWLEntity.committedWorkload,
                     startDate: committedWLEntity.startDate,
                     expiredDate: committedWLEntity.expiredDate,
