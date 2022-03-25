@@ -54,6 +54,7 @@ export class UserMap implements Mapper<User> {
 
     public static toEntity(user: User): UserEntity {
         const userEntity = new UserEntity();
+
         userEntity.alias = user.alias;
         userEntity.name = user.name;
         userEntity.email = user.email;
