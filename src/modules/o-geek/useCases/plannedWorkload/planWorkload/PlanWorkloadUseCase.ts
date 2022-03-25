@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { WorkloadStatus } from '../../../../../common/constants/committed-status';
+import { WeekStatus } from '../../../../../common/constants/week-status';
 import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
@@ -41,8 +42,17 @@ export class PlanWorkloadUseCase
     try {
       // deactive all planned workload of current user
       await this.plannedWorkloadRepo.updateMany(
-        { user: { id: userId } },
+        {
+          startDate,
+          user: { id: userId },
+        },
         { status: WorkloadStatus.INACTIVE },
+      );
+
+      // change week status of user to planning
+      await this.userRepo.update(
+        { id: userId },
+        { weekStatus: WeekStatus.PLANNED },
       );
 
       // create new planned workloads
