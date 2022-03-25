@@ -55,6 +55,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             where: {
                 user: { id: userId },
                 startDate: Between(startDateOfYear, endDateOfYear),
+                status: WorkloadStatus.ACTIVE,
             },
             relations: [
                 'committedWorkload',
