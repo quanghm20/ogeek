@@ -40,7 +40,6 @@ export class CreateCommittedWorkloadController {
         description: 'Created committed workload',
     })
     @UsePipes(new ValidationPipe({ transform: true }))
-    // eslint-disable-next-line complexity
     async execute(
         @Body() body: CreateCommittedWorkloadDto,
         @Req() req: Request,
