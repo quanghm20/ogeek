@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNumber } from 'class-validator';
+import { IsArray, IsNumber, IsString } from 'class-validator';
 
 import { CommittedWorkloadByWeekDto } from './committedWorkloadOfWeek.dto';
 import { ExpertiseScopeWithinWorkloadListDto } from './expertiseScopeWithinWorkloadList.dto';
@@ -23,4 +23,8 @@ export class WorkloadListByWeekDto {
     @ApiProperty()
     @IsNumber()
     actualWorkload: number;
+
+    @ApiProperty()
+    @IsString()
+    typeOfIssue: string;
 }

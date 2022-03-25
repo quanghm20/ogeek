@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommittedWorkloadEntity } from './infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from './infra/database/entities/contributedValue.entity';
 import { ExpertiseScopeEntity } from './infra/database/entities/expertiseScope.entity';
+import { IssueEntity } from './infra/database/entities/issue.entity';
 import { PlannedWorkloadEntity } from './infra/database/entities/plannedWorkload.entity';
 import { UserEntity } from './infra/database/entities/user.entity';
 import { ValueStreamEntity } from './infra/database/entities/valueStream.entity';
@@ -15,6 +16,7 @@ import {
     UserRepository,
     ValueStreamRepository,
 } from './repos/index';
+import { IssueRepository } from './repos/issueRepo';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
 import { GetUserController } from './useCases/user/getUser/GetUserController';
 import { GetUserUseCase } from './useCases/user/getUser/GetUserUseCase';
@@ -32,6 +34,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             ExpertiseScopeEntity,
             ValueStreamEntity,
             PlannedWorkloadEntity,
+            IssueEntity,
         ]),
     ],
     controllers: [
@@ -71,6 +74,10 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         {
             provide: 'IValueStreamRepo',
             useClass: ValueStreamRepository,
+        },
+        {
+            provide: 'IIssueRepo',
+            useClass: IssueRepository,
         },
     ],
     exports: [

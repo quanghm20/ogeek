@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/tslint/config */
+/* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 import Axios from 'axios';
 import * as moment from 'moment';
@@ -6,11 +6,13 @@ import * as moment from 'moment';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { IssueMap } from '../../../../../modules/o-geek/mappers/issueMap';
 import { ICommittedWorkloadRepo } from '../../../../../modules/o-geek/repos/committedWorkloadRepo';
+import { IIssueRepo } from '../../../../../modules/o-geek/repos/issueRepo';
 import { IPlannedWorkloadRepo } from '../../../../../modules/o-geek/repos/plannedWorkloadRepo';
 import { IUserRepo } from '../../../../../modules/o-geek/repos/userRepo';
 import { ActualWorkloadListDto } from '../../../infra/dtos/workloadListByWeek/actualWorkloadList.dto';
-import { InputGetPlansWLDto } from '../../../infra/dtos/workloadListByWeek/inputGetPlans.dto';
+import { InputStartEndDateOfWeekWLDto } from '../../../infra/dtos/workloadListByWeek/inputGetPlans.dto';
 import { InputWeekDto } from '../../../infra/dtos/workloadListByWeek/inputWeek.dto';
 import { WorkloadListByWeekDto } from '../../../infra/dtos/workloadListByWeek/workloadListByWeek.dto';
 import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
@@ -30,8 +32,7 @@ interface ServerResponse {
 
 @Injectable()
 export class GetWorkloadListUseCase
-    implements IUseCase<{ week: number }, Promise<Response>>
-{
+    implements IUseCase<{ week: number }, Promise<Response>> {
     constructor(
         @Inject('ICommittedWorkloadRepo')
         public readonly committedWLRepo: ICommittedWorkloadRepo,
@@ -39,6 +40,8 @@ export class GetWorkloadListUseCase
         public readonly plannedWLRepo: IPlannedWorkloadRepo,
         @Inject('IUserRepo')
         public readonly userRepo: IUserRepo,
+        @Inject('IIssueRepo')
+        public readonly issueRepo: IIssueRepo,
     ) {}
 
     async execute(params: InputWeekDto): Promise<Response> {
@@ -70,23 +73,29 @@ export class GetWorkloadListUseCase
                 .format();
 
             const users = await this.userRepo.findAll();
+            const issues = await this.issueRepo.findAllByWeek({
+                startDateOfWeek,
+                endDateOfWeek,
+            } as InputStartEndDateOfWeekWLDto);
             const committedWorkloads = await this.committedWLRepo.findAll();
             const plannedWorkloads = await this.plannedWLRepo.findAllByWeek({
                 startDateOfWeek,
                 endDateOfWeek,
-            } as InputGetPlansWLDto);
+            } as InputStartEndDateOfWeekWLDto);
 
             const committedWLDtos =
                 CommittedWorkloadMap.fromDomainAll(committedWorkloads);
             const plannedWLDtos =
                 PlannedWorkloadMap.fromDomainAll(plannedWorkloads);
             const userDtos = UserMap.fromDomainAll(users);
+            const issueDtos = IssueMap.fromDomainAll(issues);
 
             const workloadListByWeekDto = WorkloadListByWeekMap.combineAllDto(
                 committedWLDtos,
                 plannedWLDtos,
                 userDtos,
                 response,
+                issueDtos,
             );
 
             if (!workloadListByWeekDto) {

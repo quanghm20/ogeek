@@ -1,6 +1,8 @@
 import * as moment from 'moment';
 
+import { IssueType } from '../../../common/constants/issue-type';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
+import { IssueDto } from '../infra/dtos/issue.dto';
 import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';
 import { UserDto } from '../infra/dtos/user.dto';
 import { ActualWorkloadListDto } from '../infra/dtos/workloadListByWeek/actualWorkloadList.dto';
@@ -15,6 +17,35 @@ interface ResultExpertiseScopeAndTotalWL {
 }
 
 export class WorkloadListByWeekMap {
+    public static handleIssue(issues: IssueDto[], user: UserDto): IssueType {
+        const issueItem = issues.find(
+            (issue) =>
+                Number(issue.user.id.toString()) === Number(user.id.toString()),
+        );
+
+        if (issueItem) {
+            return issueItem.type;
+        }
+
+        return IssueType.NOT_ISSUE;
+    }
+    public static handlePlannedWL(
+        arrPlannedWLByUser: PlannedWorkloadDto[],
+        committedItem: CommittedWorkloadDto,
+    ): number {
+        const plannedWorkloadItem = arrPlannedWLByUser.find(
+            (plan) =>
+                Number(plan.committedWorkload.id.toString()) ===
+                Number(committedItem.id.toString()),
+        );
+
+        if (plannedWorkloadItem) {
+            return plannedWorkloadItem.plannedWorkload;
+        }
+
+        return 0;
+    }
+
     public static handleActualWL(
         actualWorkloadByUser: ActualWorkloadListDto,
         committedItem: CommittedWorkloadDto,
@@ -84,11 +115,10 @@ export class WorkloadListByWeekMap {
                             ),
                         },
                         committedWorkload: com.committedWorkload,
-                        plannedWorkload: arrPlannedWLByUser.find(
-                            (plan) =>
-                                Number(plan.committedWorkload.id.toString()) ===
-                                Number(com.id.toString()),
-                        )?.plannedWorkload,
+                        plannedWorkload:
+                            this.handlePlannedWL(arrPlannedWLByUser, com) === 0
+                                ? com.committedWorkload
+                                : this.handlePlannedWL(arrPlannedWLByUser, com),
                         worklog: this.handleActualWL(actualWorkloadByUser, com),
                     } as ExpertiseScopeWithinWorkloadListDto),
             );
@@ -107,6 +137,7 @@ export class WorkloadListByWeekMap {
         plannedWLDtos: PlannedWorkloadDto[],
         userDtos: UserDto[],
         actualWorkloads: ActualWorkloadListDto[],
+        issues: IssueDto[],
     ): WorkloadListByWeekDto[] {
         const workloadListByWeek = new Array<WorkloadListByWeekDto>();
         userDtos.forEach((user) => {
@@ -133,12 +164,13 @@ export class WorkloadListByWeekMap {
                     },
                     expertiseScopes: [],
                     committedWorkload: {
-                        startDate: '0',
-                        expiredDate: '0',
+                        startDate: '',
+                        expiredDate: '',
                         workload: 0,
                     },
                     plannedWorkload: 0,
                     actualWorkload: 0,
+                    typeOfIssue: IssueType.NOT_ISSUE,
                 });
             } else if (arrCommittedWLByUser[0].expiredDate < new Date()) {
                 workloadListByWeek.push({
@@ -158,6 +190,7 @@ export class WorkloadListByWeekMap {
                     },
                     plannedWorkload: 0,
                     actualWorkload: 0,
+                    typeOfIssue: IssueType.NOT_ISSUE,
                 });
             } else {
                 let resultExpAndTotalWL = {} as ResultExpertiseScopeAndTotalWL;
@@ -189,6 +222,7 @@ export class WorkloadListByWeekMap {
                     committedWorkload: committedWLByUser,
                     plannedWorkload: resultExpAndTotalWL.totalPlannedWL,
                     actualWorkload: actualWorkloadByUser.actualWorkload,
+                    typeOfIssue: this.handleIssue(issues, user),
                 });
             }
         });

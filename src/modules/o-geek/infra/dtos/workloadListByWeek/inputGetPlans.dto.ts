@@ -1,6 +1,6 @@
 import { IsDate } from 'class-validator';
 
-export class InputGetPlansWLDto {
+export class InputStartEndDateOfWeekWLDto {
     @IsDate()
     startDateOfWeek: string;
 
