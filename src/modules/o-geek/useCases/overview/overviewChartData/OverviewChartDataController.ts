@@ -37,7 +37,6 @@ export class OverviewChartDataController {
         description: 'Data for overview chart',
     })
     @ApiBadRequestResponse({
-        type: OverviewChartDataDto,
         description: 'No data to retrieve',
     })
     async execute(@Req() req: Request): Promise<OverviewChartDataDto[]> {

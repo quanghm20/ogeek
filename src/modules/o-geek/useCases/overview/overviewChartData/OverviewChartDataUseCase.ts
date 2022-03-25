@@ -6,7 +6,6 @@ import * as moment from 'moment';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
-import { DataWorklogDto } from '../../../infra/dtos/OverviewChartDto/dataWorklogForChart.dto';
 import { InputGetOverviewChartDto } from '../../../infra/dtos/OverviewChartDto/inputGetOverviewChart.dto';
 import { OverviewChartDataDto } from '../../../infra/dtos/OverviewChartDto/overviewChartData.dto';
 import { WorkloadOverviewDto } from '../../../infra/dtos/OverviewChartDto/workloadOverview.dto';
@@ -24,7 +23,7 @@ type Response = Either<
 >;
 
 interface ServerResponse {
-    data: DataWorklogDto[];
+    data: OverviewChartDataDto[];
 }
 
 @Injectable()
@@ -42,13 +41,6 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
 
     async execute(input: InputGetOverviewChartDto): Promise<Response> {
         try {
-            const url = `https://mock.o-geek.geekup.io/api/overview/actual-workload?userId=${input.userId.toString()}&week=${input.week}`;
-            const request = await Axios.get<ServerResponse>(url, {
-                headers: {
-                    'x-api-key': process.env.MOCK_API_KEY,
-                },
-            });
-            const worklogs = request.data.data;
             const startDateInWeek = new Date(MomentService.firstDateOfWeek(input.week));
 
             const expertiseScopes = await this.expertiseScopeRepo.findAll();
@@ -67,19 +59,13 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
                 for (const plannedWorkloadDto of plannedWorkloadDtos) {
 
                     const week = moment(plannedWorkloadDto.startDate).week();
-                    const foundWorklog = worklogs.find(worklog =>
-                        worklog.week === week).expertiseScopes;
                     const exId = Number(plannedWorkloadDto.contributedValue.expertiseScope.id.toString());
-                    const name = plannedWorkloadDto.contributedValue.expertiseScope.name;
-
                     if (exId === id) {
-                        const actualWorkLog = foundWorklog.find(actualWL =>
-                            name === actualWL.expertiseScope);
-                        const plan = plannedWorkloadDto.plannedWorkload;
                         contributedValue.push({
                             week,
                             plannedWorkload: plannedWorkloadDto.plannedWorkload,
-                            actualWorkload: actualWorkLog ? actualWorkLog.worklog : Math.floor(Math.random() * (plan + 1)),
+                            actualWorkload: 0,
+
                         } as WorkloadOverviewDto);
                     }
                 }
@@ -91,9 +77,16 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
                     } as OverviewChartDataDto);
                 }
             });
+            const url = `${process.env.MOCK_URL}/api/overview/actual-workload?userId=${input.userId.toString()}`;
+            const request = await Axios.post<ServerResponse>(url, overviewChartDataDtos, {
+                headers: {
+                    'x-api-key': process.env.MOCK_API_KEY,
+                },
+            });
+            const worklogs = request.data.data;
 
             if (overviewChartDataDtos) {
-                return right(Result.ok(overviewChartDataDtos));
+                return right(Result.ok(worklogs));
             }
             return left(
                 new GetOverviewChartDataErrors.GetOverviewChartDataFailed(input.userId),
