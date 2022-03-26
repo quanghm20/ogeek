@@ -11,4 +11,8 @@ export class UserWorkloadDto {
     @ApiProperty({ type: UniqueEntityID, example: 1 })
     @IsNumber()
     id: number | UniqueEntityID;
+
+    @ApiProperty({ example: 'https:link.com' })
+    @IsString()
+    avatar: string;
 }

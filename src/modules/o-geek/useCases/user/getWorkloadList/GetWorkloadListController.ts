@@ -4,11 +4,16 @@ import {
     InternalServerErrorException,
     NotFoundException,
     Param,
-    // UseGuards,
+    Req,
+    UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 
-// import { JwtAuthGuard } from '../../../../../modules/jwt-auth/jwt-auth-guard';
+import { RoleType } from '../../../../../common/constants/role-type';
+import { Roles } from '../../../../../decorators/roles.decorator';
+import { JwtAuthGuard } from '../../../../../modules/jwt-auth/jwt-auth-guard';
+// import { JwtPayload } from '../../../../../modules/jwt-auth/jwt-auth.strategy';
 import { InputWeekDto } from '../../../infra/dtos/workloadListByWeek/inputWeek.dto';
 import { WorkloadListByWeekDto } from '../../../infra/dtos/workloadListByWeek/workloadListByWeek.dto';
 import { GetWorkloadListError } from './GetWorkloadListErrors';
@@ -19,15 +24,19 @@ import { GetWorkloadListUseCase } from './GetWorkloadListUseCase';
 export class GetWorkloadListController {
     constructor(public readonly useCase: GetWorkloadListUseCase) {}
 
-    // @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Get(':week')
+    @Roles(RoleType.ADMIN)
     @ApiOkResponse({
         type: WorkloadListByWeekDto,
         description: 'Get all workload list of geeks in a week',
     })
     async execute(
+        @Req() req: Request,
         @Param('week') week: number,
     ): Promise<WorkloadListByWeekDto[]> {
+        // const { userId } = req.user as JwtPayload;
         const input = new InputWeekDto(week);
         const result = await this.useCase.execute(input);
         if (result.isLeft()) {

@@ -161,6 +161,7 @@ export class WorkloadListByWeekMap {
                     user: {
                         alias: user.alias,
                         id: user.id,
+                        avatar: user.avatar,
                     },
                     expertiseScopes: [],
                     committedWorkload: {
@@ -177,6 +178,7 @@ export class WorkloadListByWeekMap {
                     user: {
                         alias: user.alias,
                         id: user.id,
+                        avatar: user.avatar,
                     },
                     expertiseScopes: [],
                     committedWorkload: {
@@ -216,7 +218,8 @@ export class WorkloadListByWeekMap {
                 workloadListByWeek.push({
                     user: {
                         alias: user.alias,
-                        id: user.id,
+                        id: Number(user.id.toString()),
+                        avatar: user.avatar,
                     },
                     expertiseScopes: resultExpAndTotalWL.arrExpertiseScope,
                     committedWorkload: committedWLByUser,

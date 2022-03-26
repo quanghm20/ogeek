@@ -71,7 +71,7 @@ export class GetWorkloadListUseCase
                 .endOf('day')
                 .format();
 
-            const users = await this.userRepo.findAll();
+            const users = await this.userRepo.findAllUsers();
             const issues = await this.issueRepo.findAllByWeek({
                 startDateOfWeek,
                 endDateOfWeek,

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { RoleType } from '../../../common/constants/role-type';
 import { DomainId } from '../domain/domainId';
 import { User } from '../domain/user';
 import { UserEntity } from '../infra/database/entities/user.entity';
@@ -9,7 +10,7 @@ import { UserDto } from '../infra/dtos/user.dto';
 import { UserMap } from '../mappers/userMap';
 
 export interface IUserRepo {
-    findAll(): Promise<User[]>;
+    findAllUsers(): Promise<User[]>;
     findById(userId: DomainId | number): Promise<User>;
     findByAlias(alias: string): Promise<User>;
     findAllUser(): Promise<User[]>;
@@ -38,8 +39,12 @@ export class UserRepository implements IUserRepo {
         return entity ? UserMap.toDomain(entity) : null;
     }
 
-    async findAll(): Promise<User[]> {
-        const entities = await this.repo.find();
+    async findAllUsers(): Promise<User[]> {
+        const entities = await this.repo.find({
+            where: {
+                role: RoleType.USER,
+            },
+        });
         return entities ? UserMap.toDomainAll(entities) : null;
     }
 
