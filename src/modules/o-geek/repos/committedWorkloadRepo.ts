@@ -215,7 +215,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         const entities = await this.repo.find({
             where: {
                 status: WorkloadStatus.ACTIVE,
-                // expiredDate: MoreThanOrEqual(new Date()),
             },
             relations: [
                 'contributedValue',

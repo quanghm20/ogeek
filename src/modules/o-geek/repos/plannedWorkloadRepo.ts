@@ -13,14 +13,14 @@ import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
 import { InputGetPlanWLDto } from '../infra/dtos/ValueStreamsByWeek/inputGetPlanWL.dto';
-import { InputStartEndDateOfWeekWLDto } from '../infra/dtos/workloadListByWeek/inputGetPlans.dto';
+import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
 
 export interface IPlannedWorkloadRepo {
     findAllByWeek({
         startDateOfWeek,
         endDateOfWeek,
-    }: InputStartEndDateOfWeekWLDto): Promise<PlannedWorkload[]>;
+    }: StartEndDateOfWeekWLInputDto): Promise<PlannedWorkload[]>;
     findByUserIdOverview(
         userId: DomainId | number,
         startDateOfYear: string,
@@ -172,7 +172,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     async findAllByWeek({
         startDateOfWeek,
         endDateOfWeek,
-    }: InputStartEndDateOfWeekWLDto): Promise<PlannedWorkload[]> {
+    }: StartEndDateOfWeekWLInputDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
                 status: WorkloadStatus.ACTIVE,

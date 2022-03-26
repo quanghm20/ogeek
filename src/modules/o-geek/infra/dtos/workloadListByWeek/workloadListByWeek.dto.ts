@@ -27,5 +27,5 @@ export class WorkloadListByWeekDto {
 
     @ApiProperty({ enum: IssueType, example: IssueType.NOT_ISSUE })
     @IsString()
-    typeOfIssue: IssueType;
+    issueType: IssueType;
 }

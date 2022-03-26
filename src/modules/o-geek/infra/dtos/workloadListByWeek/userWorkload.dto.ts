@@ -12,7 +12,7 @@ export class UserWorkloadDto {
     @IsNumber()
     id: number | UniqueEntityID;
 
-    @ApiProperty({ example: 'https:link.com' })
+    @ApiProperty({ example: 'https://avatar.com' })
     @IsString()
     avatar: string;
 }

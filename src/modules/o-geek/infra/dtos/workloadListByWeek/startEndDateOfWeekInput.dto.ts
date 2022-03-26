@@ -1,6 +1,6 @@
 import { IsDate } from 'class-validator';
 
-export class InputStartEndDateOfWeekWLDto {
+export class StartEndDateOfWeekWLInputDto {
     @IsDate()
     startDateOfWeek: string;
 

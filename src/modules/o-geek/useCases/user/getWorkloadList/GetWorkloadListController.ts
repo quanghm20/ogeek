@@ -13,8 +13,8 @@ import { Request } from 'express';
 import { RoleType } from '../../../../../common/constants/role-type';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../../../modules/jwt-auth/jwt-auth-guard';
-// import { JwtPayload } from '../../../../../modules/jwt-auth/jwt-auth.strategy';
-import { InputWeekDto } from '../../../infra/dtos/workloadListByWeek/inputWeek.dto';
+import { JwtPayload } from '../../../../../modules/jwt-auth/jwt-auth.strategy';
+import { InputListWorkloadDto } from '../../../infra/dtos/workloadListByWeek/inputListWorkload.dto';
 import { WorkloadListByWeekDto } from '../../../infra/dtos/workloadListByWeek/workloadListByWeek.dto';
 import { GetWorkloadListError } from './GetWorkloadListErrors';
 import { GetWorkloadListUseCase } from './GetWorkloadListUseCase';
@@ -36,8 +36,8 @@ export class GetWorkloadListController {
         @Req() req: Request,
         @Param('week') week: number,
     ): Promise<WorkloadListByWeekDto[]> {
-        // const { userId } = req.user as JwtPayload;
-        const input = new InputWeekDto(week);
+        const { userId } = req.user as JwtPayload;
+        const input = new InputListWorkloadDto(week, userId);
         const result = await this.useCase.execute(input);
         if (result.isLeft()) {
             const error = result.value;

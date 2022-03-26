@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import Axios from 'axios';
 import * as moment from 'moment';
 
+import { RoleType } from '../../../../../common/constants/role-type';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
@@ -12,8 +13,8 @@ import { IIssueRepo } from '../../../../../modules/o-geek/repos/issueRepo';
 import { IPlannedWorkloadRepo } from '../../../../../modules/o-geek/repos/plannedWorkloadRepo';
 import { IUserRepo } from '../../../../../modules/o-geek/repos/userRepo';
 import { ActualWorkloadListDto } from '../../../infra/dtos/workloadListByWeek/actualWorkloadList.dto';
-import { InputStartEndDateOfWeekWLDto } from '../../../infra/dtos/workloadListByWeek/inputGetPlans.dto';
-import { InputWeekDto } from '../../../infra/dtos/workloadListByWeek/inputWeek.dto';
+import { InputListWorkloadDto } from '../../../infra/dtos/workloadListByWeek/inputListWorkload.dto';
+import { StartEndDateOfWeekWLInputDto } from '../../../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { WorkloadListByWeekDto } from '../../../infra/dtos/workloadListByWeek/workloadListByWeek.dto';
 import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
@@ -32,7 +33,7 @@ interface ServerResponse {
 
 @Injectable()
 export class GetWorkloadListUseCase
-    implements IUseCase<{ week: number }, Promise<Response>>
+    implements IUseCase<{ week: number; userId: number }, Promise<Response>>
 {
     constructor(
         @Inject('ICommittedWorkloadRepo')
@@ -45,8 +46,16 @@ export class GetWorkloadListUseCase
         public readonly issueRepo: IIssueRepo,
     ) {}
 
-    async execute(params: InputWeekDto): Promise<Response> {
+    async execute(params: InputListWorkloadDto): Promise<Response> {
         try {
+            const user = await this.userRepo.findById(params.userId);
+            if (user.role !== RoleType.ADMIN) {
+                return left(new GetWorkloadListError.Forbidden()) as Response;
+            }
+            if (params.week < 1 && params.week > 52) {
+                return left(new GetWorkloadListError.WeekError()) as Response;
+            }
+
             const url = `${process.env.MOCK_URL}/api/overview/list-workload`;
             const request = await Axios.get<ServerResponse>(url, {
                 headers: {
@@ -75,12 +84,12 @@ export class GetWorkloadListUseCase
             const issues = await this.issueRepo.findAllByWeek({
                 startDateOfWeek,
                 endDateOfWeek,
-            } as InputStartEndDateOfWeekWLDto);
+            } as StartEndDateOfWeekWLInputDto);
             const committedWorkloads = await this.committedWLRepo.findAll();
             const plannedWorkloads = await this.plannedWLRepo.findAllByWeek({
                 startDateOfWeek,
                 endDateOfWeek,
-            } as InputStartEndDateOfWeekWLDto);
+            } as StartEndDateOfWeekWLInputDto);
 
             const committedWLDtos =
                 CommittedWorkloadMap.fromDomainAll(committedWorkloads);

@@ -5,7 +5,7 @@ import { Between, Repository } from 'typeorm';
 import { DomainId } from '../domain/domainId';
 import { Issue } from '../domain/issue';
 import { IssueEntity } from '../infra/database/entities/issue.entity';
-import { InputStartEndDateOfWeekWLDto } from '../infra/dtos/workloadListByWeek/inputGetPlans.dto';
+import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { IssueMap } from '../mappers/issueMap';
 
 export interface IIssueRepo {
@@ -14,7 +14,7 @@ export interface IIssueRepo {
     findAllByWeek({
         startDateOfWeek,
         endDateOfWeek,
-    }: InputStartEndDateOfWeekWLDto): Promise<Issue[]>;
+    }: StartEndDateOfWeekWLInputDto): Promise<Issue[]>;
 }
 
 @Injectable()
@@ -41,7 +41,7 @@ export class IssueRepository implements IIssueRepo {
     async findAllByWeek({
         startDateOfWeek,
         endDateOfWeek,
-    }: InputStartEndDateOfWeekWLDto): Promise<Issue[]> {
+    }: StartEndDateOfWeekWLInputDto): Promise<Issue[]> {
         const entities = await this.repo.find({
             where: {
                 createdAt: Between(startDateOfWeek, endDateOfWeek),
