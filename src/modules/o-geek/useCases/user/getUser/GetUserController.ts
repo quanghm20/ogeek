@@ -6,7 +6,7 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
@@ -18,15 +18,16 @@ import { GetUserErrors } from './GetUserErrors';
 import { GetUserUseCase } from './GetUserUseCase';
 
 @Controller('api/user')
-@ApiTags('User')
+@ApiTags('Users')
 export class GetUserController {
     constructor(public readonly useCase: GetUserUseCase) {}
 
     @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Get()
     @ApiOkResponse({
         type: UserDto,
-        description: 'get user by alias with jwt token',
+        description: 'Get user by alias with jwt token',
     })
     async execute(@Req() req: Request): Promise<UserDto> {
         const jwtPayload = req.user as JwtPayload;

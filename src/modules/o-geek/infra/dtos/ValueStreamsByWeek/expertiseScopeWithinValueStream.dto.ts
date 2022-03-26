@@ -10,8 +10,13 @@ export class ExpertiseScopeWithinValueStreamDto {
     })
     expertiseScope: ExpertiseScopeDto;
 
-    @ApiProperty({ example: '20' })
-    @IsNumber()
+    @ApiProperty({ example: 1 })
+    committedWorkloadId: number;
+
+    @ApiProperty({ example: 1 })
+    contributedValueId: number;
+
+    @ApiProperty({ example: 1 })
     committedWorkload: number;
 
     @ApiProperty({ example: '12' })

@@ -68,8 +68,8 @@ export class ValueStreamsByWeekMap {
     ): ExpertiseScopeWithinValueStreamDto[] {
         const plannedWLFinded = plannedWLDtos.find(
             (planned) =>
-                planned.committedWorkload.id.toValue() ===
-                committedWLDto.id.toValue(),
+                Number(planned.committedWorkload.id.toString()) ===
+                Number(committedWLDto.id.toString()),
         );
 
         const plannedWorkload = plannedWLFinded
@@ -77,9 +77,10 @@ export class ValueStreamsByWeekMap {
             : committedWLDto.committedWorkload;
 
         let actual = plannedWorkload;
+
         let worklog = 0;
         if (actualPlanAndWorkLog) {
-            actual = actualPlanAndWorkLog.actualPlan;
+            actual = actualPlanAndWorkLog.actualPlannedWorkload;
             worklog = actualPlanAndWorkLog.worklog;
         }
 
@@ -87,8 +88,12 @@ export class ValueStreamsByWeekMap {
         expertiseScopeWithinValueStreamDtos.push({
             worklog,
             plannedWorkload,
-            committedWorkload: committedWLDto.committedWorkload,
             actualPlannedWorkload: actual,
+            committedWorkloadId: Number(committedWLDto.id.toString()),
+            contributedValueId: Number(
+                committedWLDto.contributedValue.id.toString(),
+            ),
+            committedWorkload: committedWLDto.committedWorkload,
             expertiseScope: {
                 id: Number(expertiseDto.id.toString()),
                 name: expertiseDto.name,
@@ -120,12 +125,13 @@ export class ValueStreamsByWeekMap {
             const expertiseDto = committedWLDto.contributedValue.expertiseScope;
             const valueStreamByWeekDto = valueStreamByWeekDtos.find(
                 (valueStreamByWeek) =>
-                    valueStreamByWeek.id === valueStreamDto.id,
+                    Number(valueStreamByWeek.id.toString()) ===
+                    Number(valueStreamDto.id.toString()),
             );
             const actualPlanAndWorkLog = actualPlanAndWorkLogDtos.find(
                 (actualPlan) =>
-                    actualPlan.contributedValueId ===
-                    committedWLDto.contributedValue.id,
+                    Number(actualPlan.contributedValueId.toString()) ===
+                    Number(committedWLDto.contributedValue.id.toString()),
             );
             if (!valueStreamByWeekDto) {
                 let expertiseScopeWithinValueStreamDtos =

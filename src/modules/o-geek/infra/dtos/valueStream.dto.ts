@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
-import { ValueStreamEntity } from '../database/entities/valueStream.entity';
 export class ValueStreamDto {
     @ApiProperty({ type: UniqueEntityID, example: 122 })
     id: UniqueEntityID | number;
@@ -15,10 +14,10 @@ export class ValueStreamDto {
     @ApiProperty({ example: new Date() })
     updatedAt?: Date;
 
-    constructor(valueStream: ValueStreamEntity) {
-        this.id = new UniqueEntityID(valueStream.id);
-        this.name = valueStream.name;
-        this.createdAt = valueStream.createdAt;
-        this.updatedAt = valueStream.updatedAt;
+    constructor() {
+        this.id = null;
+        this.name = '';
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
     }
 }

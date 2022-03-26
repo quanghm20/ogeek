@@ -49,6 +49,7 @@ export class OauthController {
 
         const mappedUser = UserMap.fromDomain(user.value.getValue() as User);
         const jwtToken = this._jwtService.signJwt(mappedUser);
+
         res.redirect(`${this._configService.get(
             'HOME_URL',
         )}/user/callback/?accessToken=${jwtToken}

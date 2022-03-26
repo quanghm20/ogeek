@@ -31,19 +31,21 @@ export class addDataIntoDatabase1647339475418 implements MigrationInterface {
 		"email",
 		"avatar",
 		"role",
+		"week_status",
 		"created_at",
 		"updated_at"
 	)
 VALUES
 	(
-		'thai.ls',
-		'Sỹ Thái',
-		'0984786432',
-		'thai.ls@geekup.vn',
-		'https://link1.com',
+		'user_314',
+		'short_name - 142',
+		'phone - 142',
+		'user_314@geekup.io',
+		'http://api.sente.geekup.io/vatar - 142',
 		'USER',
-		NOW(),
-		NOW()
+		'EXECUTING',
+		'2021-12-30 00:00:00',
+		'2021-12-30 00:00:00'
 	),
 	(
 		'quang.hm',
@@ -51,9 +53,10 @@ VALUES
 		'0977890453',
 		'quang.hm@geekup.vn',
 		'https://link1.com',
-		'ADMIN',
-		NOW(),
-		NOW()
+		'USER',
+		'PLANNING',
+		'2021-12-30 00:00:00',
+		'2021-12-30 00:00:00'
 	),
 	(
 		'loc.pt',
@@ -62,8 +65,9 @@ VALUES
 		'loc.pt@geekup.vn',
 		'https://link1.com',
 		'USER',
-		NOW(),
-		NOW()
+		'PLANNING',
+		'2021-12-30 00:00:00',
+		'2021-12-30 00:00:00'
 	),
 	(
 		'chuong.tk',
@@ -72,8 +76,9 @@ VALUES
 		'chuong.tk@geekup.vn',
 		'https://link1.com',
 		'USER',
-		NOW(),
-		NOW()
+		'PLANNING',
+		'2021-12-30 00:00:00',
+		'2021-12-30 00:00:00'
 	),
 	(
 		'tuan.lq',
@@ -82,8 +87,9 @@ VALUES
 		'tuan.lq@geekup.vn',
 		'https://link1.com',
 		'USER',
-		NOW(),
-		NOW()
+		'PLANNING',
+		'2021-12-30 00:00:00',
+		'2021-12-30 00:00:00'
 	),
 	(
 		'tuan.pa',
@@ -92,8 +98,9 @@ VALUES
 		'tuan.pa@geekup.vn',
 		'https://link1.com',
 		'USER',
-		NOW(),
-		NOW()
+		'PLANNING',
+		'2021-12-30 00:00:00',
+		'2021-12-30 00:00:00'
 	),
 	(
 		'nhi.ny',
@@ -102,8 +109,9 @@ VALUES
 		'nhi.ny@geekup.vn',
 		'https://link1.com',
 		'USER',
-		NOW(),
-		NOW()
+		'PLANNING',
+		'2021-12-30 00:00:00',
+		'2021-12-30 00:00:00'
 	),
 	(
 		'nam.dp',
@@ -112,61 +120,106 @@ VALUES
 		'nam.dp@geekup.vn',
 		'https://link1.com',
 		'ADMIN',
-		NOW(),
-		NOW()
+		'PLANNING',
+		'2021-12-30 00:00:00',
+		'2021-12-30 00:00:00'
+	),
+	(
+		'user_315',
+		'short_name - 142',
+		'phone - 143',
+		'user_315@geekup.io',
+		'http://api.sente.geekup.io/vatar - 142',
+		'USER',
+		'EXECUTING',
+		'2021-12-30 00:00:00',
+		'2021-12-30 00:00:00'
+	),
+	(
+		'user_3',
+		'short_name - 14',
+		'phone - 14',
+		'user_3@geekup.io',
+		'http://api.sente.geekup.io/vatar - 14',
+		'USER',
+		'PLANNING',
+		'2021-12-30 00:00:00',
+		'2021-12-30 00:00:00'
+	),
+	(
+		'user_264',
+		'short_name - 94',
+		'phone - 94',
+		'user_264@geekup.io',
+		'http://api.sente.geekup.io/vatar - 94',
+		'USER',
+		'PLANNING',
+		'2021-12-30 00:00:00',
+		'2021-12-30 00:00:00'
+	),
+	(
+		'user_177',
+		'short_name - 44',
+		'phone - 44',
+		'user_177@geekup.io',
+		'http://api.sente.geekup.io/vatar - 44',
+		'ADMIN',
+		'PLANNING',
+		'2021-12-30 00:00:00',
+		'2021-12-30 00:00:00'
 	);
             `,
         );
         await queryRunner.query(
             `INSERT INTO
-	value_stream (name)
+	value_stream (id, name)
 VALUES
-	('Delivery'),
-	('Capacity'),
-	('Individual'),
-	('Alignment')
+	(1, 'Delivery'),
+	(2, 'Capacity'),
+	(3, 'Individual'),
+	(4, 'Alignment');
             `,
         );
         await queryRunner.query(
             `INSERT INTO
-	expertise_scope (name)
+	expertise_scope (id, name)
 VALUES
-	('Engagement'),
-	('Interation'),
-	('Product Analysis'),
-	('Product Design'),
-	('Product Frontend'),
-	('Product Backend'),
-	('Product UI'),
-	('Product UX'),
-	('Product Alignment'),
-	('Program Operation'),
-	('People Operation')
+	(1, 'Engagement'),
+	(2, 'Integration'),
+	(3, 'Product Analysis'),
+	(4, 'Product Design'),
+	(5, 'Product Frontend'),
+	(6, 'Product Backend'),
+	(7, 'Product UI'),
+	(8, 'Product UX'),
+	(9, 'Product Alignment'),
+	(10, 'Program Operation'),
+	(11, 'People Operation');
             `,
         );
         await queryRunner.query(
             `INSERT INTO
-	contributed_value (value_stream_id, expertise_scope_id)
+	contributed_value (id, value_stream_id, expertise_scope_id)
 VALUES
-	(1, 3),
-	(1, 4),
-	(1, 5),
-	(1, 6),
-	(1, 7),
-	(1, 8),
-	(1, 10),
-	(1, 11),
-	(2, 3),
-	(2, 4),
-	(2, 5),
-	(2, 6),
-	(2, 7),
-	(2, 8),
-	(2, 10),
-	(2, 11),
-	(3, 1),
-	(3, 2),
-	(4, 9)
+	(1, 1, 3),
+	(2, 1, 4),
+	(3, 1, 5),
+	(4, 1, 6),
+	(5, 1, 7),
+	(6, 1, 8),
+	(7, 1, 10),
+	(8, 1, 11),
+	(9, 2, 3),
+	(10, 2, 4),
+	(11, 2, 5),
+	(12, 2, 6),
+	(13, 2, 7),
+	(14, 2, 8),
+	(15, 2, 10),
+	(16, 2, 11),
+	(17, 3, 1),
+	(18, 3, 2),
+	(19, 4, 9);
             `,
         );
         await queryRunner.query(
@@ -180,284 +233,109 @@ VALUES
 		pic_id
 	)
 VALUES
-	(1, 2, 20, '2022-01-01', '2022-04-30', 2),
-	(1, 3, 20, '2022-01-03', '2022-04-30', 8),
-	(2, 8, 40, '2022-02-05', '2022-04-30', 2),
-	(3, 2, 30, '2022-01-01', '2022-04-30', 8),
-	(3, 5, 10, '2022-01-01', '2022-04-30', 2),
-	(4, 4, 40, '2022-01-08', '2022-04-30', 8),
-	(5, 6, 40, '2022-02-05', '2022-04-30', 2),
-	(6, 9, 40, '2022-01-01', '2022-04-30', 8)
+	(1, 2, 20, '2022-01-01', '2022-04-30', 12),
+	(1, 3, 20, '2022-01-03', '2022-04-30', 12),
+	(2, 8, 40, '2022-02-05', '2022-04-30', 12),
+	(3, 2, 30, '2022-01-01', '2022-04-30', 12),
+	(3, 5, 10, '2022-01-01', '2022-04-30', 12),
+	(4, 4, 40, '2022-01-08', '2022-04-30', 12),
+	(5, 6, 40, '2022-02-05', '2022-04-30', 12),
+	(6, 9, 40, '2022-01-01', '2022-04-30', 12),
+	(7, 4, 40, '2022-01-08', '2022-04-30', 12),
+	(8, 6, 40, '2022-02-05', '2022-04-30', 12),
+	(9, 9, 40, '2022-01-01', '2022-04-30', 12),
+	(10, 6, 40, '2022-02-05', '2022-04-30', 12),
+	(11, 9, 40, '2022-01-01', '2022-04-30', 12),
+	(12, 8, 40, '2022-01-01', '2022-04-30', 12);
             `,
         );
 
         await queryRunner.query(
             `INSERT INTO
-	planned_workload (
-		user_id,
-		contributed_value_id,
-		committed_workload_id,
-		planned_workload,
-		start_date,
-		reason
-	)
+    planned_workload (
+        user_id,
+        contributed_value_id,
+        committed_workload_id,
+        planned_workload,
+        start_date,
+        status,
+        reason,
+        created_at,
+        updated_at
+    )
 VALUES
-	(
-		1,
-		2,
-		1,
-		20,
-		'2022-01-01',
-		'create planned workload1'
-	),
-	(
-		1,
-		3,
-		2,
-		20,
-		'2022-01-01',
-		'create planned workload2'
-	),
-	(
-		2,
-		8,
-		3,
-		40,
-		'2022-02-05',
-		'create planned workload3'
-	),
-	(
-		3,
-		2,
-		4,
-		30,
-		'2022-01-01',
-		'create planned workload4'
-	),
-	(
-		3,
-		5,
-		5,
-		10,
-		'2022-01-01',
-		'create planned workload5'
-	),
-	(
-		4,
-		4,
-		6,
-		40,
-		'2022-01-08',
-		'create planned workload6'
-	),
-	(
-		5,
-		6,
-		7,
-		40,
-		'2022-02-05',
-		'create planned workload7'
-	),
-	(
-		6,
-		9,
-		8,
-		40,
-		'2022-01-01',
-		'create planned workload8'
-	),
-	(
-		1,
-		2,
-		1,
-		20,
-		'2022-01-08',
-		'create planned workload9'
-	),
-	(
-		1,
-		3,
-		2,
-		20,
-		'2022-01-08',
-		'create planned workload10'
-	),
-	(
-		2,
-		8,
-		3,
-		40,
-		'2022-02-12',
-		'create planned workload11'
-	),
-	(
-		3,
-		2,
-		4,
-		30,
-		'2022-01-08',
-		'create planned workload12'
-	),
-	(
-		3,
-		5,
-		5,
-		10,
-		'2022-01-01',
-		'create planned workload13'
-	),
-	(
-		4,
-		4,
-		6,
-		40,
-		'2022-01-16',
-		'create planned workload14'
-	),
-	(
-		5,
-		6,
-		7,
-		40,
-		'2022-02-12',
-		'create planned workload15'
-	),
-	(
-		6,
-		9,
-		8,
-		40,
-		'2022-01-08',
-		'create planned workload16'
-	),
-	(
-		1,
-		2,
-		1,
-		20,
-		'2022-01-15',
-		'create planned workload17'
-	),
-	(
-		1,
-		3,
-		2,
-		20,
-		'2022-01-15',
-		'create planned workload18'
-	),
-	(
-		2,
-		8,
-		3,
-		40,
-		'2022-02-19',
-		'create planned workload19'
-	),
-	(
-		3,
-		2,
-		4,
-		30,
-		'2022-01-15',
-		'create planned workload20'
-	),
-	(
-		3,
-		5,
-		5,
-		10,
-		'2022-01-15',
-		'create planned workload21'
-	),
-	(
-		4,
-		4,
-		6,
-		40,
-		'2022-01-22',
-		'create planned workload22'
-	),
-	(
-		5,
-		6,
-		7,
-		40,
-		'2022-02-19',
-		'create planned workload23'
-	),
-	(
-		6,
-		9,
-		8,
-		40,
-		'2022-01-15',
-		'create planned workload24'
-	),
-	(
-		1,
-		2,
-		1,
-		20,
-		'2022-01-22',
-		'create planned workload25'
-	),
-	(
-		1,
-		3,
-		2,
-		20,
-		'2022-01-22',
-		'create planned workload26'
-	),
-	(
-		2,
-		8,
-		3,
-		40,
-		'2022-02-26',
-		'create planned workload27'
-	),
-	(
-		3,
-		2,
-		4,
-		30,
-		'2022-01-22',
-		'create planned workload28'
-	),
-	(
-		3,
-		5,
-		5,
-		10,
-		'2022-01-15',
-		'create planned workload29'
-	),
-	(
-		4,
-		4,
-		6,
-		40,
-		'2022-01-30',
-		'create planned workload30'
-	),
-	(
-		5,
-		6,
-		7,
-		40,
-		'2022-02-26',
-		'create planned workload31'
-	),
-	(
-		6,
-		9,
-		8,
-		40,
-		'2022-01-22',
-		'create planned workload32'
-	)`,
+    ( 1, 2, 1, 21, '2022-01-01', 'ACTIVE', 'update planned workload w1', '2021-12-31 14:02:01', '2021-12-31 14:02:01'),
+    ( 1, 3, 2, 20, '2022-01-01', 'ACTIVE', 'update planned workload w1', '2021-12-31 14:02:01', '2021-12-31 14:02:01'),
+    ( 1, 2, 1, 20, '2022-01-08', 'ACTIVE', 'update planned workload w2', '2022-01-06 15:02:01', '2022-01-06 15:02:01'),
+    ( 1, 3, 2, 20, '2022-01-08', 'ACTIVE', 'update planned workload w2', '2022-01-06 15:02:01', '2022-01-06 15:02:01'),
+    ( 1, 2, 1, 20, '2022-01-15', 'ACTIVE', 'update planned workload w3', '2022-01-14 07:02:01', '2022-01-14 07:02:01'),
+    ( 1, 3, 2, 20, '2022-01-15', 'ACTIVE', 'update planned workload w3', '2022-01-14 07:02:01', '2022-01-14 07:02:01'),
+    ( 1, 2, 1, 20, '2022-01-22', 'ACTIVE', 'update planned workload w4', '2022-01-21 05:02:01', '2022-01-21 05:02:01'),
+    ( 1, 3, 2, 20, '2022-01-22', 'ACTIVE', 'update planned workload w4', '2022-01-21 05:02:01', '2022-01-21 05:02:01'),
+    ( 1, 2, 1, 20, '2022-01-29', 'ACTIVE', 'update planned workload w5', '2022-01-28 08:02:01', '2022-01-28 08:02:01'),
+    ( 1, 3, 2, 20, '2022-01-29', 'ACTIVE', 'update planned workload w5', '2022-01-28 08:02:01', '2022-01-28 08:02:01'),
+    ( 1, 2, 1, 20, '2022-02-12', 'ACTIVE', 'update planned workload w6', '2022-02-11 16:12:01', '2022-02-11 16:12:01'),
+    ( 1, 3, 2, 20, '2022-02-12', 'ACTIVE', 'update planned workload w6', '2022-02-11 16:12:01', '2022-02-11 16:12:01'),
+    ( 1, 2, 1, 20, '2022-02-19', 'ACTIVE', 'update planned workload w7', '2022-02-16 16:12:01', '2022-02-16 16:12:01'),
+    ( 1, 3, 2, 20, '2022-02-19', 'ACTIVE', 'update planned workload w7', '2022-02-16 16:12:01', '2022-02-16 16:12:01'),
+    ( 1, 2, 1, 20, '2022-02-26', 'ACTIVE', 'update planned workload w8', '2022-02-25 16:12:01', '2022-02-25 16:12:01'),
+    ( 1, 3, 2, 20, '2022-02-26', 'ACTIVE', 'update planned workload w8', '2022-02-25 16:12:01', '2022-02-25 16:12:01'),
+    ( 1, 2, 1, 20, '2022-03-05', 'ACTIVE', 'update planned workload w9', '2022-03-04 16:12:01', '2022-03-04 16:12:01'),
+    ( 1, 3, 2, 20, '2022-03-05', 'ACTIVE', 'update planned workload w8', '2022-03-04 16:12:01', '2022-03-04 16:12:01'),
+    ( 1, 2, 1, 20, '2022-03-12', 'ACTIVE', 'update planned workload w10', '2022-03-11 16:12:01', '2022-03-11 16:12:01'),
+    ( 1, 3, 2, 20, '2022-03-12', 'ACTIVE', 'update planned workload w10', '2022-03-11 16:12:01', '2022-03-11 16:12:01'),
+    ( 1, 2, 1, 20, '2022-03-19', 'ACTIVE', 'update planned workload w11', '2022-03-18 16:12:01', '2022-03-18 16:12:01'),
+    ( 1, 3, 2, 20, '2022-03-19', 'ACTIVE', 'update planned workload w11', '2022-03-18 16:12:01', '2022-03-18 16:12:01'),
+    ( 1, 2, 1, 25, '2022-03-26', 'ACTIVE', 'update planned workload w12', '2022-03-25 16:12:01', '2022-03-25 16:12:01'),
+    ( 1, 3, 2, 25, '2022-03-26', 'ACTIVE', 'update planned workload w12', '2022-03-25 16:12:01', '2022-03-25 16:12:01'),
+    ( 1, 2, 1, 20, '2022-04-02', 'ACTIVE', 'update planned workload w13', '2022-04-01 16:12:01', '2022-04-01 16:12:01'),
+    ( 1, 3, 2, 20, '2022-04-02', 'ACTIVE', 'update planned workload w13', '2022-04-01 16:12:01', '2022-04-01 16:12:01'),
+    ( 1, 2, 1, 20, '2022-04-09', 'ACTIVE', 'update planned workload w14', '2022-04-09 16:12:01', '2022-04-09 16:12:01'),
+    ( 1, 3, 2, 20, '2022-04-09', 'ACTIVE', 'update planned workload w14', '2022-04-09 16:12:01', '2022-04-09 16:12:01'),
+    ( 1, 2, 1, 20, '2022-04-16', 'ACTIVE', 'update planned workload w15', '2022-04-16 16:12:01', '2022-04-16 16:12:01'),
+    ( 1, 3, 2, 20, '2022-04-16', 'ACTIVE', 'update planned workload w16', '2022-04-16 16:12:01', '2022-04-16 16:12:01'),    
+    ( 1, 2, 1, 20, '2022-04-23', 'ACTIVE', 'update planned workload w16', '2022-04-23 16:12:01', '2022-04-23 16:12:01'),
+    ( 1, 3, 2, 20, '2022-04-23', 'ACTIVE', 'update planned workload w16', '2022-04-23 16:12:01', '2022-04-23 16:12:01'),
+    ( 1, 2, 1, 22, '2022-04-30', 'ACTIVE', 'update planned workload w17', '2022-04-30 16:12:01', '2022-04-30 16:12:01'),
+    ( 1, 3, 2, 22, '2022-04-30', 'ACTIVE', 'update planned workload w17', '2022-04-30 16:12:01', '2022-04-30 16:12:01'),
+    ( 1, 2, 1, 21, '2022-05-07', 'ACTIVE', 'update planned workload w18', '2022-05-07 16:12:01', '2022-05-07 16:12:01'),
+    ( 1, 3, 2, 21, '2022-05-07', 'ACTIVE', 'update planned workload w18', '2022-05-07 16:12:01', '2022-05-07 16:12:01'),
+    ( 1, 2, 1, 25, '2022-01-01', 'INACTIVE', 'create planned workload w1', '2021-12-28 14:02:01', '2021-12-28 14:02:01'),
+    ( 1, 3, 2, 25, '2022-01-01', 'INACTIVE', 'create planned workload w1', '2021-12-28 14:02:01', '2021-12-28 14:02:01'),
+    ( 1, 2, 1, 25, '2022-01-08', 'INACTIVE', 'create planned workload w2', '2022-01-05 15:02:01', '2022-01-05 15:02:01'),
+    ( 1, 3, 2, 25, '2022-01-08', 'INACTIVE', 'create planned workload w2', '2022-01-05 15:02:01', '2022-01-05 15:02:01'),
+    ( 1, 2, 1, 25, '2022-01-15', 'INACTIVE', 'create planned workload w3', '2022-01-12 07:02:01', '2022-01-12 07:02:01'),
+    ( 1, 3, 2, 25, '2022-01-15', 'INACTIVE', 'create planned workload w3', '2022-01-12 07:02:01', '2022-01-12 07:02:01'),
+    ( 1, 2, 1, 25, '2022-01-22', 'INACTIVE', 'create planned workload w4', '2022-01-19 05:02:01', '2022-01-19 05:02:01'),
+    ( 1, 3, 2, 25, '2022-01-22', 'INACTIVE', 'create planned workload w4', '2022-01-19 05:02:01', '2022-01-19 05:02:01'),
+    ( 1, 2, 1, 25, '2022-01-29', 'INACTIVE', 'create planned workload w5', '2022-01-27 08:02:01', '2022-01-27 08:02:01'),
+    ( 1, 3, 2, 25, '2022-01-29', 'INACTIVE', 'create planned workload w5', '2022-01-27 08:02:01', '2022-01-27 08:02:01'),
+    ( 1, 2, 1, 25, '2022-02-12', 'INACTIVE', 'create planned workload w6', '2022-02-10 16:12:01', '2022-02-10 16:12:01'),
+    ( 1, 3, 2, 25, '2022-02-12', 'INACTIVE', 'create planned workload w6', '2022-02-10 16:12:01', '2022-02-10 16:12:01'),
+    ( 1, 2, 1, 25, '2022-02-19', 'INACTIVE', 'create planned workload w7', '2022-02-15 16:12:01', '2022-02-15 16:12:01'),
+    ( 1, 3, 2, 25, '2022-02-19', 'INACTIVE', 'create planned workload w7', '2022-02-15 16:12:01', '2022-02-15 16:12:01'),
+    ( 1, 2, 1, 25, '2022-02-26', 'INACTIVE', 'create planned workload w8', '2022-02-24 16:12:01', '2022-02-24 16:12:01'),
+    ( 1, 3, 2, 25, '2022-02-26', 'INACTIVE', 'create planned workload w8', '2022-02-24 16:12:01', '2022-02-24 16:12:01'),
+    ( 1, 2, 1, 25, '2022-03-05', 'INACTIVE', 'create planned workload w9', '2022-03-03 16:12:01', '2022-03-03 16:12:01'),
+    ( 1, 3, 2, 25, '2022-03-05', 'INACTIVE', 'create planned workload w9', '2022-03-03 16:12:01', '2022-03-03 16:12:01'),
+    ( 1, 2, 1, 25, '2022-03-12', 'INACTIVE', 'create planned workload w10', '2022-03-10 16:12:01', '2022-03-10 16:12:01'),
+    ( 1, 3, 2, 25, '2022-03-12', 'INACTIVE', 'create planned workload w10', '2022-03-10 16:12:01', '2022-03-10 16:12:01'),
+    ( 1, 2, 1, 25, '2022-03-19', 'INACTIVE', 'create planned workload w11', '2022-03-17 16:12:01', '2022-03-17 16:12:01'),
+    ( 1, 3, 2, 25, '2022-03-19', 'INACTIVE', 'create planned workload w11', '2022-03-17 16:12:01', '2022-03-17 16:12:01'),
+    ( 1, 2, 1, 25, '2022-03-26', 'INACTIVE', 'create planned workload w12', '2022-03-24 16:12:01', '2022-03-24 16:12:01'),
+    ( 1, 3, 2, 25, '2022-03-26', 'INACTIVE', 'create planned workload w12', '2022-03-24 16:12:01', '2022-03-24 16:12:01'),
+    ( 1, 2, 1, 25, '2022-04-02', 'INACTIVE', 'create planned workload w13', '2022-03-31 16:12:01', '2022-03-31 16:12:01'),
+    ( 1, 3, 2, 25, '2022-04-02', 'INACTIVE', 'create planned workload w13', '2022-03-31 16:12:01', '2022-03-31 16:12:01'),
+    ( 1, 2, 1, 23, '2022-04-09', 'INACTIVE', 'create planned workload w14', '2022-04-08 16:12:01', '2022-04-08 16:12:01'),
+    ( 1, 3, 2, 23, '2022-04-09', 'INACTIVE', 'create planned workload w14', '2022-04-08 16:12:01', '2022-04-08 16:12:01'),
+    ( 1, 2, 1, 23, '2022-04-16', 'INACTIVE', 'create planned workload w15', '2022-04-15 16:12:01', '2022-04-15 16:12:01'),
+    ( 1, 3, 2, 22, '2022-04-16', 'INACTIVE', 'create planned workload w15', '2022-04-15 16:12:01', '2022-04-15 16:12:01'),
+    ( 1, 2, 1, 21, '2022-04-23', 'INACTIVE', 'create planned workload w16', '2022-04-22 16:12:01', '2022-04-22 16:12:01'),
+    ( 1, 3, 2, 24, '2022-04-23', 'INACTIVE', 'create planned workload w16', '2022-04-22 16:12:01', '2022-04-22 16:12:01'),
+    ( 1, 2, 1, 20, '2022-04-30', 'INACTIVE', 'create planned workload w17', '2022-04-29 16:12:01', '2022-04-29 16:12:01'),
+    ( 1, 3, 2, 20, '2022-04-30', 'INACTIVE', 'create planned workload w17', '2022-04-29 16:12:01', '2022-04-29 16:12:01'),
+    ( 1, 2, 1, 20, '2022-05-07', 'INACTIVE', 'create planned workload w18', '2022-05-06 16:12:01', '2022-05-06 16:12:01'),
+    ( 1, 3, 2, 20, '2022-05-07', 'INACTIVE', 'create planned workload w18', '2022-05-06 16:12:01', '2022-05-06 16:12:01')`,
         );
     }
 

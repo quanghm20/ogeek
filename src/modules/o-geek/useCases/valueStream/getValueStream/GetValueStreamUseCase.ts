@@ -57,7 +57,7 @@ export class GetValueStreamUseCase
             const actualPlanAndWorkLogDtos = response;
 
             // eslint-disable-next-line import/namespace
-            moment.updateLocale('en', { week: { dow: 6 } });
+            // moment.updateLocale('en', { week: { dow: 6 } });
             const dateOfWeek = moment()
                 .utcOffset(420)
                 .week(params.week)
@@ -67,12 +67,12 @@ export class GetValueStreamUseCase
                 .utcOffset(420)
                 .add(-numDateOfWeek, 'days')
                 .startOf('day')
-                .format('MM/DD/YYYY');
+                .format();
             const endDateOfWeek = moment(startDateOfWeek)
                 .utcOffset(420)
                 .add(6, 'days')
                 .endOf('day')
-                .format('MM/DD/YYYY');
+                .format();
 
             const user = await this.userRepo.findById(params.userId);
             const valueStreams = await this.valueStreamRepo.findAll();
@@ -92,6 +92,11 @@ export class GetValueStreamUseCase
             const valueStreamDtos = ValueStreamMap.fromDomainAll(valueStreams);
             const userDto = UserMap.fromDomain(user);
 
+            const startDate = moment(startDateOfWeek)
+                .add(1, 'days')
+                .format('DD-MM-YYYY');
+            const endDate = moment(endDateOfWeek).format('DD-MM-YYYY');
+
             const valueStreamsByWeekDto = ValueStreamsByWeekMap.combineAllDto(
                 committedWLDtos,
                 plannedWLDtos,
@@ -99,8 +104,8 @@ export class GetValueStreamUseCase
                 valueStreamDtos,
                 userDto,
                 params.week,
-                startDateOfWeek,
-                endDateOfWeek,
+                startDate,
+                endDate,
             );
 
             if (!valueStreamsByWeekDto) {

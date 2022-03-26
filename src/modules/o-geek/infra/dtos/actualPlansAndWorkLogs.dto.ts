@@ -26,7 +26,7 @@ export class ActualPlanAndWorkLogDto {
 
     @ApiProperty()
     @IsNumber()
-    actualPlan: number;
+    actualPlannedWorkload: number;
 
     @ApiProperty()
     @IsNumber()
