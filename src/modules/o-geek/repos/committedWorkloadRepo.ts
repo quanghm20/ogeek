@@ -249,6 +249,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             }
             arr.push(entity.contributedValue.expertiseScope.id);
         }
-        return [...new Set(arr)];
+        return arr;
     }
 }
