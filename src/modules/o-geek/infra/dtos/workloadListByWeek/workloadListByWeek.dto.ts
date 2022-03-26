@@ -1,30 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNumber, IsString } from 'class-validator';
 
+import { IssueType } from '../../../../../common/constants/issue-type';
 import { CommittedWorkloadByWeekDto } from './committedWorkloadOfWeek.dto';
 import { ExpertiseScopeWithinWorkloadListDto } from './expertiseScopeWithinWorkloadList.dto';
 import { UserWorkloadDto } from './userWorkload.dto';
 
 export class WorkloadListByWeekDto {
-    @ApiProperty()
+    @ApiProperty({ type: UserWorkloadDto })
     user: UserWorkloadDto;
 
-    @ApiProperty()
+    @ApiProperty({ type: ExpertiseScopeWithinWorkloadListDto, isArray: true })
     @IsArray()
     expertiseScopes: ExpertiseScopeWithinWorkloadListDto[];
 
-    @ApiProperty()
+    @ApiProperty({ type: CommittedWorkloadByWeekDto })
     committedWorkload: CommittedWorkloadByWeekDto;
 
-    @ApiProperty()
+    @ApiProperty({ example: 20 })
     @IsNumber()
     plannedWorkload: number;
 
-    @ApiProperty()
+    @ApiProperty({ example: 18 })
     @IsNumber()
     actualWorkload: number;
 
-    @ApiProperty()
+    @ApiProperty({ enum: IssueType, example: IssueType.NOT_ISSUE })
     @IsString()
-    typeOfIssue: string;
+    typeOfIssue: IssueType;
 }

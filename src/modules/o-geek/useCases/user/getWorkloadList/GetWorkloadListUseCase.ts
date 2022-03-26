@@ -32,7 +32,8 @@ interface ServerResponse {
 
 @Injectable()
 export class GetWorkloadListUseCase
-    implements IUseCase<{ week: number }, Promise<Response>> {
+    implements IUseCase<{ week: number }, Promise<Response>>
+{
     constructor(
         @Inject('ICommittedWorkloadRepo')
         public readonly committedWLRepo: ICommittedWorkloadRepo,
@@ -54,8 +55,6 @@ export class GetWorkloadListUseCase
             });
             const response = request.data.data;
 
-            // eslint-disable-next-line import/namespace
-            moment.updateLocale('en', { week: { dow: 6 } });
             const dateOfWeek = moment()
                 .utcOffset(420)
                 .week(params.week)

@@ -2,15 +2,15 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
 export class CommittedWorkloadByWeekDto {
-    @ApiProperty()
+    @ApiProperty({ example: '01/01/2022' })
     @IsString()
     startDate: string;
 
-    @ApiProperty()
+    @ApiProperty({ example: '01/04/2022' })
     @IsString()
     expiredDate: string;
 
-    @ApiProperty()
+    @ApiProperty({ example: 12 })
     @IsNumber()
     workload: number;
 }

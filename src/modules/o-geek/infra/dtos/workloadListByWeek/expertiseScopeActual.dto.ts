@@ -2,15 +2,15 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
 export class ExpertiseScopeActualDto {
-    @ApiProperty()
+    @ApiProperty({ example: 'Product Backend' })
     @IsString()
     name: string;
 
-    @ApiProperty()
+    @ApiProperty({ example: 1 })
     @IsNumber()
     id: number;
 
-    @ApiProperty()
+    @ApiProperty({ example: 12 })
     @IsNumber()
     worklog: number;
 }

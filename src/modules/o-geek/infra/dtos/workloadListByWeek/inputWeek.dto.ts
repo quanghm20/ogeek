@@ -1,4 +1,7 @@
+import { IsNumber } from 'class-validator';
+
 export class InputWeekDto {
+    @IsNumber()
     week?: number;
 
     constructor(week: number) {

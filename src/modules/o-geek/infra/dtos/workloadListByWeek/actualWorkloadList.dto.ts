@@ -1,17 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import { IsArray, IsNumber } from 'class-validator';
 
 import { ExpertiseScopeActualDto } from './expertiseScopeActual.dto';
 import { UserWorkloadDto } from './userWorkload.dto';
 
 export class ActualWorkloadListDto {
-    @ApiProperty()
+    @ApiProperty({ type: UserWorkloadDto })
     user: UserWorkloadDto;
 
-    @ApiProperty()
+    @ApiProperty({ type: ExpertiseScopeActualDto, isArray: true })
+    @IsArray()
     expertiseScopes: ExpertiseScopeActualDto[];
 
-    @ApiProperty()
+    @ApiProperty({ example: 12 })
     @IsNumber()
     actualWorkload: number;
 }

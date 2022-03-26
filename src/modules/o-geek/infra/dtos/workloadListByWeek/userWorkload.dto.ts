@@ -4,11 +4,11 @@ import { IsNumber, IsString } from 'class-validator';
 import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
 
 export class UserWorkloadDto {
-    @ApiProperty()
+    @ApiProperty({ example: 'tuan.lq' })
     @IsString()
     alias: string;
 
-    @ApiProperty()
+    @ApiProperty({ type: UniqueEntityID, example: 1 })
     @IsNumber()
     id: number | UniqueEntityID;
 }
