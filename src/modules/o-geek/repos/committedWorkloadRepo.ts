@@ -1,6 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as moment from 'moment';
 import {
+    Between,
     getConnection,
     LessThan,
     LessThanOrEqual,
@@ -44,6 +46,8 @@ export interface ICommittedWorkloadRepo {
     findByUserIdOverview(
         userId: DomainId | number,
     ): Promise<CommittedWorkload[]>;
+    findAll(): Promise<CommittedWorkload[]>;
+    findAllExpertiseScope(userId: number, startDate: string): Promise<number[]>;
 }
 
 @Injectable()
@@ -90,7 +94,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.expertiseScope',
             ],
         });
-
         return entity ? CommittedWorkloadMap.toArrayDomain(entity) : null;
     }
 
@@ -208,5 +211,44 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             ],
         });
         return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
+    }
+    async findAll(): Promise<CommittedWorkload[]> {
+        const entities = await this.repo.find({
+            relations: [
+                'user',
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+            ],
+        });
+        return entities ? CommittedWorkloadMap.toArrayDomain(entities) : null;
+    }
+    async findAllExpertiseScope(
+        userId: number,
+        startDate: string,
+    ): Promise<number[]> {
+        const now = moment(new Date()).format('YYYY-MM-DD');
+        const entities = await this.repo.find({
+            where: {
+                user: { id: userId },
+                startDate: Between(startDate, now),
+            },
+            relations: [
+                'user',
+                'contributedValue',
+                'contributedValue.expertiseScope',
+            ],
+        });
+        if (entities.length <= 0) {
+            return null;
+        }
+        const arr = new Array<number>();
+        for (const entity of entities) {
+            if (arr.includes(entity.contributedValue.expertiseScope.id)) {
+                continue;
+            }
+            arr.push(entity.contributedValue.expertiseScope.id);
+        }
+        return [...new Set(arr)];
     }
 }

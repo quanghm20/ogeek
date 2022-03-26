@@ -22,6 +22,7 @@ import {
     CreateCommittedWorkloadController,
     CreateCommittedWorkloadUseCase,
 } from './useCases/committedWorkload/createCommittedWorkload';
+import { GetCommittedWorkloadUseCase } from './useCases/committedWorkload/getCommittedWorkload/GetCommittedWorkloadsUseCase';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,
@@ -87,6 +88,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetValueStreamUseCase,
         GetWeekStatusUseCase,
         GetUsersUseCase,
+        GetCommittedWorkloadUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,
