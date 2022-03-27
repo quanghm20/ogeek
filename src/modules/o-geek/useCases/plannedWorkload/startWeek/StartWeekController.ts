@@ -1,10 +1,9 @@
 import {
-    Body,
+    BadRequestException,
     Controller,
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
-    NotFoundException,
     Post,
     Req,
     UseGuards,
@@ -14,46 +13,37 @@ import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
-import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkloadsList.dto';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { MessageDto } from '../../../infra/dtos/message.dto';
-import { PlannedWorkloadDto } from '../../../infra/dtos/plannedWorkload.dto';
-import { PlanWorkloadErrors } from './PlanWorkloadErrors';
-import { PlanWorkloadUseCase } from './PlanWorkloadUseCase';
+import { StartWeekErrors } from './StartWeekErrors';
+import { StartWeekUseCase } from './StartWeekUseCase';
 
 @Controller('api/planned-workload')
-@ApiTags('Planned Workload')
-export class PlanWorkloadController {
-    constructor(public readonly useCase: PlanWorkloadUseCase) {}
+@ApiTags('Start Week')
+export class StartWeekController {
+    constructor(public readonly useCase: StartWeekUseCase) {}
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Post('plan-workload')
+    @Post('start-week')
     @HttpCode(HttpStatus.CREATED)
     @ApiOkResponse({
-        type: [PlannedWorkloadDto],
-        description: 'Plan workload for Geek',
+        description: 'Start week for Geek',
     })
-    async execute(
-        @Req() req: Request,
-        @Body() createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
-    ): Promise<MessageDto> {
+    async execute(@Req() req: Request): Promise<MessageDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
-        const { userId } = findUserDto;
-        createPlannedWorkloadsListDto.userId = userId;
 
-        const result = await this.useCase.execute(
-            createPlannedWorkloadsListDto,
-        );
+        const result = await this.useCase.execute(findUserDto);
+
         if (result.isLeft()) {
             const error = result.value;
 
             switch (error.constructor) {
-                case PlanWorkloadErrors.PlanWorkloadFailed:
-                    throw new NotFoundException(
+                case StartWeekErrors.StartWeekFailed:
+                    throw new BadRequestException(
                         error.errorValue(),
-                        'Failed to plan workload',
+                        'Cannot execute without planning',
                     );
                 default:
                     throw new InternalServerErrorException(
@@ -64,8 +54,8 @@ export class PlanWorkloadController {
         }
 
         return {
-            statusCode: HttpStatus.CREATED,
-            message: 'CREATED',
+            statusCode: HttpStatus.OK,
+            message: 'OK',
         } as MessageDto;
     }
 }

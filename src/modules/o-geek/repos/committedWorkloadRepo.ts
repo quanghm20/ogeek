@@ -109,7 +109,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 ? Number(committedWorkloadId.id.toValue())
                 : committedWorkloadId;
         const entity = await this.repo.findOne(committedWorkloadId, {
-            relations: ['contributedValue'],
+            relations: ['contributedValue', 'user', 'pic'],
         });
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
     }
