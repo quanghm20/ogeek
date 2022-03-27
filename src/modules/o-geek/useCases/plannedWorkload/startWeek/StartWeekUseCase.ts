@@ -26,10 +26,11 @@ export class StartWeekUseCase
 
     try {
       const user = await this.userRepo.findById(userId);
-      if (user.weekStatus !== WeekStatus.PLANNED)
-        {return left(
+      if (!user.planned()) {
+        return left(
           new StartWeekErrors.StartWeekFailed(),
-        ) as Response; }
+        ) as Response;
+      }
 
       await this.userRepo.update(
         { id: userId },
