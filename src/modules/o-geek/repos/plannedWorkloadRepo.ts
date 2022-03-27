@@ -58,11 +58,16 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 status: WorkloadStatus.ACTIVE,
             },
             relations: [
-                'committedWorkload',
                 'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'committedWorkload',
                 'committedWorkload.contributedValue',
-                'committedWorkload.contributedValue.valueStream',
                 'committedWorkload.contributedValue.expertiseScope',
+                'committedWorkload.contributedValue.valueStream',
+                'committedWorkload.user',
+                'committedWorkload.pic',
+                'user',
             ],
         });
 
@@ -129,6 +134,9 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'committedWorkload.contributedValue',
                 'committedWorkload.contributedValue.expertiseScope',
                 'committedWorkload.contributedValue.valueStream',
+                'user',
+                'committedWorkload.user',
+                'committedWorkload.pic',
             ],
         });
 
@@ -155,6 +163,9 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'committedWorkload.contributedValue',
                 'committedWorkload.contributedValue.expertiseScope',
                 'committedWorkload.contributedValue.valueStream',
+                'user',
+                'committedWorkload.user',
+                'committedWorkload.pic',
             ],
         });
         return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;

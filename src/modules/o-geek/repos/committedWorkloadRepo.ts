@@ -73,6 +73,8 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue',
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
+                'user',
+                'pic',
             ],
         });
 
@@ -92,6 +94,8 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue',
                 'contributedValue.valueStream',
                 'contributedValue.expertiseScope',
+                'user',
+                'pic',
             ],
         });
         return entity ? CommittedWorkloadMap.toArrayDomain(entity) : null;
@@ -177,10 +181,14 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             },
             relations: [
                 'contributedValue',
+                'user',
+                'pic',
                 'contributedValue.expertiseScope',
                 'committedWorkload',
                 'committedWorkload.contributedValue',
                 'committedWorkload.contributedValue.expertiseScope',
+                'committedWorkload.contributedValue.user',
+                'committedWorkload.contributedValue.pic',
             ],
         });
         return entities
@@ -208,6 +216,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'committedWorkload',
                 'committedWorkload.contributedValue',
                 'committedWorkload.contributedValue.expertiseScope',
+                'committedWorkload.contributedValue.valueStream',
             ],
         });
         return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
@@ -219,6 +228,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue',
                 'contributedValue.valueStream',
                 'contributedValue.expertiseScope',
+                'pic',
             ],
         });
         return entities ? CommittedWorkloadMap.toArrayDomain(entities) : null;
@@ -237,6 +247,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'user',
                 'contributedValue',
                 'contributedValue.expertiseScope',
+                'pic',
             ],
         });
         if (entities.length <= 0) {
