@@ -51,7 +51,7 @@ export class DataCommittedWorkload {
 @UseGuards(JwtAuthGuard)
 export class CreateCommittedWorkloadController {
     constructor(
-        public readonly useCase: CreateCommittedWorkloadUseCase,
+        public readonly createCommitUseCase: CreateCommittedWorkloadUseCase,
         public readonly getCommitUseCase: GetCommittedWorkloadUseCase,
     ) {}
 
@@ -70,7 +70,7 @@ export class CreateCommittedWorkloadController {
         const pic = req.user as JwtPayload;
         const picId = pic.userId;
         body.picId = picId;
-        const result = await this.useCase.execute(body);
+        const result = await this.createCommitUseCase.execute(body);
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {
