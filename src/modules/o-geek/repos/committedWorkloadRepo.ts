@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as moment from 'moment';
 import {
@@ -33,7 +33,7 @@ export interface ICommittedWorkloadRepo {
         startDate: Date,
         expiredDate: Date,
         picId: number,
-    ): Promise<number>;
+    ): Promise<CommittedWorkload[]>;
     findByUserIdInTimeRange(
         userId: DomainId | number,
         startDateInWeek: Date,
@@ -46,7 +46,7 @@ export interface ICommittedWorkloadRepo {
     findByUserIdOverview(
         userId: DomainId | number,
     ): Promise<CommittedWorkload[]>;
-    findAll(): Promise<CommittedWorkload[]>;
+    findAllCommittedActive(): Promise<CommittedWorkload[]>;
     findAllExpertiseScope(userId: number, startDate: string): Promise<number[]>;
 }
 
@@ -108,8 +108,17 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             committedWorkloadId instanceof DomainId
                 ? Number(committedWorkloadId.id.toValue())
                 : committedWorkloadId;
-        const entity = await this.repo.findOne(committedWorkloadId, {
-            relations: ['contributedValue'],
+        const entity = await this.repo.findOne({
+            where: {
+                id: committedWorkloadId,
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+                'user',
+                'pic',
+            ],
         });
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
     }
@@ -125,12 +134,13 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         startDate: Date,
         expiredDate: Date,
         picId: number,
-    ): Promise<number> {
+    ): Promise<CommittedWorkload[]> {
         const queryRunner = getConnection().createQueryRunner();
         await queryRunner.connect();
         try {
             const user = new UserEntity(userId);
             const pic = new UserEntity(picId);
+            const result = Array<number>();
 
             await queryRunner.startTransaction();
             for await (const workload of committedWorkload) {
@@ -139,9 +149,30 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                         valueStream: {
                             id: workload.valueStreamId,
                         },
-                        expertiseScope: { id: workload.expertiseScopeId },
+                        expertiseScope: {
+                            id: workload.expertiseScopeId,
+                        },
                     },
                 });
+                // set all old committed workload to InActive
+                await this.repo.update(
+                    {
+                        contributedValue: {
+                            valueStream: {
+                                id: workload.valueStreamId,
+                            },
+                            expertiseScope: {
+                                id: workload.expertiseScopeId,
+                            },
+                        },
+                        user: {
+                            id: userId,
+                        },
+                    },
+                    {
+                        status: WorkloadStatus.INACTIVE,
+                    },
+                );
 
                 const committed = new CommittedWorkloadEntity(
                     user,
@@ -151,13 +182,23 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     expiredDate,
                     pic,
                 );
-                await queryRunner.manager.save(committed);
+                const save = await queryRunner.manager.save(committed);
+                result.push(save.id);
             }
             await queryRunner.commitTransaction();
-            return HttpStatus.CREATED;
+            const commits = await this.repo.findByIds(result, {
+                relations: [
+                    'contributedValue',
+                    'contributedValue.valueStream',
+                    'contributedValue.expertiseScope',
+                    'user',
+                    'pic',
+                ],
+            });
+            return commits ? CommittedWorkloadMap.toArrayDomain(commits) : null;
         } catch (error) {
             await queryRunner.rollbackTransaction();
-            return HttpStatus.INTERNAL_SERVER_ERROR;
+            return null;
         } finally {
             await queryRunner.release();
         }
@@ -221,8 +262,11 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         });
         return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
     }
-    async findAll(): Promise<CommittedWorkload[]> {
+    async findAllCommittedActive(): Promise<CommittedWorkload[]> {
         const entities = await this.repo.find({
+            where: {
+                status: WorkloadStatus.ACTIVE,
+            },
             relations: [
                 'user',
                 'contributedValue',

@@ -44,4 +44,7 @@ export class CommittedWorkloadShortDto {
         example: WorkloadStatus.ACTIVE,
     })
     status: WorkloadStatus;
+
+    @ApiProperty({ example: new Date() })
+    createdAt: Date;
 }

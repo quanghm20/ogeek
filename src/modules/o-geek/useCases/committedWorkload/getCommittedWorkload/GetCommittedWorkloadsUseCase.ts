@@ -24,7 +24,7 @@ export class GetCommittedWorkloadUseCase
     async execute(): Promise<Response> {
         try {
             const committedWorkloadsDomain =
-                await this.committedWorkloadRepo.findAll();
+                await this.committedWorkloadRepo.findAllCommittedActive();
             if (committedWorkloadsDomain.length <= 0) {
                 return left(new GetCommittedWorkloadErrors.NotFound());
             }
