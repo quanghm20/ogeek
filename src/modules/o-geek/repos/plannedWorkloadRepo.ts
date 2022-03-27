@@ -14,6 +14,7 @@ import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
 import { InputGetPlanWLDto } from '../infra/dtos/ValueStreamsByWeek/inputGetPlanWL.dto';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
+import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface IPlannedWorkloadRepo {
     findByUserIdOverview(
@@ -153,7 +154,13 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             where: {
                 user: userId,
                 startDate:
-                    MoreThanOrEqual(startDate) && LessThanOrEqual(startDate),
+                    MoreThanOrEqual(
+                        MomentService.shiftFirstDateChart(startDate),
+                    ) &&
+                    LessThanOrEqual(
+                        MomentService.shiftLastDateChart(startDate),
+                    ),
+                status: 'ACTIVE',
             },
             relations: [
                 'contributedValue',
