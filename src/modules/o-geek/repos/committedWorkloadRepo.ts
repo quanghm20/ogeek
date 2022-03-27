@@ -1,6 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as moment from 'moment';
 import {
+    Between,
     getConnection,
     LessThan,
     LessThanOrEqual,
@@ -44,6 +46,8 @@ export interface ICommittedWorkloadRepo {
     findByUserIdOverview(
         userId: DomainId | number,
     ): Promise<CommittedWorkload[]>;
+    findAll(): Promise<CommittedWorkload[]>;
+    findAllExpertiseScope(userId: number, startDate: string): Promise<number[]>;
 }
 
 @Injectable()
@@ -69,6 +73,8 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue',
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
+                'user',
+                'pic',
             ],
         });
 
@@ -88,9 +94,10 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue',
                 'contributedValue.valueStream',
                 'contributedValue.expertiseScope',
+                'user',
+                'pic',
             ],
         });
-
         return entity ? CommittedWorkloadMap.toArrayDomain(entity) : null;
     }
 
@@ -174,10 +181,14 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             },
             relations: [
                 'contributedValue',
+                'user',
+                'pic',
                 'contributedValue.expertiseScope',
                 'committedWorkload',
                 'committedWorkload.contributedValue',
                 'committedWorkload.contributedValue.expertiseScope',
+                'committedWorkload.contributedValue.user',
+                'committedWorkload.contributedValue.pic',
             ],
         });
         return entities
@@ -205,8 +216,50 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'committedWorkload',
                 'committedWorkload.contributedValue',
                 'committedWorkload.contributedValue.expertiseScope',
+                'committedWorkload.contributedValue.valueStream',
             ],
         });
         return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
+    }
+    async findAll(): Promise<CommittedWorkload[]> {
+        const entities = await this.repo.find({
+            relations: [
+                'user',
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+                'pic',
+            ],
+        });
+        return entities ? CommittedWorkloadMap.toArrayDomain(entities) : null;
+    }
+    async findAllExpertiseScope(
+        userId: number,
+        startDate: string,
+    ): Promise<number[]> {
+        const now = moment(new Date()).format('YYYY-MM-DD');
+        const entities = await this.repo.find({
+            where: {
+                user: { id: userId },
+                startDate: Between(startDate, now),
+            },
+            relations: [
+                'user',
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'pic',
+            ],
+        });
+        if (entities.length <= 0) {
+            return null;
+        }
+        const arr = new Array<number>();
+        for (const entity of entities) {
+            if (arr.includes(entity.contributedValue.expertiseScope.id)) {
+                continue;
+            }
+            arr.push(entity.contributedValue.expertiseScope.id);
+        }
+        return arr;
     }
 }
