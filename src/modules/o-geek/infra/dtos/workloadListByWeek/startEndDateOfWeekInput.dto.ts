@@ -6,4 +6,6 @@ export class StartEndDateOfWeekWLInputDto {
 
     @IsDate()
     endDateOfWeek: string;
+
+    userId?: number;
 }
