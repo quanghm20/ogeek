@@ -160,7 +160,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                     LessThanOrEqual(
                         MomentService.shiftLastDateChart(startDate),
                     ),
-                status: 'ACTIVE',
+                status: WorkloadStatus.ACTIVE,
             },
             relations: [
                 'contributedValue',
