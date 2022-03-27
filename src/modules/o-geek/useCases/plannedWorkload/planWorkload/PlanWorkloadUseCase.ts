@@ -82,7 +82,7 @@ export class PlanWorkloadUseCase
         plannedWorkloadEntitiesList.push(plannedWorkloadEntity);
       }
       const savedPlannedWorkloads = await this.plannedWorkloadRepo.createMany(plannedWorkloadEntitiesList);
-      if (plannedWorkloads) {
+      if (savedPlannedWorkloads) {
         return right(Result.ok(savedPlannedWorkloads));
       }
 
