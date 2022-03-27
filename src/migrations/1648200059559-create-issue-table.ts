@@ -12,8 +12,7 @@ export class createIssueTable1648200059559 implements MigrationInterface {
                 "created_at" TIMESTAMP NOT NULL DEFAULT now(), 
                 "updated_at" TIMESTAMP NOT NULL DEFAULT now(), 
                 "type" character varying NOT NULL DEFAULT 'NOT_ISSUE', 
-                "week" integer NOT NULL, "user_id" integer, 
-                CONSTRAINT "UQ_0c13dcef93ca1998faf4363e5e1" UNIQUE ("type"), 
+                "week" integer NOT NULL, "user_id" integer,
                 CONSTRAINT "PK_f80e086c249b9f3f3ff2fd321b7" PRIMARY KEY ("id"))`,
         );
         await queryRunner.query(

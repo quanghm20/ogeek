@@ -104,6 +104,7 @@ export class GetWorkloadListUseCase
                 userDtos,
                 response,
                 issueDtos,
+                endDateOfWeek,
             );
 
             if (!workloadListByWeekDto) {
