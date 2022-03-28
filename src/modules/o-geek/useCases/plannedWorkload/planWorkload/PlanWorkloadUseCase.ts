@@ -1,5 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
+import * as moment from 'moment';
+import { Equal } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
 import { WorkloadStatus } from '../../../../../common/constants/committed-status';
@@ -36,6 +38,9 @@ export class PlanWorkloadUseCase
   async execute(createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto): Promise<Response> {
     const { startDate, reason, plannedWorkloads, userId } = createPlannedWorkloadsListDto;
 
+    // format startDate
+    const formattedStartDate = moment(startDate).format('YYYY-MM-DD hh:mm:ss');
+
     const plannedWorkloadEntitiesList = [] as PlannedWorkloadEntity[];
     const user = await this.userRepo.findById(userId);
 
@@ -43,7 +48,7 @@ export class PlanWorkloadUseCase
       // deactive all planned workload of current user
       await this.plannedWorkloadRepo.updateMany(
         {
-          startDate,
+          startDate: Equal(formattedStartDate),
           user: { id: userId },
         },
         { status: WorkloadStatus.INACTIVE },
@@ -62,11 +67,11 @@ export class PlanWorkloadUseCase
         const contributedValue = await this.contributedValueloadRepo.findById(contributedValueId);
         const plannedWorkload = PlannedWorkload.create(
           {
-            startDate,
             reason,
             contributedValue,
             user,
             committedWorkload,
+            startDate: new Date(formattedStartDate),
             plannedWorkload: workload,
             status: WorkloadStatus.ACTIVE,
           },
@@ -77,7 +82,7 @@ export class PlanWorkloadUseCase
         plannedWorkloadEntitiesList.push(plannedWorkloadEntity);
       }
       const savedPlannedWorkloads = await this.plannedWorkloadRepo.createMany(plannedWorkloadEntitiesList);
-      if (plannedWorkloads) {
+      if (savedPlannedWorkloads) {
         return right(Result.ok(savedPlannedWorkloads));
       }
 
