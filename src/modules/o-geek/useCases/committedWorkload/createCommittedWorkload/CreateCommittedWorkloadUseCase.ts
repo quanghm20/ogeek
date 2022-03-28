@@ -1,19 +1,20 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { RoleType } from '../../../../../common/constants/role-type';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
-import { Either, left, right } from '../../../../../core/logic/Result';
+import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedWorkload.dto';
-import { MessageDto } from '../../../infra/dtos/message.dto';
+import { CommittedWorkloadShortDto } from '../../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
 import { WorkloadDto } from '../../../infra/dtos/workload.dto';
+import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IContributedValueRepo } from '../../../repos/contributedValueRepo';
 import { IUserRepo } from '../../../repos/userRepo';
 import { CreateCommittedWorkloadErrors } from './CreateCommittedWorkloadErrors';
 type Response = Either<
     AppError.UnexpectedError | CreateCommittedWorkloadErrors.NotFound,
-    MessageDto
+    Result<CommittedWorkloadShortDto[]>
 >;
 
 @Injectable()
@@ -60,22 +61,17 @@ export class CreateCommittedWorkloadUseCase
                 expiredDate,
                 body.picId,
             );
-
-            switch (result) {
-                case HttpStatus.INTERNAL_SERVER_ERROR:
-                    return left(
-                        new AppError.UnexpectedError(
-                            'Internal Server Error Exception',
-                        ),
-                    );
-                case HttpStatus.CREATED:
-                    return right(
-                        new MessageDto(
-                            HttpStatus.CREATED,
-                            'Created committed workload !',
-                        ),
-                    );
+            if (result.length < 0) {
+                return left(
+                    new AppError.UnexpectedError(
+                        'Internal Server Error Exception',
+                    ),
+                );
             }
+            const committedWorkloadsDto =
+                CommittedWorkloadMap.fromCommittedWorkloadShortArray(result);
+            return right(Result.ok(committedWorkloadsDto));
+            return null;
         } catch (err) {
             return left(err);
         }
