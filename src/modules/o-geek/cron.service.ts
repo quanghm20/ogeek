@@ -13,7 +13,7 @@ import { IIssueRepo } from './repos/issueRepo';
 @Injectable()
 export class CronService {
     constructor(@Inject('IIssueRepo') public readonly issueRepo: IIssueRepo) {}
-    @Cron('0 15 0 * * 1') // update on Monday at 00:15
+    @Cron('0 0 20 * * 5') // update on Friday at 20:00
     async autoCreateIssueEntity(): Promise<void> {
         try {
             const issues = await this.issueRepo.findAll();

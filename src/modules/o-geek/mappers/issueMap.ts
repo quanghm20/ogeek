@@ -53,7 +53,7 @@ export class IssueMap implements Mapper<Issue> {
 
     public static toEntity(issue: Issue): IssueEntity {
         const user = UserMap.toEntity(issue.user);
-        const week = issue.week++;
+        const week = ++issue.week;
         return new IssueEntity(issue.type, week, user);
     }
 }

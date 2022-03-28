@@ -28,8 +28,13 @@ export class CreateIssueUseCase
             const { picId, userId } = body;
             const user = await this.userRepo.findById(userId);
             const pic = await this.userRepo.findById(picId);
-            if (pic && pic.isAdmin()) {
+            if (!pic && !pic.isAdmin()) {
                 return left(new CreateIssueErrors.Forbidden()) as Response;
+            }
+            if (user.isAdmin()) {
+                return left(
+                    new CreateIssueErrors.CreateIssueFailed(),
+                ) as Response;
             }
             if (!user) {
                 return left(
