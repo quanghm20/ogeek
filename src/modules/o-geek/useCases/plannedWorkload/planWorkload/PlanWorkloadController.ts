@@ -40,7 +40,7 @@ export class PlanWorkloadController {
     ): Promise<MessageDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
-        const userId = findUserDto.userId;
+        const { userId } = findUserDto;
         createPlannedWorkloadsListDto.userId = userId;
 
         const result = await this.useCase.execute(
@@ -58,7 +58,7 @@ export class PlanWorkloadController {
                 default:
                     throw new InternalServerErrorException(
                         error.errorValue(),
-                        'Something when wrong',
+                        'Something went wrong',
                     );
             }
         }
