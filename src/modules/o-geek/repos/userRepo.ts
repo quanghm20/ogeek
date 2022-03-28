@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { RoleType } from '../../../common/constants/role-type';
 import { DomainId } from '../domain/domainId';
 import { User } from '../domain/user';
 import { UserEntity } from '../infra/database/entities/user.entity';
@@ -40,11 +39,7 @@ export class UserRepository implements IUserRepo {
     }
 
     async findAllUsers(): Promise<User[]> {
-        const entities = await this.repo.find({
-            where: {
-                role: RoleType.USER,
-            },
-        });
+        const entities = await this.repo.find();
         return entities ? UserMap.toDomainAll(entities) : null;
     }
 

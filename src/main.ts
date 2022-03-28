@@ -6,6 +6,7 @@ import {
     NestExpressApplication,
 } from '@nestjs/platform-express';
 import * as Sentry from '@sentry/node';
+import Axios from 'axios';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
@@ -38,6 +39,7 @@ async function bootstrap() {
             },
         },
     );
+    Axios.defaults.timeout = 1000;
     // eslint-disable-next-line import/namespace
     moment.updateLocale('en', {
         week: {

@@ -49,6 +49,7 @@ export class GetWorkloadListUseCase
     async execute(params: InputListWorkloadDto): Promise<Response> {
         try {
             const user = await this.userRepo.findById(params.userId);
+
             if (user.role !== RoleType.ADMIN) {
                 return left(new GetWorkloadListError.Forbidden()) as Response;
             }
