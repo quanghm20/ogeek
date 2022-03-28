@@ -48,6 +48,11 @@ export interface ICommittedWorkloadRepo {
     ): Promise<CommittedWorkload[]>;
     findAllActiveCommittedWorkload(): Promise<CommittedWorkload[]>;
     findAllExpertiseScope(userId: number, startDate: string): Promise<number[]>;
+    findByValueStreamAndExpertiseScope(
+        valueStreamId: number,
+        expertiseScopeId: number,
+        userId: number,
+    ): Promise<CommittedWorkload[]>;
 }
 
 @Injectable()
@@ -68,6 +73,39 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 status: WorkloadStatus.ACTIVE,
                 user: userId,
                 expiredDate: MoreThanOrEqual(new Date()),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'user',
+                'pic',
+            ],
+        });
+
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
+    }
+
+    async findByValueStreamAndExpertiseScope(
+        valueStreamId: number,
+        expertiseScopeId: number,
+        userId: number,
+    ): Promise<CommittedWorkload[]> {
+        const entities = await this.repo.find({
+            where: {
+                contributedValue: {
+                    valueStream: {
+                        id: valueStreamId,
+                    },
+                    expertiseScope: {
+                        id: expertiseScopeId,
+                    },
+                },
+                user: {
+                    id: userId,
+                },
             },
             relations: [
                 'contributedValue',
@@ -154,26 +192,33 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                         },
                     },
                 });
-                // set all old committed workload to InActive
-                await this.repo.update(
-                    {
-                        contributedValue: {
-                            valueStream: {
-                                id: workload.valueStreamId,
+                const checkOldCommittedWorkload =
+                    await this.findByValueStreamAndExpertiseScope(
+                        workload.valueStreamId,
+                        workload.expertiseScopeId,
+                        userId,
+                    );
+                if (checkOldCommittedWorkload.length > 0) {
+                    // set all old committed workload to InActive
+                    await this.repo.update(
+                        {
+                            contributedValue: {
+                                valueStream: {
+                                    id: workload.valueStreamId,
+                                },
+                                expertiseScope: {
+                                    id: workload.expertiseScopeId,
+                                },
                             },
-                            expertiseScope: {
-                                id: workload.expertiseScopeId,
+                            user: {
+                                id: userId,
                             },
                         },
-                        user: {
-                            id: userId,
+                        {
+                            status: WorkloadStatus.INACTIVE,
                         },
-                    },
-                    {
-                        status: WorkloadStatus.INACTIVE,
-                    },
-                );
-
+                    );
+                }
                 const committed = new CommittedWorkloadEntity(
                     user,
                     contribute,
