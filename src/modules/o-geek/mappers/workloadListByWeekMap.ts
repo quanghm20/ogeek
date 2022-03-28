@@ -16,7 +16,61 @@ interface ResultExpertiseScopeAndTotalWL {
     totalCommittedWL: number;
 }
 
+interface IHashCommittedWorkload {
+    [key: string]: CommittedWorkloadDto;
+}
+
+interface IHashPlannedWorkload {
+    [key: string]: PlannedWorkloadDto;
+}
+
 export class WorkloadListByWeekMap {
+    public static handleDuplicateExpOfCommittedArray(
+        committedWLByUserArray: CommittedWorkloadDto[],
+    ): CommittedWorkloadDto[] {
+        const hashMap: IHashCommittedWorkload = {};
+
+        committedWLByUserArray.forEach((workload) => {
+            if (
+                !hashMap[workload.contributedValue.expertiseScope.id.toString()]
+            ) {
+                hashMap[
+                    workload.contributedValue.expertiseScope.id.toString()
+                ] = workload;
+                return true;
+            }
+
+            hashMap[
+                workload.contributedValue.expertiseScope.id.toString()
+            ].committedWorkload += workload.committedWorkload;
+        });
+
+        return Object.values(hashMap);
+    }
+
+    public static handleDuplicateExpOfPlannedArray(
+        plannedWLByUserArray: PlannedWorkloadDto[],
+    ): PlannedWorkloadDto[] {
+        const hashMap: IHashPlannedWorkload = {};
+
+        plannedWLByUserArray.forEach((workload) => {
+            if (
+                !hashMap[workload.contributedValue.expertiseScope.id.toString()]
+            ) {
+                hashMap[
+                    workload.contributedValue.expertiseScope.id.toString()
+                ] = workload;
+                return true;
+            }
+
+            hashMap[
+                workload.contributedValue.expertiseScope.id.toString()
+            ].plannedWorkload += workload.plannedWorkload;
+        });
+
+        return Object.values(hashMap);
+    }
+
     public static handleActualWorkload(
         actualWorkloadByUser: ActualWorkloadListDto,
     ): number {
@@ -43,7 +97,9 @@ export class WorkloadListByWeekMap {
         arrPlannedWLByUser: PlannedWorkloadDto[],
         committedItem: CommittedWorkloadDto,
     ): number {
-        const plannedWorkloadItem = arrPlannedWLByUser.find(
+        const handlePlan =
+            this.handleDuplicateExpOfPlannedArray(arrPlannedWLByUser);
+        const plannedWorkloadItem = handlePlan.find(
             (plan) =>
                 Number(plan.committedWorkload.id.toString()) ===
                 Number(committedItem.id.toString()),
@@ -88,6 +144,7 @@ export class WorkloadListByWeekMap {
             (plan) =>
                 Number(plan.user.id.toString()) === Number(user.id.toString()),
         );
+
         const totalCommittedWL = committedWLByUserArray.reduce(
             (total, item) => total + item.committedWorkload,
             0,
@@ -97,7 +154,10 @@ export class WorkloadListByWeekMap {
         let expertiseScopeArray =
             new Array<ExpertiseScopeWithinWorkloadListDto>();
         if (plannedWLByUserArray.length === 0) {
-            expertiseScopeArray = committedWLByUserArray.map(
+            const handleCommittedWL = this.handleDuplicateExpOfCommittedArray(
+                committedWLByUserArray,
+            );
+            expertiseScopeArray = handleCommittedWL.map(
                 (com) =>
                     ({
                         expertiseScope: {
