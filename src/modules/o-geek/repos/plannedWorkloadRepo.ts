@@ -13,10 +13,15 @@ import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
 import { InputGetPlanWLDto } from '../infra/dtos/ValueStreamsByWeek/inputGetPlanWL.dto';
+import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
 import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface IPlannedWorkloadRepo {
+    findAllByWeek({
+        startDateOfWeek,
+        endDateOfWeek,
+    }: StartEndDateOfWeekWLInputDto): Promise<PlannedWorkload[]>;
     findByUserIdOverview(
         userId: DomainId | number,
         startDateOfYear: string,
@@ -180,5 +185,32 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
 
     async updateMany(condition: any, update: any): Promise<void> {
         await this.repo.update(condition, update);
+    }
+
+    async findAllByWeek({
+        startDateOfWeek,
+        endDateOfWeek,
+    }: StartEndDateOfWeekWLInputDto): Promise<PlannedWorkload[]> {
+        const entities = await this.repo.find({
+            where: {
+                status: WorkloadStatus.ACTIVE,
+                startDate: Between(startDateOfWeek, endDateOfWeek),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'committedWorkload',
+                'committedWorkload.user',
+                'committedWorkload.contributedValue',
+                'committedWorkload.contributedValue.expertiseScope',
+                'committedWorkload.contributedValue.valueStream',
+                'user',
+            ],
+        });
+
+        return entities
+            ? PlannedWorkloadMap.toDomainAll(entities)
+            : new Array<PlannedWorkload>();
     }
 }

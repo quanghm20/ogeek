@@ -45,8 +45,27 @@ export class UserMap implements Mapper<User> {
             },
             new UniqueEntityID(id),
         );
-
         return userOrError.isSuccess ? userOrError.getValue() : null;
+    }
+
+    public static toDomainAll(users: UserEntity[]): User[] {
+        const userArray = new Array<User>();
+        users.forEach((user) => {
+            const userOrError = UserMap.toDomain(user);
+            if (userOrError) {
+                userArray.push(userOrError);
+            } else {
+                return null;
+            }
+        });
+
+        return userArray;
+    }
+
+    public static fromDomainAll(users: User[]): UserDto[] {
+        const arrUserDto = new Array<UserDto>();
+        users.forEach((user) => arrUserDto.push(UserMap.fromDomain(user)));
+        return arrUserDto;
     }
 
     public static toArrayDomain(raws: UserEntity[]): User[] {

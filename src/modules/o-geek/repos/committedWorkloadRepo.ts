@@ -21,6 +21,7 @@ import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface ICommittedWorkloadRepo {
+    findAll(): Promise<CommittedWorkload[]>;
     findById(
         committedWorkloadId: DomainId | number,
     ): Promise<CommittedWorkload>;
@@ -312,7 +313,25 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         });
         return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
     }
+
     async findAllActiveCommittedWorkload(): Promise<CommittedWorkload[]> {
+        const entities = await this.repo.find({
+            where: {
+                status: WorkloadStatus.ACTIVE,
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'user',
+            ],
+        });
+
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
+    }
+    async findAll(): Promise<CommittedWorkload[]> {
         const entities = await this.repo.find({
             where: {
                 status: WorkloadStatus.ACTIVE,

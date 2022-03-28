@@ -3,26 +3,27 @@ import { Mapper } from '../../../core/infra/Mapper';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
 import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';
-import { UserMap } from '../mappers/userMap';
 import { CommittedWorkloadMap } from './committedWorkloadMap';
 import { ContributedValueMap } from './contributedValueMap';
+import { UserMap } from './userMap';
 
 export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     public static fromDomain(
         plannedWorkload: PlannedWorkload,
     ): PlannedWorkloadDto {
-        const dto = new PlannedWorkloadDto();
-        dto.id = plannedWorkload.id;
-        dto.contributedValue = ContributedValueMap.fromDomain(
-            plannedWorkload.props.contributedValue,
-        );
-        dto.committedWorkload = CommittedWorkloadMap.fromDomain(
-            plannedWorkload.props.committedWorkload,
-        );
-        dto.plannedWorkload = plannedWorkload.props.plannedWorkload;
-        dto.startDate = plannedWorkload.props.startDate;
-        dto.status = plannedWorkload.props.status;
-        return dto;
+        return {
+            id: plannedWorkload.id,
+            user: plannedWorkload.props.user,
+            contributedValue: ContributedValueMap.fromDomain(
+                plannedWorkload.props.contributedValue,
+            ),
+            committedWorkload: CommittedWorkloadMap.fromDomain(
+                plannedWorkload.props.committedWorkload,
+            ),
+            plannedWorkload: plannedWorkload.props.plannedWorkload,
+            startDate: plannedWorkload.props.startDate,
+            status: plannedWorkload.props.status,
+        };
     }
 
     public static fromDomainList(
@@ -56,6 +57,7 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
         const { id } = raw;
         const plannedWorkloadOrError = PlannedWorkload.create(
             {
+                user: UserMap.toDomain(raw.user),
                 plannedWorkload: raw.plannedWorkload,
                 startDate: raw.startDate,
                 status: raw.status,
@@ -65,7 +67,6 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
                 committedWorkload: CommittedWorkloadMap.toDomain(
                     raw.committedWorkload,
                 ),
-                user: UserMap.toDomain(raw.user),
             },
             new UniqueEntityID(id),
         );
