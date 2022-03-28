@@ -28,6 +28,7 @@ import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
 import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedWorkload.dto';
 import { CommittedWorkloadShortDto } from '../../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
+import { MessageDto } from '../../../infra/dtos/message.dto';
 import { GetCommittedWorkloadErrors } from '../getCommittedWorkload/GetCommittedWorkloadErrors';
 import { GetCommittedWorkloadUseCase } from '../getCommittedWorkload/GetCommittedWorkloadsUseCase';
 import { CreateCommittedWorkloadErrors } from './CreateCommittedWorkloadErrors';
@@ -65,7 +66,7 @@ export class CreateCommittedWorkloadController {
     async execute(
         @Body() body: CreateCommittedWorkloadDto,
         @Req() req: Request,
-    ): Promise<DataCommittedWorkload> {
+    ): Promise<MessageDto> {
         const pic = req.user as JwtPayload;
         const picId = pic.userId;
         body.picId = picId;
@@ -83,7 +84,10 @@ export class CreateCommittedWorkloadController {
                     throw new InternalServerErrorException(error.errorValue());
             }
         }
-        return new DataCommittedWorkload(result.value.getValue());
+        return new MessageDto(
+            HttpStatus.CREATED,
+            'Created committed workload successfully !',
+        );
     }
 
     @Get()
