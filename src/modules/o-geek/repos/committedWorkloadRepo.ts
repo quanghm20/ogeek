@@ -89,7 +89,12 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         userId =
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entity = await this.repo.find({
-            where: { user: { id: userId } },
+            where: {
+                user: {
+                    id: userId,
+                },
+                status: WorkloadStatus.ACTIVE,
+            },
             relations: [
                 'contributedValue',
                 'contributedValue.valueStream',
