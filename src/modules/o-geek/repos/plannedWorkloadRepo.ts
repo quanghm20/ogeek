@@ -15,6 +15,7 @@ import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkloa
 import { InputGetPlanWLDto } from '../infra/dtos/ValueStreamsByWeek/inputGetPlanWL.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
+import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface IPlannedWorkloadRepo {
     findAllByWeek({
@@ -63,11 +64,16 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 status: WorkloadStatus.ACTIVE,
             },
             relations: [
-                'committedWorkload',
                 'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'committedWorkload',
                 'committedWorkload.contributedValue',
-                'committedWorkload.contributedValue.valueStream',
                 'committedWorkload.contributedValue.expertiseScope',
+                'committedWorkload.contributedValue.valueStream',
+                'committedWorkload.user',
+                'committedWorkload.pic',
+                'user',
             ],
         });
 
@@ -134,6 +140,9 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'committedWorkload.contributedValue',
                 'committedWorkload.contributedValue.expertiseScope',
                 'committedWorkload.contributedValue.valueStream',
+                'user',
+                'committedWorkload.user',
+                'committedWorkload.pic',
             ],
         });
 
@@ -150,7 +159,13 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             where: {
                 user: userId,
                 startDate:
-                    MoreThanOrEqual(startDate) && LessThanOrEqual(startDate),
+                    MoreThanOrEqual(
+                        MomentService.shiftFirstDateChart(startDate),
+                    ) &&
+                    LessThanOrEqual(
+                        MomentService.shiftLastDateChart(startDate),
+                    ),
+                status: WorkloadStatus.ACTIVE,
             },
             relations: [
                 'contributedValue',
@@ -160,6 +175,9 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'committedWorkload.contributedValue',
                 'committedWorkload.contributedValue.expertiseScope',
                 'committedWorkload.contributedValue.valueStream',
+                'user',
+                'committedWorkload.user',
+                'committedWorkload.pic',
             ],
         });
         return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;

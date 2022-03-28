@@ -19,4 +19,8 @@ export class OverviewChartDataDto {
     @ApiProperty({ example: 'Product Backend' })
     @IsString()
     expertiseScope: string;
+
+    @ApiProperty({ example: 1 })
+    @IsString()
+    expertiseScopeId: number;
 }

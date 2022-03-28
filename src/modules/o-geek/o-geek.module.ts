@@ -26,6 +26,7 @@ import {
     CreateCommittedWorkloadController,
     CreateCommittedWorkloadUseCase,
 } from './useCases/committedWorkload/createCommittedWorkload';
+import { GetCommittedWorkloadUseCase } from './useCases/committedWorkload/getCommittedWorkload/GetCommittedWorkloadsUseCase';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,
@@ -42,6 +43,10 @@ import {
     PlanWorkloadController,
     PlanWorkloadUseCase,
 } from './useCases/plannedWorkload/planWorkload';
+import {
+    StartWeekController,
+    StartWeekUseCase,
+} from './useCases/plannedWorkload/startWeek';
 import { CreateIssueController } from './useCases/user/createIssue/CreateIssueController';
 import { CreateIssueUseCase } from './useCases/user/createIssue/CreateIssueUseCase';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
@@ -83,6 +88,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         PlanWorkloadController,
         GetWorkloadListController,
         CreateIssueController,
+        StartWeekController,
     ],
     providers: [
         CronService,
@@ -94,6 +100,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetOverviewChartDataUseCase,
         GetUserUseCase,
         PlanWorkloadUseCase,
+        StartWeekUseCase,
         CreateUserUseCase,
         GetUserUseCase,
         GetValueStreamUseCase,
@@ -101,10 +108,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetWeekStatusUseCase,
         GetUsersUseCase,
         CreateIssueUseCase,
-        {
-            provide: 'IUserRepo',
-            useClass: UserRepository,
-        },
+        GetCommittedWorkloadUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

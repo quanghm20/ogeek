@@ -45,7 +45,6 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
 
             const expertiseScopes = await this.expertiseScopeRepo.findAll();
             const plannedWorkloads = await this.plannedWorkloadRepo.findByIdWithTimeRange(input.userId, startDateInWeek);
-
             // fetch data of workload from database and push to dto
             const plannedWorkloadDtos = PlannedWorkloadMap.fromDomainAll(plannedWorkloads);
 
@@ -74,6 +73,7 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
                     overviewChartDataDtos.push({
                         expertiseScopes: contributedValue,
                         expertiseScope: expertiseScope.name,
+                        expertiseScopeId: Number(expertiseScope.id),
                     } as OverviewChartDataDto);
                 }
             });

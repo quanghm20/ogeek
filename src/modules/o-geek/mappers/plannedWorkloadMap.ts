@@ -55,7 +55,6 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
 
     public static toDomain(raw: PlannedWorkloadEntity): PlannedWorkload {
         const { id } = raw;
-
         const plannedWorkloadOrError = PlannedWorkload.create(
             {
                 user: UserMap.toDomain(raw.user),
@@ -71,7 +70,6 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
             },
             new UniqueEntityID(id),
         );
-
         return plannedWorkloadOrError.isSuccess
             ? plannedWorkloadOrError.getValue()
             : null;
