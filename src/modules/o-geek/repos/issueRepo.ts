@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, getConnection, Repository } from 'typeorm';
 
@@ -17,7 +17,7 @@ export interface IIssueRepo {
         startDateOfWeek,
         endDateOfWeek,
     }: StartEndDateOfWeekWLInputDto): Promise<Issue[]>;
-    saveIssue(userId: number, week: number, type: IssueType): Promise<number>;
+    save(userId: number, week: number, type: IssueType): Promise<Issue>;
     findByUserId(
         startDateOfWeek: string,
         endDateOfWeek: string,
@@ -84,11 +84,7 @@ export class IssueRepository implements IIssueRepo {
         await this.repo.update(condition, update);
     }
 
-    async saveIssue(
-        userId: number,
-        week: number,
-        type: IssueType,
-    ): Promise<number> {
+    async save(userId: number, week: number, type: IssueType): Promise<Issue> {
         const queryRunner = getConnection().createQueryRunner();
         await queryRunner.connect();
         try {
@@ -98,10 +94,11 @@ export class IssueRepository implements IIssueRepo {
             const issue = new IssueEntity(type, week, user);
             await queryRunner.manager.save(issue);
             await queryRunner.commitTransaction();
-            return HttpStatus.CREATED;
+            // return HttpStatus.CREATED;
+            return issue ? IssueMap.toDomain(issue) : null;
         } catch (error) {
             await queryRunner.rollbackTransaction();
-            return HttpStatus.INTERNAL_SERVER_ERROR;
+            // return HttpStatus.INTERNAL_SERVER_ERROR;
         } finally {
             await queryRunner.release();
         }

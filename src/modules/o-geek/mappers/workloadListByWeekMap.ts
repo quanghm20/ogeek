@@ -84,13 +84,10 @@ export class WorkloadListByWeekMap {
         user: UserDto,
         actualWorkloadByUser: ActualWorkloadListDto,
     ): ResultExpertiseScopeAndTotalWL {
-        const plannedWLByUserArray = plannedWLDtos.filter((plan) => {
-            if (
-                Number(plan.user.id.toString()) === Number(user.id.toString())
-            ) {
-                return plan;
-            }
-        });
+        const plannedWLByUserArray = plannedWLDtos.filter(
+            (plan) =>
+                Number(plan.user.id.toString()) === Number(user.id.toString()),
+        );
         const totalCommittedWL = committedWLByUserArray.reduce(
             (total, item) => total + item.committedWorkload,
             0,
@@ -162,14 +159,13 @@ export class WorkloadListByWeekMap {
                     Number(user.id.toString()),
             );
 
-            const committedWLByUserArray = committedWLDtos.filter((com) => {
-                if (
+            const committedWLByUserArray = committedWLDtos.filter(
+                (com) =>
                     Number(com.user.id.toString()) ===
-                    Number(user.id.toString())
-                ) {
-                    return com;
-                }
-            });
+                    Number(user.id.toString()),
+            );
+
+            const oneItemOfCommittedWL = committedWLByUserArray[0];
 
             if (committedWLByUserArray.length === 0) {
                 return workloadListByWeek.push({
@@ -189,7 +185,7 @@ export class WorkloadListByWeekMap {
                     issueType: IssueType.NOT_ISSUE,
                 });
             }
-            if (committedWLByUserArray[0].expiredDate < new Date()) {
+            if (oneItemOfCommittedWL.expiredDate < new Date()) {
                 return workloadListByWeek.push({
                     user: {
                         alias: user.alias,
@@ -212,8 +208,7 @@ export class WorkloadListByWeekMap {
                 });
             }
             if (
-                moment(committedWLByUserArray[0].startDate).format() >
-                endDateOfWeek
+                moment(oneItemOfCommittedWL.startDate).format() > endDateOfWeek
             ) {
                 return true;
             }
@@ -225,8 +220,6 @@ export class WorkloadListByWeekMap {
                 user,
                 actualWorkloadByUser,
             );
-
-            const oneItemOfCommittedWL = committedWLByUserArray[0];
 
             const committedWLByUser = {
                 startDate: moment(oneItemOfCommittedWL.startDate).format(
