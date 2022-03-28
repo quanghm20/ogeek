@@ -25,4 +25,11 @@ export class IssueEntity extends AbstractEntity {
         name: 'user_id',
     })
     user: UserEntity;
+
+    constructor(type: IssueType, week: number, user: UserEntity) {
+        super();
+        this.type = type;
+        this.week = week;
+        this.user = user;
+    }
 }

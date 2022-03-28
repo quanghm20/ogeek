@@ -1,6 +1,8 @@
 import { HttpModule, Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { CronService } from './cron.service';
 import {
     CommittedWorkloadEntity,
     ContributedValueEntity,
@@ -40,6 +42,8 @@ import {
     PlanWorkloadController,
     PlanWorkloadUseCase,
 } from './useCases/plannedWorkload/planWorkload';
+import { CreateIssueController } from './useCases/user/createIssue/CreateIssueController';
+import { CreateIssueUseCase } from './useCases/user/createIssue/CreateIssueUseCase';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
 import { GetUserController } from './useCases/user/getUser/GetUserController';
 import { GetUserUseCase } from './useCases/user/getUser/GetUserUseCase';
@@ -63,6 +67,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             ProfileEntity,
             ValueStreamEntity,
         ]),
+        ScheduleModule.forRoot(),
     ],
     controllers: [
         CreateCommittedWorkloadController,
@@ -77,8 +82,10 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetUsersController,
         PlanWorkloadController,
         GetWorkloadListController,
+        CreateIssueController,
     ],
     providers: [
+        CronService,
         CreateUserUseCase,
         CreateCommittedWorkloadUseCase,
         GetAverageActualWorkloadUseCase,
@@ -93,6 +100,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetWorkloadListUseCase,
         GetWeekStatusUseCase,
         GetUsersUseCase,
+        CreateIssueUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,
@@ -128,11 +136,13 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         },
     ],
     exports: [
+        CronService,
         UserRepository,
         CreateUserUseCase,
         GetUserUseCase,
         GetValueStreamUseCase,
         GetWorkloadListUseCase,
+        CreateIssueUseCase,
         TypeOrmModule,
     ],
 })

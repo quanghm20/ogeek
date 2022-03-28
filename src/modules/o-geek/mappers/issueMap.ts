@@ -25,7 +25,7 @@ export class IssueMap implements Mapper<Issue> {
 
     public static toDomain(raw: IssueEntity): Issue {
         const { id } = raw;
-        const expertiseScopeOrError = Issue.create(
+        const issueOrError = Issue.create(
             {
                 type: raw.type,
                 week: raw.week,
@@ -34,9 +34,7 @@ export class IssueMap implements Mapper<Issue> {
             new UniqueEntityID(id),
         );
 
-        return expertiseScopeOrError.isSuccess
-            ? expertiseScopeOrError.getValue()
-            : null;
+        return issueOrError.isSuccess ? issueOrError.getValue() : null;
     }
 
     public static toDomainAll(issues: IssueEntity[]): Issue[] {
@@ -51,5 +49,11 @@ export class IssueMap implements Mapper<Issue> {
         });
 
         return issueArray;
+    }
+
+    public static toEntity(issue: Issue): IssueEntity {
+        const user = UserMap.toEntity(issue.user);
+        const week = issue.week++;
+        return new IssueEntity(issue.type, week, user);
     }
 }
