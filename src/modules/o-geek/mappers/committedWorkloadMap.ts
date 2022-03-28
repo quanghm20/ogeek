@@ -93,6 +93,8 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
                     startDate: committedWLEntity.startDate,
                     expiredDate: committedWLEntity.expiredDate,
                     status: committedWLEntity.status,
+                    createdAt: committedWLEntity.createdAt,
+                    updatedAt: committedWLEntity.updatedAt,
                     contributedValue: committedWLEntity.contributedValue
                         ? ContributedValueMap.toDomain(
                               committedWLEntity.contributedValue,
@@ -155,6 +157,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         committed.startDate = committedDomain.startDate;
         committed.expiredDate = committedDomain.expiredDate;
         committed.status = committedDomain.status;
+        committed.createdAt = committedDomain.createdAt;
 
         return committed;
     }

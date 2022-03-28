@@ -69,6 +69,18 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     set status(status: WorkloadStatus) {
         this.props.status = status;
     }
+    get createdAt(): Date {
+        return this.props.createdAt;
+    }
+    set createdAt(createdAt: Date) {
+        this.props.createdAt = createdAt;
+    }
+    get updatedAt(): Date {
+        return this.props.createdAt;
+    }
+    set updatedAt(updatedAt: Date) {
+        this.props.updatedAt = updatedAt;
+    }
     public isActive(): boolean {
         return this.props.status === WorkloadStatus.ACTIVE;
     }
