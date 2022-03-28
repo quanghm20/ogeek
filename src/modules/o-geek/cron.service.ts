@@ -23,6 +23,7 @@ export class CronService {
                 );
                 const issueEntitiesList = [] as IssueEntity[];
                 for (const issueItem of issuesFilter) {
+                    issueItem.week += 1;
                     const issue = IssueMap.toEntity(issueItem);
                     issueEntitiesList.push(issue);
                 }
