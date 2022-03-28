@@ -46,7 +46,7 @@ export class GetAverageActualWorkloadUseCase
                 );
             const queryExpertiseScopeId = expertiseScopeIdArray.reduce(
                 (qExpertiseScopeId, expertiseScopeId) =>
-                    `${qExpertiseScopeId}expertiseScopeId=${expertiseScopeId}&`,
+                    `${qExpertiseScopeId}exId=${expertiseScopeId}&`,
                 '',
             );
             const url = `${process.env.MOCK_URL}/api/overview/average-actual-workload?userId=${userId}&${queryExpertiseScopeId}`;

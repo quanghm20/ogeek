@@ -100,8 +100,11 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
                               committedWLEntity.contributedValue,
                           )
                         : null,
-                    user: committedWLEntity.contributedValue
+                    user: committedWLEntity.user
                         ? UserMap.toDomain(committedWLEntity.user)
+                        : null,
+                    pic: committedWLEntity.pic
+                        ? UserMap.toDomain(committedWLEntity.pic)
                         : null,
                 },
                 new UniqueEntityID(id),

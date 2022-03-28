@@ -53,7 +53,7 @@ export interface ICommittedWorkloadRepo {
         valueStreamId: number,
         expertiseScopeId: number,
         userId: number,
-    ): Promise<CommittedWorkload[]>;
+    ): Promise<CommittedWorkloadEntity[]>;
 }
 
 @Injectable()
@@ -93,7 +93,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         valueStreamId: number,
         expertiseScopeId: number,
         userId: number,
-    ): Promise<CommittedWorkload[]> {
+    ): Promise<CommittedWorkloadEntity[]> {
         const entities = await this.repo.find({
             where: {
                 contributedValue: {
@@ -116,10 +116,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'pic',
             ],
         });
-
-        return entities
-            ? CommittedWorkloadMap.toDomainAll(entities)
-            : new Array<CommittedWorkload>();
+        return entities ? entities : null;
     }
 
     async findByUserIdOverview(
@@ -206,24 +203,17 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     );
                 if (checkOldCommittedWorkload.length > 0) {
                     // set all old committed workload to InActive
-                    await this.repo.update(
-                        {
-                            contributedValue: {
-                                valueStream: {
-                                    id: workload.valueStreamId,
-                                },
-                                expertiseScope: {
-                                    id: workload.expertiseScopeId,
-                                },
+                    for (const wl of checkOldCommittedWorkload) {
+                        await this.repo.update(
+                            {
+                                contributedValue: wl.contributedValue,
+                                user: wl.user,
                             },
-                            user: {
-                                id: userId,
+                            {
+                                status: WorkloadStatus.INACTIVE,
                             },
-                        },
-                        {
-                            status: WorkloadStatus.INACTIVE,
-                        },
-                    );
+                        );
+                    }
                 }
                 const committed = new CommittedWorkloadEntity(
                     user,
@@ -326,10 +316,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'user',
             ],
         });
-
-        return entities
-            ? CommittedWorkloadMap.toDomainAll(entities)
-            : new Array<CommittedWorkload>();
+        return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
     }
     async findAll(): Promise<CommittedWorkload[]> {
         const entities = await this.repo.find({
