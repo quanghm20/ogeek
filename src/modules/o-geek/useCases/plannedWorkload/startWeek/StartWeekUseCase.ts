@@ -26,7 +26,7 @@ export class StartWeekUseCase
 
     try {
       const user = await this.userRepo.findById(userId);
-      if (!user.planned()) {
+      if (!user.isPlanned()) {
         return left(
           new StartWeekErrors.StartWeekFailed(),
         ) as Response;

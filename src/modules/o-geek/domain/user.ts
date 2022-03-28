@@ -72,7 +72,7 @@ export class User extends AggregateRoot<IUserProps> {
     public isPlaning(): boolean {
         return this.props.weekStatus === WeekStatus.PLANNING;
     }
-    public planned(): boolean {
+    public isPlanned(): boolean {
         return this.props.weekStatus === WeekStatus.PLANNED;
     }
     public isExecuting(): boolean {

@@ -26,7 +26,7 @@ export class StartWeekController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Patch('start-week')
-    @HttpCode(HttpStatus.CREATED)
+    @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         description: 'Start week for Geek',
     })
