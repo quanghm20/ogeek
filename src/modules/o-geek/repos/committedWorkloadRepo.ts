@@ -46,7 +46,7 @@ export interface ICommittedWorkloadRepo {
     findByUserIdOverview(
         userId: DomainId | number,
     ): Promise<CommittedWorkload[]>;
-    findAllCommittedActive(): Promise<CommittedWorkload[]>;
+    findAllActiveCommittedWorkload(): Promise<CommittedWorkload[]>;
     findAllExpertiseScope(userId: number, startDate: string): Promise<number[]>;
 }
 
@@ -262,7 +262,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         });
         return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
     }
-    async findAllCommittedActive(): Promise<CommittedWorkload[]> {
+    async findAllActiveCommittedWorkload(): Promise<CommittedWorkload[]> {
         const entities = await this.repo.find({
             where: {
                 status: WorkloadStatus.ACTIVE,
