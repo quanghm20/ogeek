@@ -1,19 +1,18 @@
-// import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
 
-import { RoleType } from '../../../../../common/constants/role-type';
+import { DateRange } from '../../../../../common/constants/date-range';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
-import { Either, left, right } from '../../../../../core/logic/Result';
+import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { CreateIssueDto } from '../../../../o-geek/infra/dtos/createIssue/createIssue.dto';
 import { IIssueRepo } from '../../../../o-geek/repos/issueRepo';
-import { MessageDto } from '../../../infra/dtos/message.dto';
+import { Issue } from '../../../domain/issue';
 import { IUserRepo } from '../../../repos/userRepo';
 import { CreateIssueErrors } from './CreateIssueErrors';
 type Response = Either<
     AppError.UnexpectedError | CreateIssueErrors.NotFound,
-    MessageDto
+    Result<Issue>
 >;
 
 @Injectable()
@@ -26,10 +25,10 @@ export class CreateIssueUseCase
     ) {}
     async execute(body: CreateIssueDto): Promise<Response> {
         try {
-            const userId = body.userId;
+            const { picId, userId } = body;
             const user = await this.userRepo.findById(userId);
-            const pic = await this.userRepo.findById(body.picId);
-            if (pic.role !== RoleType.ADMIN) {
+            const pic = await this.userRepo.findById(picId);
+            if (pic && pic.isAdmin()) {
                 return left(new CreateIssueErrors.Forbidden()) as Response;
             }
             if (!user) {
@@ -37,19 +36,22 @@ export class CreateIssueUseCase
                     new CreateIssueErrors.NotFound(userId.toString()),
                 ) as Response;
             }
-            const week = body.week;
-            const type = body.type;
 
-            const dateOfWeek = moment().utcOffset(420).week(week).format();
+            const { week, type } = body;
+
+            const dateOfWeek = moment()
+                .utcOffset(DateRange.TIME_ZONE_OFFSET)
+                .week(week)
+                .format();
             const numDateOfWeek = moment(dateOfWeek).format('e');
             const startDateOfWeek = moment(dateOfWeek)
-                .utcOffset(420)
+                .utcOffset(DateRange.TIME_ZONE_OFFSET)
                 .add(-numDateOfWeek, 'days')
                 .startOf('day')
                 .format();
             const endDateOfWeek = moment(startDateOfWeek)
-                .utcOffset(420)
-                .add(6, 'days')
+                .utcOffset(DateRange.TIME_ZONE_OFFSET)
+                .add(DateRange.DURATION_BETWEEN_START_AND_END, 'days')
                 .endOf('day')
                 .format();
 
@@ -63,29 +65,16 @@ export class CreateIssueUseCase
                     { week, user: { id: userId } },
                     { type },
                 );
-                return right(
-                    new MessageDto(HttpStatus.CREATED, 'Update issue !'),
-                );
+                return right(Result.ok(issue));
             }
 
-            const result = await this.issueRepo.saveIssue(userId, week, type);
-            switch (result) {
-                case HttpStatus.INTERNAL_SERVER_ERROR:
-                    return left(
-                        new AppError.UnexpectedError(
-                            'Internal Server Error Exception',
-                        ),
-                    );
-                case HttpStatus.CREATED:
-                    return right(
-                        new MessageDto(
-                            HttpStatus.CREATED,
-                            'Update Successfully',
-                        ),
-                    );
+            const result = await this.issueRepo.save(userId, week, type);
+            if (result) {
+                return right(Result.ok(result));
             }
+            return left(new CreateIssueErrors.CreateIssueFailed()) as Response;
         } catch (err) {
-            return left(err);
+            return left(new AppError.UnexpectedError(err));
         }
     }
 }

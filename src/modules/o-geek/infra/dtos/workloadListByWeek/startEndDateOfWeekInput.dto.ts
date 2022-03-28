@@ -1,11 +1,16 @@
-import { IsDate } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsDateString, IsNumber } from 'class-validator';
 
 export class StartEndDateOfWeekWLInputDto {
-    @IsDate()
+    @ApiProperty({ example: new Date() })
+    @IsDateString()
     startDateOfWeek: string;
 
-    @IsDate()
+    @ApiProperty({ example: new Date() })
+    @IsDateString()
     endDateOfWeek: string;
 
+    @ApiProperty({ example: 1 })
+    @IsNumber()
     userId?: number;
 }

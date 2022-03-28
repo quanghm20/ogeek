@@ -42,13 +42,17 @@ export class CreateIssueController {
         @Body() body: CreateIssueDto,
         @Req() req: Request,
     ): Promise<MessageDto> {
-        const pic = req.user as JwtPayload;
-        const picId = pic.userId;
+        const { userId: picId } = req.user as JwtPayload;
         body.picId = picId;
         const result = await this.useCase.execute(body);
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {
+                case CreateIssueErrors.CreateIssueFailed:
+                    throw new NotFoundException(
+                        error.errorValue(),
+                        'Failed to create issue',
+                    );
                 case CreateIssueErrors.Forbidden:
                     throw new ForbiddenException(error.errorValue());
                 case CreateIssueErrors.NotFound:
@@ -59,6 +63,9 @@ export class CreateIssueController {
                     throw new InternalServerErrorException(error.errorValue());
             }
         }
-        return result.value;
+        return {
+            statusCode: HttpStatus.CREATED,
+            message: 'Update successfully',
+        } as MessageDto;
     }
 }
