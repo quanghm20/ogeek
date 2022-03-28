@@ -4,7 +4,7 @@ import {
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
-    Post,
+    Patch,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -25,7 +25,7 @@ export class StartWeekController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Post('start-week')
+    @Patch('start-week')
     @HttpCode(HttpStatus.CREATED)
     @ApiOkResponse({
         description: 'Start week for Geek',
