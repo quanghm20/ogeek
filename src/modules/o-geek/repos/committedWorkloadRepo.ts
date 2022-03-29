@@ -181,9 +181,21 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         try {
             const user = new UserEntity(userId);
             const pic = new UserEntity(picId);
+            const now = new Date();
             const result = Array<number>();
 
             await queryRunner.startTransaction();
+
+            await this.repo.update(
+                {
+                    user,
+                    status: WorkloadStatus.ACTIVE,
+                },
+                {
+                    status: WorkloadStatus.INACTIVE,
+                    updatedAt: now,
+                },
+            );
             for await (const workload of committedWorkload) {
                 const contribute = await this.repoContributed.findOne({
                     where: {
@@ -195,26 +207,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                         },
                     },
                 });
-                const checkOldCommittedWorkload =
-                    await this.findByValueStreamAndExpertiseScope(
-                        workload.valueStreamId,
-                        workload.expertiseScopeId,
-                        userId,
-                    );
-                if (checkOldCommittedWorkload.length > 0) {
-                    // set all old committed workload to InActive
-                    for (const wl of checkOldCommittedWorkload) {
-                        await this.repo.update(
-                            {
-                                contributedValue: wl.contributedValue,
-                                user: wl.user,
-                            },
-                            {
-                                status: WorkloadStatus.INACTIVE,
-                            },
-                        );
-                    }
-                }
                 const committed = new CommittedWorkloadEntity(
                     user,
                     contribute,
@@ -223,6 +215,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     expiredDate,
                     pic,
                 );
+
                 const save = await queryRunner.manager.save(committed);
                 result.push(save.id);
             }
