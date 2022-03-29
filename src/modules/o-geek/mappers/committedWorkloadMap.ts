@@ -3,11 +3,13 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { CommittedWorkload } from '../domain/committedWorkload';
-// import { ContributedValue } from '../domain/contributedValue';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
+import { CommittedWorkloadShortDto } from '../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
 import { ContributedValueMap } from './contributedValueMap';
+import { ExpertiseScopeMap } from './expertiseScopeMap';
 import { UserMap } from './userMap';
+import { ValueStreamMap } from './valueStreamMap';
 
 export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     public static fromDomain(
@@ -91,10 +93,18 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
                     startDate: committedWLEntity.startDate,
                     expiredDate: committedWLEntity.expiredDate,
                     status: committedWLEntity.status,
+                    createdAt: committedWLEntity.createdAt,
+                    updatedAt: committedWLEntity.updatedAt,
                     contributedValue: committedWLEntity.contributedValue
                         ? ContributedValueMap.toDomain(
                               committedWLEntity.contributedValue,
                           )
+                        : null,
+                    user: committedWLEntity.user
+                        ? UserMap.toDomain(committedWLEntity.user)
+                        : null,
+                    pic: committedWLEntity.pic
+                        ? UserMap.toDomain(committedWLEntity.pic)
                         : null,
                 },
                 new UniqueEntityID(id),
@@ -133,5 +143,35 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             committedWorkloadsOrError.push(committedWorkloadOrError);
         });
         return committedWorkloadsOrError ? committedWorkloadsOrError : null;
+    }
+
+    public static fromCommittedWorkloadShort(
+        committedDomain: CommittedWorkload,
+    ): CommittedWorkloadShortDto {
+        const committed = new CommittedWorkloadShortDto();
+        committed.user = UserMap.fromUserShort(committedDomain.user);
+        committed.expertiseScope = ExpertiseScopeMap.fromDomainShort(
+            committedDomain.contributedValue.expertiseScope,
+        );
+        committed.valueStream = ValueStreamMap.fromDomainShort(
+            committedDomain.contributedValue.valueStream,
+        );
+        committed.committedWorkload = committedDomain.committedWorkload;
+        committed.startDate = committedDomain.startDate;
+        committed.expiredDate = committedDomain.expiredDate;
+        committed.status = committedDomain.status;
+        committed.createdAt = committedDomain.createdAt;
+
+        return committed;
+    }
+
+    public static fromCommittedWorkloadShortArray(
+        committees: CommittedWorkload[],
+    ): CommittedWorkloadShortDto[] {
+        const commits = Array<CommittedWorkloadShortDto>();
+        for (const commit of committees) {
+            commits.push(this.fromCommittedWorkloadShort(commit));
+        }
+        return commits;
     }
 }

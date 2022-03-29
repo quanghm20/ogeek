@@ -4,3 +4,4 @@ export { ExpertiseScopeRepository } from './expertiseScopeRepo';
 export { PlannedWorkloadRepository } from './plannedWorkloadRepo';
 export { ValueStreamRepository } from './valueStreamRepo';
 export { UserRepository } from './userRepo';
+export { IssueRepository } from './issueRepo';

@@ -7,6 +7,7 @@ import { RoleType } from '../../../../../common/constants/role-type';
 import { WeekStatus } from '../../../../../common/constants/week-status';
 import { UserDto } from '../../dtos/user.dto';
 import { CommittedWorkloadEntity } from './committedWorkload.entity';
+import { IssueEntity } from './issue.entity';
 import { PlannedWorkloadEntity } from './plannedWorkload.entity';
 
 @Entity({ name: 'user' })
@@ -71,6 +72,9 @@ export class UserEntity extends AbstractEntity {
         (committedWorkload) => committedWorkload.user,
     )
     committedWorkloads: CommittedWorkloadEntity[];
+
+    @OneToMany(() => IssueEntity, (issue) => issue.user)
+    issue: IssueEntity[];
 
     toDto(): UserDto {
         return new UserDto(this);

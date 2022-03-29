@@ -73,6 +73,7 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
                     overviewChartDataDtos.push({
                         expertiseScopes: contributedValue,
                         expertiseScope: expertiseScope.name,
+                        expertiseScopeId: Number(expertiseScope.id),
                     } as OverviewChartDataDto);
                 }
             });
