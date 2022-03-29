@@ -11,7 +11,11 @@ export class WorkloadListByWeekDto {
     @IsNotEmpty()
     user: UserWorkloadDto;
 
-    @ApiProperty({ type: ExpertiseScopeWithinWorkloadListDto, isArray: true })
+    @ApiProperty({
+        type: ExpertiseScopeWithinWorkloadListDto,
+        isArray: true,
+        default: [],
+    })
     @IsArray()
     @IsNotEmpty()
     expertiseScopes: ExpertiseScopeWithinWorkloadListDto[];
@@ -20,17 +24,21 @@ export class WorkloadListByWeekDto {
     @IsNotEmpty()
     committedWorkload: CommittedWorkloadByWeekDto;
 
-    @ApiProperty({ example: 20 })
+    @ApiProperty({ example: 20, default: 0 })
     @IsNumber()
     @IsNotEmpty()
     plannedWorkload: number;
 
-    @ApiProperty({ example: 18 })
+    @ApiProperty({ example: 18, default: 0 })
     @IsNumber()
     @IsNotEmpty()
     actualWorkload: number;
 
-    @ApiProperty({ enum: IssueType, example: IssueType.NOT_ISSUE })
+    @ApiProperty({
+        enum: IssueType,
+        example: IssueType.NOT_ISSUE,
+        default: IssueType.NOT_ISSUE,
+    })
     @IsString()
     @IsNotEmpty()
     issueType: IssueType;
