@@ -58,6 +58,9 @@ export interface ICommittedWorkloadRepo {
         expertiseScopeId: number,
         userId: number,
     ): Promise<CommittedWorkloadEntity[]>;
+    findAllActiveCommittedWorkloadByUser(
+        userId: number,
+    ): Promise<CommittedWorkload[]>;
 }
 
 @Injectable()
@@ -186,20 +189,30 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             const user = new UserEntity(userId);
             const pic = new UserEntity(picId);
             const now = new Date();
+            now.setHours(0, 0, 0);
             const result = Array<number>();
+            startDate.setHours(0, 0, 0);
+            expiredDate.setHours(0, 0, 0);
+            let status = WorkloadStatus.INACTIVE;
+            let oldStatus = WorkloadStatus.ACTIVE;
 
             await queryRunner.startTransaction();
 
-            await this.repo.update(
-                {
-                    user,
-                    status: WorkloadStatus.ACTIVE,
-                },
-                {
-                    status: WorkloadStatus.INACTIVE,
-                    updatedAt: now,
-                },
-            );
+            if (now >= startDate) {
+                status = WorkloadStatus.ACTIVE;
+                oldStatus = WorkloadStatus.INACTIVE;
+                await this.repo.update(
+                    {
+                        user,
+                        status: WorkloadStatus.ACTIVE,
+                    },
+                    {
+                        status: oldStatus,
+                        updatedAt: now,
+                    },
+                );
+            }
+
             for await (const workload of committedWorkload) {
                 const contribute = await this.repoContributed.findOne({
                     where: {
@@ -218,6 +231,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     startDate,
                     expiredDate,
                     pic,
+                    status,
                 );
 
                 const save = await queryRunner.manager.save(committed);
@@ -362,5 +376,23 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             arr.push(entity.contributedValue.expertiseScope.id);
         }
         return arr;
+    }
+    async findAllActiveCommittedWorkloadByUser(
+        userId: number,
+    ): Promise<CommittedWorkload[]> {
+        const entities = await this.repo.find({
+            where: {
+                user: {
+                    id: userId,
+                },
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'user',
+            ],
+        });
+        return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
     }
 }

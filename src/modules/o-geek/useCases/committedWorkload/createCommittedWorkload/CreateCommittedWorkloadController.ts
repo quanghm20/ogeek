@@ -8,6 +8,7 @@ import {
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
+    Param,
     Post,
     Req,
     UseGuards,
@@ -31,6 +32,7 @@ import { CommittedWorkloadShortDto } from '../../../infra/dtos/getCommittedWorkl
 import { MessageDto } from '../../../infra/dtos/message.dto';
 import { GetCommittedWorkloadErrors } from '../getCommittedWorkload/GetCommittedWorkloadErrors';
 import { GetCommittedWorkloadUseCase } from '../getCommittedWorkload/GetCommittedWorkloadsUseCase';
+import { GetHistoryCommittedWorkloadUseCase } from '../getHistoryCommittedWorkload/GetCommittedWorkloadsUseCase';
 import { CreateCommittedWorkloadErrors } from './CreateCommittedWorkloadErrors';
 import { CreateCommittedWorkloadUseCase } from './CreateCommittedWorkloadUseCase';
 
@@ -53,6 +55,7 @@ export class CreateCommittedWorkloadController {
     constructor(
         public readonly createCommitUseCase: CreateCommittedWorkloadUseCase,
         public readonly getCommitUseCase: GetCommittedWorkloadUseCase,
+        public readonly getHistoryCommitUseCase: GetHistoryCommittedWorkloadUseCase,
     ) {}
 
     @Post()
@@ -100,6 +103,29 @@ export class CreateCommittedWorkloadController {
     @UsePipes(new ValidationPipe({ transform: true }))
     async getAllCommittedWorkload(): Promise<DataCommittedWorkload> {
         const result = await this.getCommitUseCase.execute();
+        if (result.isLeft()) {
+            const error = result.value;
+            switch (error.constructor) {
+                case GetCommittedWorkloadErrors.NotFound:
+                    throw new NotFoundException(error.errorValue());
+                default:
+                    throw new InternalServerErrorException(error.errorValue());
+            }
+        }
+        return new DataCommittedWorkload(result.value.getValue());
+    }
+
+    @Get('/:userId')
+    @HttpCode(HttpStatus.OK)
+    @ApiOkResponse({
+        type: DataCommittedWorkload,
+        description: 'Get committed workload by user ',
+    })
+    @UsePipes(new ValidationPipe({ transform: true }))
+    async getHistoryCommittedWorkload(
+        @Param('userId') userId: number,
+    ): Promise<DataCommittedWorkload> {
+        const result = await this.getHistoryCommitUseCase.execute(userId);
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {
