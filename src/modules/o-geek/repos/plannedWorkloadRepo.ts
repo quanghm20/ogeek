@@ -158,13 +158,10 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
         const entities = await this.repo.find({
             where: {
                 user: userId,
-                startDate:
-                    MoreThanOrEqual(
-                        MomentService.shiftFirstDateChart(startDate),
-                    ) &&
-                    LessThanOrEqual(
-                        MomentService.shiftLastDateChart(startDate),
-                    ),
+                startDate: Between(
+                    MomentService.shiftFirstDateChart(startDate),
+                    MomentService.shiftLastDateChart(startDate),
+                ),
                 status: WorkloadStatus.ACTIVE,
             },
             relations: [
