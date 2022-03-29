@@ -86,7 +86,12 @@ export class GetWorkloadListUseCase
                 startDateOfWeek,
                 endDateOfWeek,
             } as StartEndDateOfWeekWLInputDto);
-            const committedWorkloads = await this.committedWLRepo.findAll();
+            const committedWorkloads = await this.committedWLRepo.findAllByWeek(
+                {
+                    startDateOfWeek,
+                    endDateOfWeek,
+                } as StartEndDateOfWeekWLInputDto,
+            );
             const plannedWorkloads = await this.plannedWLRepo.findAllByWeek({
                 startDateOfWeek,
                 endDateOfWeek,
@@ -96,6 +101,7 @@ export class GetWorkloadListUseCase
                 CommittedWorkloadMap.fromDomainAll(committedWorkloads);
             const plannedWLDtos =
                 PlannedWorkloadMap.fromDomainAll(plannedWorkloads);
+
             const userDtos = UserMap.fromDomainAll(users);
             const issueDtos = IssueMap.fromDomainAll(issues);
 
@@ -105,7 +111,6 @@ export class GetWorkloadListUseCase
                 userDtos,
                 response,
                 issueDtos,
-                endDateOfWeek,
             );
 
             if (!workloadListByWeekDto) {

@@ -59,16 +59,13 @@ export class WorkloadListByWeekMap {
             ) {
                 hashMap[
                     workload.contributedValue.expertiseScope.id.toString()
-                ] = workload;
-                return;
+                ] = { ...workload };
+            } else {
+                hashMap[
+                    workload.contributedValue.expertiseScope.id.toString()
+                ].plannedWorkload += workload.plannedWorkload;
             }
-
-            hashMap[
-                workload.contributedValue.expertiseScope.id.toString()
-            ].plannedWorkload += workload.plannedWorkload;
         });
-
-        // console.log(Object.values(hashMap));
 
         return Object.values(hashMap);
     }
@@ -125,7 +122,7 @@ export class WorkloadListByWeekMap {
                     (exp) =>
                         exp.id ===
                         Number(
-                            committedItem.contributedValue.valueStream.id.toString(),
+                            committedItem.contributedValue.expertiseScope.id.toString(),
                         ),
                 );
 
@@ -148,12 +145,6 @@ export class WorkloadListByWeekMap {
                 Number(plan.user.id.toString()) === Number(user.id.toString()),
         );
 
-        // const plannedWLByUserArray = plannedWLDtos.filter(
-        //     (plan) => Number(plan.user.id.toString()) === Number(1),
-        // );
-
-        // console.log('151==========================', plannedWLByUserArray);
-
         const totalCommittedWL = committedWLByUserArray.reduce(
             (total, item) => total + item.committedWorkload,
             0,
@@ -162,10 +153,10 @@ export class WorkloadListByWeekMap {
 
         let expertiseScopeArray =
             new Array<ExpertiseScopeWithinWorkloadListDto>();
+        const handleCommittedWL = this.handleDuplicateExpOfCommittedArray(
+            committedWLByUserArray,
+        );
         if (plannedWLByUserArray.length === 0) {
-            const handleCommittedWL = this.handleDuplicateExpOfCommittedArray(
-                committedWLByUserArray,
-            );
             expertiseScopeArray = handleCommittedWL.map(
                 (com) =>
                     ({
@@ -181,7 +172,7 @@ export class WorkloadListByWeekMap {
                     } as ExpertiseScopeWithinWorkloadListDto),
             );
         } else {
-            expertiseScopeArray = committedWLByUserArray.map((com) => {
+            expertiseScopeArray = handleCommittedWL.map((com) => {
                 const handlePlanWorkload = this.handlePlannedWL(
                     plannedWLByUserArray,
                     com,
@@ -201,14 +192,11 @@ export class WorkloadListByWeekMap {
                     worklog: this.handleActualWL(actualWorkloadByUser, com),
                 } as ExpertiseScopeWithinWorkloadListDto;
             });
+            totalPlannedWL = plannedWLByUserArray.reduce(
+                (total, item) => total + item.plannedWorkload,
+                0,
+            );
         }
-
-        // console.log('200==========================', plannedWLByUserArray);
-
-        totalPlannedWL = plannedWLByUserArray.reduce(
-            (total, item) => total + item.plannedWorkload,
-            0,
-        );
 
         return { expertiseScopeArray, totalPlannedWL, totalCommittedWL };
     }
@@ -219,9 +207,9 @@ export class WorkloadListByWeekMap {
         userDtos: UserDto[],
         actualWorkloads: ActualWorkloadListDto[],
         issues: IssueDto[],
-        endDateOfWeek: string,
     ): WorkloadListByWeekDto[] {
         const workloadListByWeek = new Array<WorkloadListByWeekDto>();
+
         userDtos.forEach((user) => {
             const actualWorkloadByUser = actualWorkloads.find(
                 (actual) =>
@@ -249,9 +237,11 @@ export class WorkloadListByWeekMap {
                         startDate: '',
                         expiredDate: '',
                         workload: 0,
+                        createdAt: '',
                     },
                     plannedWorkload: 0,
                     actualWorkload: 0,
+                    weekStatus: user.weekStatus,
                     issueType: IssueType.NOT_ISSUE,
                 });
             }
@@ -265,22 +255,21 @@ export class WorkloadListByWeekMap {
                     expertiseScopes: [],
                     committedWorkload: {
                         startDate: moment(
-                            committedWLByUserArray[0].startDate,
+                            oneItemOfCommittedWL.startDate,
                         ).format('YYYY-MM-DD'),
                         expiredDate: moment(
-                            committedWLByUserArray[0].expiredDate,
+                            oneItemOfCommittedWL.expiredDate,
                         ).format('YYYY-MM-DD'),
+                        createdAt: moment(
+                            oneItemOfCommittedWL.createdAt,
+                        ).format(),
                         workload: 0,
                     },
                     plannedWorkload: 0,
                     actualWorkload: 0,
+                    weekStatus: user.weekStatus,
                     issueType: IssueType.NOT_ISSUE,
                 });
-            }
-            if (
-                moment(oneItemOfCommittedWL.startDate).format() > endDateOfWeek
-            ) {
-                return true;
             }
 
             let resultExpAndTotalWL = {} as ResultExpertiseScopeAndTotalWL;
@@ -290,7 +279,6 @@ export class WorkloadListByWeekMap {
                 user,
                 actualWorkloadByUser,
             );
-
             const committedWLByUser = {
                 startDate: moment(oneItemOfCommittedWL.startDate).format(
                     'YYYY-MM-DD',
@@ -298,6 +286,7 @@ export class WorkloadListByWeekMap {
                 expiredDate: moment(oneItemOfCommittedWL.expiredDate).format(
                     'YYYY-MM-DD',
                 ),
+                createdAt: moment(oneItemOfCommittedWL.createdAt).format(),
                 workload: resultExpAndTotalWL.totalCommittedWL,
             } as CommittedWorkloadByWeekDto;
 
@@ -311,6 +300,7 @@ export class WorkloadListByWeekMap {
                 committedWorkload: committedWLByUser,
                 plannedWorkload: resultExpAndTotalWL.totalPlannedWL,
                 actualWorkload: this.handleActualWorkload(actualWorkloadByUser),
+                weekStatus: user.weekStatus,
                 issueType: this.handleIssue(issues, user),
             });
         });

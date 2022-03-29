@@ -17,11 +17,15 @@ import { CommittedWorkloadEntity } from '../infra/database/entities/committedWor
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
 import { UserEntity } from '../infra/database/entities/user.entity';
 import { WorkloadDto } from '../infra/dtos/workload.dto';
+import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface ICommittedWorkloadRepo {
-    findAll(): Promise<CommittedWorkload[]>;
+    findAllByWeek({
+        startDateOfWeek,
+        endDateOfWeek,
+    }: StartEndDateOfWeekWLInputDto): Promise<CommittedWorkload[]>;
     findById(
         committedWorkloadId: DomainId | number,
     ): Promise<CommittedWorkload>;
@@ -311,10 +315,14 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         });
         return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
     }
-    async findAll(): Promise<CommittedWorkload[]> {
+    async findAllByWeek({
+        startDateOfWeek,
+        endDateOfWeek,
+    }: StartEndDateOfWeekWLInputDto): Promise<CommittedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: WorkloadStatus.ACTIVE,
+                startDate: LessThanOrEqual(startDateOfWeek),
+                expiredDate: MoreThanOrEqual(endDateOfWeek),
             },
             relations: [
                 'user',
