@@ -23,9 +23,9 @@ export class CreateIssueUseCase
         @Inject('IUserRepo') public readonly userRepo: IUserRepo,
         @Inject('IIssueRepo') public readonly issueRepo: IIssueRepo,
     ) {}
-    async execute(body: CreateIssueDto): Promise<Response> {
+    async execute(createIssueDto: CreateIssueDto): Promise<Response> {
         try {
-            const { picId, userId } = body;
+            const { userId, picId } = createIssueDto;
             const user = await this.userRepo.findById(userId);
             const pic = await this.userRepo.findById(picId);
             if (!pic && !pic.isAdmin()) {
@@ -42,7 +42,7 @@ export class CreateIssueUseCase
                 ) as Response;
             }
 
-            const { week, type } = body;
+            const { week, type } = createIssueDto;
 
             const dateOfWeek = moment()
                 .utcOffset(DateRange.TIME_ZONE_OFFSET)
