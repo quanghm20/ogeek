@@ -283,11 +283,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'user',
                 'pic',
                 'contributedValue.expertiseScope',
-                'committedWorkload',
-                'committedWorkload.contributedValue',
-                'committedWorkload.contributedValue.expertiseScope',
-                'committedWorkload.contributedValue.user',
-                'committedWorkload.contributedValue.pic',
+                'contributedValue.valueStream',
             ],
         });
         return entities

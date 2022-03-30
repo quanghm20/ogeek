@@ -1,12 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-    Between,
-    Connection,
-    LessThanOrEqual,
-    MoreThanOrEqual,
-    Repository,
-} from 'typeorm';
+import { Between, Connection, Repository } from 'typeorm';
 
 import { WorkloadStatus } from '../../../common/constants/committed-status';
 import { DomainId } from '../domain/domainId';
@@ -145,7 +139,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'committedWorkload.pic',
             ],
         });
-
         return entities
             ? PlannedWorkloadMap.toDomainAll(entities)
             : new Array<PlannedWorkload>();
