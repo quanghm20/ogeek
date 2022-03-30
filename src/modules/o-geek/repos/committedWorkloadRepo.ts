@@ -201,17 +201,19 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
 
             await queryRunner.startTransaction();
 
-            if (now <= startDate) {
+            if (now >= startDate) {
                 status = WorkloadStatus.ACTIVE;
                 oldStatus = WorkloadStatus.INACTIVE;
+            }
+            if (now <= startDate) {
                 await this.repo.update(
                     {
                         user,
                         status: WorkloadStatus.ACTIVE,
-                        expiredDate: LessThan(startDate),
                     },
                     {
                         status: oldStatus,
+                        expiredDate: startDate,
                         updatedAt: now,
                     },
                 );
