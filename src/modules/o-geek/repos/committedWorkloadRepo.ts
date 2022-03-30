@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 
 import { WorkloadStatus } from '../../../common/constants/committed-status';
+import { DateRange } from '../../../common/constants/date-range';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
@@ -190,21 +191,24 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             const pic = new UserEntity(picId);
             const now = new Date();
             now.setHours(0, 0, 0);
+            startDate = moment(startDate).add(DateRange.UTC, 'hours').toDate();
+            expiredDate = moment(expiredDate)
+                .add(DateRange.UTC, 'hours')
+                .toDate();
             const result = Array<number>();
-            startDate.setHours(0, 0, 0);
-            expiredDate.setHours(0, 0, 0);
             let status = WorkloadStatus.INACTIVE;
             let oldStatus = WorkloadStatus.ACTIVE;
 
             await queryRunner.startTransaction();
 
-            if (now >= startDate) {
+            if (now <= startDate) {
                 status = WorkloadStatus.ACTIVE;
                 oldStatus = WorkloadStatus.INACTIVE;
                 await this.repo.update(
                     {
                         user,
                         status: WorkloadStatus.ACTIVE,
+                        expiredDate: LessThan(startDate),
                     },
                     {
                         status: oldStatus,
@@ -212,7 +216,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     },
                 );
             }
-
             for await (const workload of committedWorkload) {
                 const contribute = await this.repoContributed.findOne({
                     where: {
