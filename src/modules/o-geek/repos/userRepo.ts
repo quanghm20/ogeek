@@ -9,9 +9,11 @@ import { UserDto } from '../infra/dtos/user.dto';
 import { UserMap } from '../mappers/userMap';
 
 export interface IUserRepo {
+    findAllUsers(): Promise<User[]>;
     findById(userId: DomainId | number): Promise<User>;
     findByAlias(alias: string): Promise<User>;
     findAllUser(): Promise<User[]>;
+    update(condition: any, update: any): Promise<void>;
 }
 
 @Injectable()
@@ -36,6 +38,11 @@ export class UserRepository implements IUserRepo {
         return entity ? UserMap.toDomain(entity) : null;
     }
 
+    async findAllUsers(): Promise<User[]> {
+        const entities = await this.repo.find();
+        return entities ? UserMap.toDomainAll(entities) : null;
+    }
+
     async createUser(userDto: UserDto): Promise<User> {
         const entity = this.repo.create({
             alias: userDto.alias,
@@ -48,5 +55,9 @@ export class UserRepository implements IUserRepo {
         });
         const createdUser = await this.repo.save(entity);
         return createdUser ? UserMap.toDomain(entity) : null;
+    }
+
+    async update(condition: any, update: any): Promise<void> {
+        await this.repo.update(condition, update);
     }
 }

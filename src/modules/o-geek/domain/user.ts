@@ -66,6 +66,11 @@ export class User extends AggregateRoot<IUserProps> {
     set role(role: RoleType) {
         this.props.role = role;
     }
+
+    get createdAt(): Date {
+        return this.props.createdAt;
+    }
+
     public isAdmin(): boolean {
         return this.props.role === RoleType.ADMIN;
     }

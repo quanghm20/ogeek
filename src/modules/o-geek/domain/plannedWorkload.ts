@@ -84,8 +84,6 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
         const defaultValues = {
             ...props,
         };
-        defaultValues.createdAt = new Date();
-        defaultValues.updatedAt = new Date();
 
         const plannedWorkload = new PlannedWorkload(defaultValues, id);
         return Result.ok<PlannedWorkload>(plannedWorkload);

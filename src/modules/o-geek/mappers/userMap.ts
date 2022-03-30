@@ -2,6 +2,7 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { User } from '../domain/user';
 import { UserEntity } from '../infra/database/entities/user.entity';
+import { UserCompactDto } from '../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
 import { UserShortDto } from '../infra/dtos/getUsers/getUsersDto';
 import { GetWeekStatusDto } from '../infra/dtos/getWeekStatus.dto';
 import { UserDto } from '../infra/dtos/user.dto';
@@ -20,6 +21,10 @@ export class UserMap implements Mapper<User> {
         dto.weekStatus = user.weekStatus;
         return dto;
     }
+    public static fromUserShort(user: User): UserCompactDto {
+        const id = Number(user.id.toValue());
+        return new UserCompactDto(id, user.alias, user.name);
+    }
     public static fromDomainWeekStatus(user: User): GetWeekStatusDto {
         return {
             weekStatus: user.weekStatus,
@@ -37,11 +42,31 @@ export class UserMap implements Mapper<User> {
                 role: raw.role,
                 weekStatus: raw.weekStatus,
                 avatar: raw.avatar,
+                createdAt: raw.createdAt,
             },
             new UniqueEntityID(id),
         );
-
         return userOrError.isSuccess ? userOrError.getValue() : null;
+    }
+
+    public static toDomainAll(users: UserEntity[]): User[] {
+        const userArray = new Array<User>();
+        users.forEach((user) => {
+            const userOrError = UserMap.toDomain(user);
+            if (userOrError) {
+                userArray.push(userOrError);
+            } else {
+                return null;
+            }
+        });
+
+        return userArray;
+    }
+
+    public static fromDomainAll(users: User[]): UserDto[] {
+        const arrUserDto = new Array<UserDto>();
+        users.forEach((user) => arrUserDto.push(UserMap.fromDomain(user)));
+        return arrUserDto;
     }
 
     public static toArrayDomain(raws: UserEntity[]): User[] {
