@@ -62,6 +62,7 @@ export interface ICommittedWorkloadRepo {
     findAllActiveCommittedWorkloadByUser(
         userId: number,
     ): Promise<CommittedWorkload[]>;
+    updateCommittedWorkloadExpired(): Promise<void>;
 }
 
 @Injectable()
@@ -399,5 +400,29 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             ],
         });
         return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
+    }
+    async updateCommittedWorkloadExpired(): Promise<void> {
+        const queryRunner = getConnection().createQueryRunner();
+        await queryRunner.connect();
+        const now = moment(new Date()).format('YYYY-MM-DD');
+        await queryRunner.startTransaction();
+
+        try {
+            await this.repo.update(
+                {
+                    expiredDate: now,
+                    status: WorkloadStatus.ACTIVE,
+                },
+                {
+                    status: WorkloadStatus.INACTIVE,
+                    updatedAt: new Date(),
+                },
+            );
+            await queryRunner.commitTransaction();
+        } catch (error) {
+            await queryRunner.rollbackTransaction();
+        } finally {
+            await queryRunner.release();
+        }
     }
 }
