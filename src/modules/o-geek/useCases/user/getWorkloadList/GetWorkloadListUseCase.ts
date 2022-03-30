@@ -57,7 +57,7 @@ export class GetWorkloadListUseCase
                 return left(new GetWorkloadListError.WeekError()) as Response;
             }
 
-            const url = `${process.env.MOCK_URL}/api/overview/list-workload`;
+            const url = `${process.env.MOCK_URL}/api/overview/list-workload/${params.week}`;
             const request = await Axios.get<ServerResponse>(url, {
                 headers: {
                     'x-api-key': process.env.MOCK_API_KEY,
