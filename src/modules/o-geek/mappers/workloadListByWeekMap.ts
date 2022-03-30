@@ -250,7 +250,7 @@ export class WorkloadListByWeekMap {
             const handleOverlapCommittedWL =
                 this.handleOverlapCommittedWorkload(committedWLByUserArray);
 
-            const oneItemOfCommittedWL = handleOverlapCommittedWL[0];
+            const firstCommittedWLItem = handleOverlapCommittedWL[0];
 
             if (committedWLByUserArray.length === 0) {
                 return workloadListByWeek.push({
@@ -272,7 +272,7 @@ export class WorkloadListByWeekMap {
                     issueType: IssueType.NOT_ISSUE,
                 });
             }
-            if (oneItemOfCommittedWL.expiredDate < new Date()) {
+            if (firstCommittedWLItem.expiredDate < new Date()) {
                 return workloadListByWeek.push({
                     user: {
                         alias: user.alias,
@@ -282,13 +282,13 @@ export class WorkloadListByWeekMap {
                     expertiseScopes: [],
                     committedWorkload: {
                         startDate: moment(
-                            oneItemOfCommittedWL.startDate,
+                            firstCommittedWLItem.startDate,
                         ).format('YYYY-MM-DD'),
                         expiredDate: moment(
-                            oneItemOfCommittedWL.expiredDate,
+                            firstCommittedWLItem.expiredDate,
                         ).format('YYYY-MM-DD'),
                         updatedAt: moment(
-                            oneItemOfCommittedWL.updatedAt,
+                            firstCommittedWLItem.updatedAt,
                         ).format('DD-MM-YYYY hh:mm:ss'),
                         workload: 0,
                     },
@@ -308,13 +308,13 @@ export class WorkloadListByWeekMap {
             );
 
             const committedWLByUser = {
-                startDate: moment(oneItemOfCommittedWL.startDate).format(
+                startDate: moment(firstCommittedWLItem.startDate).format(
                     'YYYY-MM-DD',
                 ),
-                expiredDate: moment(oneItemOfCommittedWL.expiredDate).format(
+                expiredDate: moment(firstCommittedWLItem.expiredDate).format(
                     'YYYY-MM-DD',
                 ),
-                updatedAt: moment(oneItemOfCommittedWL.updatedAt).format(
+                updatedAt: moment(firstCommittedWLItem.updatedAt).format(
                     'DD-MM-YYYY hh:mm:ss',
                 ),
                 workload: resultExpAndTotalWL.totalCommittedWL,

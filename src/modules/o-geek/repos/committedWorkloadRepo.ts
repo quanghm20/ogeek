@@ -329,7 +329,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue',
                 'contributedValue.valueStream',
                 'contributedValue.expertiseScope',
-                // 'pic',
             ],
         });
 
