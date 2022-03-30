@@ -20,5 +20,5 @@ export class CommittedWorkloadByWeekDto {
     @ApiProperty({ example: '01/04/2022', default: '' })
     @IsDateString()
     @IsNotEmpty()
-    createdAt: string;
+    updatedAt: string;
 }
