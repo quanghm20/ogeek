@@ -68,6 +68,8 @@ export class CommittedWorkloadEntity extends AbstractEntity {
         expiredDate: Date,
         pic?: UserEntity,
         status?: WorkloadStatus,
+        createdAt?: Date,
+        updatedAt?: Date,
     ) {
         super();
         this.user = user;
@@ -77,5 +79,7 @@ export class CommittedWorkloadEntity extends AbstractEntity {
         this.expiredDate = expiredDate;
         this.pic = pic;
         this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }

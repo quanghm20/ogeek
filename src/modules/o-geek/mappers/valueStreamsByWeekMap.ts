@@ -79,6 +79,7 @@ export class ValueStreamsByWeekMap {
         let actual = 0;
 
         let worklog = 0;
+
         if (actualPlanAndWorkLog) {
             actual = actualPlanAndWorkLog.actualPlannedWorkload;
             worklog = actualPlanAndWorkLog.worklog;
