@@ -57,7 +57,7 @@ export class GetWorkloadListUseCase
                 return left(new GetWorkloadListError.WeekError()) as Response;
             }
 
-            const url = `${process.env.MOCK_URL}/api/overview/list-workload`;
+            const url = `${process.env.MOCK_URL}/api/overview/list-workload/${params.week}`;
             const request = await Axios.get<ServerResponse>(url, {
                 headers: {
                     'x-api-key': process.env.MOCK_API_KEY,
@@ -69,7 +69,9 @@ export class GetWorkloadListUseCase
                 .utcOffset(420)
                 .week(params.week)
                 .format();
+
             const numDateOfWeek = moment(dateOfWeek).format('e');
+
             const startDateOfWeek = moment(dateOfWeek)
                 .utcOffset(420)
                 .add(-numDateOfWeek, 'days')
@@ -86,7 +88,13 @@ export class GetWorkloadListUseCase
                 startDateOfWeek,
                 endDateOfWeek,
             } as StartEndDateOfWeekWLInputDto);
-            const committedWorkloads = await this.committedWLRepo.findAll();
+            const committedWorkloads = await this.committedWLRepo.findAllByWeek(
+                {
+                    startDateOfWeek,
+                    endDateOfWeek,
+                } as StartEndDateOfWeekWLInputDto,
+            );
+
             const plannedWorkloads = await this.plannedWLRepo.findAllByWeek({
                 startDateOfWeek,
                 endDateOfWeek,
@@ -94,8 +102,10 @@ export class GetWorkloadListUseCase
 
             const committedWLDtos =
                 CommittedWorkloadMap.fromDomainAll(committedWorkloads);
+
             const plannedWLDtos =
                 PlannedWorkloadMap.fromDomainAll(plannedWorkloads);
+
             const userDtos = UserMap.fromDomainAll(users);
             const issueDtos = IssueMap.fromDomainAll(issues);
 
@@ -105,7 +115,6 @@ export class GetWorkloadListUseCase
                 userDtos,
                 response,
                 issueDtos,
-                endDateOfWeek,
             );
 
             if (!workloadListByWeekDto) {

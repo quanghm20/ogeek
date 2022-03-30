@@ -11,17 +11,22 @@ import {
 } from 'typeorm';
 
 import { WorkloadStatus } from '../../../common/constants/committed-status';
+import { DateRange } from '../../../common/constants/date-range';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
 import { UserEntity } from '../infra/database/entities/user.entity';
 import { WorkloadDto } from '../infra/dtos/workload.dto';
+import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface ICommittedWorkloadRepo {
-    findAll(): Promise<CommittedWorkload[]>;
+    findAllByWeek({
+        startDateOfWeek,
+        endDateOfWeek,
+    }: StartEndDateOfWeekWLInputDto): Promise<CommittedWorkload[]>;
     findById(
         committedWorkloadId: DomainId | number,
     ): Promise<CommittedWorkload>;
@@ -54,6 +59,10 @@ export interface ICommittedWorkloadRepo {
         expertiseScopeId: number,
         userId: number,
     ): Promise<CommittedWorkloadEntity[]>;
+    findAllActiveCommittedWorkloadByUser(
+        userId: number,
+    ): Promise<CommittedWorkload[]>;
+    updateCommittedWorkloadExpired(): Promise<void>;
 }
 
 @Injectable()
@@ -182,20 +191,34 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             const user = new UserEntity(userId);
             const pic = new UserEntity(picId);
             const now = new Date();
+            now.setHours(0, 0, 0);
+            startDate = moment(startDate).add(DateRange.UTC, 'hours').toDate();
+            expiredDate = moment(expiredDate)
+                .add(DateRange.UTC, 'hours')
+                .toDate();
             const result = Array<number>();
+            let status = WorkloadStatus.INACTIVE;
+            let oldStatus = WorkloadStatus.ACTIVE;
 
             await queryRunner.startTransaction();
 
-            await this.repo.update(
-                {
-                    user,
-                    status: WorkloadStatus.ACTIVE,
-                },
-                {
-                    status: WorkloadStatus.INACTIVE,
-                    updatedAt: now,
-                },
-            );
+            if (now >= startDate) {
+                status = WorkloadStatus.ACTIVE;
+                oldStatus = WorkloadStatus.INACTIVE;
+            }
+            if (now <= startDate) {
+                await this.repo.update(
+                    {
+                        user,
+                        status: WorkloadStatus.ACTIVE,
+                    },
+                    {
+                        status: oldStatus,
+                        expiredDate: startDate,
+                        updatedAt: now,
+                    },
+                );
+            }
             for await (const workload of committedWorkload) {
                 const contribute = await this.repoContributed.findOne({
                     where: {
@@ -214,6 +237,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     startDate,
                     expiredDate,
                     pic,
+                    status,
                 );
 
                 const save = await queryRunner.manager.save(committed);
@@ -311,19 +335,23 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         });
         return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
     }
-    async findAll(): Promise<CommittedWorkload[]> {
+    async findAllByWeek({
+        startDateOfWeek,
+        endDateOfWeek,
+    }: StartEndDateOfWeekWLInputDto): Promise<CommittedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: WorkloadStatus.ACTIVE,
+                startDate: LessThanOrEqual(startDateOfWeek),
+                expiredDate: MoreThanOrEqual(endDateOfWeek),
             },
             relations: [
                 'user',
                 'contributedValue',
                 'contributedValue.valueStream',
                 'contributedValue.expertiseScope',
-                'pic',
             ],
         });
+
         return entities ? CommittedWorkloadMap.toArrayDomain(entities) : null;
     }
     async findAllExpertiseScope(
@@ -354,5 +382,47 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             arr.push(entity.contributedValue.expertiseScope.id);
         }
         return arr;
+    }
+    async findAllActiveCommittedWorkloadByUser(
+        userId: number,
+    ): Promise<CommittedWorkload[]> {
+        const entities = await this.repo.find({
+            where: {
+                user: {
+                    id: userId,
+                },
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'user',
+            ],
+        });
+        return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
+    }
+    async updateCommittedWorkloadExpired(): Promise<void> {
+        const queryRunner = getConnection().createQueryRunner();
+        await queryRunner.connect();
+        const now = moment(new Date()).format('YYYY-MM-DD');
+        await queryRunner.startTransaction();
+
+        try {
+            await this.repo.update(
+                {
+                    expiredDate: now,
+                    status: WorkloadStatus.ACTIVE,
+                },
+                {
+                    status: WorkloadStatus.INACTIVE,
+                    updatedAt: new Date(),
+                },
+            );
+            await queryRunner.commitTransaction();
+        } catch (error) {
+            await queryRunner.rollbackTransaction();
+        } finally {
+            await queryRunner.release();
+        }
     }
 }

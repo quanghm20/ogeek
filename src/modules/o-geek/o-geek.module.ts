@@ -26,7 +26,9 @@ import {
     CreateCommittedWorkloadController,
     CreateCommittedWorkloadUseCase,
 } from './useCases/committedWorkload/createCommittedWorkload';
+import { CronCommittedWorkload } from './useCases/committedWorkload/cron-committed-workload.service';
 import { GetCommittedWorkloadUseCase } from './useCases/committedWorkload/getCommittedWorkload/GetCommittedWorkloadsUseCase';
+import { GetHistoryCommittedWorkloadUseCase } from './useCases/committedWorkload/getHistoryCommittedWorkload/GetCommittedWorkloadsUseCase';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,
@@ -119,6 +121,8 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         },
         CreateIssueUseCase,
         GetCommittedWorkloadUseCase,
+        GetHistoryCommittedWorkloadUseCase,
+        CronCommittedWorkload,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,
@@ -159,6 +163,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetWorkloadListUseCase,
         CreateIssueUseCase,
         TypeOrmModule,
+        CronCommittedWorkload,
     ],
 })
 export class OGeekModule {}

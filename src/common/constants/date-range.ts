@@ -4,4 +4,5 @@ export enum DateRange {
     MILLISECONDS_IN_DAY = 86400000,
     TIME_ZONE_OFFSET = 7 * 60,
     DURATION_BETWEEN_START_AND_END = 6,
+    UTC = 7,
 }
