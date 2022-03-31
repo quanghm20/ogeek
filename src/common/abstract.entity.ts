@@ -6,19 +6,24 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 
+// import { UniqueEntityID } from '../core/domain/UniqueEntityID';
+
 export abstract class AbstractEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+    @PrimaryGeneratedColumn()
+    id: number;
 
     @CreateDateColumn({
         type: 'timestamp without time zone',
         name: 'created_at',
     })
-    createdAt: Date;
+    createdAt?: Date;
 
     @UpdateDateColumn({
         type: 'timestamp without time zone',
         name: 'updated_at',
     })
-    updatedAt: Date;
+    updatedAt?: Date;
+    constructor(id?: number) {
+        this.id = id;
+    }
 }
