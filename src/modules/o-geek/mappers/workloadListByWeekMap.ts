@@ -253,50 +253,7 @@ export class WorkloadListByWeekMap {
             const firstCommittedWLItem = handleOverlapCommittedWL[0];
 
             if (committedWLByUserArray.length === 0) {
-                return workloadListByWeek.push({
-                    user: {
-                        alias: user.alias,
-                        id: Number(user.id.toString()),
-                        avatar: user.avatar,
-                    },
-                    expertiseScopes: [],
-                    committedWorkload: {
-                        startDate: '',
-                        expiredDate: '',
-                        workload: 0,
-                        updatedAt: '',
-                    },
-                    plannedWorkload: 0,
-                    actualWorkload: 0,
-                    weekStatus: user.weekStatus,
-                    issueType: IssueType.NOT_ISSUE,
-                });
-            }
-            if (firstCommittedWLItem.expiredDate < new Date()) {
-                return workloadListByWeek.push({
-                    user: {
-                        alias: user.alias,
-                        id: Number(user.id.toString()),
-                        avatar: user.avatar,
-                    },
-                    expertiseScopes: [],
-                    committedWorkload: {
-                        startDate: moment(
-                            firstCommittedWLItem.startDate,
-                        ).format('YYYY-MM-DD'),
-                        expiredDate: moment(
-                            firstCommittedWLItem.expiredDate,
-                        ).format('YYYY-MM-DD'),
-                        updatedAt: moment(
-                            firstCommittedWLItem.updatedAt,
-                        ).format('DD-MM-YYYY hh:mm:ss'),
-                        workload: 0,
-                    },
-                    plannedWorkload: 0,
-                    actualWorkload: 0,
-                    weekStatus: user.weekStatus,
-                    issueType: IssueType.NOT_ISSUE,
-                });
+                return;
             }
 
             let resultExpAndTotalWL = {} as ResultExpertiseScopeAndTotalWL;
