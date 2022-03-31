@@ -437,8 +437,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             where: {
                 status: WorkloadStatus.ACTIVE,
                 user: userId,
-                startDate: LessThan(startDateOfWeek),
-                expiredDate: MoreThanOrEqual(endDateOfWeek),
+                startDate: LessThan(endDateOfWeek),
             },
             relations: [
                 'contributedValue',

@@ -28,7 +28,7 @@ export class OauthController {
     }
     // if user is authenticated, they are redirected here
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    @Get('oauth/otable/callback')
+    @Get('api/oauth/otable/callback')
     @UseGuards(OAuthGuard)
     async redirectLogin(
         @Req() req: Request,
