@@ -63,6 +63,11 @@ export interface ICommittedWorkloadRepo {
         userId: number,
     ): Promise<CommittedWorkload[]>;
     updateCommittedWorkloadExpired(): Promise<void>;
+    findByUserIdValueStream(
+        userId: DomainId | number,
+        startDateOfWeek: string,
+        endDateOfWeek: string,
+    ): Promise<CommittedWorkload[]>;
 }
 
 @Injectable()
@@ -420,5 +425,31 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         } finally {
             await queryRunner.release();
         }
+    }
+    async findByUserIdValueStream(
+        userId: DomainId | number,
+        startDateOfWeek: string,
+        endDateOfWeek: string,
+    ): Promise<CommittedWorkload[]> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        const entities = await this.repo.find({
+            where: {
+                status: WorkloadStatus.ACTIVE,
+                user: userId,
+                startDate: LessThan(startDateOfWeek),
+                expiredDate: MoreThanOrEqual(endDateOfWeek),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'user',
+                'pic',
+            ],
+        });
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
     }
 }
