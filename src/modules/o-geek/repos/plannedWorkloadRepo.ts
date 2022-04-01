@@ -139,7 +139,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'committedWorkload.pic',
             ],
         });
-
         return entities
             ? PlannedWorkloadMap.toDomainAll(entities)
             : new Array<PlannedWorkload>();

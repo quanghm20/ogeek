@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsString } from 'class-validator';
 
 import { WorkloadOverviewDto } from '../OverviewChartDto/workloadOverview.dto';
 
@@ -23,4 +23,12 @@ export class OverviewChartDataDto {
     @ApiProperty({ example: 1 })
     @IsString()
     expertiseScopeId: number;
+
+    @ApiProperty({ example: 12 })
+    @IsNumber()
+    worklogLength: number;
+
+    @ApiProperty({ example: 6 })
+    @IsNumber()
+    actualPlannedWorkloadLength: number;
 }

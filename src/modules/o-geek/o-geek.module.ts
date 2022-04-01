@@ -26,11 +26,17 @@ import {
     CreateCommittedWorkloadController,
     CreateCommittedWorkloadUseCase,
 } from './useCases/committedWorkload/createCommittedWorkload';
+import { CronCommittedWorkload } from './useCases/committedWorkload/cron-committed-workload.service';
 import { GetCommittedWorkloadUseCase } from './useCases/committedWorkload/getCommittedWorkload/GetCommittedWorkloadsUseCase';
+import { GetHistoryCommittedWorkloadUseCase } from './useCases/committedWorkload/getHistoryCommittedWorkload/GetCommittedWorkloadsUseCase';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,
 } from './useCases/contributedValue/getContributedValue';
+import {
+    GetDetailActualPlannedWorkloadController,
+    GetDetailActualPlannedWorkloadUseCase,
+} from './useCases/detailActualPlannedWorkload/getDetailActualPlannedWorkload';
 import { GetAverageActualWorkloadController } from './useCases/overview/getAverageActualWorkload/GetAverageActualWorkloadController';
 import { GetAverageActualWorkloadUseCase } from './useCases/overview/getAverageActualWorkload/GetAverageActualWorkloadUseCase';
 import { GetWeekStatusController } from './useCases/overview/message/GetWeekStatusController';
@@ -86,6 +92,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetValueStreamController,
         GetUsersController,
         PlanWorkloadController,
+        GetDetailActualPlannedWorkloadController,
         GetWorkloadListController,
         CreateIssueController,
         StartWeekController,
@@ -107,8 +114,15 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetWorkloadListUseCase,
         GetWeekStatusUseCase,
         GetUsersUseCase,
+        GetDetailActualPlannedWorkloadUseCase,
+        {
+            provide: 'IUserRepo',
+            useClass: UserRepository,
+        },
         CreateIssueUseCase,
         GetCommittedWorkloadUseCase,
+        GetHistoryCommittedWorkloadUseCase,
+        CronCommittedWorkload,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,
@@ -145,9 +159,11 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         CreateUserUseCase,
         GetUserUseCase,
         GetValueStreamUseCase,
+        GetDetailActualPlannedWorkloadUseCase,
         GetWorkloadListUseCase,
         CreateIssueUseCase,
         TypeOrmModule,
+        CronCommittedWorkload,
     ],
 })
 export class OGeekModule {}

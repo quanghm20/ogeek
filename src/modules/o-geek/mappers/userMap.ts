@@ -42,6 +42,7 @@ export class UserMap implements Mapper<User> {
                 role: raw.role,
                 weekStatus: raw.weekStatus,
                 avatar: raw.avatar,
+                createdAt: raw.createdAt,
             },
             new UniqueEntityID(id),
         );
