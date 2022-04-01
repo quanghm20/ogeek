@@ -282,6 +282,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     LessThanOrEqual(
                         MomentService.shiftLastDateChart(startDateInWeek),
                     ),
+                status: WorkloadStatus.ACTIVE,
             },
             relations: [
                 'contributedValue',
