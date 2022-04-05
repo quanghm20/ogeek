@@ -1,5 +1,5 @@
-import { RoleType } from '../../../common/constants/role-type';
-import { WeekStatus } from '../../../common/constants/week-status';
+import { RoleType } from '../../../common/constants/roleType';
+import { WeekStatus } from '../../../common/constants/weekStatus';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';

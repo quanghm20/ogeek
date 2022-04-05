@@ -23,7 +23,7 @@ import {
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { RoleType } from '../../../../../common/constants/role-type';
+import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';

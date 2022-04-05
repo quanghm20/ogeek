@@ -1,5 +1,5 @@
-import { CommittedWorkloadStatus } from '../../../common/constants/committed-status';
-import { dateRange } from '../../../common/constants/date-range';
+import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
+import { dateRange } from '../../../common/constants/dateRange';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';

@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
-import { IssueType } from '../../../../../common/constants/issue-type';
+import { IssueType } from '../../../../../common/constants/issueType';
 import { UserEntity } from './user.entity';
 
 @Entity({ name: 'issue' })

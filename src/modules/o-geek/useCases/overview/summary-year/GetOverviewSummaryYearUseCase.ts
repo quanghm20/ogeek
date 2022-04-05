@@ -3,7 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import Axios from 'axios';
 import * as moment from 'moment';
 
-import { dateRange } from '../../../../../common/constants/date-range';
+import { dateRange } from '../../../../../common/constants/dateRange';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';

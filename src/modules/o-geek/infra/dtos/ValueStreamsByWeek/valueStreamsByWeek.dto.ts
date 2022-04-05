@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsDate, IsEnum, IsNumber } from 'class-validator';
 
-import { WeekStatus } from '../../../../../common/constants/week-status';
+import { WeekStatus } from '../../../../../common/constants/weekStatus';
 import { ValueStreamByWeekDto } from './valueStream.dto';
 export class ValueStreamsByWeekDto {
     @ApiProperty({ example: 1 })

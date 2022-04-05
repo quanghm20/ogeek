@@ -1,4 +1,4 @@
-import { IssueType } from '../../../common/constants/issue-type';
+import { IssueType } from '../../../common/constants/issueType';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';

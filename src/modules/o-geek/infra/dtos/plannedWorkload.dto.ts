@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { WorkloadStatus } from '../../../../common/constants/committed-status';
+import { PlannedWorkloadStatus } from '../../../../common/constants/plannedStatus';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { ContributedValueDto } from '../../../o-geek/infra/dtos/contributedValue.dto';
 import { CommittedWorkloadDto } from './committedWorkload.dto';
@@ -28,8 +28,11 @@ export class PlannedWorkloadDto {
     @ApiProperty({ example: new Date() })
     startDate: Date;
 
-    @ApiProperty({ enum: WorkloadStatus, example: WorkloadStatus.ACTIVE })
-    status?: WorkloadStatus;
+    @ApiProperty({
+        enum: PlannedWorkloadStatus,
+        example: PlannedWorkloadStatus.ACTIVE,
+    })
+    status?: PlannedWorkloadStatus;
 
     @ApiProperty({ example: new Date() })
     createdAt?: Date;

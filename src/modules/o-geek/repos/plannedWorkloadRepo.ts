@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Connection, Repository } from 'typeorm';
 
-import { WorkloadStatus } from '../../../common/constants/committed-status';
+import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
@@ -55,7 +55,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             where: {
                 user: { id: userId },
                 startDate: Between(startDateOfYear, endDateOfYear),
-                status: WorkloadStatus.ACTIVE,
+                status: PlannedWorkloadStatus.ACTIVE,
             },
             relations: [
                 'contributedValue',
@@ -122,7 +122,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }: InputGetPlanWLDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: WorkloadStatus.ACTIVE,
+                status: PlannedWorkloadStatus.ACTIVE,
                 user: userId,
                 startDate: Between(startDateOfWeek, endDateOfWeek),
             },
@@ -155,7 +155,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                     MomentService.shiftFirstDateChart(startDate),
                     MomentService.shiftLastDateChart(startDate),
                 ),
-                status: WorkloadStatus.ACTIVE,
+                status: PlannedWorkloadStatus.ACTIVE,
             },
             relations: [
                 'contributedValue',
@@ -183,7 +183,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }: StartEndDateOfWeekWLInputDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: WorkloadStatus.ACTIVE,
+                status: PlannedWorkloadStatus.ACTIVE,
                 startDate: Between(startDateOfWeek, endDateOfWeek),
             },
             relations: [

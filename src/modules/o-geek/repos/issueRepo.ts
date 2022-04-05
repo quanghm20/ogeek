@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, getConnection, Repository } from 'typeorm';
 
-import { IssueType } from '../../../common/constants/issue-type';
+import { IssueType } from '../../../common/constants/issueType';
 import { DomainId } from '../domain/domainId';
 import { Issue } from '../domain/issue';
 import { UserEntity } from '../infra/database/entities';

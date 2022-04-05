@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 
-import { WeekStatus } from '../../../../../common/constants/week-status';
+import { WeekStatus } from '../../../../../common/constants/weekStatus';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';

@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 
-import { CommittedWorkloadStatus } from '../../../common/constants/committed-status';
-import { IssueType } from '../../../common/constants/issue-type';
+import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
+import { IssueType } from '../../../common/constants/issueType';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { IssueDto } from '../infra/dtos/issue.dto';
 import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';

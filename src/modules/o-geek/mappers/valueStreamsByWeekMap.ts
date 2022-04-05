@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 
-import { WeekStatus } from '../../../common/constants/week-status';
+import { WeekStatus } from '../../../common/constants/weekStatus';
 import { ActualPlanAndWorkLogDto } from '../infra/dtos/actualPlansAndWorkLogs.dto';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { ExpertiseScopeDto } from '../infra/dtos/expertiseScope.dto';
@@ -12,12 +12,8 @@ import { ValueStreamByWeekDto } from '../infra/dtos/ValueStreamsByWeek/valueStre
 import { ValueStreamsByWeekDto } from '../infra/dtos/ValueStreamsByWeek/valueStreamsByWeek.dto';
 
 export class ValueStreamsByWeekMap {
-    public static getStatusValueStreamInFuture(
-        plannedWLDtos: PlannedWorkloadDto[],
-    ): WeekStatus {
-        return plannedWLDtos.length > 0
-            ? WeekStatus.PLANNED
-            : WeekStatus.PLANNING;
+    public static getStatusValueStreamInFuture(): WeekStatus {
+        return WeekStatus.PLANNING;
     }
 
     public static getStatusValueStream(
@@ -30,9 +26,7 @@ export class ValueStreamsByWeekMap {
             return WeekStatus.CLOSED;
         }
         if (currentWeek < week) {
-            return ValueStreamsByWeekMap.getStatusValueStreamInFuture(
-                plannedWLDtos,
-            );
+            return ValueStreamsByWeekMap.getStatusValueStreamInFuture();
         }
         return userDto.weekStatus;
     }

@@ -2,14 +2,12 @@ import { HttpModule, Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { CronService } from './cron.service';
 import {
     CommittedWorkloadEntity,
     ContributedValueEntity,
     ExpertiseScopeEntity,
     IssueEntity,
     PlannedWorkloadEntity,
-    ProfileEntity,
     UserEntity,
     ValueStreamEntity,
 } from './infra/database/entities';
@@ -75,7 +73,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             ExpertiseScopeEntity,
             PlannedWorkloadEntity,
             IssueEntity,
-            ProfileEntity,
             ValueStreamEntity,
         ]),
         ScheduleModule.forRoot(),
@@ -98,7 +95,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         StartWeekController,
     ],
     providers: [
-        CronService,
         CreateUserUseCase,
         CreateCommittedWorkloadUseCase,
         GetAverageActualWorkloadUseCase,
@@ -154,7 +150,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         },
     ],
     exports: [
-        CronService,
         UserRepository,
         CreateUserUseCase,
         GetUserUseCase,

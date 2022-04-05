@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { RoleType } from '../../../../common/constants/role-type';
-import { WeekStatus } from '../../../../common/constants/week-status';
+import { RoleType } from '../../../../common/constants/roleType';
+import { WeekStatus } from '../../../../common/constants/weekStatus';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { UserEntity } from '../database/entities/user.entity';
 

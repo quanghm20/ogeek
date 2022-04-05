@@ -10,8 +10,8 @@ import {
     Repository,
 } from 'typeorm';
 
-import { WorkloadStatus } from '../../../common/constants/committed-status';
-import { DateRange } from '../../../common/constants/date-range';
+import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
+import { dateRange } from '../../../common/constants/dateRange';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
@@ -85,7 +85,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entities = await this.repo.find({
             where: {
-                status: WorkloadStatus.ACTIVE,
+                status: CommittedWorkloadStatus.ACTIVE,
                 user: userId,
                 expiredDate: MoreThanOrEqual(new Date()),
             },
@@ -143,7 +143,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 user: {
                     id: userId,
                 },
-                status: WorkloadStatus.ACTIVE,
+                status: CommittedWorkloadStatus.ACTIVE,
             },
             relations: [
                 'contributedValue',
@@ -197,25 +197,25 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             const pic = new UserEntity(picId);
             const now = new Date();
             now.setHours(0, 0, 0);
-            startDate = moment(startDate).add(DateRange.UTC, 'hours').toDate();
+            startDate = moment(startDate).add(dateRange.UTC, 'hours').toDate();
             expiredDate = moment(expiredDate)
-                .add(DateRange.UTC, 'hours')
+                .add(dateRange.UTC, 'hours')
                 .toDate();
             const result = Array<number>();
-            let status = WorkloadStatus.INACTIVE;
-            let oldStatus = WorkloadStatus.ACTIVE;
+            let status = CommittedWorkloadStatus.INACTIVE;
+            let oldStatus = CommittedWorkloadStatus.ACTIVE;
 
             await queryRunner.startTransaction();
 
             if (now >= startDate) {
-                status = WorkloadStatus.ACTIVE;
-                oldStatus = WorkloadStatus.INACTIVE;
+                status = CommittedWorkloadStatus.ACTIVE;
+                oldStatus = CommittedWorkloadStatus.INACTIVE;
             }
             if (now <= startDate) {
                 await this.repo.update(
                     {
                         user,
-                        status: WorkloadStatus.ACTIVE,
+                        status: CommittedWorkloadStatus.ACTIVE,
                     },
                     {
                         status: oldStatus,
@@ -325,7 +325,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     async findAllActiveCommittedWorkload(): Promise<CommittedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: WorkloadStatus.ACTIVE,
+                status: CommittedWorkloadStatus.ACTIVE,
             },
             relations: [
                 'contributedValue',
@@ -412,10 +412,10 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             await this.repo.update(
                 {
                     expiredDate: now,
-                    status: WorkloadStatus.ACTIVE,
+                    status: CommittedWorkloadStatus.ACTIVE,
                 },
                 {
-                    status: WorkloadStatus.INACTIVE,
+                    status: CommittedWorkloadStatus.INACTIVE,
                     updatedAt: new Date(),
                 },
             );
@@ -435,7 +435,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entities = await this.repo.find({
             where: {
-                status: WorkloadStatus.ACTIVE,
+                status: CommittedWorkloadStatus.ACTIVE,
                 user: userId,
                 startDate: LessThan(endDateOfWeek),
             },

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { WorkloadStatus } from '../../../../../common/constants/committed-status';
+import { CommittedWorkloadStatus } from '../../../../../common/constants/committedStatus';
 import { ExpertiseScopeShortDto } from '../getContributedValue/expertiseScopeShort.dto';
 import { ValueStreamShortDto } from '../summaryYearDTO/valueStreamShort.dto';
 export class UserCompactDto {
@@ -40,10 +40,10 @@ export class CommittedWorkloadShortDto {
     expiredDate: Date;
 
     @ApiProperty({
-        enum: WorkloadStatus,
-        example: WorkloadStatus.ACTIVE,
+        enum: CommittedWorkloadStatus,
+        example: CommittedWorkloadStatus.ACTIVE,
     })
-    status: WorkloadStatus;
+    status: CommittedWorkloadStatus;
 
     @ApiProperty({ example: new Date() })
     createdAt: Date;

@@ -10,7 +10,7 @@ import {
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { RoleType } from '../../../../../common/constants/role-type';
+import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../../../modules/jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../../modules/jwt-auth/jwt-auth.strategy';

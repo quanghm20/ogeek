@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
-import { CommittedWorkloadStatus } from '../../../../../common/constants/committed-status';
+import { CommittedWorkloadStatus } from '../../../../../common/constants/committedStatus';
 import { ContributedValueEntity } from './contributedValue.entity';
 import { PlannedWorkloadEntity } from './plannedWorkload.entity';
 import { UserEntity } from './user.entity';

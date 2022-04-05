@@ -3,7 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import Axios from 'axios';
 import * as moment from 'moment';
 
-import { RoleType } from '../../../../../common/constants/role-type';
+import { RoleType } from '../../../../../common/constants/roleType';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';

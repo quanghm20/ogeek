@@ -1,8 +1,8 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
-import { RoleType } from '../../../../../common/constants/role-type';
-import { WeekStatus } from '../../../../../common/constants/week-status';
+import { RoleType } from '../../../../../common/constants/roleType';
+import { WeekStatus } from '../../../../../common/constants/weekStatus';
 import { UserDto } from '../../dtos/user.dto';
 import { CommittedWorkloadEntity } from './committedWorkload.entity';
 import { IssueEntity } from './issue.entity';

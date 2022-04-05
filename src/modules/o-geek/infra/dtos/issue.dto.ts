@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
-import { IssueType } from '../../../../common/constants/issue-type';
+import { IssueType } from '../../../../common/constants/issueType';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { UserDto } from './user.dto';
 export class IssueDto {

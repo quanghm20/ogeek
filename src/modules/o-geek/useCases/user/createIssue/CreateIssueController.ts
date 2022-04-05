@@ -14,7 +14,7 @@ import {
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { RoleType } from '../../../../../common/constants/role-type';
+import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { CreateIssueDto } from '../../../..//o-geek/infra/dtos/createIssue/createIssue.dto';
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';

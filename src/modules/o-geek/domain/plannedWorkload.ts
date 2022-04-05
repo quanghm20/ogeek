@@ -1,4 +1,4 @@
-import { PlannedWorkloadStatus } from '../../../common/constants/planned-status';
+import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
