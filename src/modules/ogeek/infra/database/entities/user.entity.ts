@@ -9,7 +9,6 @@ import {
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
 import { RoleType } from '../../../../../common/constants/roleType';
-import { WeekStatus } from '../../../../../common/constants/weekStatus';
 import { UserDto } from '../../dtos/user.dto';
 import { CommittedWorkloadEntity } from './committedWorkload.entity';
 import { IssueEntity } from './issue.entity';
@@ -60,14 +59,6 @@ export class UserEntity extends AbstractEntity {
         default: RoleType.USER,
     })
     role: RoleType;
-
-    @Column({
-        type: 'enum',
-        enum: WeekStatus,
-        default: WeekStatus.PLANNING,
-        name: 'week_status',
-    })
-    weekStatus: WeekStatus;
 
     @ManyToOne(() => UserEntity, (user) => user.id)
     @JoinColumn({
