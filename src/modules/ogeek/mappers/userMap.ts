@@ -4,7 +4,6 @@ import { User } from '../domain/user';
 import { UserEntity } from '../infra/database/entities/user.entity';
 import { UserCompactDto } from '../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
 import { UserShortDto } from '../infra/dtos/getUsers/getUsersDto';
-import { GetWeekStatusDto } from '../infra/dtos/getWeekStatus.dto';
 import { UserDto } from '../infra/dtos/user.dto';
 
 export class UserMap implements Mapper<User> {
@@ -16,20 +15,18 @@ export class UserMap implements Mapper<User> {
         dto.name = user.name;
         dto.phone = user.phone;
         dto.role = user.role;
-        dto.weekStatus = user.weekStatus;
         dto.avatar = user.avatar;
-        dto.weekStatus = user.weekStatus;
         return dto;
     }
     public static fromUserShort(user: User): UserCompactDto {
         const id = Number(user.id.toValue());
         return new UserCompactDto(id, user.alias, user.name);
     }
-    public static fromDomainWeekStatus(user: User): GetWeekStatusDto {
-        return {
-            weekStatus: user.weekStatus,
-        };
-    }
+    // public static fromDomainWeekStatus(user: User): GetWeekStatusDto {
+    //     return {
+    //         weekStatus: user.weekStatus,
+    //     };
+    // }
 
     public static toDomain(raw: UserEntity): User {
         const { id } = raw;
@@ -40,7 +37,6 @@ export class UserMap implements Mapper<User> {
                 name: raw.name,
                 phone: raw.phone,
                 role: raw.role,
-                weekStatus: raw.weekStatus,
                 avatar: raw.avatar,
                 createdAt: raw.createdAt,
             },
@@ -86,7 +82,6 @@ export class UserMap implements Mapper<User> {
         userEntity.phone = user.phone;
         userEntity.id = Number(user.id.toValue());
         userEntity.role = user.role;
-        userEntity.weekStatus = user.weekStatus;
         userEntity.avatar = user.avatar;
 
         return userEntity;

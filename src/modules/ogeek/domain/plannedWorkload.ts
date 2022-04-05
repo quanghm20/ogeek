@@ -70,9 +70,6 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     get reason(): string {
         return this.props.reason;
     }
-    public isActive(): boolean {
-        return this.props.status === PlannedWorkloadStatus.ACTIVE;
-    }
     public static create(
         props: IPlannedWorkloadProps,
         id: UniqueEntityID,

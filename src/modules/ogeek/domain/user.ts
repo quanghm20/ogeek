@@ -1,5 +1,4 @@
 import { RoleType } from '../../../common/constants/roleType';
-import { WeekStatus } from '../../../common/constants/weekStatus';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
@@ -13,7 +12,6 @@ interface IUserProps {
     email: string;
     avatar: string;
     role: RoleType;
-    weekStatus: WeekStatus;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -54,12 +52,7 @@ export class User extends AggregateRoot<IUserProps> {
     set avatar(avatar: string) {
         this.props.avatar = avatar;
     }
-    get weekStatus(): WeekStatus {
-        return this.props.weekStatus;
-    }
-    set weekStatus(weekStatus: WeekStatus) {
-        this.props.weekStatus = weekStatus;
-    }
+
     get role(): RoleType {
         return this.props.role;
     }
@@ -71,20 +64,8 @@ export class User extends AggregateRoot<IUserProps> {
         return this.props.createdAt;
     }
 
-    public isAdmin(): boolean {
-        return this.props.role === RoleType.ADMIN;
-    }
-    public isPlaning(): boolean {
-        return this.props.weekStatus === WeekStatus.PLANNING;
-    }
-    public isPlanned(): boolean {
-        return this.props.weekStatus === WeekStatus.PLANNING;
-    }
-    public isExecuting(): boolean {
-        return this.props.weekStatus === WeekStatus.EXECUTING;
-    }
-    public isClosed(): boolean {
-        return this.props.weekStatus === WeekStatus.CLOSED;
+    public isPeopleOps(): boolean {
+        return this.props.role === RoleType.PP;
     }
     public static create(props: IUserProps, id?: UniqueEntityID): Result<User> {
         const propsResult = Guard.againstNullOrUndefinedBulk([]);

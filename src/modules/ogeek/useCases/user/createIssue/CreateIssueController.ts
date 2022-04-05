@@ -32,7 +32,7 @@ export class CreateIssueController {
 
     @Post()
     @HttpCode(HttpStatus.OK)
-    @Roles(RoleType.ADMIN)
+    @Roles(RoleType.PP)
     @ApiOkResponse({
         type: MessageDto,
         description: 'Create issue',

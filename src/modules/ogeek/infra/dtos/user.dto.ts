@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { RoleType } from '../../../../common/constants/roleType';
-import { WeekStatus } from '../../../../common/constants/weekStatus';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { UserEntity } from '../database/entities/user.entity';
 
@@ -29,10 +28,6 @@ export class UserDto {
 
     @ApiProperty({ enum: RoleType, example: RoleType.USER })
     role?: RoleType;
-
-    @ApiProperty({ enum: WeekStatus, example: WeekStatus.PLANNING })
-    weekStatus?: WeekStatus;
-
     @ApiProperty({ example: new Date() })
     createdAt?: Date;
 
@@ -48,7 +43,6 @@ export class UserDto {
             this.phone = user.phone;
             this.avatar = user.avatar;
             this.role = user.role;
-            this.weekStatus = user.weekStatus;
             this.createdAt = user.createdAt;
             this.updatedAt = user.updatedAt;
         }

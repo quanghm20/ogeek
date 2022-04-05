@@ -17,12 +17,8 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
             ENUM('INACTIVE', 'ACTIVE', 'INCOMING', 'NOT RENEW')`,
         );
         await queryRunner.query(
-            `CREATE TYPE "public"."active_status_enum" AS 
-            ENUM('ACTIVE', 'INACTIVE')`,
-        );
-        await queryRunner.query(
-            `CREATE TYPE "public"."week_status_enum" AS 
-            ENUM('PLANNING', 'EXECUTING', 'CLOSE')`,
+            `CREATE TYPE "public"."plan_status_enum" AS 
+            ENUM('PLANNING', 'EXECUTING', 'CLOSE', 'ARCHIVE')`,
         );
         await queryRunner.query(
             `CREATE TYPE "public"."issue_status_enum" AS 
@@ -37,13 +33,12 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "email" character varying(255) NOT NULL,
                 "avatar" character varying(255),
                 "role" "public"."user_role_enum" NOT NULL DEFAULT 'USER', 
-                "week_status" "public"."week_status_enum" DEFAULT 'PLANNING',
                 "created_by" integer,
                 "updated_by" integer,
                 "deleted_by" integer,
-                "created_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "deleted_at" TIMESTAMP,
+                "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMPTZ,
                 CONSTRAINT "UQ_USER_ALIAS" UNIQUE ("alias"),
                 CONSTRAINT "UQ_USER_PHONE" UNIQUE ("phone"),
                 CONSTRAINT "UQ_USER_EMAIL" UNIQUE ("email"),
@@ -63,9 +58,9 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "created_by" integer,
                 "updated_by" integer,
                 "deleted_by" integer,
-                "created_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "deleted_at" TIMESTAMP,
+                "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMPTZ,
                 CONSTRAINT "PK_VALUE_STREAM" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_VALUE_STREAM_CREATED_BY" 
                     FOREIGN KEY ("created_by") REFERENCES "user"("id"),
@@ -82,9 +77,9 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "created_by" integer,
                 "updated_by" integer,
                 "deleted_by" integer,
-                "created_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "deleted_at" TIMESTAMP,
+                "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMPTZ,
                 CONSTRAINT "PK_EXPERTISE_SCOPE" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_EXPERTISE_SCOPE_CREATED_BY" 
                     FOREIGN KEY ("created_by") REFERENCES "user"("id"),
@@ -102,9 +97,9 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "created_by" integer,
                 "updated_by" integer,
                 "deleted_by" integer,
-                "created_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "deleted_at" TIMESTAMP,
+                "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMPTZ,
                 CONSTRAINT "PK_CONTRIBUTED_VALUE" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_CONTRIBUTED_VALUE_EXPERTISE_SCOPE" 
                     FOREIGN KEY ("expertise_scope_id") REFERENCES "expertise_scope"("id"),
@@ -123,16 +118,16 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "id" SERIAL NOT NULL,
                 "contributed_value_id" integer,
                 "committed_workload" integer NOT NULL,
-                "start_date" TIMESTAMP NOT NULL,
-                "expired_date" TIMESTAMP NOT NULL,
+                "start_date" TIMESTAMPTZ NOT NULL,
+                "expired_date" TIMESTAMPTZ NOT NULL,
                 "user_id" integer,
                 "status" "public"."committed_workload_status_enum" NOT NULL DEFAULT 'INCOMING',
                 "created_by" integer,
                 "updated_by" integer,
                 "deleted_by" integer,
-                "created_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "deleted_at" TIMESTAMP,
+                "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMPTZ,
                 CONSTRAINT "PK_COMMITTED_WORKLOAD" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_COMMITTED_WORKLOAD_USER" 
                     FOREIGN KEY ("user_id") REFERENCES "user"("id"),
@@ -156,18 +151,18 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
             `CREATE TABLE "planned_workload" (
                 "id" SERIAL NOT NULL,
                 "planned_workload" integer NOT NULL,
-                "start_date" TIMESTAMP NOT NULL,
+                "start_date" TIMESTAMPTZ NOT NULL,
                 "user_id" integer,
                 "contributed_value_id" bigint,
                 "committed_workload_id" bigint,
-                "status" "public"."active_status_enum" NOT NULL DEFAULT 'ACTIVE',
+                "status" "public"."plan_status_enum" DEFAULT 'PLANNING',
                 "reason" text NOT NULL,
                 "created_by" integer,
                 "updated_by" integer,
                 "deleted_by" integer,
-                "created_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "deleted_at" TIMESTAMP,
+                "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMPTZ,
                 CONSTRAINT "PK_PLANNED_WORKLOAD" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_PLANNED_WORKLOAD_CONTRIBUTED_VALUE" 
                     FOREIGN KEY ("contributed_value_id") REFERENCES "contributed_value"("id"),
@@ -220,9 +215,9 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "created_by" integer,
                 "updated_by" integer,
                 "deleted_by" integer,
-                "created_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "deleted_at" TIMESTAMP,
+                "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMPTZ,
                 CONSTRAINT "PK_NOTIFICATION" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_NOTIFICATION_USER" 
                     FOREIGN KEY ("user_id") REFERENCES "user"("id"),
@@ -246,8 +241,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
         await queryRunner.query('DROP TABLE "value_stream"');
         await queryRunner.query('DROP TABLE "user"');
         await queryRunner.query('DROP TYPE "public"."issue_status_enum"');
-        await queryRunner.query('DROP TYPE "public"."week_status_enum"');
-        await queryRunner.query('DROP TYPE "public"."active_status_enum"');
+        await queryRunner.query('DROP TYPE "public"."plan_status_enum"');
         await queryRunner.query('DROP TYPE "public"."read_status_enum"');
         await queryRunner.query('DROP TYPE "public"."user_role_enum"');
         await queryRunner.query(

@@ -30,7 +30,7 @@ export class PlannedWorkloadDto {
 
     @ApiProperty({
         enum: PlannedWorkloadStatus,
-        example: PlannedWorkloadStatus.ACTIVE,
+        example: PlannedWorkloadStatus.PLANNING,
     })
     status?: PlannedWorkloadStatus;
 

@@ -51,7 +51,7 @@ export class PlannedWorkloadEntity extends AbstractEntity {
         name: 'status',
         type: 'enum',
         enum: PlannedWorkloadStatus,
-        default: PlannedWorkloadStatus.ACTIVE,
+        default: PlannedWorkloadStatus.PLANNING,
     })
     status: PlannedWorkloadStatus;
 

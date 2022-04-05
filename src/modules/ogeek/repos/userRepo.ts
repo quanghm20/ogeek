@@ -51,7 +51,6 @@ export class UserRepository implements IUserRepo {
             email: userDto.email,
             avatar: userDto.avatar,
             role: userDto.role,
-            weekStatus: userDto.weekStatus,
         });
         const createdUser = await this.repo.save(entity);
         return createdUser ? UserMap.toDomain(entity) : null;

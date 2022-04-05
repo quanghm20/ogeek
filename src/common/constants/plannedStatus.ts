@@ -1,4 +1,6 @@
 export enum PlannedWorkloadStatus {
-    ACTIVE = 'ACTIVE',
-    INACTIVE = 'INACTIVE',
+    ARCHIVE = 'ARCHIVE',
+    PLANNING = 'PLANNING',
+    EXECUTING = 'EXECUTING',
+    CLOSED = 'CLOSED',
 }

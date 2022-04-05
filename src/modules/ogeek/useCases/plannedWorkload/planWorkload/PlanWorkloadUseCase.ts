@@ -5,7 +5,6 @@ import { Equal } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
 import { PlannedWorkloadStatus } from '../../../../../common/constants/plannedStatus';
-// import { WeekStatus } from '../../../../../common/constants/weekStatus';
 import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
@@ -58,7 +57,7 @@ export class PlanWorkloadUseCase
           startDate: Equal(formattedStartDate),
           user: { id: userId },
         },
-        { status: PlannedWorkloadStatus.INACTIVE },
+        { status: PlannedWorkloadStatus.ARCHIVE },
       );
 
       // change week status of user to planning
@@ -80,7 +79,7 @@ export class PlanWorkloadUseCase
             committedWorkload,
             startDate: new Date(formattedStartDate),
             plannedWorkload: workload,
-            status: PlannedWorkloadStatus.ACTIVE,
+            status: PlannedWorkloadStatus.PLANNING,
           },
           new UniqueEntityID(uuidv4()),
         );
