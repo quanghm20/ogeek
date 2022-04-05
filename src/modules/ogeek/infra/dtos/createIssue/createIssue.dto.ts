@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
-import { IssueType } from '../../../../../common/constants/issueType';
+import { IssueStatus } from '../../../../../common/constants/issueStatus';
 
 export class CreateIssueDto {
     @ApiProperty({ example: 2 })
@@ -14,10 +14,10 @@ export class CreateIssueDto {
     @IsNotEmpty()
     week: number;
 
-    @ApiProperty({ enum: IssueType, example: null })
+    @ApiProperty({ enum: IssueStatus, example: null })
     @IsString()
     @IsNotEmpty()
-    type: IssueType;
+    type: IssueStatus;
 
     @ApiProperty({ example: 1 })
     @IsNumber()

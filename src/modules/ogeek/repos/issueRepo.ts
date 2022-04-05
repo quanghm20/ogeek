@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, getConnection, Repository } from 'typeorm';
 
-import { IssueType } from '../../../common/constants/issueType';
+import { IssueStatus } from '../../../common/constants/issueStatus';
 import { DomainId } from '../domain/domainId';
 import { Issue } from '../domain/issue';
 import { UserEntity } from '../infra/database/entities';
@@ -17,7 +17,7 @@ export interface IIssueRepo {
         startDateOfWeek,
         endDateOfWeek,
     }: StartEndDateOfWeekWLInputDto): Promise<Issue[]>;
-    save(userId: number, week: number, type: IssueType): Promise<Issue>;
+    save(userId: number, week: number, type: IssueStatus): Promise<Issue>;
     findByUserId(
         startDateOfWeek: string,
         endDateOfWeek: string,
@@ -84,7 +84,11 @@ export class IssueRepository implements IIssueRepo {
         await this.repo.update(condition, update);
     }
 
-    async save(userId: number, week: number, type: IssueType): Promise<Issue> {
+    async save(
+        userId: number,
+        week: number,
+        type: IssueStatus,
+    ): Promise<Issue> {
         const queryRunner = getConnection().createQueryRunner();
         await queryRunner.connect();
         try {

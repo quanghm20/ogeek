@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-import { IssueType } from '../../../../../common/constants/issueType';
+import { IssueStatus } from '../../../../../common/constants/issueStatus';
 import { WeekStatus } from '../../../../../common/constants/weekStatus';
 import { CommittedWorkloadByWeekDto } from './committedWorkloadOfWeek.dto';
 import { ExpertiseScopeWithinWorkloadListDto } from './expertiseScopeWithinWorkloadList.dto';
@@ -41,11 +41,11 @@ export class WorkloadListByWeekDto {
     weekStatus: string;
 
     @ApiProperty({
-        enum: IssueType,
+        enum: IssueStatus,
         example: null,
         default: null,
     })
     @IsString()
     @IsNotEmpty()
-    issueType: IssueType;
+    issueStatus: IssueStatus;
 }

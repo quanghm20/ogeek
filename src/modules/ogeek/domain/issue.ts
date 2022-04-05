@@ -1,4 +1,4 @@
-import { IssueType } from '../../../common/constants/issueType';
+import { IssueStatus } from '../../../common/constants/issueStatus';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
@@ -7,7 +7,7 @@ import { DomainId } from './domainId';
 import { User } from './user';
 interface IIssueProps {
     week: number;
-    type: IssueType;
+    type: IssueStatus;
     user: User;
     createdAt?: Date;
     updatedAt?: Date;
@@ -19,10 +19,10 @@ export class Issue extends AggregateRoot<IIssueProps> {
     get issueId(): DomainId {
         return DomainId.create(this._id).getValue();
     }
-    get type(): IssueType {
+    get type(): IssueStatus {
         return this.props.type;
     }
-    set type(type: IssueType) {
+    set type(type: IssueStatus) {
         this.props.type = type;
     }
     get week(): number {

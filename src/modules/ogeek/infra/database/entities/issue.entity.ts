@@ -1,18 +1,18 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
-import { IssueType } from '../../../../../common/constants/issueType';
+import { IssueStatus } from '../../../../../common/constants/issueStatus';
 import { UserEntity } from './user.entity';
 
 @Entity({ name: 'issue' })
 export class IssueEntity extends AbstractEntity {
     @Column({
         nullable: false,
-        enum: IssueType,
+        enum: IssueStatus,
         name: 'type',
         default: null,
     })
-    type: IssueType;
+    type: IssueStatus;
 
     @Column({
         nullable: false,
@@ -26,7 +26,7 @@ export class IssueEntity extends AbstractEntity {
     })
     user: UserEntity;
 
-    constructor(type: IssueType, week: number, user: UserEntity) {
+    constructor(type: IssueStatus, week: number, user: UserEntity) {
         super();
         this.type = type;
         this.week = week;

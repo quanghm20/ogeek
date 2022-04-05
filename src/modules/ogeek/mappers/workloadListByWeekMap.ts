@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 
 import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
-import { IssueType } from '../../../common/constants/issueType';
+import { IssueStatus } from '../../../common/constants/issueStatus';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { IssueDto } from '../infra/dtos/issue.dto';
 import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';
@@ -104,7 +104,7 @@ export class WorkloadListByWeekMap {
         return 0;
     }
 
-    public static handleIssue(issues: IssueDto[], user: UserDto): IssueType {
+    public static handleIssue(issues: IssueDto[], user: UserDto): IssueStatus {
         const issueItem = issues.find(
             (issue) =>
                 Number(issue.user.id.toString()) === Number(user.id.toString()),
@@ -288,7 +288,7 @@ export class WorkloadListByWeekMap {
                 plannedWorkload: resultExpAndTotalWL.totalPlannedWL,
                 actualWorkload: this.handleActualWorkload(actualWorkloadByUser),
                 weekStatus: user.weekStatus,
-                issueType: this.handleIssue(issues, user),
+                issueStatus: this.handleIssue(issues, user),
             });
         });
 

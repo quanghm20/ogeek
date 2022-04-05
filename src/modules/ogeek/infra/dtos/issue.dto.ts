@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
-import { IssueType } from '../../../../common/constants/issueType';
+import { IssueStatus } from '../../../../common/constants/issueStatus';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { UserDto } from './user.dto';
 export class IssueDto {
@@ -9,9 +9,9 @@ export class IssueDto {
     @IsNotEmpty()
     id: UniqueEntityID | number;
 
-    @ApiProperty({ enum: IssueType, example: null })
+    @ApiProperty({ enum: IssueStatus, example: null })
     @IsOptional()
-    type?: IssueType;
+    type?: IssueStatus;
 
     @ApiProperty({ type: () => UserDto })
     @IsOptional()
