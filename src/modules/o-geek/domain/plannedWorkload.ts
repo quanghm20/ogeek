@@ -1,4 +1,4 @@
-import { WorkloadStatus } from '../../../common/constants/committed-status';
+import { PlannedWorkloadStatus } from '../../../common/constants/planned-status';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
@@ -17,7 +17,7 @@ interface IPlannedWorkloadProps {
     committedWorkload?: CommittedWorkload;
     startDate?: Date;
     reason?: string;
-    status?: WorkloadStatus;
+    status?: PlannedWorkloadStatus;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -49,10 +49,10 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     set startDate(startDate: Date) {
         this.props.startDate = startDate;
     }
-    get status(): WorkloadStatus {
+    get status(): PlannedWorkloadStatus {
         return this.props.status;
     }
-    set status(status: WorkloadStatus) {
+    set status(status: PlannedWorkloadStatus) {
         this.props.status = status;
     }
     get valueStream(): ValueStream {
@@ -71,7 +71,7 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
         return this.props.reason;
     }
     public isActive(): boolean {
-        return this.props.status === WorkloadStatus.ACTIVE;
+        return this.props.status === PlannedWorkloadStatus.ACTIVE;
     }
     public static create(
         props: IPlannedWorkloadProps,

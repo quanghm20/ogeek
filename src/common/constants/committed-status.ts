@@ -1,4 +1,6 @@
-export enum WorkloadStatus {
-    ACTIVE = 'ACTIVE',
-    INACTIVE = 'INACTIVE',
+export enum CommittedWorkloadStatus {
+    END = 'END',
+    NEW = 'NEW',
+    RENEW = 'RENEW',
+    WORKING = 'WORKING',
 }

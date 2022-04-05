@@ -1,8 +1,7 @@
-/* eslint-disable import/no-default-export */
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
-import { WorkloadStatus } from '../../../../../common/constants/committed-status';
+import { CommittedWorkloadStatus } from '../../../../../common/constants/committed-status';
 import { ContributedValueEntity } from './contributedValue.entity';
 import { PlannedWorkloadEntity } from './plannedWorkload.entity';
 import { UserEntity } from './user.entity';
@@ -37,10 +36,10 @@ export class CommittedWorkloadEntity extends AbstractEntity {
     startDate: Date;
 
     @Column({
-        default: WorkloadStatus.ACTIVE,
+        default: CommittedWorkloadStatus.NEW,
         name: 'status',
     })
-    status: WorkloadStatus;
+    status: CommittedWorkloadStatus;
 
     @Column({
         nullable: false,
@@ -67,7 +66,7 @@ export class CommittedWorkloadEntity extends AbstractEntity {
         startDate: Date,
         expiredDate: Date,
         pic?: UserEntity,
-        status?: WorkloadStatus,
+        status?: CommittedWorkloadStatus,
         createdAt?: Date,
         updatedAt?: Date,
     ) {

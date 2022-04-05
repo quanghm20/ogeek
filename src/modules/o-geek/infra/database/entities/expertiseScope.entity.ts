@@ -1,4 +1,3 @@
-/* eslint-disable import/no-default-export */
 import { Column, Entity, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';

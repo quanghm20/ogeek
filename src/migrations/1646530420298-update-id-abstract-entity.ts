@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-// eslint-disable-next-line @typescript-eslint/tslint/config
-export class updateIdAbstractEntity1646530420298 implements MigrationInterface {
+export class UpdateIdAbstractEntity implements MigrationInterface {
     name = 'updateIdAbstractEntity1646530420298';
 
     public async up(queryRunner: QueryRunner): Promise<void> {

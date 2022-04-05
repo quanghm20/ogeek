@@ -1,4 +1,4 @@
-import { WorkloadStatus } from '../../../common/constants/committed-status';
+import { CommittedWorkloadStatus } from '../../../common/constants/committed-status';
 import { DateRange } from '../../../common/constants/date-range';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
@@ -15,7 +15,7 @@ interface ICommittedWorkloadProps {
     startDate?: Date;
     expiredDate?: Date;
     pic?: User;
-    status?: WorkloadStatus;
+    status?: CommittedWorkloadStatus;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -63,10 +63,10 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     set expiredDate(expiredDate: Date) {
         this.props.expiredDate = expiredDate;
     }
-    get status(): WorkloadStatus {
+    get status(): CommittedWorkloadStatus {
         return this.props.status;
     }
-    set status(status: WorkloadStatus) {
+    set status(status: CommittedWorkloadStatus) {
         this.props.status = status;
     }
     get createdAt(): Date {
@@ -82,7 +82,7 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         this.props.updatedAt = updatedAt;
     }
     public isActive(): boolean {
-        return this.props.status === WorkloadStatus.ACTIVE;
+        return this.props.status === CommittedWorkloadStatus.NEW;
     }
     public getValueStreamId(): number {
         return Number(this.contributedValue.valueStream.id.toValue());
