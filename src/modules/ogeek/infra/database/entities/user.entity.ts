@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    Unique,
+} from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
 import { RoleType } from '../../../../../common/constants/roleType';
@@ -9,6 +16,9 @@ import { IssueEntity } from './issue.entity';
 import { PlannedWorkloadEntity } from './plannedWorkload.entity';
 
 @Entity({ name: 'user' })
+@Unique('UQ_USER_ALIAS', ['alias'])
+@Unique('UQ_USER_PHONE', ['phone'])
+@Unique('UQ_USER_EMAIL', ['email'])
 export class UserEntity extends AbstractEntity {
     @Column({
         unique: true,

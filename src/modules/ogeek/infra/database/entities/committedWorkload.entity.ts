@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+    Check,
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+} from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
 import { CommittedWorkloadStatus } from '../../../../../common/constants/committedStatus';
@@ -7,6 +14,15 @@ import { PlannedWorkloadEntity } from './plannedWorkload.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ name: 'committed_workload' })
+@Check(
+    'CHK_START_DATE_COMMITTED_WORKLOAD',
+    '"start_date" > now() AND "start_date" < "expired_date"',
+)
+@Check('CHK_EXPIRED_DATE_COMMITTED_WORKLOAD', '"expired_date" > now()')
+@Check(
+    'CHK_COMMITTED_WORKLOAD',
+    '"committed_workload" >= 0 AND "committed_workload" <= 50 ',
+)
 export class CommittedWorkloadEntity extends AbstractEntity {
     @ManyToOne(() => UserEntity, (user) => user.committedWorkloads)
     @JoinColumn({

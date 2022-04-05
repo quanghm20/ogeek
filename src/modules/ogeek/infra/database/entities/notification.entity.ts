@@ -1,21 +1,23 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
-import { IssueStatus } from '../../../../../common/constants/issueStatus';
+import { NotificationStatus } from '../../../../../common/constants/notificationStatus';
 import { UserEntity } from './user.entity';
 
 @Entity({ name: 'issue' })
-export class IssueEntity extends AbstractEntity {
+export class NotificationEntity extends AbstractEntity {
     @Column({
         nullable: false,
-        enum: IssueStatus,
-        name: 'type',
+        enum: NotificationStatus,
         default: null,
+        name: 'read',
     })
-    status: IssueStatus;
+    read: NotificationStatus;
 
-    @Column({ name: 'note' })
-    note: IssueStatus;
+    @Column({
+        name: 'message',
+    })
+    message: string;
 
     @ManyToOne(() => UserEntity, (user) => user.committedWorkloads)
     @JoinColumn({

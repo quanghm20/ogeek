@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Check, Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
 import { PlannedWorkloadStatus } from '../../../../../common/constants/plannedStatus';
@@ -7,6 +7,8 @@ import { ContributedValueEntity } from './contributedValue.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ name: 'planned_workload' })
+@Check('CHK_PLANNED_WORKLOAD', '"planned_workload" >= 0')
+@Check('CHK_START_DATE_PLANNED_WORKLOAD', '"start_date" > now()')
 export class PlannedWorkloadEntity extends AbstractEntity {
     @ManyToOne(() => UserEntity, (user) => user.plannedWorkloads)
     @JoinColumn({
@@ -47,6 +49,8 @@ export class PlannedWorkloadEntity extends AbstractEntity {
     @Column({
         nullable: false,
         name: 'status',
+        type: 'enum',
+        enum: PlannedWorkloadStatus,
         default: PlannedWorkloadStatus.ACTIVE,
     })
     status: PlannedWorkloadStatus;
@@ -56,6 +60,7 @@ export class PlannedWorkloadEntity extends AbstractEntity {
         name: 'reason',
     })
     reason: string;
+
     @ManyToOne(() => UserEntity, (user) => user.id)
     @JoinColumn({
         name: 'created_by',

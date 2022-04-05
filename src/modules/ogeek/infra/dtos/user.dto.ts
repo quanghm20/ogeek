@@ -27,7 +27,7 @@ export class UserDto {
     @ApiProperty({ example: 'http://localhost/avatar' })
     avatar?: string;
 
-    @ApiProperty({ enum: RoleType, example: RoleType.ADMIN })
+    @ApiProperty({ enum: RoleType, example: RoleType.USER })
     role?: RoleType;
 
     @ApiProperty({ enum: WeekStatus, example: WeekStatus.PLANNING })
