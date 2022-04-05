@@ -31,11 +31,6 @@ export class CreateIssueUseCase
             if (!pic && !pic.isAdmin()) {
                 return left(new CreateIssueErrors.Forbidden()) as Response;
             }
-            if (user.isAdmin()) {
-                return left(
-                    new CreateIssueErrors.CreateIssueFailed(),
-                ) as Response;
-            }
             if (!user) {
                 return left(
                     new CreateIssueErrors.NotFound(userId.toString()),
