@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
 
-import { DateRange } from '../../../../../common/constants/date-range';
+import { dateRange } from '../../../../../common/constants/date-range';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
@@ -40,18 +40,18 @@ export class CreateIssueUseCase
             const { week, type } = createIssueDto;
 
             const dateOfWeek = moment()
-                .utcOffset(DateRange.TIME_ZONE_OFFSET)
+                .utcOffset(dateRange.TIME_ZONE_OFFSET)
                 .week(week)
                 .format();
             const numDateOfWeek = moment(dateOfWeek).format('e');
             const startDateOfWeek = moment(dateOfWeek)
-                .utcOffset(DateRange.TIME_ZONE_OFFSET)
+                .utcOffset(dateRange.TIME_ZONE_OFFSET)
                 .add(-numDateOfWeek, 'days')
                 .startOf('day')
                 .format();
             const endDateOfWeek = moment(startDateOfWeek)
-                .utcOffset(DateRange.TIME_ZONE_OFFSET)
-                .add(DateRange.DURATION_BETWEEN_START_AND_END, 'days')
+                .utcOffset(dateRange.TIME_ZONE_OFFSET)
+                .add(dateRange.DURATION_BETWEEN_START_AND_END, 'days')
                 .endOf('day')
                 .format();
 

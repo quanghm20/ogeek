@@ -36,7 +36,7 @@ export class CommittedWorkloadEntity extends AbstractEntity {
     startDate: Date;
 
     @Column({
-        default: CommittedWorkloadStatus.NEW,
+        default: CommittedWorkloadStatus.ACTIVE,
         name: 'status',
     })
     status: CommittedWorkloadStatus;

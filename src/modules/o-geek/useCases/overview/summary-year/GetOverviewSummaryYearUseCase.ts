@@ -3,7 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import Axios from 'axios';
 import * as moment from 'moment';
 
-import { DateRange } from '../../../../../common/constants/date-range';
+import { dateRange } from '../../../../../common/constants/date-range';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
@@ -42,7 +42,7 @@ export class GetOverviewSummaryYearUseCase
             const startDateYear = moment().startOf('year').format('YYYY-MM-DD');
             const startDateOfYear = moment(startDateYear, 'YYYY-MM-DD').startOf('week').format('YYYY-MM-DD');
 
-            const endDateOfYear = moment(startDateOfYear, 'YYYY-MM-DD').add(DateRange.DAY_OF_YEAR, 'days').format('YYYY-MM-DD');
+            const endDateOfYear = moment(startDateOfYear, 'YYYY-MM-DD').add(dateRange.DAY_OF_YEAR, 'days').format('YYYY-MM-DD');
 
             const committedWorkloads = await this.committedWorkloadRepo.findByUserIdOverview(userId);
             const plannedWorkloads = await this.plannedWorkloadRepo.findByUserIdOverview(userId, startDateOfYear, endDateOfYear);

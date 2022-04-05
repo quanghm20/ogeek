@@ -14,7 +14,7 @@ export class CreateIssueDto {
     @IsNotEmpty()
     week: number;
 
-    @ApiProperty({ enum: IssueType, example: IssueType.ISSUE })
+    @ApiProperty({ enum: IssueType, example: null })
     @IsString()
     @IsNotEmpty()
     type: IssueType;

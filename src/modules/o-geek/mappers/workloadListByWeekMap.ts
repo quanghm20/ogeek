@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 
-import { WorkloadStatus } from '../../../common/constants/committed-status';
+import { CommittedWorkloadStatus } from '../../../common/constants/committed-status';
 import { IssueType } from '../../../common/constants/issue-type';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { IssueDto } from '../infra/dtos/issue.dto';
@@ -43,7 +43,7 @@ export class WorkloadListByWeekMap {
         });
 
         if (myMap.size === 2) {
-            return myMap.get(WorkloadStatus.ACTIVE);
+            return myMap.get(CommittedWorkloadStatus.ACTIVE);
         }
 
         return committedWLByUserArray;
@@ -114,7 +114,7 @@ export class WorkloadListByWeekMap {
             return issueItem.type;
         }
 
-        return IssueType.NOT_ISSUE;
+        return null;
     }
 
     public static handlePlannedWL(

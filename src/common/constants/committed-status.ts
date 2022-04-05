@@ -1,6 +1,5 @@
 export enum CommittedWorkloadStatus {
-    END = 'END',
-    NEW = 'NEW',
-    RENEW = 'RENEW',
-    WORKING = 'WORKING',
+    ACTIVE = 'ACTIVE',
+    INACTIVE = 'INACTIVE',
+    INCOMING = 'INCOMING',
 }

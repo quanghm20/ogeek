@@ -10,7 +10,7 @@ export class IssueEntity extends AbstractEntity {
         nullable: false,
         enum: IssueType,
         name: 'type',
-        default: IssueType.NOT_ISSUE,
+        default: null,
     })
     type: IssueType;
 

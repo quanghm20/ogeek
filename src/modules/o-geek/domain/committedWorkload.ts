@@ -1,5 +1,5 @@
 import { CommittedWorkloadStatus } from '../../../common/constants/committed-status';
-import { DateRange } from '../../../common/constants/date-range';
+import { dateRange } from '../../../common/constants/date-range';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
@@ -82,7 +82,7 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         this.props.updatedAt = updatedAt;
     }
     public isActive(): boolean {
-        return this.props.status === CommittedWorkloadStatus.NEW;
+        return this.props.status === CommittedWorkloadStatus.ACTIVE;
     }
     public getValueStreamId(): number {
         return Number(this.contributedValue.valueStream.id.toValue());
@@ -97,12 +97,12 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         if (startDate < endDate) {
             return Math.floor(
                 (endDate.getTime() - startDate.getTime()) /
-                    (DateRange.MILLISECONDS_IN_DAY * DateRange.DAY_OF_WEEK),
+                    (dateRange.MILLISECONDS_IN_DAY * dateRange.DAY_OF_WEEK),
             );
         }
         return Math.floor(
             (startDate.getTime() - endDate.getTime()) /
-                (DateRange.MILLISECONDS_IN_DAY * DateRange.DAY_OF_WEEK),
+                (dateRange.MILLISECONDS_IN_DAY * dateRange.DAY_OF_WEEK),
         );
     }
     // startDate < startDateOfYear

@@ -9,7 +9,7 @@ export class IssueDto {
     @IsNotEmpty()
     id: UniqueEntityID | number;
 
-    @ApiProperty({ enum: IssueType, example: IssueType.NOT_ISSUE })
+    @ApiProperty({ enum: IssueType, example: null })
     @IsOptional()
     type?: IssueType;
 
