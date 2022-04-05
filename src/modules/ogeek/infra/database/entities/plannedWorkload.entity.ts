@@ -43,6 +43,7 @@ export class PlannedWorkloadEntity extends AbstractEntity {
     @Column({
         nullable: false,
         name: 'start_date',
+        type: 'timestamp with time zone',
     })
     startDate: Date;
 

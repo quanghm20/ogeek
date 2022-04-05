@@ -48,6 +48,7 @@ export class CommittedWorkloadEntity extends AbstractEntity {
     @Column({
         nullable: false,
         name: 'start_date',
+        type: 'timestamp with time zone',
     })
     startDate: Date;
 
@@ -60,6 +61,7 @@ export class CommittedWorkloadEntity extends AbstractEntity {
     @Column({
         nullable: false,
         name: 'expired_date',
+        type: 'timestamp with time zone',
     })
     expiredDate: Date;
 
