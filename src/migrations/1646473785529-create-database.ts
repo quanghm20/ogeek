@@ -6,7 +6,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
             `CREATE TYPE "public"."user_role_enum" AS 
-            ENUM('USER', 'ADMIN', 'PP_OPS')`,
+            ENUM('USER', 'PP OPS')`,
         );
         await queryRunner.query(
             `CREATE TYPE "public"."notification_status_enum" AS 
@@ -14,11 +14,15 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
         );
         await queryRunner.query(
             `CREATE TYPE "public"."committed_workload_status_enum" AS 
-            ENUM('END', 'RENEW', 'WORKING', NEW)`,
+            ENUM('INACTIVE', 'ACTIVE', 'INCOMING', 'NOT RENEW')`,
         );
         await queryRunner.query(
             `CREATE TYPE "public"."planned_workload_status_enum" AS 
             ENUM('PLANNING', 'EXECUTING', 'CLOSE')`,
+        );
+        await queryRunner.query(
+            `CREATE TYPE "public"."issue_status_enum" AS 
+            ENUM('POTENTIAL ISSUE', 'RESOLVED')`,
         );
         await queryRunner.query(
             `CREATE TABLE "user" (
@@ -29,29 +33,54 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "email" character varying NOT NULL,
                 "avatar" character varying,
                 "role" "public"."user_role_enum" NOT NULL DEFAULT 'USER', 
+                "created_by" integer,
+                "updated_by" integer,
+                "deleted_by" integer,
                 "created_at" TIMESTAMP NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMP,
                 CONSTRAINT "UQ_ALIAS" UNIQUE ("alias"), 
                 CONSTRAINT "UQ_PHONE" UNIQUE ("phone"), 
                 CONSTRAINT "UQ_EMAIL" UNIQUE ("email"), 
-                CONSTRAINT "PK_USER" PRIMARY KEY ("id"))`,
+                CONSTRAINT "PK_USER" PRIMARY KEY ("id")
+            )`,
         );
         await queryRunner.query(
             `CREATE TABLE "value_stream" (
                 "id" SERIAL NOT NULL,
                 "name" character varying(100) NOT NULL,
+                "created_by" integer,
+                "updated_by" integer,
+                "deleted_by" integer,
                 "created_at" TIMESTAMP NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "PK_VALUE_STREAM" PRIMARY KEY ("id")
+                "deleted_at" TIMESTAMP,
+                CONSTRAINT "PK_VALUE_STREAM" PRIMARY KEY ("id"),
+                CONSTRAINT "FK_VALUE_STREAM_CREATED_BY" 
+                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
+                CONSTRAINT "FK_VALUE_STREAM_UPDATED_BY" 
+                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
+                CONSTRAINT "FK_VALUE_STREAM_DELETED_BY" 
+                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id")
             )`,
         );
         await queryRunner.query(
             `CREATE TABLE "expertise_scope" (
                 "id" SERIAL NOT NULL ,
                 "name" character varying(100) NOT NULL,
+                "created_by" integer,
+                "updated_by" integer,
+                "deleted_by" integer,
                 "created_at" TIMESTAMP NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "PK_EXPERTISE_SCOPE" PRIMARY KEY ("id")
+                "deleted_at" TIMESTAMP,
+                CONSTRAINT "PK_EXPERTISE_SCOPE" PRIMARY KEY ("id"),
+                CONSTRAINT "FK_EXPERTISE_SCOPE_CREATED_BY" 
+                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
+                CONSTRAINT "FK_EXPERTISE_SCOPE_UPDATED_BY" 
+                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
+                CONSTRAINT "FK_EXPERTISE_SCOPE_DELETED_BY" 
+                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id")
             )`,
         );
         await queryRunner.query(
@@ -59,13 +88,23 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "id" SERIAL NOT NULL,
                 "value_stream_id" integer,
                 "expertise_scope_id" integer,
+                "created_by" integer,
+                "updated_by" integer,
+                "deleted_by" integer,
                 "created_at" TIMESTAMP NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMP,
                 CONSTRAINT "PK_CONTRIBUTED_VALUE" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_CONTRIBUTED_VALUE_EXPERTISE_SCOPE" 
                     FOREIGN KEY ("expertise_scope_id") REFERENCES "expertise_scope"("id"),
                 CONSTRAINT "FK_CONTRIBUTED_VALUE_VALUE_STREAM" 
-                    FOREIGN KEY ("value_stream_id") REFERENCES "value_stream"("id")
+                    FOREIGN KEY ("value_stream_id") REFERENCES "value_stream"("id"),
+                CONSTRAINT "FK_CONTRIBUTED_VALUE_CREATED_BY" 
+                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
+                CONSTRAINT "FK_CONTRIBUTED_VALUE_UPDATED_BY" 
+                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
+                CONSTRAINT "FK_CONTRIBUTED_VALUE_DELETED_BY" 
+                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id")
             )`,
         );
         await queryRunner.query(
@@ -76,11 +115,13 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "start_date" TIMESTAMP NOT NULL,
                 "expired_date" TIMESTAMP NOT NULL,
                 "user_id" integer,
-                "status" "public"."committed_workload_status_enum" NOT NULL DEFAULT 'NEW',
+                "status" "public"."committed_workload_status_enum" NOT NULL DEFAULT 'INCOMING',
                 "created_by" integer,
                 "updated_by" integer,
+                "deleted_by" integer,
                 "created_at" TIMESTAMP NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMP,
                 CONSTRAINT "PK_COMMITTED_WORKLOAD" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_COMMITTED_WORKLOAD_USER" 
                     FOREIGN KEY ("user_id") REFERENCES "user"("id"),
@@ -88,12 +129,14 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                     FOREIGN KEY ("created_by") REFERENCES "user"("id"),
                 CONSTRAINT "FK_COMMITTED_WORKLOAD_UPDATED_BY" 
                     FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
+                CONSTRAINT "FK_COMMITTED_WORKLOAD_DELETED_BY" 
+                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id"),
                 CONSTRAINT "FK_COMMITTED_WORKLOAD_CONTRIBUTED_VALUE" 
                     FOREIGN KEY ("contributed_value_id") REFERENCES "contributed_value"("id"),
                 CONSTRAINT "CHK_START_DATE" 
                     CHECK("start_date" >= now() and "start_date" < "expired_date"),
                 CONSTRAINT "CHK_COMMITTED_WORKLOAD" 
-                    CHECK("committed_workload" >=0),
+                    CHECK("committed_workload" >=0)
             )`,
         );
         await queryRunner.query(
@@ -105,17 +148,27 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "contributed_value_id" bigint,
                 "committed_workload_id" bigint,
                 "status" "public"."planned_workload_status_enum" NOT NULL DEFAULT 'PLANNING',
+                "created_by" integer,
+                "updated_by" integer,
+                "deleted_by" integer,
                 "created_at" TIMESTAMP NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMP,
                 CONSTRAINT "PK_PLANNED_WORKLOAD" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_PLANNED_WORKLOAD_CONTRIBUTED_VALUE" 
                     FOREIGN KEY ("contributed_value_id") REFERENCES "contributed_value"("id"),
                 CONSTRAINT "FK_PLANNED_WORKLOAD_USER" 
                     FOREIGN KEY ("user_id") REFERENCES "user"("id"),
                 CONSTRAINT "FK_PLANNED_WORKLOAD_COMMITTED_WORKLOAD" 
-                    FOREIGN KEY ("planned_workload_id") REFERENCES "planned_workload"("id"),
+                    FOREIGN KEY ("committed_workload_id") REFERENCES "committed_workload"("id"),
                 CONSTRAINT "CHK_PLANNED_WORKLOAD" 
-                    CHECK("planned_workload" >=0),
+                    CHECK("planned_workload" >= 0),
+                CONSTRAINT "FK_PLANNED_WORKLOAD_CREATED_BY" 
+                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
+                CONSTRAINT "FK_PLANNED_WORKLOAD_UPDATED_BY" 
+                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
+                CONSTRAINT "FK_PLANNED_WORKLOAD_DELETED_BY" 
+                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id")
 
             )`,
         );
@@ -124,27 +177,47 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "id" SERIAL NOT NULL, 
                 "type" character varying NOT NULL DEFAULT 'NOT_ISSUE', 
                 "week" integer NOT NULL, 
-                "year" integer NOT NULL DEFAULT EXTRACT(YEAR FROM TIMESTAMP now());,
+                "year" integer NOT NULL,
                 "user_id" integer, 
-                "created_at" TIMESTAMP NOT NULL DEFAULT now(), 
-                "updated_at" TIMESTAMP NOT NULL DEFAULT now(), 
-                CONSTRAINT "PK_ISSUE" PRIMARY KEY ("id")),
+                "created_by" integer,
+                "updated_by" integer,
+                "deleted_by" integer,
+                "created_at" TIMESTAMP NOT NULL DEFAULT now(),
+                "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMP,
+                CONSTRAINT "PK_ISSUE" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_ISSUE_USER" 
-                    FOREIGN KEY ("user_id") REFERENCES "user"("id")
-                `,
+                    FOREIGN KEY ("user_id") REFERENCES "user"("id"),
+                CONSTRAINT "FK_ISSUE_CREATED_BY" 
+                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
+                CONSTRAINT "FK_ISSUE_UPDATED_BY" 
+                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
+                CONSTRAINT "FK_ISSUE_DELETED_BY" 
+                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id")
+                )`,
         );
         await queryRunner.query(
             `CREATE TABLE "notification" (
                 "id" SERIAL NOT NULL, 
                 "message" text NOT NULL, 
                 "user_id" integer, 
-                "status" "public"."notification_status_enum" NOT NULL DEFAULT 'UNREAD'
-                "created_at" TIMESTAMP NOT NULL DEFAULT now(), 
-                "updated_at" TIMESTAMP NOT NULL DEFAULT now(), 
-                CONSTRAINT "PK_ISSUE" PRIMARY KEY ("id")),
+                "status" "public"."notification_status_enum" NOT NULL DEFAULT 'UNREAD',
+                "created_by" integer,
+                "updated_by" integer,
+                "deleted_by" integer,
+                "created_at" TIMESTAMP NOT NULL DEFAULT now(),
+                "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMP,
+                CONSTRAINT "PK_NOTIFICATION" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_NOTIFICATION_USER" 
-                    FOREIGN KEY ("user_id") REFERENCES "user"("id")
-                `,
+                    FOREIGN KEY ("user_id") REFERENCES "user"("id"),
+                CONSTRAINT "FK_NOTIFICATION_CREATED_BY" 
+                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
+                CONSTRAINT "FK_NOTIFICATION_UPDATED_BY" 
+                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
+                CONSTRAINT "FK_NOTIFICATION_DELETED_BY" 
+                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id")
+            )`,
         );
     }
 
@@ -162,6 +235,9 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
         );
         await queryRunner.query(
             'DROP TYPE "public"."committed_workload_status_enum"',
+        );
+        await queryRunner.query(
+            'DROP TYPE "public"."notification_status_enum"',
         );
         await queryRunner.query('DROP TYPE "public"."user_role_enum"');
     }

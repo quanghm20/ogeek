@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
 import { RoleType } from '../../../../../common/constants/role-type';
@@ -58,6 +58,24 @@ export class UserEntity extends AbstractEntity {
         name: 'week_status',
     })
     weekStatus: WeekStatus;
+
+    @ManyToOne(() => UserEntity, (user) => user.id)
+    @JoinColumn({
+        name: 'created_by',
+    })
+    createdBy?: UserEntity;
+
+    @ManyToOne(() => UserEntity, (user) => user.id)
+    @JoinColumn({
+        name: 'updated_by',
+    })
+    updatedBy?: UserEntity;
+
+    @ManyToOne(() => UserEntity, (user) => user.id)
+    @JoinColumn({
+        name: 'deleted_by',
+    })
+    deletedBy?: UserEntity;
 
     @OneToMany(
         () => PlannedWorkloadEntity,

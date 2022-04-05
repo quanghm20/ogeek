@@ -26,10 +26,21 @@ export class IssueEntity extends AbstractEntity {
     })
     user: UserEntity;
 
-    constructor(type: IssueType, week: number, user: UserEntity) {
-        super();
-        this.type = type;
-        this.week = week;
-        this.user = user;
-    }
+    @ManyToOne(() => UserEntity, (user) => user.id)
+    @JoinColumn({
+        name: 'created_by',
+    })
+    createdBy?: UserEntity;
+
+    @ManyToOne(() => UserEntity, (user) => user.id)
+    @JoinColumn({
+        name: 'updated_by',
+    })
+    updatedBy?: UserEntity;
+
+    @ManyToOne(() => UserEntity, (user) => user.id)
+    @JoinColumn({
+        name: 'deleted_by',
+    })
+    deletedBy?: UserEntity;
 }

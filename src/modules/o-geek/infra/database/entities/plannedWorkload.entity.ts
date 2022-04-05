@@ -56,4 +56,21 @@ export class PlannedWorkloadEntity extends AbstractEntity {
         name: 'reason',
     })
     reason: string;
+    @ManyToOne(() => UserEntity, (user) => user.id)
+    @JoinColumn({
+        name: 'created_by',
+    })
+    createdBy?: UserEntity;
+
+    @ManyToOne(() => UserEntity, (user) => user.id)
+    @JoinColumn({
+        name: 'updated_by',
+    })
+    updatedBy?: UserEntity;
+
+    @ManyToOne(() => UserEntity, (user) => user.id)
+    @JoinColumn({
+        name: 'deleted_by',
+    })
+    deletedBy?: UserEntity;
 }

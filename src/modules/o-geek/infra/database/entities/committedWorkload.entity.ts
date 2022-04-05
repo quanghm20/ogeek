@@ -47,11 +47,23 @@ export class CommittedWorkloadEntity extends AbstractEntity {
     })
     expiredDate: Date;
 
-    @ManyToOne(() => UserEntity, (user) => user.committedWorkloads)
+    @ManyToOne(() => UserEntity, (user) => user.id)
     @JoinColumn({
-        name: 'pic_id',
+        name: 'created_by',
     })
-    pic: UserEntity;
+    createdBy?: UserEntity;
+
+    @ManyToOne(() => UserEntity, (user) => user.id)
+    @JoinColumn({
+        name: 'updated_by',
+    })
+    updatedBy?: UserEntity;
+
+    @ManyToOne(() => UserEntity, (user) => user.id)
+    @JoinColumn({
+        name: 'deleted_by',
+    })
+    deletedBy?: UserEntity;
 
     @OneToMany(
         () => PlannedWorkloadEntity,
@@ -65,7 +77,6 @@ export class CommittedWorkloadEntity extends AbstractEntity {
         committedWorkload: number,
         startDate: Date,
         expiredDate: Date,
-        pic?: UserEntity,
         status?: CommittedWorkloadStatus,
         createdAt?: Date,
         updatedAt?: Date,
@@ -76,7 +87,6 @@ export class CommittedWorkloadEntity extends AbstractEntity {
         this.committedWorkload = committedWorkload;
         this.startDate = startDate;
         this.expiredDate = expiredDate;
-        this.pic = pic;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
