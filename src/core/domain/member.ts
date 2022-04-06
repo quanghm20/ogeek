@@ -6,7 +6,7 @@ import { MemberId } from './memberId';
 import { UniqueEntityID } from './UniqueEntityID';
 
 export interface IMemberProps {
-    email: MemberEmail;
+    email?: MemberEmail;
     alias?: string;
 }
 
@@ -28,8 +28,8 @@ export class Member extends Entity<IMemberProps> {
     }
 
     public static create(
-        props: IMemberProps,
-        id: UniqueEntityID,
+        props?: IMemberProps,
+        id?: UniqueEntityID,
     ): Result<Member> {
         const propsResult = Guard.combine([
             Guard.againstNullOrUndefined(props.email, 'email'),

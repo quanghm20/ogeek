@@ -83,7 +83,12 @@ export class CommittedWorkloadController {
     ): Promise<MessageDto> {
         const pic = req.user as JwtPayload;
         const id = new UniqueEntityID(pic.userId);
-        const member = Member.create(id).getValue();
+        const member = Member.create(
+            {
+                alias: '',
+            },
+            id,
+        ).getValue();
         const result = await this.createCommitUseCase.execute(body, member);
         if (result.isLeft()) {
             const error = result.value;
