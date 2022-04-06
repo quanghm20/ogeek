@@ -16,8 +16,8 @@ import {
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
-import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
+import { JwtAuthGuard } from '../../../../jwtAuth/jwt-auth-guard';
+import { JwtPayload } from '../../../../jwtAuth/jwt-auth.strategy';
 import { GetWeekStatusDto } from '../../../infra/dtos/getWeekStatus.dto';
 // import { UserMap } from '../../../mappers/userMap';
 import { GetWeekStatusErrors } from './GetWeekStatusErrors';

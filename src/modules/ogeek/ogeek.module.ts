@@ -53,6 +53,7 @@ import {
 } from './useCases/plannedWorkload/startWeek';
 import { CreateIssueController } from './useCases/user/createIssue/CreateIssueController';
 import { CreateIssueUseCase } from './useCases/user/createIssue/CreateIssueUseCase';
+import { CreateUserController } from './useCases/user/createUser/CreateUserController';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
 import { GetUserController } from './useCases/user/getUser/GetUserController';
 import { GetUserUseCase } from './useCases/user/getUser/GetUserUseCase';
@@ -92,6 +93,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetWorkloadListController,
         CreateIssueController,
         StartWeekController,
+        CreateUserController,
     ],
     providers: [
         CreateUserUseCase,

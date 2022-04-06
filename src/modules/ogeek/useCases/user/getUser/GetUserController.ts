@@ -9,8 +9,10 @@ import {
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
-import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
+import { RoleType } from '../../../../../common/constants/roleType';
+import { Roles } from '../../../../../decorators/roles.decorator';
+import { RolesGuard } from '../../../../../guards/roles.guard';
+import { JwtPayload } from '../../../../jwtAuth/jwt-auth.strategy';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { UserDto } from '../../../infra/dtos/user.dto';
 import { UserMap } from '../../../mappers/userMap';
@@ -18,11 +20,12 @@ import { GetUserErrors } from './GetUserErrors';
 import { GetUserUseCase } from './GetUserUseCase';
 
 @Controller('api/user')
-@ApiTags('Users')
+@ApiTags('User')
 export class GetUserController {
     constructor(public readonly useCase: GetUserUseCase) {}
 
-    @UseGuards(JwtAuthGuard)
+    @Roles(RoleType.PP)
+    @UseGuards(RolesGuard)
     @ApiBearerAuth()
     @Get()
     @ApiOkResponse({

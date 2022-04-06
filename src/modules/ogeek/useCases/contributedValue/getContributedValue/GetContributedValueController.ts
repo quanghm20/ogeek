@@ -11,7 +11,7 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
-import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
+import { JwtAuthGuard } from '../../../../jwtAuth/jwt-auth-guard';
 import { GetContributedValueShortDto } from '../../../infra/dtos/getContributedValue/getContributedValue.dto';
 import { GetContributedValueErrors } from './GetContributedValueErrors';
 import { GetContributedValueUseCase } from './GetContributedValueUseCase';

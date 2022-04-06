@@ -10,12 +10,12 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../../guards/roles.guard';
-import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
+import { JwtAuthGuard } from '../../../../jwtAuth/jwt-auth-guard';
 import { DataUserShortDto } from '../../../infra/dtos/getUsers/getUsersDto';
 import { GetUserErrors } from './GetUsersErrors';
 import { GetUsersUseCase } from './GetUsersUseCase';
 
-@ApiTags('Users')
+@ApiTags('User')
 @Controller('api/users')
 export class GetUsersController {
     constructor(public readonly useCase: GetUsersUseCase) {}
