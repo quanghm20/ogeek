@@ -1,7 +1,7 @@
 import { HttpModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { JwtAuthModule } from '../../modules/jwt-auth/jwt-auth.module';
+import { JwtAuthModule } from '../jwtAuth/jwtAuth.module';
 import { OGeekModule } from '../ogeek/ogeek.module';
 import { OauthController } from './oauth.controller';
 import { OAuthStrategy } from './oauth.strategy';

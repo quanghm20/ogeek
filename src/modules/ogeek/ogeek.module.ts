@@ -26,7 +26,7 @@ import {
     GetCommittedWorkloadUseCase,
     GetHistoryCommittedWorkloadUseCase,
 } from './useCases/committedWorkload';
-import { CronCommittedWorkload } from './useCases/committedWorkload/cron-committed-workload.service';
+import { CronCommittedWorkload } from './useCases/committedWorkload/cronCommittedWorkload.service';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,

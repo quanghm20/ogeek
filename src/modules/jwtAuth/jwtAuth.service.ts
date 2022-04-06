@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { UserDto } from '../ogeek/infra/dtos/user.dto';
-import { JwtPayload } from './jwt-auth.strategy';
+import { JwtPayload } from './jwtAuth.strategy';
 @Injectable()
 export class JwtAuthService {
     constructor(private _jwtService: JwtService) {}

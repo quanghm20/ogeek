@@ -12,14 +12,14 @@ import {
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
-import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
+import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
+import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import {
     DetailActualPlannedWorkloadAndWorklogDto,
     InputDetailPlannedWorkloadAndWorklogDto,
 } from '../../../infra/dtos/detailActualPlannedWorkloadAndWorklog';
-import { GetDetailActualPlannedWorkloadAndWorklogError } from './getDetailActualPlannedWorkloadError';
-import { GetDetailActualPlannedWorkloadUseCase } from './getDetailActualPlannedWorkloadUsecase';
+import { GetDetailActualPlannedWorkloadAndWorklogError } from './GetDetailActualPlannedWorkloadErrors';
+import { GetDetailActualPlannedWorkloadUseCase } from './GetDetailActualPlannedWorkloadUseCase';
 
 @Controller('api/user/planned-workload-in-projects')
 @ApiTags('API detail actual planned workload')
