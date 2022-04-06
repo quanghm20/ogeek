@@ -14,15 +14,17 @@ interface ICommittedWorkloadProps {
     committedWorkload?: number;
     startDate?: Date;
     expiredDate?: Date;
-    pic?: User;
+    createdBy?: User;
+    updatedBy?: User;
+    deletedBy?: User;
     status?: CommittedWorkloadStatus;
     createdAt?: Date;
     updatedAt?: Date;
 }
 
 export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
-    private constructor(props: ICommittedWorkloadProps, id: UniqueEntityID) {
-        super(id, props);
+    private constructor(props?: ICommittedWorkloadProps, id?: UniqueEntityID) {
+        super(props, id);
     }
     get committedWorkloadId(): DomainId {
         return DomainId.create(this._id).getValue();
@@ -33,11 +35,23 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     set contributedValue(contributedValue: ContributedValue) {
         this.props.contributedValue = contributedValue;
     }
-    get pic(): User {
-        return this.props.pic;
+    get createdBy(): User {
+        return this.props.createdBy;
     }
-    set pic(pic: User) {
-        this.props.pic = pic;
+    set createdBy(createdBy: User) {
+        this.props.createdBy = createdBy;
+    }
+    get updatedBy(): User {
+        return this.props.createdBy;
+    }
+    set updatedBy(updatedBy: User) {
+        this.props.updatedBy = updatedBy;
+    }
+    get deletedBy(): User {
+        return this.props.createdBy;
+    }
+    set deletedBy(deletedBy: User) {
+        this.props.deletedBy = deletedBy;
     }
     get user(): User {
         return this.props.user;

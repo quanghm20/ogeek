@@ -16,7 +16,7 @@ interface IUserProps {
     updatedAt?: Date;
 }
 export class User extends AggregateRoot<IUserProps> {
-    private constructor(props: IUserProps, id: UniqueEntityID) {
+    private constructor(props?: IUserProps, id?: UniqueEntityID) {
         super(props, id);
     }
     get userId(): DomainId {

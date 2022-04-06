@@ -13,7 +13,7 @@ interface IIssueProps {
     updatedAt?: Date;
 }
 export class Issue extends AggregateRoot<IIssueProps> {
-    private constructor(props: IIssueProps, id: UniqueEntityID) {
+    private constructor(props?: IIssueProps, id?: UniqueEntityID) {
         super(props, id);
     }
     get issueId(): DomainId {

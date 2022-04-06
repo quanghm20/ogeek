@@ -9,7 +9,7 @@ interface IExpertiseScopeProps {
     updatedAt?: Date;
 }
 export class ExpertiseScope extends AggregateRoot<IExpertiseScopeProps> {
-    private constructor(props: IExpertiseScopeProps, id: UniqueEntityID) {
+    private constructor(props?: IExpertiseScopeProps, id?: UniqueEntityID) {
         super(props, id);
     }
     get expertiseScopeId(): DomainId {

@@ -22,7 +22,7 @@ interface IPlannedWorkloadProps {
     updatedAt?: Date;
 }
 export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
-    private constructor(props: IPlannedWorkloadProps, id: UniqueEntityID) {
+    private constructor(props?: IPlannedWorkloadProps, id?: UniqueEntityID) {
         super(props, id);
     }
     get user(): User {

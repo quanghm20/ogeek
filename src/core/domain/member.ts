@@ -24,7 +24,7 @@ export class Member extends Entity<IMemberProps> {
     }
 
     private constructor(id: UniqueEntityID, props?: IMemberProps) {
-        super(id, props);
+        super(props, id);
     }
 
     public static create(
