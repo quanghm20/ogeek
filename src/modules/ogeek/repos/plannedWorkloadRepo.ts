@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Connection, Repository } from 'typeorm';
+import { Between, Connection, Not, Repository } from 'typeorm';
 
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
-import { InputGetPlanWLDto } from '../infra/dtos/ValueStreamsByWeek/inputGetPlanWL.dto';
+import { InputGetPlanWLDto } from '../infra/dtos/valueStreamsByWeek/inputGetPlanWL.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
 import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
@@ -55,7 +55,9 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             where: {
                 user: { id: userId },
                 startDate: Between(startDateOfYear, endDateOfYear),
-                status: PlannedWorkloadStatus.ACTIVE,
+                status:
+                    PlannedWorkloadStatus.EXECUTING ||
+                    PlannedWorkloadStatus.CLOSED,
             },
             relations: [
                 'contributedValue',
@@ -122,7 +124,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }: InputGetPlanWLDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: PlannedWorkloadStatus.ACTIVE,
+                status: !PlannedWorkloadStatus.ARCHIVE,
                 user: userId,
                 startDate: Between(startDateOfWeek, endDateOfWeek),
             },
@@ -155,7 +157,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                     MomentService.shiftFirstDateChart(startDate),
                     MomentService.shiftLastDateChart(startDate),
                 ),
-                status: PlannedWorkloadStatus.ACTIVE,
+                // status: PlannedWorkloadStatus.ACTIVE,
             },
             relations: [
                 'contributedValue',
@@ -183,7 +185,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }: StartEndDateOfWeekWLInputDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: PlannedWorkloadStatus.ACTIVE,
+                status: Not(PlannedWorkloadStatus.ARCHIVE),
                 startDate: Between(startDateOfWeek, endDateOfWeek),
             },
             relations: [

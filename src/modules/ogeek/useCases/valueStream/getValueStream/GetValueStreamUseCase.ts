@@ -7,9 +7,9 @@ import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { ActualPlanAndWorkLogDto } from '../../../infra/dtos/actualPlansAndWorkLogs.dto';
-import { InputGetPlanWLDto } from '../../../infra/dtos/ValueStreamsByWeek/inputGetPlanWL.dto';
-import { InputValueStreamByWeekDto } from '../../../infra/dtos/ValueStreamsByWeek/inputValueStream.dto';
-import { ValueStreamsByWeekDto } from '../../../infra/dtos/ValueStreamsByWeek/valueStreamsByWeek.dto';
+import { InputGetPlanWLDto } from '../../../infra/dtos/valueStreamsByWeek/inputGetPlanWL.dto';
+import { InputValueStreamByWeekDto } from '../../../infra/dtos/valueStreamsByWeek/inputValueStream.dto';
+import { ValueStreamsByWeekDto } from '../../../infra/dtos/valueStreamsByWeek/valueStreamsByWeek.dto';
 import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
 import { UserMap } from '../../../mappers/userMap';
@@ -57,7 +57,6 @@ export class GetValueStreamUseCase
             const actualPlanAndWorkLogDtos = response;
 
             // eslint-disable-next-line import/namespace
-            // moment.updateLocale('en', { week: { dow: 6 } });
             const dateOfWeek = moment()
                 .utcOffset(420)
                 .week(params.week)

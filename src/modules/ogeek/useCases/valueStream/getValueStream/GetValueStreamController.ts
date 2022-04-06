@@ -12,8 +12,8 @@ import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
-import { InputValueStreamByWeekDto } from '../../../infra/dtos/ValueStreamsByWeek/inputValueStream.dto';
-import { ValueStreamsByWeekDto } from '../../../infra/dtos/ValueStreamsByWeek/valueStreamsByWeek.dto';
+import { InputValueStreamByWeekDto } from '../../../infra/dtos/valueStreamsByWeek/inputValueStream.dto';
+import { ValueStreamsByWeekDto } from '../../../infra/dtos/valueStreamsByWeek/valueStreamsByWeek.dto';
 import { GetValueStreamError } from './GetValueStreamErrors';
 import { GetValueStreamUseCase } from './GetValueStreamUseCase';
 
