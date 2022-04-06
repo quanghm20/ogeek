@@ -30,6 +30,7 @@ export class IssueMap implements Mapper<Issue> {
                 status: raw.status,
                 note: raw.note,
                 user: UserMap.toDomain(raw.user),
+                updatedBy: UserMap.toDomain(raw.updatedBy),
                 createdBy: UserMap.toDomain(raw.createdBy),
             },
             new UniqueEntityID(id),
@@ -54,6 +55,12 @@ export class IssueMap implements Mapper<Issue> {
 
     public static toEntity(issue: Issue): IssueEntity {
         const user = UserMap.toEntity(issue.user);
-        return new IssueEntity(issue.note, issue.status, user);
+        const issueEntity = new IssueEntity();
+        issueEntity.id = Number(issue.id.toValue());
+        issueEntity.note = issue.note;
+        issueEntity.status = issue.status;
+        issueEntity.user = user;
+
+        return issueEntity;
     }
 }

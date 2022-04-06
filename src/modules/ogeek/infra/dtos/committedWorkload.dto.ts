@@ -43,4 +43,8 @@ export class CommittedWorkloadDto {
     @ApiProperty({ example: new Date() })
     @IsOptional()
     updatedAt?: Date;
+
+    @ApiProperty({ example: new Date() })
+    @IsOptional()
+    deletedAt?: Date;
 }

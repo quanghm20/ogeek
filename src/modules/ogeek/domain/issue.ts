@@ -11,12 +11,16 @@ interface IIssueProps {
     user: User;
     createdAt?: Date;
     updatedAt?: Date;
-    createdBy: User;
+    deletedAt?: Date;
+    createdBy?: User;
+    updatedBy?: User;
+    deletedBy?: User;
 }
 export class Issue extends AggregateRoot<IIssueProps> {
     private constructor(props?: IIssueProps, id?: UniqueEntityID) {
         super(props, id);
     }
+
     get issueId(): DomainId {
         return DomainId.create(this._id).getValue();
     }

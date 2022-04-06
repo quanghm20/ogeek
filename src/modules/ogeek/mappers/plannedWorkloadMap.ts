@@ -15,7 +15,7 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
 
         return {
             id: plannedWorkload.id,
-            user: plannedWorkload.props.user,
+            user: UserMap.fromDomain(plannedWorkload.props.user),
             contributedValue: ContributedValueMap.fromDomain(
                 plannedWorkload.props.contributedValue,
             ),
@@ -31,17 +31,8 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     public static fromDomainList(
         plannedWorkloadList: PlannedWorkload[],
     ): PlannedWorkloadDto[] {
-        return plannedWorkloadList.map(
-            (plannedWL) =>
-                ({
-                    id: plannedWL.id,
-                    user: plannedWL.props.user,
-                    contributedValue: plannedWL.props.contributedValue,
-                    committedWorkload: plannedWL.props.committedWorkload,
-                    plannedWorkload: plannedWL.props.plannedWorkload,
-                    startDate: plannedWL.props.startDate,
-                    status: plannedWL.props.status,
-                } as PlannedWorkloadDto),
+        return plannedWorkloadList.map((plannedWL) =>
+            this.fromDomain(plannedWL),
         );
     }
 

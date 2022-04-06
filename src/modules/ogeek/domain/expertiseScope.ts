@@ -3,10 +3,15 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
 import { DomainId } from './domainId';
+import { User } from './user';
 interface IExpertiseScopeProps {
-    name: string;
+    name?: string;
     createdAt?: Date;
     updatedAt?: Date;
+    deletedAt?: Date;
+    createdBy?: User;
+    updatedBy?: User;
+    deletedBy?: User;
 }
 export class ExpertiseScope extends AggregateRoot<IExpertiseScopeProps> {
     private constructor(props?: IExpertiseScopeProps, id?: UniqueEntityID) {

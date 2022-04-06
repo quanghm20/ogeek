@@ -45,6 +45,7 @@ export class WorkloadListByWeekDto {
         enum: PlannedWorkloadStatus,
         example: PlannedWorkloadStatus.PLANNING,
     })
+    @IsString()
     @IsEnum(PlannedWorkloadStatus)
     @IsNotEmpty()
     weekStatus: PlannedWorkloadStatus;

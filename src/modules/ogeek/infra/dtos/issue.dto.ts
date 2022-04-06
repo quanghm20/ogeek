@@ -17,7 +17,7 @@ export class IssueDto {
     @IsOptional()
     user?: UserDto;
 
-    @ApiProperty({ example: 12 })
+    @ApiProperty()
     @IsOptional()
     note?: string;
 
