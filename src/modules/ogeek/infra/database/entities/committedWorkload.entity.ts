@@ -15,10 +15,7 @@ import { UserEntity } from './user.entity';
 
 @Entity({ name: 'committed_workload' })
 @Check('CHK_START_DATE_COMMITTED_WORKLOAD', '"start_date" < "expired_date"')
-@Check(
-    'CHK_COMMITTED_WORKLOAD',
-    '"committed_workload" >= 0 AND "committed_workload" <= 50 ',
-)
+@Check('CHK_COMMITTED_WORKLOAD', '"committed_workload" >= 0')
 export class CommittedWorkloadEntity extends AbstractEntity {
     @ManyToOne(() => UserEntity, (user) => user.committedWorkloads)
     @JoinColumn({
@@ -61,24 +58,6 @@ export class CommittedWorkloadEntity extends AbstractEntity {
     })
     expiredDate: Date;
 
-    @ManyToOne(() => UserEntity, (user) => user.id)
-    @JoinColumn({
-        name: 'created_by',
-    })
-    createdBy: UserEntity;
-
-    @ManyToOne(() => UserEntity, (user) => user.id)
-    @JoinColumn({
-        name: 'updated_by',
-    })
-    updatedBy: UserEntity;
-
-    @ManyToOne(() => UserEntity, (user) => user.id)
-    @JoinColumn({
-        name: 'deleted_by',
-    })
-    deletedBy: UserEntity;
-
     @OneToMany(
         () => PlannedWorkloadEntity,
         (plannedWorkload) => plannedWorkload.committedWorkload,
@@ -93,9 +72,9 @@ export class CommittedWorkloadEntity extends AbstractEntity {
         startDate?: Date,
         expiredDate?: Date,
         status?: CommittedWorkloadStatus,
-        createdBy?: UserEntity,
-        updatedBy?: UserEntity,
-        deletedBy?: UserEntity,
+        createdBy?: number,
+        updatedBy?: number,
+        deletedBy?: number,
         createdAt?: Date,
         updatedAt?: Date,
         deletedAt?: Date,

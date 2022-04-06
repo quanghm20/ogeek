@@ -21,32 +21,14 @@ export class IssueEntity extends AbstractEntity {
     })
     user: UserEntity;
 
-    @ManyToOne(() => UserEntity, (user) => user.id)
-    @JoinColumn({
-        name: 'created_by',
-    })
-    createdBy: UserEntity;
-
-    @ManyToOne(() => UserEntity, (user) => user.id)
-    @JoinColumn({
-        name: 'updated_by',
-    })
-    updatedBy: UserEntity;
-
-    @ManyToOne(() => UserEntity, (user) => user.id)
-    @JoinColumn({
-        name: 'deleted_by',
-    })
-    deletedBy: UserEntity;
-
     constructor(
         id?: number,
         note?: string,
         status?: IssueStatus,
         user?: UserEntity,
-        createdBy?: UserEntity,
-        updatedBy?: UserEntity,
-        deletedBy?: UserEntity,
+        createdBy?: number,
+        updatedBy?: number,
+        deletedBy?: number,
         createdAt?: Date,
         updatedAt?: Date,
         deletedAt?: Date,
