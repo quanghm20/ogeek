@@ -11,15 +11,15 @@ export class IssueDto {
 
     @ApiProperty({ enum: IssueStatus, example: null })
     @IsOptional()
-    type?: IssueStatus;
+    status?: IssueStatus;
 
     @ApiProperty({ type: () => UserDto })
     @IsOptional()
     user?: UserDto;
 
-    @ApiProperty({ example: 12 })
+    @ApiProperty()
     @IsOptional()
-    week?: number;
+    note?: string;
 
     @ApiProperty({ example: new Date() })
     @IsOptional()

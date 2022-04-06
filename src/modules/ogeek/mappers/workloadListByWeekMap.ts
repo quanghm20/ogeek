@@ -2,6 +2,7 @@ import * as moment from 'moment';
 
 import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
 import { IssueStatus } from '../../../common/constants/issueStatus';
+import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { IssueDto } from '../infra/dtos/issue.dto';
 import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';
@@ -111,7 +112,7 @@ export class WorkloadListByWeekMap {
         );
 
         if (issueItem) {
-            return issueItem.type;
+            return issueItem.status;
         }
 
         return null;
@@ -287,7 +288,7 @@ export class WorkloadListByWeekMap {
                 committedWorkload: committedWLByUser,
                 plannedWorkload: resultExpAndTotalWL.totalPlannedWL,
                 actualWorkload: this.handleActualWorkload(actualWorkloadByUser),
-                weekStatus: user.weekStatus,
+                weekStatus: PlannedWorkloadStatus.PLANNING,
                 issueStatus: this.handleIssue(issues, user),
             });
         });

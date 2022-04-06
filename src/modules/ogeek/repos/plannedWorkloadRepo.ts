@@ -55,7 +55,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             where: {
                 user: { id: userId },
                 startDate: Between(startDateOfYear, endDateOfYear),
-                status: PlannedWorkloadStatus.ACTIVE,
+                status: PlannedWorkloadStatus.PLANNING,
             },
             relations: [
                 'contributedValue',
@@ -122,7 +122,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }: InputGetPlanWLDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: PlannedWorkloadStatus.ACTIVE,
+                status: PlannedWorkloadStatus.PLANNING,
                 user: userId,
                 startDate: Between(startDateOfWeek, endDateOfWeek),
             },
@@ -155,7 +155,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                     MomentService.shiftFirstDateChart(startDate),
                     MomentService.shiftLastDateChart(startDate),
                 ),
-                status: PlannedWorkloadStatus.ACTIVE,
+                status: PlannedWorkloadStatus.PLANNING,
             },
             relations: [
                 'contributedValue',
@@ -183,7 +183,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }: StartEndDateOfWeekWLInputDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: PlannedWorkloadStatus.ACTIVE,
+                status: PlannedWorkloadStatus.PLANNING,
                 startDate: Between(startDateOfWeek, endDateOfWeek),
             },
             relations: [

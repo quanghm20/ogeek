@@ -9,9 +9,8 @@ export class IssueMap implements Mapper<Issue> {
     public static fromDomain(issue: Issue): IssueDto {
         return {
             id: issue.id,
-            type: issue.type,
-            week: issue.week,
-            user: issue.user,
+            status: issue.status,
+            note: issue.note,
         };
     }
 
@@ -27,9 +26,10 @@ export class IssueMap implements Mapper<Issue> {
         const { id } = raw;
         const issueOrError = Issue.create(
             {
-                type: raw.type,
-                week: raw.week,
+                status: raw.status,
+                note: raw.note,
                 user: UserMap.toDomain(raw.user),
+                updatedBy: UserMap.toDomain(raw.updatedBy),
             },
             new UniqueEntityID(id),
         );
@@ -53,6 +53,12 @@ export class IssueMap implements Mapper<Issue> {
 
     public static toEntity(issue: Issue): IssueEntity {
         const user = UserMap.toEntity(issue.user);
-        return new IssueEntity(issue.type, issue.week, user);
+        const issueEntity = new IssueEntity();
+        issueEntity.id = Number(issue.id.toValue());
+        issueEntity.note = issue.note;
+        issueEntity.status = issue.status;
+        issueEntity.user = user;
+
+        return issueEntity;
     }
 }
