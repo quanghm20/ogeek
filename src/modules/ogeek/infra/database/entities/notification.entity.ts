@@ -42,9 +42,10 @@ export class NotificationEntity extends AbstractEntity {
     deletedBy: UserEntity;
 
     constructor(
-        message: string,
-        read: NotificationStatus,
-        user: UserEntity,
+        id?: number,
+        message?: string,
+        read?: NotificationStatus,
+        user?: UserEntity,
         createdBy?: UserEntity,
         updatedBy?: UserEntity,
         deletedBy?: UserEntity,
@@ -52,7 +53,7 @@ export class NotificationEntity extends AbstractEntity {
         updatedAt?: Date,
         deletedAt?: Date,
     ) {
-        super();
+        super(id);
         this.message = message;
         this.read = read;
         this.user = user;

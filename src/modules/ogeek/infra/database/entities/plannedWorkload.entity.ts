@@ -81,12 +81,13 @@ export class PlannedWorkloadEntity extends AbstractEntity {
     deletedBy: UserEntity;
 
     constructor(
-        user: UserEntity,
-        contributedValue: ContributedValueEntity,
-        committedWorkload: CommittedWorkloadEntity,
-        plannedWorkload: number,
-        startDate: Date,
-        reason: string,
+        id?: number,
+        user?: UserEntity,
+        contributedValue?: ContributedValueEntity,
+        committedWorkload?: CommittedWorkloadEntity,
+        plannedWorkload?: number,
+        startDate?: Date,
+        reason?: string,
         createdBy?: UserEntity,
         updatedBy?: UserEntity,
         deletedBy?: UserEntity,
@@ -94,11 +95,13 @@ export class PlannedWorkloadEntity extends AbstractEntity {
         updatedAt?: Date,
         deletedAt?: Date,
     ) {
-        super();
+        super(id);
         this.user = user;
         this.contributedValue = contributedValue;
         this.committedWorkload = committedWorkload;
         this.plannedWorkload = plannedWorkload;
+        this.startDate = startDate;
+        this.reason = reason;
         this.createdBy = createdBy;
         this.updatedBy = updatedBy;
         this.deletedBy = deletedBy;

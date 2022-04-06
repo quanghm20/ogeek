@@ -58,8 +58,9 @@ export class ContributedValueEntity extends AbstractEntity {
     committedWorkloads: CommittedWorkloadEntity[];
 
     constructor(
-        valueStream: ValueStreamEntity,
-        expertiseScope: ExpertiseScopeEntity,
+        id?: number,
+        valueStream?: ValueStreamEntity,
+        expertiseScope?: ExpertiseScopeEntity,
         createdBy?: UserEntity,
         updatedBy?: UserEntity,
         deletedBy?: UserEntity,
@@ -67,7 +68,7 @@ export class ContributedValueEntity extends AbstractEntity {
         updatedAt?: Date,
         deletedAt?: Date,
     ) {
-        super();
+        super(id);
         this.valueStream = valueStream;
         this.expertiseScope = expertiseScope;
         this.createdBy = createdBy;
