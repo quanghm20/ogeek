@@ -6,7 +6,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
             `CREATE TYPE "public"."user_role_enum" AS 
-            ENUM('USER', 'PP OPS')`,
+            ENUM('USER', 'PEOPLE_OPS')`,
         );
         await queryRunner.query(
             `CREATE TYPE "public"."read_status_enum" AS 
@@ -28,7 +28,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
             `CREATE TABLE "user" (
                 "id" SERIAL NOT NULL,
                 "alias" character varying(50) NOT NULL,
-                "name" character varying(100) NOT NULL,
+                "name" character varying(255) NOT NULL,
                 "phone" character varying(15),
                 "email" character varying(255) NOT NULL,
                 "avatar" character varying(255),
@@ -153,8 +153,8 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "planned_workload" integer NOT NULL,
                 "start_date" TIMESTAMPTZ NOT NULL,
                 "user_id" integer,
-                "contributed_value_id" bigint,
-                "committed_workload_id" bigint,
+                "contributed_value_id" integer,
+                "committed_workload_id" integer,
                 "status" "public"."plan_status_enum" DEFAULT 'PLANNING',
                 "reason" text NOT NULL,
                 "created_by" integer,

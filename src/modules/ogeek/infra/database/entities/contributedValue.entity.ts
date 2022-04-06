@@ -31,19 +31,19 @@ export class ContributedValueEntity extends AbstractEntity {
     @JoinColumn({
         name: 'created_by',
     })
-    createdBy?: UserEntity;
+    createdBy: UserEntity;
 
     @ManyToOne(() => UserEntity, (user) => user.id)
     @JoinColumn({
         name: 'updated_by',
     })
-    updatedBy?: UserEntity;
+    updatedBy: UserEntity;
 
     @ManyToOne(() => UserEntity, (user) => user.id)
     @JoinColumn({
         name: 'deleted_by',
     })
-    deletedBy?: UserEntity;
+    deletedBy: UserEntity;
 
     @OneToMany(
         () => PlannedWorkloadEntity,
@@ -56,4 +56,25 @@ export class ContributedValueEntity extends AbstractEntity {
         (committedWorkload) => committedWorkload.contributedValue,
     )
     committedWorkloads: CommittedWorkloadEntity[];
+
+    constructor(
+        valueStream: ValueStreamEntity,
+        expertiseScope: ExpertiseScopeEntity,
+        createdBy?: UserEntity,
+        updatedBy?: UserEntity,
+        deletedBy?: UserEntity,
+        createdAt?: Date,
+        updatedAt?: Date,
+        deletedAt?: Date,
+    ) {
+        super();
+        this.valueStream = valueStream;
+        this.expertiseScope = expertiseScope;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
+        this.deletedBy = deletedBy;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+    }
 }

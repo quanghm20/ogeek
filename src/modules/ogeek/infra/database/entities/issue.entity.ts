@@ -7,17 +7,15 @@ import { UserEntity } from './user.entity';
 @Entity({ name: 'issue' })
 export class IssueEntity extends AbstractEntity {
     @Column({
-        nullable: false,
         enum: IssueStatus,
         name: 'type',
-        default: null,
     })
     status: IssueStatus;
 
     @Column({ name: 'note' })
-    note: IssueStatus;
+    note: string;
 
-    @ManyToOne(() => UserEntity, (user) => user.committedWorkloads)
+    @ManyToOne(() => UserEntity, (user) => user.id)
     @JoinColumn({
         name: 'user_id',
     })
@@ -27,17 +25,40 @@ export class IssueEntity extends AbstractEntity {
     @JoinColumn({
         name: 'created_by',
     })
-    createdBy?: UserEntity;
+    createdBy: UserEntity;
 
     @ManyToOne(() => UserEntity, (user) => user.id)
     @JoinColumn({
         name: 'updated_by',
     })
-    updatedBy?: UserEntity;
+    updatedBy: UserEntity;
 
     @ManyToOne(() => UserEntity, (user) => user.id)
     @JoinColumn({
         name: 'deleted_by',
     })
-    deletedBy?: UserEntity;
+    deletedBy: UserEntity;
+
+    constructor(
+        note: string,
+        status: IssueStatus,
+        user: UserEntity,
+        createdBy?: UserEntity,
+        updatedBy?: UserEntity,
+        deletedBy?: UserEntity,
+        createdAt?: Date,
+        updatedAt?: Date,
+        deletedAt?: Date,
+    ) {
+        super();
+        this.note = note;
+        this.status = status;
+        this.user = user;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
+        this.deletedBy = deletedBy;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+    }
 }
