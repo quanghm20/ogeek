@@ -23,8 +23,8 @@ export class Member extends Entity<IMemberProps> {
         return this.props.alias;
     }
 
-    private constructor(props: IMemberProps, id: UniqueEntityID) {
-        super(props, id);
+    private constructor(id: UniqueEntityID, props?: IMemberProps) {
+        super(id, props);
     }
 
     public static create(
@@ -40,7 +40,7 @@ export class Member extends Entity<IMemberProps> {
             return Result.fail<Member>(propsResult.message);
         }
 
-        const member = new Member(props, id);
+        const member = new Member(id, props);
 
         return Result.ok(member);
     }

@@ -20,14 +20,12 @@ export class OauthController {
         private _getUserUseCase: GetUserUseCase,
     ) {}
     // redirect to authen server
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     @Get('api/oauth/otable')
     @UseGuards(OAuthGuard)
     login(): string {
         return '';
     }
     // if user is authenticated, they are redirected here
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     @Get('oauth/otable/callback')
     @UseGuards(OAuthGuard)
     async redirectLogin(

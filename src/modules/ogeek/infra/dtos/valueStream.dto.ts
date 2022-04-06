@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 export class ValueStreamDto {
@@ -6,12 +7,15 @@ export class ValueStreamDto {
     id: UniqueEntityID | number;
 
     @ApiProperty({ example: 'Delivery' })
-    name?: string;
+    @IsNotEmpty()
+    name: string;
 
     @ApiProperty({ example: new Date() })
+    @IsOptional()
     createdAt?: Date;
 
     @ApiProperty({ example: new Date() })
+    @IsOptional()
     updatedAt?: Date;
 
     constructor() {

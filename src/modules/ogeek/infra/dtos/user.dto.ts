@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsFQDN, IsNotEmpty, IsOptional } from 'class-validator';
 
 import { RoleType } from '../../../../common/constants/roleType';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
@@ -9,30 +10,39 @@ export class UserDto {
         type: () => UniqueEntityID,
         example: new UniqueEntityID(77),
     })
-    id?: UniqueEntityID;
+    id: UniqueEntityID;
 
     @ApiProperty({ example: 'thai.ls' })
-    alias?: string;
+    @IsNotEmpty()
+    alias: string;
 
     @ApiProperty({ example: 'Sỹ Thái' })
-    name?: string;
+    @IsNotEmpty()
+    name: string;
 
     @ApiProperty({ example: '0984786432' })
-    phone?: string;
+    @IsNotEmpty()
+    phone: string;
 
     @ApiProperty({ example: 'thai.ls@geekup.vn' })
-    email?: string;
+    @IsEmail()
+    @IsNotEmpty()
+    email: string;
 
     @ApiProperty({ example: 'http://localhost/avatar' })
-    avatar?: string;
+    @IsFQDN()
+    avatar: string;
 
     @ApiProperty({ enum: RoleType, example: RoleType.USER })
-    role?: RoleType;
-    @ApiProperty({ example: new Date() })
-    createdAt?: Date;
+    role: RoleType;
 
     @ApiProperty({ example: new Date() })
-    updatedAt?: Date;
+    @IsOptional()
+    createdAt: Date;
+
+    @ApiProperty({ example: new Date() })
+    @IsOptional()
+    updatedAt: Date;
 
     constructor(user?: UserEntity) {
         if (user) {

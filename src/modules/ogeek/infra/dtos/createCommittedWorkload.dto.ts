@@ -1,24 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsDateString, IsNumber } from 'class-validator';
+import { IsArray, IsDate, IsInt, IsNotEmpty, IsNumber } from 'class-validator';
 
 import { WorkloadDto } from './workload.dto';
 
 export class CreateCommittedWorkloadDto {
     @ApiProperty({ example: 1 })
     @IsNumber()
+    @IsNotEmpty()
+    @IsInt()
     userId: number;
 
     @ApiProperty({ type: () => WorkloadDto, isArray: true })
     @IsArray()
+    @IsNotEmpty()
     committedWorkloads: WorkloadDto[];
 
     @ApiProperty({ example: new Date() })
-    @IsDateString()
+    @IsDate()
+    @IsNotEmpty()
     startDate: Date;
 
-    @IsDateString()
+    @IsDate()
     @ApiProperty({ example: new Date() })
+    @IsNotEmpty()
     expiredDate: Date;
-
-    picId?: number;
 }
