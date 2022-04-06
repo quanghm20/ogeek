@@ -11,6 +11,7 @@ export class IssueMap implements Mapper<Issue> {
             id: issue.id,
             status: issue.status,
             note: issue.note,
+            user: issue.user,
         };
     }
 
@@ -30,6 +31,7 @@ export class IssueMap implements Mapper<Issue> {
                 note: raw.note,
                 user: UserMap.toDomain(raw.user),
                 updatedBy: UserMap.toDomain(raw.updatedBy),
+                createdBy: UserMap.toDomain(raw.createdBy),
             },
             new UniqueEntityID(id),
         );

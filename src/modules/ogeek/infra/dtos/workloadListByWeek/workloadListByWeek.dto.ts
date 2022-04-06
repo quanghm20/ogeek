@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+    IsArray,
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsString,
+} from 'class-validator';
 
 import { IssueStatus } from '../../../../../common/constants/issueStatus';
 import { PlannedWorkloadStatus } from '../../../../../common/constants/plannedStatus';
@@ -40,8 +46,9 @@ export class WorkloadListByWeekDto {
         example: PlannedWorkloadStatus.PLANNING,
     })
     @IsString()
+    @IsEnum(PlannedWorkloadStatus)
     @IsNotEmpty()
-    weekStatus: string;
+    weekStatus: PlannedWorkloadStatus;
 
     @ApiProperty({
         enum: IssueStatus,

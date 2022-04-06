@@ -20,9 +20,7 @@ export class Issue extends AggregateRoot<IIssueProps> {
     private constructor(props?: IIssueProps, id?: UniqueEntityID) {
         super(props, id);
     }
-    get note(): string {
-        return this.props.note;
-    }
+
     get issueId(): DomainId {
         return DomainId.create(this._id).getValue();
     }
@@ -31,6 +29,12 @@ export class Issue extends AggregateRoot<IIssueProps> {
     }
     set status(status: IssueStatus) {
         this.props.status = status;
+    }
+    get note(): string {
+        return this.props.note;
+    }
+    set note(note: string) {
+        this.props.note = note;
     }
     get user(): User {
         return this.props.user;

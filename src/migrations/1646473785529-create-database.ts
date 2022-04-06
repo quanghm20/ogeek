@@ -18,7 +18,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
         );
         await queryRunner.query(
             `CREATE TYPE "public"."plan_status_enum" AS 
-            ENUM('PLANNING', 'EXECUTING', 'CLOSE', 'ARCHIVE')`,
+            ENUM('PLANNING', 'EXECUTING', 'CLOSED', 'ARCHIVE')`,
         );
         await queryRunner.query(
             `CREATE TYPE "public"."issue_status_enum" AS 
@@ -140,9 +140,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 CONSTRAINT "FK_COMMITTED_WORKLOAD_CONTRIBUTED_VALUE" 
                     FOREIGN KEY ("contributed_value_id") REFERENCES "contributed_value"("id"),
                 CONSTRAINT "CHK_START_DATE_COMMITTED_WORKLOAD" 
-                    CHECK("start_date" > now() and "start_date" < "expired_date"),
-                CONSTRAINT "CHK_EXPIRED_DATE_COMMITTED_WORKLOAD" 
-                    CHECK("expired_date" > now()),
+                    CHECK("start_date" < "expired_date"),
                 CONSTRAINT "CHK_COMMITTED_WORKLOAD" 
                     CHECK("committed_workload" >=0 AND "committed_workload" <= 50)
             )`,
@@ -177,10 +175,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 CONSTRAINT "FK_PLANNED_WORKLOAD_DELETED_BY" 
                     FOREIGN KEY ("deleted_by") REFERENCES "user"("id"),
                 CONSTRAINT "CHK_PLANNED_WORKLOAD" 
-                    CHECK("planned_workload" >= 0),
-                CONSTRAINT "CHK_START_DATE_PLANNED_WORKLOAD" 
-                    CHECK("start_date" > now())
-
+                    CHECK("planned_workload" >= 0)
             )`,
         );
         await queryRunner.query(

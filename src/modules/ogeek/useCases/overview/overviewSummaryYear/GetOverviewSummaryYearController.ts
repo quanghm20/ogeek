@@ -13,7 +13,7 @@ import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
-import { DataResponseDto } from '../../../infra/dtos/summaryYearDTO/dataResponse.dto';
+import { DataResponseDto } from '../../../infra/dtos/overviewSummaryYear/dataResponse.dto';
 import { GetOverviewSummaryYearErrors } from './GetOverviewSummaryYearErrors';
 import { GetOverviewSummaryYearUseCase } from './GetOverviewSummaryYearUseCase';
 

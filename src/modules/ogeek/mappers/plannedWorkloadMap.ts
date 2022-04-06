@@ -71,7 +71,7 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     public static toEntity(
         plannedWorkload: PlannedWorkload,
     ): PlannedWorkloadEntity {
-        const entity = new PlannedWorkloadEntity();
+        const entity = {} as PlannedWorkloadEntity;
 
         entity.status = plannedWorkload.status;
         entity.user = UserMap.toEntity(plannedWorkload.user);

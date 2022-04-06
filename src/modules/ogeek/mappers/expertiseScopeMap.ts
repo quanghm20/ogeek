@@ -51,7 +51,7 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
     public static toEntity(
         expertiseScope: ExpertiseScope,
     ): ExpertiseScopeEntity {
-        const expertiseScopeEntity = new ExpertiseScopeEntity();
+        const expertiseScopeEntity = {} as ExpertiseScopeEntity;
         expertiseScopeEntity.id = Number(expertiseScope.id.toValue());
         expertiseScopeEntity.name = expertiseScope.name;
 
