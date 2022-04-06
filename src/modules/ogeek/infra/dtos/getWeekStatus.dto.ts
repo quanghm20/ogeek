@@ -11,7 +11,7 @@ export class GetWeekStatusDto {
     })
     weekStatus?: PlannedWorkloadStatus;
 
-    constructor(plannedWorkload: PlannedWorkloadEntity) {
+    constructor(plannedWorkload?: PlannedWorkloadEntity) {
         // this.weekStatus = user.weekStatus;
         this.weekStatus = plannedWorkload.status;
     }
