@@ -55,7 +55,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
                 "deleted_at" TIMESTAMPTZ,
-                CONSTRAINT "PK_VALUE_STREAM" PRIMARY KEY ("id"),
+                CONSTRAINT "PK_VALUE_STREAM" PRIMARY KEY ("id")
             )`,
         );
         await queryRunner.query(
@@ -68,7 +68,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
                 "deleted_at" TIMESTAMPTZ,
-                CONSTRAINT "PK_EXPERTISE_SCOPE" PRIMARY KEY ("id"),
+                CONSTRAINT "PK_EXPERTISE_SCOPE" PRIMARY KEY ("id")
             )`,
         );
         await queryRunner.query(
@@ -86,7 +86,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 CONSTRAINT "FK_CONTRIBUTED_VALUE_EXPERTISE_SCOPE" 
                     FOREIGN KEY ("expertise_scope_id") REFERENCES "expertise_scope"("id"),
                 CONSTRAINT "FK_CONTRIBUTED_VALUE_VALUE_STREAM" 
-                    FOREIGN KEY ("value_stream_id") REFERENCES "value_stream"("id"),
+                    FOREIGN KEY ("value_stream_id") REFERENCES "value_stream"("id")
             )`,
         );
         await queryRunner.query(
@@ -173,7 +173,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "deleted_at" TIMESTAMPTZ,
                 CONSTRAINT "PK_NOTIFICATION" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_NOTIFICATION_USER" 
-                    FOREIGN KEY ("user_id") REFERENCES "user"("id"),
+                    FOREIGN KEY ("user_id") REFERENCES "user"("id")
             )`,
         );
     }
