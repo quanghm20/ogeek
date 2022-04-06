@@ -118,7 +118,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
         await queryRunner.query(
             `CREATE TABLE "planned_workload" (
                 "id" SERIAL NOT NULL,
-                "planned_workload" integer NOT NULL,
+                "planned_workload" decimal(4,2) NOT NULL,
                 "start_date" TIMESTAMPTZ NOT NULL,
                 "user_id" integer,
                 "contributed_value_id" integer,
