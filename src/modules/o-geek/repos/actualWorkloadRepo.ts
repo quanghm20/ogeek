@@ -1,30 +1,29 @@
 // import { Injectable } from '@nestjs/common';
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { Repository } from 'typeorm';
+// import Axios from 'axios';
 
-// import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
-// import { actual}
-
-// export interface ICommittedWorkloadRepo {
-//     getCommittedWorkload(id: UniqueEntityID): Promise<CommittedWorkload>;
+// import { ConfigService } from '../../../shared/services/config.service';
+// interface IActualWorkloadRepo {
+//     getDataFromOtable(params: Record<string, unknown>): Promise<any>;
 // }
 
 // @Injectable()
-// export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
-//     constructor(
-//         @InjectRepository(CommittedWorkloadEntity)
-//         protected committedWorkloadRepo: Repository<CommittedWorkloadEntity>,
-//     ) {}
+// export class ActualWorkloadRepository implements IActualWorkloadRepo {
+//     constructor(private _configService: ConfigService) {}
+//     async getDataFromOtable(params: Record<string, string>): Promise<unknown> {
+//         let url = `${this._configService.get('MOCK_URL')}`;
+//         if (params.params) {
+//             url = url + '/' + params.params;
+//         }
 
-//     // Check correction of data type, if it is number, force it to be DomainId
-//     async getCommittedWorkload(
-//         committedWorkloadId: DomainId | number,
-//     ): Promise<CommittedWorkload> {
-//         // committedWorkloadId = committedWorkloadId instanceof DomainId ? committedWorkloadId.id.
+//         if (params.queryString) {
+//             url = url + '?' + params.queryString;
+//         }
 
-//         const entity = await this.committedWorkloadRepo.findOne(
-//             committedWorkloadId,
-//         );
-//         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
+//         const request = await Axios.get<Record<string, unknown>>(url, {
+//             headers: {
+//                 'x-api-key': this._configService.get('MOCK_API_KEY'),
+//             },
+//         });
+//         return request.data.data;
 //     }
 // }

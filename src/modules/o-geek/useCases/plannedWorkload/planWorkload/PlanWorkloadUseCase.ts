@@ -21,83 +21,97 @@ import { IUserRepo } from '../../../repos/userRepo';
 import { PlanWorkloadErrors } from './PlanWorkloadErrors';
 
 type Response = Either<
-  AppError.UnexpectedError | PlanWorkloadErrors.PlanWorkloadFailed,
-  Result<PlannedWorkload[]>
+    AppError.UnexpectedError | PlanWorkloadErrors.PlanWorkloadFailed,
+    Result<PlannedWorkload[]>
 >;
 
 @Injectable()
 export class PlanWorkloadUseCase
-  implements IUseCase<CreatePlannedWorkloadsListDto, Promise<Response>>
+    implements IUseCase<CreatePlannedWorkloadsListDto, Promise<Response>>
 {
-  constructor(
-    @Inject('IPlannedWorkloadRepo')
-    public readonly plannedWorkloadRepo: IPlannedWorkloadRepo,
-    @Inject('ICommittedWorkloadRepo')
-    public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
-    @Inject('IContributedValueRepo')
-    public readonly contributedValueloadRepo: IContributedValueRepo,
-    @Inject('IUserRepo') public readonly userRepo: IUserRepo,
-  ) { }
+    constructor(
+        @Inject('IPlannedWorkloadRepo')
+        public readonly plannedWorkloadRepo: IPlannedWorkloadRepo,
+        @Inject('ICommittedWorkloadRepo')
+        public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
+        @Inject('IContributedValueRepo')
+        public readonly contributedValueloadRepo: IContributedValueRepo,
+        @Inject('IUserRepo') public readonly userRepo: IUserRepo,
+    ) {}
 
-  async execute(
-    createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
-  ): Promise<Response> {
-    const { startDate, reason, plannedWorkloads, userId } =
-      createPlannedWorkloadsListDto;
+    async execute(
+        createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
+    ): Promise<Response> {
+        const { startDate, reason, plannedWorkloads, userId } =
+            createPlannedWorkloadsListDto;
 
-    // format startDate
-    const formattedStartDate = moment(startDate).format('YYYY-MM-DD hh:mm:ss');
-
-    const plannedWorkloadEntitiesList = [] as PlannedWorkloadEntity[];
-    const user = await this.userRepo.findById(userId);
-
-    try {
-      // deactive all planned workload of current user
-      await this.plannedWorkloadRepo.updateMany(
-        {
-          startDate: Equal(formattedStartDate),
-          user: { id: userId },
-        },
-        { status: WorkloadStatus.INACTIVE },
-      );
-
-      // change week status of user to planning
-      await this.userRepo.update(
-        { id: userId, weekStatus: WeekStatus.PLANNING },
-        { weekStatus: WeekStatus.PLANNED },
-      );
-
-      // create new planned workloads
-      for (const plannedWorkloadDto of plannedWorkloads) {
-        const { contributedValueId, committedWorkloadId, workload } = plannedWorkloadDto;
-        const committedWorkload = await this.committedWorkloadRepo.findById(committedWorkloadId);
-        const contributedValue = await this.contributedValueloadRepo.findById(contributedValueId);
-        const plannedWorkload = PlannedWorkload.create(
-          {
-            reason,
-            contributedValue,
-            user,
-            committedWorkload,
-            startDate: new Date(formattedStartDate),
-            plannedWorkload: workload,
-            status: WorkloadStatus.ACTIVE,
-          },
-          new UniqueEntityID(uuidv4()),
+        // format startDate
+        const formattedStartDate = moment(startDate).format(
+            'YYYY-MM-DD hh:mm:ss',
         );
 
-        const plannedWorkloadEntity = PlannedWorkloadMap.toEntity(plannedWorkload.getValue());
-        plannedWorkloadEntitiesList.push(plannedWorkloadEntity);
-      }
-      const savedPlannedWorkloads = await this.plannedWorkloadRepo.createMany(plannedWorkloadEntitiesList);
-      if (savedPlannedWorkloads) {
-        return right(Result.ok(savedPlannedWorkloads));
-      }
+        const plannedWorkloadEntitiesList = [] as PlannedWorkloadEntity[];
+        const user = await this.userRepo.findById(userId);
 
-      return left(
-        new PlanWorkloadErrors.PlanWorkloadFailed(),
-      ) as Response;
-    } catch (err) {
-      return left(new AppError.UnexpectedError(err));
+        try {
+            // deactive all planned workload of current user
+            await this.plannedWorkloadRepo.updateMany(
+                {
+                    startDate: Equal(formattedStartDate),
+                    user: { id: userId },
+                },
+                { status: WorkloadStatus.INACTIVE },
+            );
+
+            // change week status of user to planning
+            await this.userRepo.update(
+                { id: userId, weekStatus: WeekStatus.PLANNING },
+                { weekStatus: WeekStatus.PLANNED },
+            );
+
+            // create new planned workloads
+            for (const plannedWorkloadDto of plannedWorkloads) {
+                const { contributedValueId, committedWorkloadId, workload } =
+                    plannedWorkloadDto;
+                const committedWorkload =
+                    await this.committedWorkloadRepo.findById(
+                        committedWorkloadId,
+                    );
+                const contributedValue =
+                    await this.contributedValueloadRepo.findById(
+                        contributedValueId,
+                    );
+                const plannedWorkload = PlannedWorkload.create(
+                    {
+                        reason,
+                        contributedValue,
+                        user,
+                        committedWorkload,
+                        startDate: new Date(formattedStartDate),
+                        plannedWorkload: workload,
+                        status: WorkloadStatus.ACTIVE,
+                    },
+                    new UniqueEntityID(uuidv4()),
+                );
+
+                const plannedWorkloadEntity = PlannedWorkloadMap.toEntity(
+                    plannedWorkload.getValue(),
+                );
+                plannedWorkloadEntitiesList.push(plannedWorkloadEntity);
+            }
+            const savedPlannedWorkloads =
+                await this.plannedWorkloadRepo.createMany(
+                    plannedWorkloadEntitiesList,
+                );
+            if (savedPlannedWorkloads) {
+                return right(Result.ok(savedPlannedWorkloads));
+            }
+
+            return left(
+                new PlanWorkloadErrors.PlanWorkloadFailed(),
+            ) as Response;
+        } catch (err) {
+            return left(new AppError.UnexpectedError(err));
+        }
     }
-  }
 }

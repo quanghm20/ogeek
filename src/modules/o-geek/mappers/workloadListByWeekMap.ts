@@ -1,6 +1,7 @@
 import * as moment from 'moment';
 
 import { WorkloadStatus } from '../../../common/constants/committed-status';
+import { FormatDate } from '../../../common/constants/formatDate';
 import { IssueType } from '../../../common/constants/issue-type';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { IssueDto } from '../infra/dtos/issue.dto';
@@ -54,22 +55,27 @@ export class WorkloadListByWeekMap {
     ): CommittedWorkloadDto[] {
         const hashMap: IHashCommittedWorkload = {};
 
-        committedWLByUserArray.forEach((workload) => {
-            if (
-                !hashMap[workload.contributedValue.expertiseScope.id.toString()]
-            ) {
+        try {
+            committedWLByUserArray.forEach((workload) => {
+                if (
+                    !hashMap[
+                        workload.contributedValue.expertiseScope.id.toString()
+                    ]
+                ) {
+                    hashMap[
+                        workload.contributedValue.expertiseScope.id.toString()
+                    ] = { ...workload };
+                    return true;
+                }
+
                 hashMap[
                     workload.contributedValue.expertiseScope.id.toString()
-                ] = { ...workload };
-                return true;
-            }
-
-            hashMap[
-                workload.contributedValue.expertiseScope.id.toString()
-            ].committedWorkload += workload.committedWorkload;
-        });
-
-        return Object.values(hashMap);
+                ].committedWorkload += workload.committedWorkload;
+            });
+            return Object.values(hashMap);
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 
     public static handleDuplicateExpOfPlannedArray(
@@ -266,13 +272,13 @@ export class WorkloadListByWeekMap {
 
             const committedWLByUser = {
                 startDate: moment(firstCommittedWLItem.startDate).format(
-                    'YYYY-MM-DD',
+                    FormatDate.SHORT_DATE_REVERSE,
                 ),
                 expiredDate: moment(firstCommittedWLItem.expiredDate).format(
-                    'YYYY-MM-DD',
+                    FormatDate.SHORT_DATE_REVERSE,
                 ),
                 updatedAt: moment(firstCommittedWLItem.updatedAt).format(
-                    'DD-MM-YYYY hh:mm:ss',
+                    FormatDate.DATE_TIME,
                 ),
                 workload: resultExpAndTotalWL.totalCommittedWL,
             } as CommittedWorkloadByWeekDto;

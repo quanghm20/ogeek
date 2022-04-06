@@ -3,7 +3,7 @@ import {
     Get,
     InternalServerErrorException,
     NotFoundException,
-    Param,
+    Query,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -19,14 +19,14 @@ import { WorkloadListByWeekDto } from '../../../infra/dtos/workloadListByWeek/wo
 import { GetWorkloadListError } from './GetWorkloadListErrors';
 import { GetWorkloadListUseCase } from './GetWorkloadListUseCase';
 
-@Controller('api/user/workloads')
+@Controller('api/admin/user/workloads')
 @ApiTags('List workload table')
 export class GetWorkloadListController {
     constructor(public readonly useCase: GetWorkloadListUseCase) {}
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Get(':week')
+    @Get()
     @Roles(RoleType.ADMIN)
     @ApiOkResponse({
         type: WorkloadListByWeekDto,
@@ -34,7 +34,7 @@ export class GetWorkloadListController {
     })
     async execute(
         @Req() req: Request,
-        @Param('week') week: number,
+        @Query('week') week: number,
     ): Promise<WorkloadListByWeekDto[]> {
         const { userId } = req.user as JwtPayload;
         const input = new InputListWorkloadDto(week, userId);

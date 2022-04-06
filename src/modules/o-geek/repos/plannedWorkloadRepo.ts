@@ -131,12 +131,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
                 'committedWorkload',
-                'committedWorkload.contributedValue',
-                'committedWorkload.contributedValue.expertiseScope',
-                'committedWorkload.contributedValue.valueStream',
                 'user',
-                'committedWorkload.user',
-                'committedWorkload.pic',
             ],
         });
         return entities
@@ -191,10 +186,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
                 'committedWorkload',
-                'committedWorkload.user',
-                'committedWorkload.contributedValue',
-                'committedWorkload.contributedValue.expertiseScope',
-                'committedWorkload.contributedValue.valueStream',
                 'user',
             ],
         });

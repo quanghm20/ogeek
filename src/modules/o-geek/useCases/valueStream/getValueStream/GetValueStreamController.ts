@@ -3,7 +3,7 @@ import {
     Get,
     InternalServerErrorException,
     NotFoundException,
-    Param,
+    Query,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -24,14 +24,14 @@ export class GetValueStreamController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Get(':week')
+    @Get()
     @ApiOkResponse({
         type: ValueStreamsByWeekDto,
         description: 'Get all value streams & expertise scopes in a week',
     })
     async execute(
         @Req() req: Request,
-        @Param('week') week: number,
+        @Query('week') week: number,
     ): Promise<ValueStreamsByWeekDto> {
         const { userId } = req.user as JwtPayload;
         const inputValueStream = new InputValueStreamByWeekDto(userId, week);

@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import Axios from 'axios';
 import * as moment from 'moment';
 
+import { FormatDate } from '../../../../../common/constants/formatDate';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
@@ -32,7 +33,8 @@ interface ServerResponse {
 
 @Injectable()
 export class GetValueStreamUseCase
-    implements IUseCase<{ userId: number; week: number }, Promise<Response>> {
+    implements IUseCase<{ userId: number; week: number }, Promise<Response>>
+{
     constructor(
         @Inject('IValueStreamRepo')
         public readonly valueStreamRepo: IValueStreamRepo,
@@ -76,11 +78,12 @@ export class GetValueStreamUseCase
 
             const user = await this.userRepo.findById(params.userId);
             const valueStreams = await this.valueStreamRepo.findAll();
-            const committedWLs = await this.committedWLRepo.findByUserIdValueStream(
-                params.userId,
-                startDateOfWeek,
-                endDateOfWeek,
-            );
+            const committedWLs =
+                await this.committedWLRepo.findByUserIdValueStream(
+                    params.userId,
+                    startDateOfWeek,
+                    endDateOfWeek,
+                );
 
             const plannedWLs = await this.plannedWLRepo.findByUserId({
                 startDateOfWeek,
@@ -96,8 +99,8 @@ export class GetValueStreamUseCase
 
             const startDate = moment(startDateOfWeek)
                 .add(1, 'days')
-                .format('DD-MM-YYYY');
-            const endDate = moment(endDateOfWeek).format('DD-MM-YYYY');
+                .format(FormatDate.SHORT_DATE);
+            const endDate = moment(endDateOfWeek).format(FormatDate.SHORT_DATE);
 
             const valueStreamsByWeekDto = ValueStreamsByWeekMap.combineAllDto(
                 committedWLDtos,
