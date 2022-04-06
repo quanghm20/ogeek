@@ -3,7 +3,7 @@ import {
     Get,
     InternalServerErrorException,
     NotFoundException,
-    Param,
+    Query,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -12,8 +12,8 @@ import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
-import { InputValueStreamByWeekDto } from '../../../infra/dtos/ValueStreamsByWeek/inputValueStream.dto';
-import { ValueStreamsByWeekDto } from '../../../infra/dtos/ValueStreamsByWeek/valueStreamsByWeek.dto';
+import { InputValueStreamByWeekDto } from '../../../infra/dtos/valueStreamsByWeek/inputValueStream.dto';
+import { ValueStreamsByWeekDto } from '../../../infra/dtos/valueStreamsByWeek/valueStreamsByWeek.dto';
 import { GetValueStreamError } from './GetValueStreamErrors';
 import { GetValueStreamUseCase } from './GetValueStreamUseCase';
 
@@ -24,14 +24,14 @@ export class GetValueStreamController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Get(':week')
+    @Get('')
     @ApiOkResponse({
         type: ValueStreamsByWeekDto,
         description: 'Get all value streams & expertise scopes in a week',
     })
     async execute(
         @Req() req: Request,
-        @Param('week') week: number,
+        @Query('week') week: number,
     ): Promise<ValueStreamsByWeekDto> {
         const { userId } = req.user as JwtPayload;
         const inputValueStream = new InputValueStreamByWeekDto(userId, week);
@@ -40,7 +40,7 @@ export class GetValueStreamController {
             const error = result.value;
 
             switch (error.constructor) {
-                case GetValueStreamError.ValueStreamNotFound:
+                case GetValueStreamError.FailToGetValueStream:
                     throw new NotFoundException(
                         error.errorValue(),
                         'Can not get value stream by week',
@@ -48,7 +48,7 @@ export class GetValueStreamController {
                 default:
                     throw new InternalServerErrorException(
                         error.errorValue(),
-                        'server error!! ',
+                        'Something wrong happended',
                     );
             }
         }

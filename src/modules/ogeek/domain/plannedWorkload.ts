@@ -20,6 +20,10 @@ interface IPlannedWorkloadProps {
     status?: PlannedWorkloadStatus;
     createdAt?: Date;
     updatedAt?: Date;
+    deletedAt?: Date;
+    createdBy?: User;
+    updatedBy?: User;
+    deletedBy?: User;
 }
 export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     private constructor(props?: IPlannedWorkloadProps, id?: UniqueEntityID) {

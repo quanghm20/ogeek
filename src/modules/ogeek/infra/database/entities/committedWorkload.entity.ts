@@ -14,11 +14,7 @@ import { PlannedWorkloadEntity } from './plannedWorkload.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ name: 'committed_workload' })
-@Check(
-    'CHK_START_DATE_COMMITTED_WORKLOAD',
-    '"start_date" > now() AND "start_date" < "expired_date"',
-)
-@Check('CHK_EXPIRED_DATE_COMMITTED_WORKLOAD', '"expired_date" > now()')
+@Check('CHK_START_DATE_COMMITTED_WORKLOAD', '"start_date" < "expired_date"')
 @Check(
     'CHK_COMMITTED_WORKLOAD',
     '"committed_workload" >= 0 AND "committed_workload" <= 50 ',

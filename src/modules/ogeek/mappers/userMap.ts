@@ -22,11 +22,6 @@ export class UserMap implements Mapper<User> {
         const id = Number(user.id.toValue());
         return new UserCompactDto(id, user.alias, user.name);
     }
-    // public static fromDomainWeekStatus(user: User): GetWeekStatusDto {
-    //     return {
-    //         weekStatus: user.weekStatus,
-    //     };
-    // }
 
     public static toDomain(raw: UserEntity): User {
         const { id } = raw;
@@ -75,14 +70,12 @@ export class UserMap implements Mapper<User> {
 
     public static toEntity(user: User): UserEntity {
         const userEntity = new UserEntity();
-
+        userEntity.id = Number(user.id.toString());
         userEntity.alias = user.alias;
-        userEntity.name = user.name;
-        userEntity.email = user.email;
         userEntity.phone = user.phone;
-        userEntity.id = Number(user.id.toValue());
+        userEntity.email = user.email;
+        userEntity.name = user.name;
         userEntity.role = user.role;
-        userEntity.avatar = user.avatar;
 
         return userEntity;
     }

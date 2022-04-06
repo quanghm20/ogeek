@@ -4,9 +4,11 @@ import { UseCaseError } from '../../../../../core/logic/UseCaseError';
 
 export namespace FailToCreateUserErrors {
     export class FailToCreateUser extends Result<UseCaseError> {
-        constructor() {
+        constructor(message?: string) {
             super(false, {
-                message: ' Cannot create new user ',
+                message: message
+                    ? message
+                    : ' Cannot create new user. Please check your input',
             } as UseCaseError);
         }
     }

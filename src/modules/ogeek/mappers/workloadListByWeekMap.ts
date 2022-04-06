@@ -111,7 +111,7 @@ export class WorkloadListByWeekMap {
         );
 
         if (issueItem) {
-            return issueItem.type;
+            return issueItem.status;
         }
 
         return null;
@@ -287,7 +287,7 @@ export class WorkloadListByWeekMap {
                 committedWorkload: committedWLByUser,
                 plannedWorkload: resultExpAndTotalWL.totalPlannedWL,
                 actualWorkload: this.handleActualWorkload(actualWorkloadByUser),
-                weekStatus: user.weekStatus,
+                weekStatus: plannedWLDtos[0].status,
                 issueStatus: this.handleIssue(issues, user),
             });
         });

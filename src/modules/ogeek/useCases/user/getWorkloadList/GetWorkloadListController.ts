@@ -27,7 +27,7 @@ export class GetWorkloadListController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Get(':week')
-    @Roles(RoleType.ADMIN)
+    @Roles(RoleType.PP)
     @ApiOkResponse({
         type: WorkloadListByWeekDto,
         description: 'Get all workload list of geeks in a week',

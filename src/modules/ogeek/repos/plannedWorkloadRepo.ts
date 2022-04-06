@@ -1,14 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as moment from 'moment';
-import { Between, Connection, getConnection, Repository } from 'typeorm';
+import {
+    Between,
+    Connection,
+    getConnection,
+    LessThanOrEqual,
+    Repository,
+} from 'typeorm';
 
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { CommittedWorkloadEntity } from '../infra/database/entities';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
-import { InputGetPlanWLDto } from '../infra/dtos/ValueStreamsByWeek/inputGetPlanWL.dto';
+import { InputGetPlanWLDto } from '../infra/dtos/valueStreamsByWeek/inputGetPlanWL.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
 import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
@@ -33,6 +39,10 @@ export interface IPlannedWorkloadRepo {
         startDateOfWeek,
         endDateOfWeek,
     }: InputGetPlanWLDto): Promise<PlannedWorkload[]>;
+    getPlanWLNotClosed({
+        startDateOfWeek,
+        userId,
+    }: InputGetPlanWLDto): Promise<PlannedWorkload>;
     create(entity: PlannedWorkloadEntity): Promise<PlannedWorkload>;
     createMany(entities: PlannedWorkloadEntity[]): Promise<PlannedWorkload[]>;
     updateMany(condition: any, update: any): Promise<void>;
@@ -60,7 +70,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             where: {
                 user: { id: userId },
                 startDate: Between(startDateOfYear, endDateOfYear),
-                status: PlannedWorkloadStatus.ACTIVE,
+                status: !PlannedWorkloadStatus.ARCHIVE,
             },
             relations: [
                 'contributedValue',
@@ -127,7 +137,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }: InputGetPlanWLDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: PlannedWorkloadStatus.ACTIVE,
+                status: !PlannedWorkloadStatus.ARCHIVE,
                 user: userId,
                 startDate: Between(startDateOfWeek, endDateOfWeek),
             },
@@ -149,6 +159,22 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             : new Array<PlannedWorkload>();
     }
 
+    async getPlanWLNotClosed({
+        startDateOfWeek,
+        userId,
+    }: InputGetPlanWLDto): Promise<PlannedWorkload> {
+        const entitie = await this.repo.findOne({
+            where: {
+                status:
+                    PlannedWorkloadStatus.PLANNING ||
+                    PlannedWorkloadStatus.EXECUTING,
+                user: userId,
+                endDate: LessThanOrEqual(startDateOfWeek),
+            },
+        });
+        return entitie ? PlannedWorkloadMap.toDomain(entitie) : null;
+    }
+
     async findByIdWithTimeRange(
         userId: DomainId | number,
         startDate: Date,
@@ -160,7 +186,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                     MomentService.shiftFirstDateChart(startDate),
                     MomentService.shiftLastDateChart(startDate),
                 ),
-                status: PlannedWorkloadStatus.ACTIVE,
+                status: !PlannedWorkloadStatus.ARCHIVE,
             },
             relations: [
                 'contributedValue',
@@ -188,7 +214,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }: StartEndDateOfWeekWLInputDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: PlannedWorkloadStatus.ACTIVE,
+                status: !PlannedWorkloadStatus.ARCHIVE,
                 startDate: Between(startDateOfWeek, endDateOfWeek),
             },
             relations: [
@@ -233,7 +259,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 plannedWorkload.plannedWorkload = workload;
                 plannedWorkload.reason = `Auto generate planned workload by committed workload for ${committedWorkload.id} week ${i} `;
                 plannedWorkload.startDate = startDate.toDate();
-                plannedWorkload.status = WorkloadStatus.ACTIVE;
+                plannedWorkload.status = PlannedWorkloadStatus.PLANNING;
                 plannedWorkload.user = committedWorkload.user;
                 plannedWorkload.updatedAt = new Date();
                 const res = await queryRunner.manager.save(
