@@ -64,7 +64,7 @@ export class CreateCommittedWorkloadUseCase
                 userId,
                 startDate,
                 expiredDate,
-                createdBy,
+                createdBy.id,
             );
             if (result.length < 0) {
                 return left(
@@ -76,7 +76,6 @@ export class CreateCommittedWorkloadUseCase
             const committedWorkloadsDto =
                 CommittedWorkloadMap.fromCommittedWorkloadShortArray(result);
             return right(Result.ok(committedWorkloadsDto));
-            return null;
         } catch (err) {
             return left(err);
         }

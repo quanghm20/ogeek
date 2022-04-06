@@ -3,16 +3,15 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
 import { DomainId } from './domainId';
-import { User } from './user';
 
 interface IValueStreamProps {
     name?: string;
+    createdBy?: number;
+    updatedBy?: number;
+    deletedBy?: number;
     createdAt?: Date;
     updatedAt?: Date;
     deletedAt?: Date;
-    createdBy?: User;
-    updatedBy?: User;
-    deletedBy?: User;
 }
 export class ValueStream extends AggregateRoot<IValueStreamProps> {
     private constructor(props?: IValueStreamProps, id?: UniqueEntityID) {

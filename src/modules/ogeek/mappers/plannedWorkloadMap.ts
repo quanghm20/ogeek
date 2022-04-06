@@ -11,8 +11,6 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     public static fromDomain(
         plannedWorkload: PlannedWorkload,
     ): PlannedWorkloadDto {
-        // console.log(plannedWorkload);
-
         return {
             id: plannedWorkload.id,
             user: UserMap.fromDomain(plannedWorkload.props.user),

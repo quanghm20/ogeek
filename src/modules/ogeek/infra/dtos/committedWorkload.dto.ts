@@ -33,8 +33,8 @@ export class CommittedWorkloadDto {
     })
     status: CommittedWorkloadStatus;
 
-    @ApiProperty({ type: UserDto })
-    createdBy?: UserDto;
+    @ApiProperty()
+    createdBy?: number;
 
     @ApiProperty({ example: new Date() })
     @IsOptional()

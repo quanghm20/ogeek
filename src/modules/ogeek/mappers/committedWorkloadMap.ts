@@ -26,7 +26,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         dto.committedWorkload = committedWorkload.props.committedWorkload;
         dto.startDate = committedWorkload.props.startDate;
         dto.expiredDate = committedWorkload.props.expiredDate;
-        dto.createdBy = UserMap.fromDomain(committedWorkload.props.createdBy);
+        dto.createdBy = committedWorkload.props.createdBy;
         dto.createdAt = committedWorkload.props.createdAt;
         dto.updatedAt = committedWorkload.props.updatedAt;
         return dto;
@@ -106,12 +106,8 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
                     user: committedWLEntity.user
                         ? UserMap.toDomain(committedWLEntity.user)
                         : null,
-                    createdBy: committedWLEntity.createdBy
-                        ? UserMap.toDomain(committedWLEntity.createdBy)
-                        : null,
-                    updatedBy: committedWLEntity.updatedBy
-                        ? UserMap.toDomain(committedWLEntity.updatedBy)
-                        : null,
+                    createdBy: committedWLEntity.createdBy,
+                    updatedBy: committedWLEntity.updatedBy,
                 },
                 new UniqueEntityID(id),
             );

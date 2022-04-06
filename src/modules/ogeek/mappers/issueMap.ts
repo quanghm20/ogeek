@@ -30,8 +30,8 @@ export class IssueMap implements Mapper<Issue> {
                 status: raw.status,
                 note: raw.note,
                 user: UserMap.toDomain(raw.user),
-                updatedBy: UserMap.toDomain(raw.updatedBy),
-                createdBy: UserMap.toDomain(raw.createdBy),
+                updatedBy: raw.updatedBy,
+                createdBy: raw.createdBy,
             },
             new UniqueEntityID(id),
         );

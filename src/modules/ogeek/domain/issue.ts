@@ -9,12 +9,12 @@ interface IIssueProps {
     note: string;
     status: IssueStatus;
     user: User;
+    createdBy?: number;
+    updatedBy?: number;
+    deletedBy?: number;
     createdAt?: Date;
     updatedAt?: Date;
     deletedAt?: Date;
-    createdBy?: User;
-    updatedBy?: User;
-    deletedBy?: User;
 }
 export class Issue extends AggregateRoot<IIssueProps> {
     private constructor(props?: IIssueProps, id?: UniqueEntityID) {

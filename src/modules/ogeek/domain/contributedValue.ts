@@ -4,18 +4,17 @@ import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
 import { DomainId } from './domainId';
 import { ExpertiseScope } from './expertiseScope';
-import { User } from './user';
 import { ValueStream } from './valueStream';
 
 interface IContributedValueProps {
     valueStream?: ValueStream;
     expertiseScope?: ExpertiseScope;
+    createdBy?: number;
+    updatedBy?: number;
+    deletedBy?: number;
     createdAt?: Date;
     updatedAt?: Date;
     deletedAt?: Date;
-    createdBy?: User;
-    updatedBy?: User;
-    deletedBy?: User;
 }
 export class ContributedValue extends AggregateRoot<IContributedValueProps> {
     private constructor(props?: IContributedValueProps, id?: UniqueEntityID) {

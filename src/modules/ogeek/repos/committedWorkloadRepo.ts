@@ -45,7 +45,7 @@ export interface ICommittedWorkloadRepo {
         userId: number,
         startDate: Date,
         expiredDate: Date,
-        createdBy: UserEntity,
+        createdBy: number,
     ): Promise<CommittedWorkload[]>;
     findByUserIdInTimeRange(
         userId: DomainId | number,
@@ -197,12 +197,12 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         userId: number,
         startDate: Date,
         expiredDate: Date,
+        createdBy: number,
     ): Promise<CommittedWorkload[]> {
         const queryRunner = getConnection().createQueryRunner();
         await queryRunner.connect();
         try {
             const user = new UserEntity(userId);
-            const createdBy = new UserEntity();
             const now = new Date();
             now.setHours(0, 0, 0);
             startDate = moment(startDate).add(dateRange.UTC, 'hours').toDate();

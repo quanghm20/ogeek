@@ -12,12 +12,12 @@ interface IUserProps {
     email: string;
     avatar: string;
     role: RoleType;
+    createdBy?: number;
+    updatedBy?: number;
+    deletedBy?: number;
     createdAt?: Date;
     updatedAt?: Date;
     deletedAt?: Date;
-    createdBy?: User;
-    updatedBy?: User;
-    deletedBy?: User;
 }
 export class User extends AggregateRoot<IUserProps> {
     private constructor(props?: IUserProps, id?: UniqueEntityID) {
