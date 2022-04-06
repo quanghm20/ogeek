@@ -37,7 +37,8 @@ export class ValueStreamEntity extends AbstractEntity {
     contributedValues: ContributedValueEntity[];
 
     constructor(
-        name: string,
+        id?: number,
+        name?: string,
         createdBy?: UserEntity,
         updatedBy?: UserEntity,
         deletedBy?: UserEntity,
@@ -45,7 +46,7 @@ export class ValueStreamEntity extends AbstractEntity {
         updatedAt?: Date,
         deletedAt?: Date,
     ) {
-        super();
+        super(id);
         this.name = name;
         this.createdBy = createdBy;
         this.updatedBy = updatedBy;

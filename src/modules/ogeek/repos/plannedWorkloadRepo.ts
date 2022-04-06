@@ -6,7 +6,7 @@ import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
-import { InputGetPlanWLDto } from '../infra/dtos/ValueStreamsByWeek/inputGetPlanWL.dto';
+import { InputGetPlanWLDto } from '../infra/dtos/valueStreamsByWeek/inputGetPlanWL.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
 import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';

@@ -90,11 +90,12 @@ export class CommittedWorkloadEntity extends AbstractEntity {
     plannedWorkloads: PlannedWorkloadEntity[];
 
     constructor(
-        user: UserEntity,
-        contributedValue: ContributedValueEntity,
-        committedWorkload: number,
-        startDate: Date,
-        expiredDate: Date,
+        id?: number,
+        user?: UserEntity,
+        contributedValue?: ContributedValueEntity,
+        committedWorkload?: number,
+        startDate?: Date,
+        expiredDate?: Date,
         status?: CommittedWorkloadStatus,
         createdBy?: UserEntity,
         updatedBy?: UserEntity,
@@ -103,7 +104,7 @@ export class CommittedWorkloadEntity extends AbstractEntity {
         updatedAt?: Date,
         deletedAt?: Date,
     ) {
-        super();
+        super(id);
         this.user = user;
         this.contributedValue = contributedValue;
         this.committedWorkload = committedWorkload;

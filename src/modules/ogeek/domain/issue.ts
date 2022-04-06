@@ -14,7 +14,7 @@ interface IIssueProps {
     createdBy: User;
 }
 export class Issue extends AggregateRoot<IIssueProps> {
-    private constructor(props: IIssueProps, id: UniqueEntityID) {
+    private constructor(props?: IIssueProps, id?: UniqueEntityID) {
         super(props, id);
     }
     get issueId(): DomainId {

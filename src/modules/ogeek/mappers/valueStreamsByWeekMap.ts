@@ -4,9 +4,9 @@ import { ExpertiseScopeDto } from '../infra/dtos/expertiseScope.dto';
 import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';
 import { UserDto } from '../infra/dtos/user.dto';
 import { ValueStreamDto } from '../infra/dtos/valueStream.dto';
-import { ExpertiseScopeWithinValueStreamDto } from '../infra/dtos/ValueStreamsByWeek/expertiseScopeWithinValueStream.dto';
-import { ValueStreamByWeekDto } from '../infra/dtos/ValueStreamsByWeek/valueStream.dto';
-import { ValueStreamsByWeekDto } from '../infra/dtos/ValueStreamsByWeek/valueStreamsByWeek.dto';
+import { ExpertiseScopeWithinValueStreamDto } from '../infra/dtos/valueStreamsByWeek/expertiseScopeWithinValueStream.dto';
+import { ValueStreamByWeekDto } from '../infra/dtos/valueStreamsByWeek/valueStream.dto';
+import { ValueStreamsByWeekDto } from '../infra/dtos/valueStreamsByWeek/valueStreamsByWeek.dto';
 
 export class ValueStreamsByWeekMap {
     public static addValueStreamEmpty(

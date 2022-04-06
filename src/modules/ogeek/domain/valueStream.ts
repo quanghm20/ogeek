@@ -10,7 +10,7 @@ interface IValueStreamProps {
     updatedAt?: Date;
 }
 export class ValueStream extends AggregateRoot<IValueStreamProps> {
-    private constructor(props: IValueStreamProps, id: UniqueEntityID) {
+    private constructor(props?: IValueStreamProps, id?: UniqueEntityID) {
         super(props, id);
     }
     get valueStreamId(): DomainId {

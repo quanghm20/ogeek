@@ -103,12 +103,13 @@ export class UserEntity extends AbstractEntity {
     }
 
     constructor(
-        alias: string,
-        phone: string,
-        email: string,
-        avatar: string,
-        role: RoleType,
-        name: string,
+        id?: number,
+        alias?: string,
+        phone?: string,
+        email?: string,
+        avatar?: string,
+        role?: RoleType,
+        name?: string,
         createdBy?: UserEntity,
         updatedBy?: UserEntity,
         deletedBy?: UserEntity,
@@ -116,7 +117,7 @@ export class UserEntity extends AbstractEntity {
         updatedAt?: Date,
         deletedAt?: Date,
     ) {
-        super();
+        super(id);
         this.alias = alias;
         this.phone = phone;
         this.email = email;

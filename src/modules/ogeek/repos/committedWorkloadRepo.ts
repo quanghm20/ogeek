@@ -193,7 +193,8 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         const queryRunner = getConnection().createQueryRunner();
         await queryRunner.connect();
         try {
-            const user = {} as UserEntity;
+            const user = new UserEntity(userId);
+            const createdBy = new UserEntity();
             const now = new Date();
             now.setHours(0, 0, 0);
             startDate = moment(startDate).add(dateRange.UTC, 'hours').toDate();
@@ -235,12 +236,15 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     },
                 });
                 const committed = new CommittedWorkloadEntity(
+                    0,
                     user,
                     contribute,
                     workload.workload,
                     startDate,
                     expiredDate,
                     status,
+                    createdBy,
+                    createdBy,
                 );
 
                 const save = await queryRunner.manager.save(committed);

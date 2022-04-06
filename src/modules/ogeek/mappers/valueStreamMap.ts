@@ -3,7 +3,7 @@ import { Mapper } from '../../../core/infra/Mapper';
 import { ValueStream } from '../domain/valueStream';
 import { ValueStreamEntity } from '../infra/database/entities/valueStream.entity';
 import { ValueStreamShortInsertDto } from '../infra/dtos/getContributedValue/valueStreamShort.dto';
-import { ValueStreamShortDto } from '../infra/dtos/summaryYearDTO/valueStreamShort.dto';
+import { ValueStreamShortDto } from '../infra/dtos/overviewSummaryYear/valueStreamShort.dto';
 import { ValueStreamDto } from '../infra/dtos/valueStream.dto';
 
 export class ValueStreamMap implements Mapper<ValueStream> {

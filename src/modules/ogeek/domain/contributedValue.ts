@@ -13,7 +13,7 @@ interface IContributedValueProps {
     updatedAt?: Date;
 }
 export class ContributedValue extends AggregateRoot<IContributedValueProps> {
-    private constructor(props: IContributedValueProps, id: UniqueEntityID) {
+    private constructor(props?: IContributedValueProps, id?: UniqueEntityID) {
         super(props, id);
     }
     get valueStream(): ValueStream {
