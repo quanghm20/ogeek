@@ -19,8 +19,8 @@ import * as moment from 'moment';
 
 import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
-import { InputGetOverviewChartDto } from '../../../infra/dtos/OverviewChartDto/inputGetOverviewChart.dto';
-import { OverviewChartDataDto } from '../../../infra/dtos/OverviewChartDto/overviewChartData.dto';
+import { InputGetOverviewChartDto } from '../../../infra/dtos/overviewChart/inputGetOverviewChart.dto';
+import { OverviewChartDataDto } from '../../../infra/dtos/overviewChart/overviewChartData.dto';
 import { GetOverviewChartDataErrors } from './OverviewChartDataErrors';
 import { GetOverviewChartDataUseCase } from './OverviewChartDataUseCase';
 

@@ -13,6 +13,7 @@
     "start:hmr": "node dist/main",
     "migration": "ts-node node_modules/typeorm/cli.js migration:run -f ormconfig",
     "migration:generate": "ts-node node_modules/typeorm/cli.js migration:generate -f ormconfig -d src/migrations -n",
+    "seeding:generate": "ts-node node_modules/typeorm/cli.js migration:generate -f ormconfig -d src/seeding -n",
     "migration:revert": "ts-node node_modules/typeorm/cli.js migration:revert -f ormconfig",
     "webpack": "webpack --config webpack.config.js --progress",
     "migration:create": "ts-node node_modules/typeorm/cli.js migration:create -f ormconfig -d src/migrations -n",

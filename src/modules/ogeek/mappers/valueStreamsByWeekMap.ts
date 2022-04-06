@@ -1,34 +1,34 @@
 import * as moment from 'moment';
 
-import { WeekStatus } from '../../../common/constants/weekStatus';
+import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { ActualPlanAndWorkLogDto } from '../infra/dtos/actualPlansAndWorkLogs.dto';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { ExpertiseScopeDto } from '../infra/dtos/expertiseScope.dto';
 import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';
 import { UserDto } from '../infra/dtos/user.dto';
 import { ValueStreamDto } from '../infra/dtos/valueStream.dto';
-import { ExpertiseScopeWithinValueStreamDto } from '../infra/dtos/ValueStreamsByWeek/expertiseScopeWithinValueStream.dto';
-import { ValueStreamByWeekDto } from '../infra/dtos/ValueStreamsByWeek/valueStream.dto';
-import { ValueStreamsByWeekDto } from '../infra/dtos/ValueStreamsByWeek/valueStreamsByWeek.dto';
+import { ExpertiseScopeWithinValueStreamDto } from '../infra/dtos/valueStreamsByWeek/expertiseScopeWithinValueStream.dto';
+import { ValueStreamByWeekDto } from '../infra/dtos/valueStreamsByWeek/valueStream.dto';
+import { ValueStreamsByWeekDto } from '../infra/dtos/valueStreamsByWeek/valueStreamsByWeek.dto';
 
 export class ValueStreamsByWeekMap {
-    public static getStatusValueStreamInFuture(): WeekStatus {
-        return WeekStatus.PLANNING;
+    public static getStatusValueStreamInFuture(): PlannedWorkloadStatus {
+        return PlannedWorkloadStatus.PLANNING;
     }
 
     public static getStatusValueStream(
         week: number,
         currentWeek: number,
-        plannedWLDtos: PlannedWorkloadDto[],
-        userDto: UserDto,
-    ): WeekStatus {
+        // plannedWLDtos: PlannedWorkloadDto[],
+        // userDto: UserDto,
+    ): PlannedWorkloadStatus {
         if (currentWeek > week) {
-            return WeekStatus.CLOSED;
+            return PlannedWorkloadStatus.CLOSED;
         }
-        if (currentWeek < week) {
-            return ValueStreamsByWeekMap.getStatusValueStreamInFuture();
-        }
-        return userDto.weekStatus;
+        // if (currentWeek < week) {
+        //     return ValueStreamsByWeekMap.getStatusValueStreamInFuture();
+        // }
+        // return userDto.weekStatus;
     }
 
     public static addValueStreamEmpty(
@@ -111,8 +111,8 @@ export class ValueStreamsByWeekMap {
         const status = ValueStreamsByWeekMap.getStatusValueStream(
             week,
             currentWeek,
-            plannedWLDtos,
-            userDto,
+            // plannedWLDtos,
+            // userDto,
         );
         const valueStreamByWeekDtos = new Array<ValueStreamByWeekDto>();
         committedWLDtos.forEach((committedWLDto) => {
