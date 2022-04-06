@@ -21,12 +21,12 @@ import {
     ValueStreamRepository,
 } from './repos/index';
 import {
-    CreateCommittedWorkloadController,
+    CommittedWorkloadController,
     CreateCommittedWorkloadUseCase,
-} from './useCases/committedWorkload/createCommittedWorkload';
+    GetCommittedWorkloadUseCase,
+    GetHistoryCommittedWorkloadUseCase,
+} from './useCases/committedWorkload';
 import { CronCommittedWorkload } from './useCases/committedWorkload/cron-committed-workload.service';
-import { GetCommittedWorkloadUseCase } from './useCases/committedWorkload/getCommittedWorkload/GetCommittedWorkloadsUseCase';
-import { GetHistoryCommittedWorkloadUseCase } from './useCases/committedWorkload/getHistoryCommittedWorkload/GetCommittedWorkloadsUseCase';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,
@@ -77,7 +77,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         ScheduleModule.forRoot(),
     ],
     controllers: [
-        CreateCommittedWorkloadController,
+        CommittedWorkloadController,
         GetContributedValueController,
         GetUserController,
         GetValueStreamController,

@@ -1,10 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Connection, LessThanOrEqual, Repository } from 'typeorm';
+import * as moment from 'moment';
+import {
+    Between,
+    Connection,
+    getConnection,
+    LessThanOrEqual,
+    Repository,
+} from 'typeorm';
 
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
+import { CommittedWorkloadEntity } from '../infra/database/entities';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
 import { InputGetPlanWLDto } from '../infra/dtos/valueStreamsByWeek/inputGetPlanWL.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
@@ -38,6 +46,9 @@ export interface IPlannedWorkloadRepo {
     create(entity: PlannedWorkloadEntity): Promise<PlannedWorkload>;
     createMany(entities: PlannedWorkloadEntity[]): Promise<PlannedWorkload[]>;
     updateMany(condition: any, update: any): Promise<void>;
+    autoGeneratePlannedWorkloadByCommittedWorkload(
+        committedWorkload: CommittedWorkloadEntity,
+    ): Promise<PlannedWorkload[]>;
 }
 
 @Injectable()
@@ -222,5 +233,52 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
         return entities
             ? PlannedWorkloadMap.toDomainAll(entities)
             : new Array<PlannedWorkload>();
+    }
+
+    async autoGeneratePlannedWorkloadByCommittedWorkload(
+        committedWorkload: CommittedWorkloadEntity,
+    ): Promise<PlannedWorkload[]> {
+        const queryRunner = getConnection().createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            // console.log(committedWorkload);
+            let startDate = moment(committedWorkload.startDate);
+            const expiredDate = moment(committedWorkload.expiredDate);
+            const workload = committedWorkload.committedWorkload;
+            const result = new Array<PlannedWorkload>();
+            if (startDate.weekday() < 6) {
+                startDate = startDate.add(startDate.weekday(), 'd');
+            }
+            for (let i = startDate.weeks(); i <= expiredDate.weeks(); i++) {
+                const plannedWorkload = new PlannedWorkloadEntity();
+                plannedWorkload.committedWorkload = committedWorkload;
+                plannedWorkload.contributedValue =
+                    committedWorkload.contributedValue;
+                plannedWorkload.createdAt = new Date();
+                plannedWorkload.plannedWorkload = workload;
+                plannedWorkload.reason = `Auto generate planned workload by committed workload for ${committedWorkload.id} week ${i} `;
+                plannedWorkload.startDate = startDate.toDate();
+                plannedWorkload.status = PlannedWorkloadStatus.PLANNING;
+                plannedWorkload.user = committedWorkload.user;
+                plannedWorkload.updatedAt = new Date();
+                const res = await queryRunner.manager.save(
+                    PlannedWorkloadEntity,
+                    plannedWorkload,
+                );
+                result.push(PlannedWorkloadMap.toDomain(res));
+                startDate = startDate.add(7, 'd');
+            }
+            await queryRunner.commitTransaction();
+            return result;
+        } catch (err) {
+            // since we have errors lets rollback the changes we made
+            // console.log(err);
+            await queryRunner.rollbackTransaction();
+            return null;
+        } finally {
+            // you need to release a queryRunner which was manually instantiated
+            await queryRunner.release();
+        }
     }
 }

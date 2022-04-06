@@ -8,8 +8,8 @@ import {
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
-    Param,
     Post,
+    Query,
     Req,
     UseGuards,
     UsePipes,
@@ -19,22 +19,25 @@ import {
     ApiBearerAuth,
     ApiOkResponse,
     ApiProperty,
+    ApiPropertyOptional,
     ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { RoleType } from '../../../../../common/constants/roleType';
-import { Roles } from '../../../../../decorators/roles.decorator';
-import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
-import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
-import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedWorkload.dto';
-import { CommittedWorkloadShortDto } from '../../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
-import { MessageDto } from '../../../infra/dtos/message.dto';
-import { GetCommittedWorkloadErrors } from '../getCommittedWorkload/GetCommittedWorkloadErrors';
-import { GetCommittedWorkloadUseCase } from '../getCommittedWorkload/GetCommittedWorkloadsUseCase';
-import { GetHistoryCommittedWorkloadUseCase } from '../getHistoryCommittedWorkload/GetCommittedWorkloadsUseCase';
-import { CreateCommittedWorkloadErrors } from './CreateCommittedWorkloadErrors';
-import { CreateCommittedWorkloadUseCase } from './CreateCommittedWorkloadUseCase';
+import { RoleType } from '../../../../common/constants/roleType';
+import { Member } from '../../../../core/domain/member';
+import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
+import { Roles } from '../../../../decorators/roles.decorator';
+import { JwtAuthGuard } from '../../../jwt-auth/jwt-auth-guard';
+import { JwtPayload } from '../../../jwt-auth/jwt-auth.strategy';
+import { CreateCommittedWorkloadDto } from '../../infra/dtos/createCommittedWorkload.dto';
+import { CommittedWorkloadShortDto } from '../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
+import { MessageDto } from '../../infra/dtos/message.dto';
+import { CreateCommittedWorkloadErrors } from './createCommittedWorkload/CreateCommittedWorkloadErrors';
+import { CreateCommittedWorkloadUseCase } from './createCommittedWorkload/CreateCommittedWorkloadUseCase';
+import { GetCommittedWorkloadErrors } from './getCommittedWorkload/GetCommittedWorkloadErrors';
+import { GetCommittedWorkloadUseCase } from './getCommittedWorkload/GetCommittedWorkloadsUseCase';
+import { GetHistoryCommittedWorkloadUseCase } from './getHistoryCommittedWorkload/GetCommittedWorkloadsUseCase';
 
 export class DataCommittedWorkload {
     @ApiProperty({
@@ -46,12 +49,20 @@ export class DataCommittedWorkload {
         this.data = data;
     }
 }
+export class FilterCommittedWorkload {
+    @ApiProperty()
+    @ApiPropertyOptional()
+    userId?: number;
+    constructor(userId?: number) {
+        this.userId = userId;
+    }
+}
 
 @Controller('api/committed-workloads')
 @ApiTags('API committed workload ')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-export class CreateCommittedWorkloadController {
+export class CommittedWorkloadController {
     constructor(
         public readonly createCommitUseCase: CreateCommittedWorkloadUseCase,
         public readonly getCommitUseCase: GetCommittedWorkloadUseCase,
@@ -71,9 +82,14 @@ export class CreateCommittedWorkloadController {
         @Req() req: Request,
     ): Promise<MessageDto> {
         const pic = req.user as JwtPayload;
-        const picId = pic.userId;
-        body.picId = picId;
-        const result = await this.createCommitUseCase.execute(body);
+        const id = new UniqueEntityID(pic.userId);
+        const member = Member.create(
+            {
+                alias: '',
+            },
+            id,
+        ).getValue();
+        const result = await this.createCommitUseCase.execute(body, member);
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {
@@ -96,37 +112,19 @@ export class CreateCommittedWorkloadController {
     @Get()
     @HttpCode(HttpStatus.OK)
     @Roles(RoleType.PP)
-    @UseGuards()
     @ApiOkResponse({
         type: DataCommittedWorkload,
         description: 'Get all committed workload',
     })
-    @UsePipes(new ValidationPipe({ transform: true }))
-    async getAllCommittedWorkload(): Promise<DataCommittedWorkload> {
-        const result = await this.getCommitUseCase.execute();
-        if (result.isLeft()) {
-            const error = result.value;
-            switch (error.constructor) {
-                case GetCommittedWorkloadErrors.NotFound:
-                    throw new NotFoundException(error.errorValue());
-                default:
-                    throw new InternalServerErrorException(error.errorValue());
-            }
-        }
-        return new DataCommittedWorkload(result.value.getValue());
-    }
-
-    @Get('/:userId')
-    @HttpCode(HttpStatus.OK)
-    @ApiOkResponse({
-        type: DataCommittedWorkload,
-        description: 'Get committed workload by user ',
-    })
-    @UsePipes(new ValidationPipe({ transform: true }))
-    async getHistoryCommittedWorkload(
-        @Param('userId') userId: number,
+    @UsePipes(
+        new ValidationPipe({
+            transform: true,
+        }),
+    )
+    async getAllCommittedWorkload(
+        @Query() query: FilterCommittedWorkload,
     ): Promise<DataCommittedWorkload> {
-        const result = await this.getHistoryCommitUseCase.execute(userId);
+        const result = await this.getCommitUseCase.execute(query);
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {

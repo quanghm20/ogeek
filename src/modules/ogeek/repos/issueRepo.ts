@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, getConnection, Repository } from 'typeorm';
@@ -95,7 +96,7 @@ export class IssueRepository implements IIssueRepo {
             const user = new UserEntity(userId);
 
             await queryRunner.startTransaction();
-            const issue = new IssueEntity(type, week, user);
+            const issue = new IssueEntity();
             await queryRunner.manager.save(issue);
             await queryRunner.commitTransaction();
             // return HttpStatus.CREATED;
