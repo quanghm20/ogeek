@@ -1,13 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { WeekStatus } from '../../../../common/constants/weekStatus';
-import { UserEntity } from '../database/entities/user.entity';
+import { PlannedWorkloadStatus } from '../../../../common/constants/plannedStatus';
+import { PlannedWorkloadEntity } from '../database/entities';
+// import { UserEntity } from '../database/entities/user.entity';
 
 export class GetWeekStatusDto {
-    @ApiProperty({ enum: WeekStatus, example: WeekStatus.PLANNING })
-    weekStatus?: WeekStatus;
+    @ApiProperty({
+        enum: PlannedWorkloadStatus,
+        example: PlannedWorkloadStatus.PLANNING,
+    })
+    weekStatus?: PlannedWorkloadStatus;
 
-    constructor(user: UserEntity) {
-        this.weekStatus = user.weekStatus;
+    constructor(plannedWorkload: PlannedWorkloadEntity) {
+        // this.weekStatus = user.weekStatus;
+        this.weekStatus = plannedWorkload.status;
     }
 }

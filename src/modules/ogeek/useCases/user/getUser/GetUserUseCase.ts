@@ -21,7 +21,7 @@ export class GetUserUseCase
         @Inject('IUserRepo') public readonly repo: IUserRepo,
     ) {}
 
-    async helperExecute(findUserDto: FindUserDto): Promise<User> {
+    async getUserByEachUseCase(findUserDto: FindUserDto): Promise<User> {
         if (findUserDto.alias) {
             return this.repo.findByAlias(findUserDto.alias);
         }
@@ -34,7 +34,7 @@ export class GetUserUseCase
 
     async execute(findUserDto: FindUserDto): Promise<Response> {
         try {
-            const user = await this.helperExecute(findUserDto);
+            const user = await this.getUserByEachUseCase(findUserDto);
             if (user) {
                 return right(Result.ok(user));
             }

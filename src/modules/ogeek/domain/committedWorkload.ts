@@ -22,7 +22,7 @@ interface ICommittedWorkloadProps {
 
 export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     private constructor(props: ICommittedWorkloadProps, id: UniqueEntityID) {
-        super(id, props);
+        super(props, id);
     }
     get committedWorkloadId(): DomainId {
         return DomainId.create(this._id).getValue();

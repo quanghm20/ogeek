@@ -1,24 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsDate, IsEnum, IsNumber } from 'class-validator';
 
-import { WeekStatus } from '../../../../../common/constants/weekStatus';
+import { PlannedWorkloadStatus } from '../../../../../common/constants/plannedStatus';
 import { ValueStreamByWeekDto } from './valueStream.dto';
 export class ValueStreamsByWeekDto {
     @ApiProperty({ example: 1 })
     @IsNumber()
     week: number;
 
-    @ApiProperty({ example: '28/02/2022' })
+    @ApiProperty({ example: new Date() })
     @IsDate()
-    startDate: string;
+    startDate: Date;
 
-    @ApiProperty({ example: '04/03/2022' })
+    @ApiProperty({ example: new Date() })
     @IsDate()
-    endDate: string;
+    endDate: Date;
 
-    @ApiProperty({ example: WeekStatus.PLANNING })
-    @IsEnum(WeekStatus)
-    status: WeekStatus;
+    @ApiProperty({ example: PlannedWorkloadStatus.PLANNING })
+    @IsEnum(PlannedWorkloadStatus)
+    status: PlannedWorkloadStatus;
 
     @ApiProperty()
     @IsArray()

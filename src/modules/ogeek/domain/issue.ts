@@ -6,11 +6,12 @@ import { Result } from '../../../core/logic/Result';
 import { DomainId } from './domainId';
 import { User } from './user';
 interface IIssueProps {
-    week: number;
-    type: IssueStatus;
+    note: string;
+    status: IssueStatus;
     user: User;
     createdAt?: Date;
     updatedAt?: Date;
+    createdBy: User;
 }
 export class Issue extends AggregateRoot<IIssueProps> {
     private constructor(props: IIssueProps, id: UniqueEntityID) {
@@ -19,17 +20,17 @@ export class Issue extends AggregateRoot<IIssueProps> {
     get issueId(): DomainId {
         return DomainId.create(this._id).getValue();
     }
-    get type(): IssueStatus {
-        return this.props.type;
+    get status(): IssueStatus {
+        return this.props.status;
     }
-    set type(type: IssueStatus) {
-        this.props.type = type;
+    set status(status: IssueStatus) {
+        this.props.status = status;
     }
-    get week(): number {
-        return this.props.week;
+    get note(): string {
+        return this.props.note;
     }
-    set week(week: number) {
-        this.props.week = week;
+    set note(note: string) {
+        this.props.note = note;
     }
     get user(): User {
         return this.props.user;

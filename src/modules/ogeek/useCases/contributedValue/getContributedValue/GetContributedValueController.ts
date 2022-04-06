@@ -24,7 +24,7 @@ export class GetContributedValueController {
     constructor(public readonly useCase: GetContributedValueUseCase) {}
 
     @Get()
-    @Roles(RoleType.ADMIN)
+    @Roles(RoleType.PP)
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: GetContributedValueShortDto,
