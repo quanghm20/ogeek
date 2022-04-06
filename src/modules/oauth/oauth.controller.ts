@@ -2,13 +2,13 @@ import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { JwtAuthService } from '../../modules/jwt-auth/jwt-auth.service';
-import { User } from '../../modules/o-geek/domain/user';
-import { FindUserDto } from '../../modules/o-geek/infra/dtos/findUser.dto';
-import { UserDto } from '../../modules/o-geek/infra/dtos/user.dto';
-import { UserMap } from '../../modules/o-geek/mappers/userMap';
 import { ConfigService } from '../../shared/services/config.service';
-import { CreateUserUseCase } from '../o-geek/useCases/user/createUser/CreateUserUseCase';
-import { GetUserUseCase } from '../o-geek/useCases/user/getUser/GetUserUseCase';
+import { User } from '../ogeek/domain/user';
+import { FindUserDto } from '../ogeek/infra/dtos/findUser.dto';
+import { UserDto } from '../ogeek/infra/dtos/user.dto';
+import { UserMap } from '../ogeek/mappers/userMap';
+import { CreateUserUseCase } from '../ogeek/useCases/user/createUser/CreateUserUseCase';
+import { GetUserUseCase } from '../ogeek/useCases/user/getUser/GetUserUseCase';
 import { OAuthGuard } from './oauth.guard';
 
 @Controller('')
@@ -20,14 +20,12 @@ export class OauthController {
         private _getUserUseCase: GetUserUseCase,
     ) {}
     // redirect to authen server
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     @Get('api/oauth/otable')
     @UseGuards(OAuthGuard)
     login(): string {
         return '';
     }
     // if user is authenticated, they are redirected here
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     @Get('oauth/otable/callback')
     @UseGuards(OAuthGuard)
     async redirectLogin(

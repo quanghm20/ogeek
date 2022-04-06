@@ -2,27 +2,32 @@
 
 import {
     CreateDateColumn,
+    DeleteDateColumn,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-
-// import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 
 export abstract class AbstractEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @CreateDateColumn({
-        type: 'timestamp without time zone',
+        type: 'timestamp with time zone',
         name: 'created_at',
     })
     createdAt?: Date;
 
     @UpdateDateColumn({
-        type: 'timestamp without time zone',
+        type: 'timestamp with time zone',
         name: 'updated_at',
     })
     updatedAt?: Date;
+
+    @DeleteDateColumn({
+        type: 'timestamp with time zone',
+        name: 'deleted_at',
+    })
+    deletedAt?: Date;
     constructor(id?: number) {
         this.id = id;
     }

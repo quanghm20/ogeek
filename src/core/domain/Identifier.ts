@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable complexity */
 export class Identifier<T> {
     constructor(private _value: T) {
         this._value = _value;

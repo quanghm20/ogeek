@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { contextMiddleware } from './middlewares';
 import { JwtAuthModule } from './modules/jwt-auth/jwt-auth.module';
-import { OGeekModule } from './modules/o-geek/o-geek.module';
 import { OauthModule } from './modules/oauth/oauth.module';
+import { OGeekModule } from './modules/ogeek/ogeek.module';
 import { ConfigService } from './shared/services/config.service';
 import { SharedModule } from './shared/shared.module';
 
