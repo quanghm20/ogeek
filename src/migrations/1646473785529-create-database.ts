@@ -27,10 +27,10 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
         await queryRunner.query(
             `CREATE TABLE "user" (
                 "id" SERIAL NOT NULL,
-                "alias" character varying(50) NOT NULL,
-                "name" character varying(255) NOT NULL,
-                "phone" character varying(15),
-                "email" character varying(255) NOT NULL,
+                "alias" varchar(50) NOT NULL,
+                "name" varchar(255) NOT NULL,
+                "phone" varchar(15),
+                "email" varchar(255) NOT NULL,
                 "avatar" character varying(255),
                 "role" "public"."user_role_enum" NOT NULL DEFAULT 'USER', 
                 "created_by" integer,
@@ -42,32 +42,20 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 CONSTRAINT "UQ_USER_ALIAS" UNIQUE ("alias"),
                 CONSTRAINT "UQ_USER_PHONE" UNIQUE ("phone"),
                 CONSTRAINT "UQ_USER_EMAIL" UNIQUE ("email"),
-                CONSTRAINT "PK_USER" PRIMARY KEY ("id"),
-                CONSTRAINT "FK_USER_CREATED_BY" 
-                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_USER_UPDATED_BY" 
-                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_USER_DELETED_BY" 
-                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id")
+                CONSTRAINT "PK_USER" PRIMARY KEY ("id")
             )`,
         );
         await queryRunner.query(
             `CREATE TABLE "value_stream" (
                 "id" SERIAL NOT NULL,
-                "name" character varying(100) NOT NULL,
+                "name" varchar(100) NOT NULL,
                 "created_by" integer,
                 "updated_by" integer,
                 "deleted_by" integer,
                 "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
                 "deleted_at" TIMESTAMPTZ,
-                CONSTRAINT "PK_VALUE_STREAM" PRIMARY KEY ("id"),
-                CONSTRAINT "FK_VALUE_STREAM_CREATED_BY" 
-                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_VALUE_STREAM_UPDATED_BY" 
-                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_VALUE_STREAM_DELETED_BY" 
-                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id")
+                CONSTRAINT "PK_VALUE_STREAM" PRIMARY KEY ("id")
             )`,
         );
         await queryRunner.query(
@@ -80,13 +68,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
                 "deleted_at" TIMESTAMPTZ,
-                CONSTRAINT "PK_EXPERTISE_SCOPE" PRIMARY KEY ("id"),
-                CONSTRAINT "FK_EXPERTISE_SCOPE_CREATED_BY" 
-                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_EXPERTISE_SCOPE_UPDATED_BY" 
-                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_EXPERTISE_SCOPE_DELETED_BY" 
-                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id")
+                CONSTRAINT "PK_EXPERTISE_SCOPE" PRIMARY KEY ("id")
             )`,
         );
         await queryRunner.query(
@@ -104,13 +86,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 CONSTRAINT "FK_CONTRIBUTED_VALUE_EXPERTISE_SCOPE" 
                     FOREIGN KEY ("expertise_scope_id") REFERENCES "expertise_scope"("id"),
                 CONSTRAINT "FK_CONTRIBUTED_VALUE_VALUE_STREAM" 
-                    FOREIGN KEY ("value_stream_id") REFERENCES "value_stream"("id"),
-                CONSTRAINT "FK_CONTRIBUTED_VALUE_CREATED_BY" 
-                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_CONTRIBUTED_VALUE_UPDATED_BY" 
-                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_CONTRIBUTED_VALUE_DELETED_BY" 
-                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id")
+                    FOREIGN KEY ("value_stream_id") REFERENCES "value_stream"("id")
             )`,
         );
         await queryRunner.query(
@@ -131,24 +107,18 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 CONSTRAINT "PK_COMMITTED_WORKLOAD" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_COMMITTED_WORKLOAD_USER" 
                     FOREIGN KEY ("user_id") REFERENCES "user"("id"),
-                CONSTRAINT "FK_COMMITTED_WORKLOAD_CREATED_BY" 
-                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_COMMITTED_WORKLOAD_UPDATED_BY" 
-                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_COMMITTED_WORKLOAD_DELETED_BY" 
-                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id"),
                 CONSTRAINT "FK_COMMITTED_WORKLOAD_CONTRIBUTED_VALUE" 
                     FOREIGN KEY ("contributed_value_id") REFERENCES "contributed_value"("id"),
                 CONSTRAINT "CHK_START_DATE_COMMITTED_WORKLOAD" 
                     CHECK("start_date" < "expired_date"),
                 CONSTRAINT "CHK_COMMITTED_WORKLOAD" 
-                    CHECK("committed_workload" >=0 AND "committed_workload" <= 50)
+                    CHECK("committed_workload" >=0)
             )`,
         );
         await queryRunner.query(
             `CREATE TABLE "planned_workload" (
                 "id" SERIAL NOT NULL,
-                "planned_workload" integer NOT NULL,
+                "planned_workload" decimal(4,2) NOT NULL,
                 "start_date" TIMESTAMPTZ NOT NULL,
                 "user_id" integer,
                 "contributed_value_id" integer,
@@ -168,12 +138,6 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                     FOREIGN KEY ("user_id") REFERENCES "user"("id"),
                 CONSTRAINT "FK_PLANNED_WORKLOAD_COMMITTED_WORKLOAD" 
                     FOREIGN KEY ("committed_workload_id") REFERENCES "committed_workload"("id"),
-                CONSTRAINT "FK_PLANNED_WORKLOAD_CREATED_BY" 
-                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_PLANNED_WORKLOAD_UPDATED_BY" 
-                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_PLANNED_WORKLOAD_DELETED_BY" 
-                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id"),
                 CONSTRAINT "CHK_PLANNED_WORKLOAD" 
                     CHECK("planned_workload" >= 0)
             )`,
@@ -191,12 +155,6 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
                 "deleted_at" TIMESTAMP,
                 CONSTRAINT "PK_ISSUE" PRIMARY KEY ("id"),
-                CONSTRAINT "FK_ISSUE_USER" 
-                    FOREIGN KEY ("user_id") REFERENCES "user"("id"),
-                CONSTRAINT "FK_ISSUE_CREATED_BY" 
-                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_ISSUE_UPDATED_BY" 
-                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
                 CONSTRAINT "FK_ISSUE_DELETED_BY" 
                     FOREIGN KEY ("deleted_by") REFERENCES "user"("id")
                 )`,
@@ -215,13 +173,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "deleted_at" TIMESTAMPTZ,
                 CONSTRAINT "PK_NOTIFICATION" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_NOTIFICATION_USER" 
-                    FOREIGN KEY ("user_id") REFERENCES "user"("id"),
-                CONSTRAINT "FK_NOTIFICATION_CREATED_BY" 
-                    FOREIGN KEY ("created_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_NOTIFICATION_UPDATED_BY" 
-                    FOREIGN KEY ("updated_by") REFERENCES "user"("id"),
-                CONSTRAINT "FK_NOTIFICATION_DELETED_BY" 
-                    FOREIGN KEY ("deleted_by") REFERENCES "user"("id")
+                    FOREIGN KEY ("user_id") REFERENCES "user"("id")
             )`,
         );
     }

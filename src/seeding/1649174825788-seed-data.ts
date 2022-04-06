@@ -26,10 +26,10 @@ VALUES
 		'user_314@geekup.io',
 		'http://api.sente.geekup.io/vatar',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'quang.hm',
@@ -38,10 +38,10 @@ VALUES
 		'quang.hm@geekup.vn',
 		'https://link1.com',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'loc.pt',
@@ -50,10 +50,10 @@ VALUES
 		'loc.pt@geekup.vn',
 		'https://link1.com',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'chuong.tk',
@@ -62,10 +62,10 @@ VALUES
 		'chuong.tk@geekup.vn',
 		'https://link1.com',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'tuan.lq',
@@ -74,10 +74,10 @@ VALUES
 		'tuan.lq@geekup.vn',
 		'https://link1.com',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'tuan.pa',
@@ -86,10 +86,10 @@ VALUES
 		'tuan.pa@geekup.vn',
 		'https://link1.com',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'nhi.ny',
@@ -98,10 +98,10 @@ VALUES
 		'nhi.ny@geekup.vn',
 		'https://link1.com',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'nam.dp',
@@ -110,10 +110,10 @@ VALUES
 		'nam.dp@geekup.vn',
 		'https://link1.com',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'user_315',
@@ -122,10 +122,10 @@ VALUES
 		'user_315@geekup.io',
 		'http://api.sente.geekup.io/vatar - 142',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'user_3',
@@ -134,10 +134,10 @@ VALUES
 		'user_3@geekup.io',
 		'http://api.sente.geekup.io/vatar - 14',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'user_264',
@@ -146,10 +146,10 @@ VALUES
 		'user_264@geekup.io',
 		'http://api.sente.geekup.io/vatar - 94',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'user_177',
@@ -158,10 +158,10 @@ VALUES
 		'user_177@geekup.io',
 		'http://api.sente.geekup.io/vatar - 44',
 		'PEOPLE_OPS',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
         'thuong.nv',
@@ -170,10 +170,10 @@ VALUES
         'thuong.nv@geekup.vn',
         'https://link22.com',
         'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'nguyen.tk',
@@ -182,10 +182,10 @@ VALUES
 		'nguyen.tk@geekup.vn',
 		'https://link21.com',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'thai.ls',
@@ -194,10 +194,10 @@ VALUES
 		'thai.ls@geekup.vn',
 		'https://link4.com',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'sang.nd',
@@ -206,10 +206,10 @@ VALUES
 		'sang.nd@geekup.vn',
 		'https://link223.vn',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'linh.tt',
@@ -218,10 +218,10 @@ VALUES
 		'linh.tt@geekup.vn',
 		'https://linkss.com',
 		'USER',
-		12,
+		-2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'tran.nk',
@@ -230,10 +230,10 @@ VALUES
 		'tran.nk@geekup.vn',
 		'https://linkss.com',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'dat.pq',
@@ -242,10 +242,10 @@ VALUES
 		'dat.pq@geekup.vn',
 		'https://linkss.com',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'van.nt',
@@ -254,10 +254,10 @@ VALUES
 		'van.nt@geekup.vn',
 		'https://linkss.com',
 		'USER',
-		12,
+		-2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'huy.lt',
@@ -266,10 +266,10 @@ VALUES
 		'huy.lt@geekup.vn',
 		'https://linkss.com',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	),
 	(
 		'nam.ll',
@@ -278,10 +278,10 @@ VALUES
 		'nam.ll@geekup.vn',
 		'https://linkss.com',
 		'USER',
-        12,
+        -2,
 		'2021-12-20 00:00:00',
 		'2021-12-20 00:00:00',
-        12
+        -2
 	);
             `,
         );
