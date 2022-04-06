@@ -93,7 +93,7 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
     public static toEntity(
         contributedValue: ContributedValue,
     ): ContributedValueEntity {
-        const entity = new ContributedValueEntity();
+        const entity = {} as ContributedValueEntity;
 
         entity.id = Number(contributedValue.contributedValueId.id.toValue());
         entity.expertiseScope = ExpertiseScopeMap.toEntity(

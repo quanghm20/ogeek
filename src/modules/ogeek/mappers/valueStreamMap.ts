@@ -84,12 +84,10 @@ export class ValueStreamMap implements Mapper<ValueStream> {
     }
 
     public static toEntity(valueStream: ValueStream): ValueStreamEntity {
-        const entity = new ValueStreamEntity();
-
-        entity.id = Number(valueStream.id.toValue());
-        entity.name = valueStream.name;
-
-        return entity;
+        return {
+            id: Number(valueStream.id.toValue()),
+            name: valueStream.name,
+        } as ValueStreamEntity;
     }
 
     public static toArrayDomain(raws: ValueStreamEntity[]): ValueStream[] {

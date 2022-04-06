@@ -44,16 +44,20 @@ export class UserRepository implements IUserRepo {
     }
 
     async createUser(userDto: UserDto): Promise<User> {
-        const entity = this.repo.create({
-            alias: userDto.alias,
-            name: userDto.name,
-            phone: userDto.phone,
-            email: userDto.email,
-            avatar: userDto.avatar,
-            role: userDto.role,
-        });
-        const createdUser = await this.repo.save(entity);
-        return createdUser ? UserMap.toDomain(entity) : null;
+        try {
+            const entity = this.repo.create({
+                alias: userDto.alias,
+                name: userDto.name,
+                phone: userDto.phone,
+                email: userDto.email,
+                avatar: userDto.avatar,
+                role: userDto.role,
+            });
+            const createdUser = await this.repo.save(entity);
+            return createdUser ? UserMap.toDomain(entity) : null;
+        } catch (err) {
+            return null;
+        }
     }
 
     async update(condition: any, update: any): Promise<void> {

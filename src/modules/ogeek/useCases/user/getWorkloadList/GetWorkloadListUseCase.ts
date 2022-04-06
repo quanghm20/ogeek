@@ -50,7 +50,7 @@ export class GetWorkloadListUseCase
         try {
             const user = await this.userRepo.findById(params.userId);
 
-            if (user.role !== RoleType.ADMIN) {
+            if (user.role !== RoleType.PP) {
                 return left(new GetWorkloadListError.Forbidden()) as Response;
             }
             if (params.week < 1 && params.week > 52) {

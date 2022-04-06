@@ -74,17 +74,9 @@ export class UserMap implements Mapper<User> {
     }
 
     public static toEntity(user: User): UserEntity {
-        const userEntity = new UserEntity();
-
-        userEntity.alias = user.alias;
-        userEntity.name = user.name;
-        userEntity.email = user.email;
-        userEntity.phone = user.phone;
-        userEntity.id = Number(user.id.toValue());
-        userEntity.role = user.role;
-        userEntity.avatar = user.avatar;
-
-        return userEntity;
+        return {
+            ...user.props,
+        } as UserEntity;
     }
 
     public static toUserShort(user: User): UserShortDto {

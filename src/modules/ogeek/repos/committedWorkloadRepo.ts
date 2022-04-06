@@ -6,6 +6,7 @@ import {
     getConnection,
     LessThan,
     LessThanOrEqual,
+    MoreThan,
     MoreThanOrEqual,
     Repository,
 } from 'typeorm';
@@ -65,8 +66,8 @@ export interface ICommittedWorkloadRepo {
     updateCommittedWorkloadExpired(): Promise<void>;
     findByUserIdValueStream(
         userId: DomainId | number,
-        startDateOfWeek: string,
-        endDateOfWeek: string,
+        startDateOfWeek: Date,
+        endDateOfWeek: Date,
     ): Promise<CommittedWorkload[]>;
 }
 
@@ -188,13 +189,12 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         userId: number,
         startDate: Date,
         expiredDate: Date,
-        picId: number,
     ): Promise<CommittedWorkload[]> {
         const queryRunner = getConnection().createQueryRunner();
         await queryRunner.connect();
         try {
             const user = new UserEntity(userId);
-            const createdBy = new UserEntity(picId);
+            const createdBy = new UserEntity();
             const now = new Date();
             now.setHours(0, 0, 0);
             startDate = moment(startDate).add(dateRange.UTC, 'hours').toDate();
@@ -430,8 +430,8 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     }
     async findByUserIdValueStream(
         userId: DomainId | number,
-        startDateOfWeek: string,
-        endDateOfWeek: string,
+        startDateOfWeek: Date,
+        endDateOfWeek: Date,
     ): Promise<CommittedWorkload[]> {
         userId =
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
@@ -440,6 +440,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 status: CommittedWorkloadStatus.ACTIVE,
                 user: userId,
                 startDate: LessThan(endDateOfWeek),
+                endDate: MoreThan(startDateOfWeek),
             },
             relations: [
                 'contributedValue',

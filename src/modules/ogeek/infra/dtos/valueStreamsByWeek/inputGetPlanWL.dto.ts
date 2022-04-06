@@ -7,8 +7,8 @@ export class InputGetPlanWLDto {
     userId: number | DomainId;
 
     @IsDate()
-    startDateOfWeek: string;
+    startDateOfWeek: Date;
 
     @IsDate()
-    endDateOfWeek: string;
+    endDateOfWeek: Date;
 }

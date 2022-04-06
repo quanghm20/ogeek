@@ -62,7 +62,6 @@ import { GetWorkloadListController } from './useCases/user/getWorkloadList/GetWo
 import { GetWorkloadListUseCase } from './useCases/user/getWorkloadList/GetWorkloadListUseCase';
 import { GetValueStreamController } from './useCases/valueStream/getValueStream/GetValueStreamController';
 import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/GetValueStreamUseCase';
-
 @Module({
     imports: [
         HttpModule,
@@ -111,14 +110,14 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetWeekStatusUseCase,
         GetUsersUseCase,
         GetDetailActualPlannedWorkloadUseCase,
-        {
-            provide: 'IUserRepo',
-            useClass: UserRepository,
-        },
         CreateIssueUseCase,
         GetCommittedWorkloadUseCase,
         GetHistoryCommittedWorkloadUseCase,
         CronCommittedWorkload,
+        {
+            provide: 'IUserRepo',
+            useClass: UserRepository,
+        },
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

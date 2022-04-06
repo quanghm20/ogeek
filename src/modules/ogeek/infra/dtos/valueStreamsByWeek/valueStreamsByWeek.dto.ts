@@ -8,13 +8,13 @@ export class ValueStreamsByWeekDto {
     @IsNumber()
     week: number;
 
-    @ApiProperty({ example: '28/02/2022' })
+    @ApiProperty({ example: new Date() })
     @IsDate()
-    startDate: string;
+    startDate: Date;
 
-    @ApiProperty({ example: '04/03/2022' })
+    @ApiProperty({ example: new Date() })
     @IsDate()
-    endDate: string;
+    endDate: Date;
 
     @ApiProperty({ example: PlannedWorkloadStatus.PLANNING })
     @IsEnum(PlannedWorkloadStatus)

@@ -1,13 +1,13 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 
-import { WeekStatus } from '../../../../../common/constants/weekStatus';
+import { PlannedWorkloadStatus } from '../../../../../common/constants/plannedStatus';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { IUserRepo } from '../../../repos/userRepo';
-import { StartWeekErrors } from './StartWeekErrors';
+// import { StartWeekErrors } from './StartWeekErrors';
 
 type Response = Either<
   AppError.UnexpectedError,
@@ -25,16 +25,17 @@ export class StartWeekUseCase
     const { userId } = findUserDto;
 
     try {
-      const user = await this.userRepo.findById(userId);
-      if (!user.isPlanned()) {
-        return left(
-          new StartWeekErrors.StartWeekFailed(),
-        ) as Response;
-      }
+      // const user = await this.userRepo.findById(userId);
+      // if (!user.isPlanned()) {
+      // if (1===1) {
+      //   return left(
+      //     new StartWeekErrors.StartWeekFailed(),
+      //   ) as Response;
+      // }
 
       await this.userRepo.update(
         { id: userId },
-        { weekStatus: WeekStatus.EXECUTING },
+        { weekStatus: PlannedWorkloadStatus.EXECUTING },
       );
       return right(Result.ok());
 

@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { StartAndEndDateOfWeekDto } from '../../../../ogeek/infra/dtos/valueStreamsByWeek/startAndEndDateOfWeek.dto';
 import { ActualPlanAndWorkLogDto } from '../../../infra/dtos/actualPlansAndWorkLogs.dto';
 import { InputGetPlanWLDto } from '../../../infra/dtos/valueStreamsByWeek/inputGetPlanWL.dto';
 import { InputValueStreamByWeekDto } from '../../../infra/dtos/valueStreamsByWeek/inputValueStream.dto';
@@ -19,17 +20,17 @@ import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
 import { IUserRepo } from '../../../repos/userRepo';
 import { IValueStreamRepo } from '../../../repos/valueStreamRepo';
+import { MomentService } from '../../moment/configMomentService/ConfigMomentService';
 import { GetValueStreamError } from './GetValueStreamErrors';
 
 type Response = Either<
-    AppError.UnexpectedError | GetValueStreamError.ValueStreamNotFound,
+    AppError.UnexpectedError | GetValueStreamError.FailToGetValueStream,
     Result<ValueStreamsByWeekDto>
 >;
 
 interface ServerResponse {
     data: ActualPlanAndWorkLogDto[];
 }
-
 @Injectable()
 export class GetValueStreamUseCase
     implements IUseCase<{ userId: number; week: number }, Promise<Response>> {
@@ -44,10 +45,30 @@ export class GetValueStreamUseCase
         public readonly userRepo: IUserRepo,
     ) {}
 
-    async execute(params: InputValueStreamByWeekDto): Promise<Response> {
+    async getWeekByEachUseCase(inputValueStreamByWeekDto: InputValueStreamByWeekDto): Promise<StartAndEndDateOfWeekDto> {
+        const planNotClosed = await this.plannedWLRepo.getPlanWLNotClosed(
+            { userId: inputValueStreamByWeekDto.userId,
+              startDateOfWeek: MomentService.firstDateOfWeek(inputValueStreamByWeekDto.week),
+         } as InputGetPlanWLDto,
+        );
+        if (planNotClosed) {
+            return {
+                startDateOfWeek: planNotClosed.startDate,
+                endDateOfWeek: moment(planNotClosed.startDate).add(7, 'days').toDate(),
+            };
+        }
+        return {
+            startDateOfWeek: MomentService.firstDateOfWeek(inputValueStreamByWeekDto.week),
+            endDateOfWeek: MomentService.lastDateOfWeek(inputValueStreamByWeekDto.week),
+        };
+
+    }
+
+    async execute(inputValueStreamByWeekDto: InputValueStreamByWeekDto): Promise<Response> {
         try {
             // get actual plans and worklogs
-            const url = `${process.env.MOCK_URL}/api/overview/value-stream?userid=${params.userId}&week=${params.week}`;
+            const url =
+                `${process.env.MOCK_URL}/api/overview/value-stream?userid=${inputValueStreamByWeekDto.userId}&week=${inputValueStreamByWeekDto.week}`;
             const request = await Axios.get<ServerResponse>(url, {
                 headers: {
                     'x-api-key': process.env.MOCK_API_KEY,
@@ -56,47 +77,23 @@ export class GetValueStreamUseCase
             const response = request.data.data;
             const actualPlanAndWorkLogDtos = response;
 
-            // eslint-disable-next-line import/namespace
-            const dateOfWeek = moment()
-                .utcOffset(420)
-                .week(params.week)
-                .format();
-            const numDateOfWeek = moment(dateOfWeek).format('e');
-            const startDateOfWeek = moment(dateOfWeek)
-                .utcOffset(420)
-                .add(-numDateOfWeek, 'days')
-                .startOf('day')
-                .format();
-            const endDateOfWeek = moment(startDateOfWeek)
-                .utcOffset(420)
-                .add(6, 'days')
-                .endOf('day')
-                .format();
-
-            const user = await this.userRepo.findById(params.userId);
+            const startAndEndDateOfWeek = await this.getWeekByEachUseCase(inputValueStreamByWeekDto);
+            const user = await this.userRepo.findById(inputValueStreamByWeekDto.userId);
             const valueStreams = await this.valueStreamRepo.findAll();
             const committedWLs = await this.committedWLRepo.findByUserIdValueStream(
-                params.userId,
-                startDateOfWeek,
-                endDateOfWeek,
+                inputValueStreamByWeekDto.userId,
+                startAndEndDateOfWeek.startDateOfWeek,
+                startAndEndDateOfWeek.endDateOfWeek,
             );
-
             const plannedWLs = await this.plannedWLRepo.findByUserId({
-                startDateOfWeek,
-                endDateOfWeek,
-                userId: params.userId,
+                ...startAndEndDateOfWeek,
+                userId: inputValueStreamByWeekDto.userId,
             } as InputGetPlanWLDto);
 
-            const committedWLDtos =
-                CommittedWorkloadMap.fromDomainAll(committedWLs);
+            const committedWLDtos = CommittedWorkloadMap.fromDomainAll(committedWLs);
             const plannedWLDtos = PlannedWorkloadMap.fromDomainAll(plannedWLs);
             const valueStreamDtos = ValueStreamMap.fromDomainAll(valueStreams);
             const userDto = UserMap.fromDomain(user);
-
-            const startDate = moment(startDateOfWeek)
-                .add(1, 'days')
-                .format('DD-MM-YYYY');
-            const endDate = moment(endDateOfWeek).format('DD-MM-YYYY');
 
             const valueStreamsByWeekDto = ValueStreamsByWeekMap.combineAllDto(
                 committedWLDtos,
@@ -104,14 +101,14 @@ export class GetValueStreamUseCase
                 actualPlanAndWorkLogDtos,
                 valueStreamDtos,
                 userDto,
-                params.week,
-                startDate,
-                endDate,
+                inputValueStreamByWeekDto.week,
+                startAndEndDateOfWeek.startDateOfWeek,
+                startAndEndDateOfWeek.endDateOfWeek,
             );
 
             if (!valueStreamsByWeekDto) {
                 return left(
-                    new GetValueStreamError.ValueStreamNotFound(),
+                    new GetValueStreamError.FailToGetValueStream(),
                 ) as Response;
             }
             return right(Result.ok(valueStreamsByWeekDto));

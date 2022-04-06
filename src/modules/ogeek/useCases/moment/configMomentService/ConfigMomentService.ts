@@ -13,7 +13,6 @@ export class MomentService {
         moment.updateLocale('en', { week: { dow: 6 } });
         return this.moment();
     }
-
     public static convertDateToWeek(injectedDate: Date): number {
         return moment(injectedDate).week();
     }
@@ -47,7 +46,7 @@ export class MomentService {
         return result;
     }
 
-    public static firstDateOfWeek(week: number): string {
+    public static firstDateOfWeek(week: number): Date {
         const date = moment().utcOffset(420).week(week).format();
 
         const num = moment(date).day();
@@ -55,10 +54,10 @@ export class MomentService {
             .utcOffset(420)
             .add(-num, 'days')
             .startOf('day')
-            .format('MM-DD-YYYY');
+            .toDate();
     }
 
-    public static lastDateOfWeek(week: number): string {
+    public static lastDateOfWeek(week: number): Date {
         const date = moment().utcOffset(420).week(week).format();
 
         const num = 7 - moment(date).day();
@@ -66,7 +65,7 @@ export class MomentService {
             .utcOffset(420)
             .add(num, 'days')
             .startOf('day')
-            .format('MM-DD-YYYY');
+            .toDate();
     }
 
     public static shiftFirstDateChart(injectedDate: Date): Date {

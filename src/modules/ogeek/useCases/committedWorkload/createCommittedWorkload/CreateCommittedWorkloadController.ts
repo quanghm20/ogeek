@@ -60,7 +60,7 @@ export class CreateCommittedWorkloadController {
 
     @Post()
     @HttpCode(HttpStatus.OK)
-    @Roles(RoleType.ADMIN)
+    @Roles(RoleType.PP)
     @ApiOkResponse({
         type: DataCommittedWorkload,
         description: 'Created committed workload',
@@ -95,7 +95,8 @@ export class CreateCommittedWorkloadController {
 
     @Get()
     @HttpCode(HttpStatus.OK)
-    @Roles(RoleType.ADMIN)
+    @Roles(RoleType.PP)
+    @UseGuards()
     @ApiOkResponse({
         type: DataCommittedWorkload,
         description: 'Get all committed workload',

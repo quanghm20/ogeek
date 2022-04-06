@@ -1,6 +1,3 @@
-import * as moment from 'moment';
-
-import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { ActualPlanAndWorkLogDto } from '../infra/dtos/actualPlansAndWorkLogs.dto';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { ExpertiseScopeDto } from '../infra/dtos/expertiseScope.dto';
@@ -12,25 +9,6 @@ import { ValueStreamByWeekDto } from '../infra/dtos/valueStreamsByWeek/valueStre
 import { ValueStreamsByWeekDto } from '../infra/dtos/valueStreamsByWeek/valueStreamsByWeek.dto';
 
 export class ValueStreamsByWeekMap {
-    public static getStatusValueStreamInFuture(): PlannedWorkloadStatus {
-        return PlannedWorkloadStatus.PLANNING;
-    }
-
-    public static getStatusValueStream(
-        week: number,
-        currentWeek: number,
-        // plannedWLDtos: PlannedWorkloadDto[],
-        // userDto: UserDto,
-    ): PlannedWorkloadStatus {
-        if (currentWeek > week) {
-            return PlannedWorkloadStatus.CLOSED;
-        }
-        // if (currentWeek < week) {
-        //     return ValueStreamsByWeekMap.getStatusValueStreamInFuture();
-        // }
-        // return userDto.weekStatus;
-    }
-
     public static addValueStreamEmpty(
         valueStreamByWeekDtos: ValueStreamByWeekDto[],
         valueStreamDtos: ValueStreamDto[],
@@ -104,16 +82,9 @@ export class ValueStreamsByWeekMap {
         valueStreamDtos: ValueStreamDto[],
         userDto: UserDto,
         week: number,
-        startDateOfWeek: string,
-        endDateOfWeek: string,
+        startDateOfWeek: Date,
+        endDateOfWeek: Date,
     ): ValueStreamsByWeekDto {
-        const currentWeek = moment(new Date()).week();
-        const status = ValueStreamsByWeekMap.getStatusValueStream(
-            week,
-            currentWeek,
-            // plannedWLDtos,
-            // userDto,
-        );
         const valueStreamByWeekDtos = new Array<ValueStreamByWeekDto>();
         committedWLDtos.forEach((committedWLDto) => {
             const valueStreamDto = committedWLDto.contributedValue.valueStream;
@@ -169,7 +140,7 @@ export class ValueStreamsByWeekMap {
         );
         return {
             week,
-            status,
+            status: plannedWLDtos[0].status,
             startDate: startDateOfWeek,
             endDate: endDateOfWeek,
             valueStreams: valueStreamByWeekDtos,

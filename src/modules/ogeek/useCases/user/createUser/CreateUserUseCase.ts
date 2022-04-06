@@ -1,5 +1,5 @@
-/* eslint-disable complexity */
 import { Inject, Injectable } from '@nestjs/common';
+import Axios from 'axios';
 
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
@@ -20,13 +20,26 @@ export class CreateUserUseCase implements IUseCase<UserDto, Promise<Response>> {
 
     async execute(userDto: UserDto): Promise<Response> {
         try {
+            // check user in Sente
+            const url = `${process.env.MOCK_URL}/api/overview/user-info?alias=${userDto.alias}`;
+            const request = await Axios.get<UserDto>(url, {
+                headers: {
+                    'x-api-key': process.env.MOCK_API_KEY,
+                },
+            });
+            const response = request.data;
+            if (!response) {
+                return left(
+                    new AppError.UnexpectedError('User is not finded in Sente'),
+                ) as Response;
+            }
+
             const user = await this.repo.createUser(userDto);
             if (!user) {
                 return left(
                     new FailToCreateUserErrors.FailToCreateUser(),
                 ) as Response;
             }
-
             return right(Result.ok(user));
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
