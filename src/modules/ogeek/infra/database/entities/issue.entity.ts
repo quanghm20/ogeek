@@ -40,9 +40,10 @@ export class IssueEntity extends AbstractEntity {
     deletedBy: UserEntity;
 
     constructor(
-        note: string,
-        status: IssueStatus,
-        user: UserEntity,
+        id?: number,
+        note?: string,
+        status?: IssueStatus,
+        user?: UserEntity,
         createdBy?: UserEntity,
         updatedBy?: UserEntity,
         deletedBy?: UserEntity,
@@ -50,7 +51,7 @@ export class IssueEntity extends AbstractEntity {
         updatedAt?: Date,
         deletedAt?: Date,
     ) {
-        super();
+        super(id);
         this.note = note;
         this.status = status;
         this.user = user;
