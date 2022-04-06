@@ -43,7 +43,7 @@ export class CreateIssueController {
         @Req() req: Request,
     ): Promise<MessageDto> {
         const { userId: picId } = req.user as JwtPayload;
-        const createIssueDto: CreateIssueDto = { ...body, picId };
+        const createIssueDto = { ...body, picId };
         const result = await this.useCase.execute(createIssueDto);
         if (result.isLeft()) {
             const error = result.value;
