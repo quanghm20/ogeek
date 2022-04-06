@@ -1,2 +1,2 @@
-export { GetDetailActualPlannedWorkloadController } from './getDetailActualPlannedWorkloadController';
-export { GetDetailActualPlannedWorkloadUseCase } from './getDetailActualPlannedWorkloadUsecase';
+export { GetDetailActualPlannedWorkloadController } from './GetDetailActualPlannedWorkloadController';
+export { GetDetailActualPlannedWorkloadUseCase } from './GetDetailActualPlannedWorkloadUseCase';

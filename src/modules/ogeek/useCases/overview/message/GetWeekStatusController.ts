@@ -16,10 +16,10 @@ import {
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
-import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
+import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
+import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { GetWeekStatusDto } from '../../../infra/dtos/getWeekStatus.dto';
-import { UserMap } from '../../../mappers/userMap';
+// import { UserMap } from '../../../mappers/userMap';
 import { GetWeekStatusErrors } from './GetWeekStatusErrors';
 import { GetWeekStatusUseCase } from './GetWeekStatusUseCase';
 
@@ -59,6 +59,6 @@ export class GetWeekStatusController {
                     );
             }
         }
-        return UserMap.fromDomainWeekStatus(result.value.getValue());
+        return new GetWeekStatusDto();
     }
 }

@@ -6,8 +6,12 @@ import { DomainId } from './domainId';
 
 interface IValueStreamProps {
     name?: string;
+    createdBy?: number;
+    updatedBy?: number;
+    deletedBy?: number;
     createdAt?: Date;
     updatedAt?: Date;
+    deletedAt?: Date;
 }
 export class ValueStream extends AggregateRoot<IValueStreamProps> {
     private constructor(props?: IValueStreamProps, id?: UniqueEntityID) {

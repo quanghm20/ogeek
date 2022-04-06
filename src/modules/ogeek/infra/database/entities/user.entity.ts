@@ -1,11 +1,4 @@
-import {
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
-    Unique,
-} from 'typeorm';
+import { Column, Entity, OneToMany, Unique } from 'typeorm';
 
 import { AbstractEntity } from '../../../../../common/abstract.entity';
 import { RoleType } from '../../../../../common/constants/roleType';
@@ -65,24 +58,6 @@ export class UserEntity extends AbstractEntity {
     })
     role: RoleType;
 
-    @ManyToOne(() => UserEntity, (user) => user.id)
-    @JoinColumn({
-        name: 'created_by',
-    })
-    createdBy: UserEntity;
-
-    @ManyToOne(() => UserEntity, (user) => user.id)
-    @JoinColumn({
-        name: 'updated_by',
-    })
-    updatedBy: UserEntity;
-
-    @ManyToOne(() => UserEntity, (user) => user.id)
-    @JoinColumn({
-        name: 'deleted_by',
-    })
-    deletedBy: UserEntity;
-
     @OneToMany(
         () => PlannedWorkloadEntity,
         (plannedWorkload) => plannedWorkload.user,
@@ -110,9 +85,9 @@ export class UserEntity extends AbstractEntity {
         avatar?: string,
         role?: RoleType,
         name?: string,
-        createdBy?: UserEntity,
-        updatedBy?: UserEntity,
-        deletedBy?: UserEntity,
+        createdBy?: number,
+        updatedBy?: number,
+        deletedBy?: number,
         createdAt?: Date,
         updatedAt?: Date,
         deletedAt?: Date,

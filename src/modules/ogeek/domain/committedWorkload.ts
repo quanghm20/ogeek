@@ -12,14 +12,15 @@ interface ICommittedWorkloadProps {
     contributedValue?: ContributedValue;
     user?: User;
     committedWorkload?: number;
+    status?: CommittedWorkloadStatus;
     startDate?: Date;
     expiredDate?: Date;
-    createdBy?: User;
-    updatedBy?: User;
-    deletedBy?: User;
-    status?: CommittedWorkloadStatus;
+    createdBy?: number;
+    updatedBy?: number;
+    deletedBy?: number;
     createdAt?: Date;
     updatedAt?: Date;
+    deletedAt?: Date;
 }
 
 export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
@@ -35,22 +36,22 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     set contributedValue(contributedValue: ContributedValue) {
         this.props.contributedValue = contributedValue;
     }
-    get createdBy(): User {
+    get createdBy(): number {
         return this.props.createdBy;
     }
-    set createdBy(createdBy: User) {
+    set createdBy(createdBy: number) {
         this.props.createdBy = createdBy;
     }
-    get updatedBy(): User {
+    get updatedBy(): number {
         return this.props.createdBy;
     }
-    set updatedBy(updatedBy: User) {
+    set updatedBy(updatedBy: number) {
         this.props.updatedBy = updatedBy;
     }
-    get deletedBy(): User {
+    get deletedBy(): number {
         return this.props.createdBy;
     }
-    set deletedBy(deletedBy: User) {
+    set deletedBy(deletedBy: number) {
         this.props.deletedBy = deletedBy;
     }
     get user(): User {

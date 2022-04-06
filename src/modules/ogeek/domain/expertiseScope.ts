@@ -4,9 +4,13 @@ import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
 import { DomainId } from './domainId';
 interface IExpertiseScopeProps {
-    name: string;
+    name?: string;
+    createdBy?: number;
+    updatedBy?: number;
+    deletedBy?: number;
     createdAt?: Date;
     updatedAt?: Date;
+    deletedAt?: Date;
 }
 export class ExpertiseScope extends AggregateRoot<IExpertiseScopeProps> {
     private constructor(props?: IExpertiseScopeProps, id?: UniqueEntityID) {

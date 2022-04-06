@@ -12,8 +12,8 @@ import { Request } from 'express';
 
 import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
-import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
-import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
+import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
+import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { InputListWorkloadDto } from '../../../infra/dtos/workloadListByWeek/inputListWorkload.dto';
 import { WorkloadListByWeekDto } from '../../../infra/dtos/workloadListByWeek/workloadListByWeek.dto';
 import { GetWorkloadListError } from './GetWorkloadListErrors';
@@ -27,7 +27,7 @@ export class GetWorkloadListController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Get(':week')
-    @Roles(RoleType.ADMIN)
+    @Roles(RoleType.PP)
     @ApiOkResponse({
         type: WorkloadListByWeekDto,
         description: 'Get all workload list of geeks in a week',

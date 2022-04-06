@@ -12,8 +12,8 @@ import {
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { JwtAuthGuard } from '../../../../jwt-auth/jwt-auth-guard';
-import { JwtPayload } from '../../../../jwt-auth/jwt-auth.strategy';
+import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
+import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { AverageActualWorkloadDto } from '../../../infra/dtos/getAverageActualWorkload/averageActualWorkload.dto';
 import { InputGetAverageActualWorkloadDto } from '../../../infra/dtos/getAverageActualWorkload/inputAverageActualWorkload.dto';
 import { GetAverageActualWorkloadErrors } from './GetAverageActualWorkloadErrors';

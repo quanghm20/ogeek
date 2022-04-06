@@ -9,8 +9,12 @@ import { ValueStream } from './valueStream';
 interface IContributedValueProps {
     valueStream?: ValueStream;
     expertiseScope?: ExpertiseScope;
+    createdBy?: number;
+    updatedBy?: number;
+    deletedBy?: number;
     createdAt?: Date;
     updatedAt?: Date;
+    deletedAt?: Date;
 }
 export class ContributedValue extends AggregateRoot<IContributedValueProps> {
     private constructor(props?: IContributedValueProps, id?: UniqueEntityID) {

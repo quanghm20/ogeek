@@ -8,7 +8,6 @@ import { UserEntity } from './user.entity';
 
 @Entity({ name: 'planned_workload' })
 @Check('CHK_PLANNED_WORKLOAD', '"planned_workload" >= 0')
-@Check('CHK_START_DATE_PLANNED_WORKLOAD', '"start_date" > now()')
 export class PlannedWorkloadEntity extends AbstractEntity {
     @ManyToOne(() => UserEntity, (user) => user.plannedWorkloads)
     @JoinColumn({
@@ -62,24 +61,6 @@ export class PlannedWorkloadEntity extends AbstractEntity {
     })
     reason: string;
 
-    @ManyToOne(() => UserEntity, (user) => user.id)
-    @JoinColumn({
-        name: 'created_by',
-    })
-    createdBy: UserEntity;
-
-    @ManyToOne(() => UserEntity, (user) => user.id)
-    @JoinColumn({
-        name: 'updated_by',
-    })
-    updatedBy: UserEntity;
-
-    @ManyToOne(() => UserEntity, (user) => user.id)
-    @JoinColumn({
-        name: 'deleted_by',
-    })
-    deletedBy: UserEntity;
-
     constructor(
         id?: number,
         user?: UserEntity,
@@ -88,9 +69,9 @@ export class PlannedWorkloadEntity extends AbstractEntity {
         plannedWorkload?: number,
         startDate?: Date,
         reason?: string,
-        createdBy?: UserEntity,
-        updatedBy?: UserEntity,
-        deletedBy?: UserEntity,
+        createdBy?: number,
+        updatedBy?: number,
+        deletedBy?: number,
         createdAt?: Date,
         updatedAt?: Date,
         deletedAt?: Date,

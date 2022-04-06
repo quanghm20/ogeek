@@ -17,7 +17,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     ): CommittedWorkloadDto {
         const dto = new CommittedWorkloadDto();
         dto.id = committedWorkload.id;
-        dto.user = committedWorkload.props.user;
+        dto.user = UserMap.fromDomain(committedWorkload.props.user);
         dto.contributedValue = committedWorkload.props.contributedValue
             ? ContributedValueMap.fromDomain(
                   committedWorkload.props.contributedValue,
@@ -26,7 +26,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         dto.committedWorkload = committedWorkload.props.committedWorkload;
         dto.startDate = committedWorkload.props.startDate;
         dto.expiredDate = committedWorkload.props.expiredDate;
-        dto.pic = committedWorkload.props.pic;
+        dto.createdBy = committedWorkload.props.createdBy;
         dto.createdAt = committedWorkload.props.createdAt;
         dto.updatedAt = committedWorkload.props.updatedAt;
         return dto;
@@ -60,14 +60,15 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         const contributedValue = ContributedValueMap.toEntity(
             committedWorkload.contributedValue,
         );
+        const id = Number(committedWorkload.committedWorkloadId.id.toValue());
         const entity = new CommittedWorkloadEntity(
+            id,
             user,
             contributedValue,
             committedWorkload.committedWorkload,
             committedWorkload.startDate,
             committedWorkload.expiredDate,
         );
-        entity.id = Number(committedWorkload.committedWorkloadId.id.toValue());
         entity.contributedValue = ContributedValueMap.toEntity(
             committedWorkload.contributedValue,
         );
@@ -105,9 +106,8 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
                     user: committedWLEntity.user
                         ? UserMap.toDomain(committedWLEntity.user)
                         : null,
-                    pic: committedWLEntity.pic
-                        ? UserMap.toDomain(committedWLEntity.pic)
-                        : null,
+                    createdBy: committedWLEntity.createdBy,
+                    updatedBy: committedWLEntity.updatedBy,
                 },
                 new UniqueEntityID(id),
             );

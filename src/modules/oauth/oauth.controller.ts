@@ -1,8 +1,8 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-import { JwtAuthService } from '../../modules/jwt-auth/jwt-auth.service';
 import { ConfigService } from '../../shared/services/config.service';
+import { JwtAuthService } from '../jwtAuth/jwtAuth.service';
 import { User } from '../ogeek/domain/user';
 import { FindUserDto } from '../ogeek/infra/dtos/findUser.dto';
 import { UserDto } from '../ogeek/infra/dtos/user.dto';

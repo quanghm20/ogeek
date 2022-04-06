@@ -1319,7 +1319,7 @@
     "json-socket" "0.3.0"
     "tslib" "2.2.0"
 
-"@nestjs/passport@^7.0.0":
+"@nestjs/passport@^7.1.6":
   "integrity" "sha512-iHD/4D01CsKKWg7kUzo4yGNS4m90z1an0eUz+6nBlE5VeEOuCzhGFoBKAt0OKLJLOTEsJKuj4C2b5QfjqXVTyQ=="
   "resolved" "https://registry.npmjs.org/@nestjs/passport/-/passport-7.1.6.tgz"
   "version" "7.1.6"
@@ -1847,6 +1847,14 @@
   "resolved" "https://registry.npmjs.org/@types/parse-json/-/parse-json-4.0.0.tgz"
   "version" "4.0.0"
 
+"@types/passport-http@^0.3.9":
+  "integrity" "sha512-uQ4vyRdvM0jdWuKpLmi6Q6ri9Nwt8YnHmF7kE6snbthxPrsMWcjRCVc5WcPaQ356ODSZTDgiRYURMPIspCkn3Q=="
+  "resolved" "https://registry.npmjs.org/@types/passport-http/-/passport-http-0.3.9.tgz"
+  "version" "0.3.9"
+  dependencies:
+    "@types/express" "*"
+    "@types/passport" "*"
+
 "@types/passport-jwt@^3.0.3":
   "integrity" "sha512-cmAAMIRTaEwpqxlrZyiEY9kdibk94gP5KTF8AT1Ra4rWNZYHNMreqhKUEeC5WJtuN5SJZjPQmV+XO2P5PlnvNQ=="
   "resolved" "https://registry.npmjs.org/@types/passport-jwt/-/passport-jwt-3.0.6.tgz"
@@ -1856,7 +1864,7 @@
     "@types/jsonwebtoken" "*"
     "@types/passport-strategy" "*"
 
-"@types/passport-strategy@*":
+"@types/passport-strategy@*", "@types/passport-strategy@^0.2.35":
   "integrity" "sha512-o5D19Jy2XPFoX2rKApykY15et3Apgax00RRLf0RUotPDUsYrQa7x4howLYr9El2mlUApHmCMv5CZ1IXqKFQ2+g=="
   "resolved" "https://registry.npmjs.org/@types/passport-strategy/-/passport-strategy-0.2.35.tgz"
   "version" "0.2.35"
@@ -1864,7 +1872,7 @@
     "@types/express" "*"
     "@types/passport" "*"
 
-"@types/passport@*":
+"@types/passport@*", "@types/passport@^1.0.7":
   "integrity" "sha512-JtswU8N3kxBYgo+n9of7C97YQBT+AYPP2aBfNGTzABqPAZnK/WOAaKfh3XesUYMZRrXFuoPc2Hv0/G/nQFveHw=="
   "resolved" "https://registry.npmjs.org/@types/passport/-/passport-1.0.7.tgz"
   "version" "1.0.7"
@@ -10304,6 +10312,14 @@
   "resolved" "https://registry.npmjs.org/pascalcase/-/pascalcase-0.1.1.tgz"
   "version" "0.1.1"
 
+"passport-headerapikey@^1.2.2":
+  "integrity" "sha512-4BvVJRrWsNJPrd3UoZfcnnl4zvUWYKEtfYkoDsaOKBsrWHYmzTApCjs7qUbncOLexE9ul0IRiYBFfBG0y9IVQA=="
+  "resolved" "https://registry.npmjs.org/passport-headerapikey/-/passport-headerapikey-1.2.2.tgz"
+  "version" "1.2.2"
+  dependencies:
+    "lodash" "^4.17.15"
+    "passport-strategy" "^1.0.0"
+
 "passport-jwt@^4.0.0":
   "integrity" "sha512-BwC0n2GP/1hMVjR4QpnvqA61TxenUMlmfNjYNgK0ZAs0HK4SOQkHcSv4L328blNTLtHq7DbmvyNJiH+bn6C5Mg=="
   "resolved" "https://registry.npmjs.org/passport-jwt/-/passport-jwt-4.0.0.tgz"
@@ -10328,7 +10344,7 @@
   "resolved" "https://registry.npmjs.org/passport-strategy/-/passport-strategy-1.0.0.tgz"
   "version" "1.0.0"
 
-"passport@^0.4.0", "passport@~0.4.1":
+"passport@^0.4.0", "passport@^0.4.1":
   "integrity" "sha512-IxXgZZs8d7uFSt3eqNjM9NQ3g3uQCW5avD8mRNoXV99Yig50vjuaez6dQK2qC0kVWPRTujxY0dWgGfT09adjYg=="
   "resolved" "https://registry.npmjs.org/passport/-/passport-0.4.1.tgz"
   "version" "0.4.1"

@@ -1,6 +1,8 @@
 'use strict';
 
+import { IsInt } from 'class-validator';
 import {
+    Column,
     CreateDateColumn,
     DeleteDateColumn,
     PrimaryGeneratedColumn,
@@ -28,6 +30,25 @@ export abstract class AbstractEntity {
         name: 'deleted_at',
     })
     deletedAt?: Date;
+
+    @IsInt()
+    @Column({
+        name: 'created_by',
+    })
+    createdBy: number;
+
+    @IsInt()
+    @Column({
+        name: 'updated_by',
+    })
+    updatedBy: number;
+
+    @IsInt()
+    @Column({
+        name: 'deleted_by',
+    })
+    deletedBy?: number;
+
     constructor(id?: number) {
         this.id = id;
     }

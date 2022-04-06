@@ -9,6 +9,14 @@ if (!(<any>module).hot /* for webpack HMR */) {
     process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 }
 
+const migrations = ['src/migrations/*{.ts,.js}'];
+
+if (
+    process.env.NODE_ENV === 'development' ||
+    process.env.NODE_ENV === 'staging'
+) {
+    migrations.push('src/seeding/*{.ts,.js}');
+}
 dotenv.config({
     path: `.${process.env.NODE_ENV}.env`,
 });
@@ -19,6 +27,7 @@ for (const envName of Object.keys(process.env)) {
 }
 
 module.exports = {
+    migrations,
     type: 'postgres',
     host: process.env.DB_HOST,
     port: +process.env.DB_PORT,
@@ -27,5 +36,4 @@ module.exports = {
     database: process.env.DB_DATABASE,
     namingStrategy: new SnakeNamingStrategy(),
     entities: ['src/modules/**/*.entity{.ts,.js}'],
-    migrations: ['src/migrations/*{.ts,.js}'],
 };

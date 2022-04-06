@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { CommittedWorkloadStatus } from '../../../../../common/constants/committedStatus';
 import { ExpertiseScopeShortDto } from '../getContributedValue/expertiseScopeShort.dto';
-import { ValueStreamShortDto } from '../summaryYearDTO/valueStreamShort.dto';
+import { ValueStreamShortDto } from '../overviewSummaryYear/valueStreamShort.dto';
 export class UserCompactDto {
     @ApiProperty({ example: 1 })
     id?: number;

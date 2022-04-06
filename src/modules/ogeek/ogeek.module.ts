@@ -21,12 +21,12 @@ import {
     ValueStreamRepository,
 } from './repos/index';
 import {
-    CreateCommittedWorkloadController,
+    CommittedWorkloadController,
     CreateCommittedWorkloadUseCase,
-} from './useCases/committedWorkload/createCommittedWorkload';
-import { CronCommittedWorkload } from './useCases/committedWorkload/cron-committed-workload.service';
-import { GetCommittedWorkloadUseCase } from './useCases/committedWorkload/getCommittedWorkload/GetCommittedWorkloadsUseCase';
-import { GetHistoryCommittedWorkloadUseCase } from './useCases/committedWorkload/getHistoryCommittedWorkload/GetCommittedWorkloadsUseCase';
+    GetCommittedWorkloadUseCase,
+    GetHistoryCommittedWorkloadUseCase,
+} from './useCases/committedWorkload';
+import { CronCommittedWorkload } from './useCases/committedWorkload/cronCommittedWorkload.service';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,
@@ -62,7 +62,6 @@ import { GetWorkloadListController } from './useCases/user/getWorkloadList/GetWo
 import { GetWorkloadListUseCase } from './useCases/user/getWorkloadList/GetWorkloadListUseCase';
 import { GetValueStreamController } from './useCases/valueStream/getValueStream/GetValueStreamController';
 import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/GetValueStreamUseCase';
-
 @Module({
     imports: [
         HttpModule,
@@ -78,7 +77,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         ScheduleModule.forRoot(),
     ],
     controllers: [
-        CreateCommittedWorkloadController,
+        CommittedWorkloadController,
         GetContributedValueController,
         GetUserController,
         GetValueStreamController,
@@ -111,14 +110,14 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetWeekStatusUseCase,
         GetUsersUseCase,
         GetDetailActualPlannedWorkloadUseCase,
-        {
-            provide: 'IUserRepo',
-            useClass: UserRepository,
-        },
         CreateIssueUseCase,
         GetCommittedWorkloadUseCase,
         GetHistoryCommittedWorkloadUseCase,
         CronCommittedWorkload,
+        {
+            provide: 'IUserRepo',
+            useClass: UserRepository,
+        },
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

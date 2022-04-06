@@ -3,10 +3,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
-import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedWorkload.dto';
 import { CommittedWorkloadShortDto } from '../../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
 import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
+import { FilterCommittedWorkload } from '../CommittedWorkloadController';
 import { GetCommittedWorkloadErrors } from './GetCommittedWorkloadErrors';
 type Response = Either<
     AppError.UnexpectedError | GetCommittedWorkloadErrors.NotFound,
@@ -15,16 +15,18 @@ type Response = Either<
 
 @Injectable()
 export class GetCommittedWorkloadUseCase
-    implements IUseCase<CreateCommittedWorkloadDto | number, Promise<Response>>
+    implements IUseCase<FilterCommittedWorkload | number, Promise<Response>>
 {
     constructor(
         @Inject('ICommittedWorkloadRepo')
         public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
     ) {}
-    async execute(): Promise<Response> {
+    async execute(query: FilterCommittedWorkload): Promise<Response> {
         try {
             const committedWorkloadsDomain =
-                await this.committedWorkloadRepo.findAllActiveCommittedWorkload();
+                await this.committedWorkloadRepo.findAllActiveCommittedWorkload(
+                    query,
+                );
             if (committedWorkloadsDomain.length <= 0) {
                 return left(new GetCommittedWorkloadErrors.NotFound());
             }
