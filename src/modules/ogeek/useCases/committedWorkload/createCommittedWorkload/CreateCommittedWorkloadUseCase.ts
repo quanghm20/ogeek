@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { RoleType } from '../../../../../common/constants/roleType';
+import { Member } from '../../../../../core/domain/member';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
@@ -8,6 +8,7 @@ import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedW
 import { CommittedWorkloadShortDto } from '../../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
 import { WorkloadDto } from '../../../infra/dtos/workload.dto';
 import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
+import { UserMap } from '../../../mappers/userMap';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IContributedValueRepo } from '../../../repos/contributedValueRepo';
 import { IUserRepo } from '../../../repos/userRepo';
@@ -28,14 +29,18 @@ export class CreateCommittedWorkloadUseCase
         @Inject('IContributedValueRepo')
         public readonly contributedValueRepo: IContributedValueRepo,
     ) {}
-    async execute(body: CreateCommittedWorkloadDto): Promise<Response> {
+    async execute(
+        body: CreateCommittedWorkloadDto,
+        member: Member,
+    ): Promise<Response> {
         try {
             const userId = body.userId;
             const user = await this.userRepo.findById(userId);
             const startDate = body.startDate;
             const expiredDate = body.expiredDate;
-            const pic = await this.userRepo.findById(body.picId);
-            if (pic.role !== RoleType.ADMIN) {
+            const userCreated = await this.userRepo.findById(member.memberId);
+            const createdBy = UserMap.toEntity(userCreated);
+            if (!userCreated.isPeopleOps) {
                 return left(
                     new CreateCommittedWorkloadErrors.Forbidden(),
                 ) as Response;
@@ -59,7 +64,7 @@ export class CreateCommittedWorkloadUseCase
                 userId,
                 startDate,
                 expiredDate,
-                body.picId,
+                createdBy,
             );
             if (result.length < 0) {
                 return left(
