@@ -74,6 +74,12 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     get reason(): string {
         return this.props.reason;
     }
+    get isClosed(): boolean {
+        return this.props.status === PlannedWorkloadStatus.CLOSED;
+    }
+    get isActive(): boolean {
+        return this.props.status !== PlannedWorkloadStatus.ARCHIVE;
+    }
     public static calculate(
         plannedWorkloads: PlannedWorkload[],
         committedWorkloadItem: CommittedWorkload,
@@ -88,6 +94,7 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
             0,
         );
     }
+
     public static create(
         props: IPlannedWorkloadProps,
         id: UniqueEntityID,

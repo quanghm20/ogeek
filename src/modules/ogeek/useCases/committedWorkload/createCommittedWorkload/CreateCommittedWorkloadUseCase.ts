@@ -33,8 +33,7 @@ export class CreateCommittedWorkloadUseCase
         member: number,
     ): Promise<Response> {
         try {
-            const userId = body.userId;
-            const user = await this.userRepo.findById(userId);
+            const user = await this.userRepo.findById(member);
             const startDate = body.startDate;
             const expiredDate = body.expiredDate;
             const userCreated = await this.userRepo.findById(member);
@@ -47,7 +46,7 @@ export class CreateCommittedWorkloadUseCase
             if (!user) {
                 return left(
                     new CreateCommittedWorkloadErrors.NotFound(
-                        userId.toString(),
+                        member.toString(),
                     ),
                 ) as Response;
             }
@@ -60,7 +59,7 @@ export class CreateCommittedWorkloadUseCase
             }
             const result = await this.committedWorkloadRepo.saveCommits(
                 committedWorkloads,
-                userId,
+                member,
                 startDate,
                 expiredDate,
                 createdBy.id,

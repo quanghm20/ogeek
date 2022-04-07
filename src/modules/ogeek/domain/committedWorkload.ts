@@ -198,14 +198,4 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
             );
         }
     }
-
-    public static calculateDuplicate(
-        committedWorkload: number,
-        committedWorkloadDuplicate: number,
-    ): number {
-        if (committedWorkload && committedWorkloadDuplicate) {
-            return committedWorkload + committedWorkloadDuplicate;
-        }
-        return committedWorkload;
-    }
 }

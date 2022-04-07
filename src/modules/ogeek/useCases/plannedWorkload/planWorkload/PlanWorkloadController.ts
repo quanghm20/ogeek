@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     HttpCode,
@@ -14,9 +15,8 @@ import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkloadsList.dto';
+import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkload/createPlannedWorkloadsList.dto';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
-import { MessageDto } from '../../../infra/dtos/message.dto';
 import { PlannedWorkloadDto } from '../../../infra/dtos/plannedWorkload.dto';
 import { PlanWorkloadErrors } from './PlanWorkloadErrors';
 import { PlanWorkloadUseCase } from './PlanWorkloadUseCase';
@@ -28,7 +28,7 @@ export class PlanWorkloadController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Post('plan-workload')
+    @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiOkResponse({
         type: [PlannedWorkloadDto],
@@ -37,19 +37,25 @@ export class PlanWorkloadController {
     async execute(
         @Req() req: Request,
         @Body() createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
-    ): Promise<MessageDto> {
+    ): Promise<CreatePlannedWorkloadsListDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
-        const { userId } = findUserDto;
-        createPlannedWorkloadsListDto.userId = userId;
+        const userId = findUserDto.userId;
 
         const result = await this.useCase.execute(
             createPlannedWorkloadsListDto,
+            userId,
         );
+
         if (result.isLeft()) {
             const error = result.value;
 
             switch (error.constructor) {
+                case PlanWorkloadErrors.InputValidationFailed:
+                    throw new BadRequestException(
+                        error.errorValue(),
+                        'Failed to validate input',
+                    );
                 case PlanWorkloadErrors.PlanWorkloadFailed:
                     throw new NotFoundException(
                         error.errorValue(),
@@ -63,9 +69,6 @@ export class PlanWorkloadController {
             }
         }
 
-        return {
-            statusCode: HttpStatus.CREATED,
-            message: 'CREATED',
-        } as MessageDto;
+        return createPlannedWorkloadsListDto;
     }
 }

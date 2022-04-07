@@ -37,10 +37,8 @@ import {
 } from './useCases/detailActualPlannedWorkload/getDetailActualPlannedWorkload';
 import { GetAverageActualWorkloadController } from './useCases/overview/getAverageActualWorkload/GetAverageActualWorkloadController';
 import { GetAverageActualWorkloadUseCase } from './useCases/overview/getAverageActualWorkload/GetAverageActualWorkloadUseCase';
-import { GetWeekStatusController } from './useCases/overview/message/GetWeekStatusController';
-import { GetWeekStatusUseCase } from './useCases/overview/message/GetWeekStatusUseCase';
-import { OverviewChartDataController } from './useCases/overview/overviewChartData/OverviewChartDataController';
-import { GetOverviewChartDataUseCase } from './useCases/overview/overviewChartData/OverviewChartDataUseCase';
+import { OverviewChartDataController } from './useCases/overview/overviewChartData/GetOverviewChartDataController';
+import { GetOverviewChartDataUseCase } from './useCases/overview/overviewChartData/GetOverviewChartDataUseCase';
 import { GetOverviewSummaryYearController } from './useCases/overview/overviewSummaryYear/GetOverviewSummaryYearController';
 import { GetOverviewSummaryYearUseCase } from './useCases/overview/overviewSummaryYear/GetOverviewSummaryYearUseCase';
 import {
@@ -81,7 +79,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetContributedValueController,
         GetUserController,
         GetValueStreamController,
-        GetWeekStatusController,
         OverviewChartDataController,
         GetAverageActualWorkloadController,
         GetOverviewSummaryYearController,
@@ -107,7 +104,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetUserUseCase,
         GetValueStreamUseCase,
         GetWorkloadListUseCase,
-        GetWeekStatusUseCase,
         GetUsersUseCase,
         GetDetailActualPlannedWorkloadUseCase,
         CreateIssueUseCase,

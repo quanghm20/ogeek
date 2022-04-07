@@ -16,6 +16,7 @@ import { CommittedWorkloadStatus } from '../../../common/constants/committedStat
 import { dateRange } from '../../../common/constants/dateRange';
 import { Order } from '../../../common/constants/order';
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
+import { MomentService } from '../../../providers/moment.service';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
@@ -28,7 +29,6 @@ import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/s
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
 import { FilterCommittedWorkload } from '../useCases/committedWorkload/CommittedWorkloadController';
-import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface ICommittedWorkloadRepo {
     findAllByWeek({
@@ -104,7 +104,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
                 'user',
-                'pic',
             ],
         });
 
@@ -137,7 +136,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
                 'user',
-                'pic',
             ],
         });
         return entities ? entities : null;
@@ -181,9 +179,9 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.valueStream',
                 'contributedValue.expertiseScope',
                 'user',
-                'pic',
             ],
         });
+
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
     }
     async save(
@@ -272,7 +270,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     'contributedValue.valueStream',
                     'contributedValue.expertiseScope',
                     'user',
-                    'pic',
                 ],
             });
             return commits ? CommittedWorkloadMap.toArrayDomain(commits) : null;
@@ -299,11 +296,11 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     LessThanOrEqual(
                         MomentService.shiftLastDateChart(startDateInWeek),
                     ),
+                status: CommittedWorkloadStatus.ACTIVE,
             },
             relations: [
                 'contributedValue',
                 'user',
-                'pic',
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
             ],
@@ -391,7 +388,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'user',
                 'contributedValue',
                 'contributedValue.expertiseScope',
-                'pic',
             ],
         });
         if (entities.length <= 0) {
@@ -460,7 +456,9 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entities = await this.repo.find({
             where: {
-                status: CommittedWorkloadStatus.ACTIVE,
+                status:
+                    CommittedWorkloadStatus.ACTIVE ||
+                    CommittedWorkloadStatus.NOT_RENEW,
                 user: userId,
                 startDate: LessThan(endDateOfWeek),
                 endDate: MoreThan(startDateOfWeek),
@@ -470,7 +468,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
                 'user',
-                'pic',
             ],
         });
         return entities
@@ -485,7 +482,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            // console.log(committedWorkload);
             let startDate = moment(committedWorkload.startDate);
             const expiredDate = moment(committedWorkload.expiredDate);
             const workload = committedWorkload.committedWorkload;
@@ -516,7 +512,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             return result;
         } catch (err) {
             // since we have errors lets rollback the changes we made
-            // console.log(err);
             await queryRunner.rollbackTransaction();
             return null;
         } finally {

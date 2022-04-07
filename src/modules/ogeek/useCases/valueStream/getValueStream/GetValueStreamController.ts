@@ -24,7 +24,7 @@ export class GetValueStreamController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Get('')
+    @Get()
     @ApiOkResponse({
         type: ValueStreamsByWeekDto,
         description: 'Get all value streams & expertise scopes in a week',

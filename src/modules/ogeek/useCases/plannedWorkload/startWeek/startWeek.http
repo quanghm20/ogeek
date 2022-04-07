@@ -7,3 +7,7 @@ PATCH {{baseUrl}}/planned-workload/start-week
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
+{
+    "startDate": "2022-04-16 07:00:00+07"
+}
+
