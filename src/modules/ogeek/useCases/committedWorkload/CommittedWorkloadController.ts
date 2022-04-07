@@ -79,8 +79,11 @@ export class CommittedWorkloadController {
         @Body() body: CreateCommittedWorkloadDto,
         @Req() req: Request,
     ): Promise<MessageDto> {
-        const pic = req.user as JwtPayload;
-        const result = await this.createCommitUseCase.execute(body, pic.userId);
+        const createdBy = req.user as JwtPayload;
+        const result = await this.createCommitUseCase.execute(
+            body,
+            createdBy.userId,
+        );
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {

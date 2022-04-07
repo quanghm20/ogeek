@@ -80,6 +80,21 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     get isActive(): boolean {
         return this.props.status !== PlannedWorkloadStatus.ARCHIVE;
     }
+    public static calculate(
+        plannedWorkloads: PlannedWorkload[],
+        committedWorkloadItem: CommittedWorkload,
+    ): number {
+        return plannedWorkloads.reduce(
+            (preTotalPlannedWorkload, currentPlannedWorkload) =>
+                preTotalPlannedWorkload +
+                (currentPlannedWorkload.committedWorkload.id.toValue() ===
+                committedWorkloadItem.id.toValue()
+                    ? currentPlannedWorkload.plannedWorkload
+                    : 0),
+            0,
+        );
+    }
+
     public static create(
         props: IPlannedWorkloadProps,
         id: UniqueEntityID,
