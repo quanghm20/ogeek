@@ -74,6 +74,20 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     get reason(): string {
         return this.props.reason;
     }
+    public static calculate(
+        plannedWorkloads: PlannedWorkload[],
+        committedWorkloadItem: CommittedWorkload,
+    ): number {
+        return plannedWorkloads.reduce(
+            (preTotalPlannedWorkload, currentPlannedWorkload) =>
+                preTotalPlannedWorkload +
+                (currentPlannedWorkload.committedWorkload.id.toValue() ===
+                committedWorkloadItem.id.toValue()
+                    ? currentPlannedWorkload.plannedWorkload
+                    : 0),
+            0,
+        );
+    }
     public static create(
         props: IPlannedWorkloadProps,
         id: UniqueEntityID,

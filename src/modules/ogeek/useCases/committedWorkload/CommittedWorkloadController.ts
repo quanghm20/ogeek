@@ -25,8 +25,6 @@ import {
 import { Request } from 'express';
 
 import { RoleType } from '../../../../common/constants/roleType';
-import { Member } from '../../../../core/domain/member';
-import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
 import { Roles } from '../../../../decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
@@ -81,15 +79,11 @@ export class CommittedWorkloadController {
         @Body() body: CreateCommittedWorkloadDto,
         @Req() req: Request,
     ): Promise<MessageDto> {
-        const pic = req.user as JwtPayload;
-        const id = new UniqueEntityID(pic.userId);
-        const member = Member.create(
-            {
-                alias: '',
-            },
-            id,
-        ).getValue();
-        const result = await this.createCommitUseCase.execute(body, member);
+        const createdBy = req.user as JwtPayload;
+        const result = await this.createCommitUseCase.execute(
+            body,
+            createdBy.userId,
+        );
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {

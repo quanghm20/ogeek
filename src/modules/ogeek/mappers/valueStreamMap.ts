@@ -60,6 +60,8 @@ export class ValueStreamMap implements Mapper<ValueStream> {
         return valueStreamArrayDto;
     }
 
+    // public static fromDomainOverview(valueStream: )
+
     public static toDomain(raw: ValueStreamEntity): ValueStream {
         const { id } = raw;
 

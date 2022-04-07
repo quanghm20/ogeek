@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { Member } from '../../../../../core/domain/member';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
@@ -31,14 +30,14 @@ export class CreateCommittedWorkloadUseCase
     ) {}
     async execute(
         body: CreateCommittedWorkloadDto,
-        member: Member,
+        member: number,
     ): Promise<Response> {
         try {
             const userId = body.userId;
             const user = await this.userRepo.findById(userId);
             const startDate = body.startDate;
             const expiredDate = body.expiredDate;
-            const userCreated = await this.userRepo.findById(member.memberId);
+            const userCreated = await this.userRepo.findById(member);
             const createdBy = UserMap.toEntity(userCreated);
             if (!userCreated.isPeopleOps) {
                 return left(

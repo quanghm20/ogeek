@@ -8,6 +8,7 @@ import {
     LessThanOrEqual,
     MoreThan,
     MoreThanOrEqual,
+    Not,
     Repository,
 } from 'typeorm';
 
@@ -152,14 +153,13 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 user: {
                     id: userId,
                 },
-                status: CommittedWorkloadStatus.ACTIVE,
+                status: Not(CommittedWorkloadStatus.INCOMING),
             },
             relations: [
                 'contributedValue',
                 'contributedValue.valueStream',
                 'contributedValue.expertiseScope',
                 'user',
-                'pic',
             ],
         });
         return entity ? CommittedWorkloadMap.toArrayDomain(entity) : null;

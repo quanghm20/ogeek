@@ -4,22 +4,24 @@ import Axios from 'axios';
 import * as moment from 'moment';
 
 import { dateRange } from '../../../../../common/constants/dateRange';
+import { DefaultValue } from '../../../../../common/constants/defaultValue';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { DomainId } from '../../../domain/domainId';
+import { PlannedWorkload } from '../../../domain/plannedWorkload';
 import { DataResponseDto } from '../../../infra/dtos/overviewSummaryYear/dataResponse.dto';
-import { ExpertiseScopesDto } from '../../../infra/dtos/overviewSummaryYear/expertiseScopes.dto';
+import { ExpertiseScopeDto } from '../../../infra/dtos/overviewSummaryYear/expertiseScope.dto';
 import { ExpertiseScopeShortDto } from '../../../infra/dtos/overviewSummaryYear/expertiseScopeShort.dto';
 import { ValueStreamsDto } from '../../../infra/dtos/overviewSummaryYear/valueStreams.dto';
-import { ValueStreamMap } from '../../../mappers/valueStreamMap';
+import { ValueStreamShortDto } from '../../../infra/dtos/overviewSummaryYear/valueStreamShort.dto';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
 import { IValueStreamRepo } from '../../../repos/valueStreamRepo';
 import { GetOverviewSummaryYearErrors } from './GetOverviewSummaryYearErrors';
 
 type Response = Either<
-    AppError.UnexpectedError | GetOverviewSummaryYearErrors.UserNotFound,
+    AppError.UnexpectedError | GetOverviewSummaryYearErrors.NotFound,
     Result<DataResponseDto>
 >;
 
@@ -48,41 +50,50 @@ export class GetOverviewSummaryYearUseCase
             const plannedWorkloads = await this.plannedWorkloadRepo.findByUserIdOverview(userId, startDateOfYear, endDateOfYear);
 
             const valueStream = await this.valueStreamRepo.findAllOverview();
-            const valueStreamShortArrayDto = ValueStreamMap.fromArrayDomain(valueStream);
 
-            const data = Array<ValueStreamsDto>();
-            valueStreamShortArrayDto.forEach(function(valueStreamItem) {
-                const expertiseScopesDto = Array<ExpertiseScopesDto>();
-                committedWorkloads.forEach(function(committedWorkloadItem) {
-                    if (committedWorkloadItem.getValueStreamId() === valueStreamItem.id) {
-                        const committedWorkload = committedWorkloadItem.calculateCommittedWorkload(startDateOfYear, endDateOfYear);
-                        const plannedWorkload = plannedWorkloads.reduce((preTotalPlannedWL, currentPlannedWL) =>
-                            preTotalPlannedWL + (currentPlannedWL.committedWorkload.id.toValue() === committedWorkloadItem.id.toValue()
-                            ? currentPlannedWL.plannedWorkload : 0), 0);
-                        const expertiseScopeShortDto = new ExpertiseScopeShortDto(
+            // const valueStreamShortArrayDto = ValueStreamMap.fromArrayDomain(valueStream);
+
+            const data = new Array<ValueStreamsDto>();
+            valueStream.map((valueStreamItem) => {
+                const expertiseScopeArray = new Array<ExpertiseScopeDto>();
+                committedWorkloads.map((committedWorkloadItem) => {
+                    if (committedWorkloadItem.getValueStreamId() === valueStreamItem.id.toValue()) {
+
+                        const committedWorkload =
+                            committedWorkloadItem.calculate(startDateOfYear, endDateOfYear, Number(valueStreamItem.id.toValue()));
+
+                        const plannedWorkload = PlannedWorkload.calculate(plannedWorkloads, committedWorkloadItem);
+
+                        const expertiseScopeShort = new ExpertiseScopeShortDto(
                             committedWorkloadItem.getExpertiseScopeId(),
                             committedWorkloadItem.contributedValue.expertiseScope.name,
                         );
-                        const expertiseScope = new ExpertiseScopesDto(
-                            expertiseScopeShortDto,
+
+                        const expertiseScope = new ExpertiseScopeDto(
+                            expertiseScopeShort,
                             committedWorkload,
                             plannedWorkload,
-                            0,
-                            0,
+                            DefaultValue.ACTUAL_PLANNED_WORKLOAD,
+                            DefaultValue.WORKLOG,
                         );
-                        const findExp = expertiseScopesDto.find((expertiseScopeItem) =>
+                        const findExp = expertiseScopeArray.find((expertiseScopeItem) =>
                             expertiseScope.expertiseScope.id === expertiseScopeItem.expertiseScope.id);
                         if (!findExp) {
-                            expertiseScopesDto.push(expertiseScope);
+                            expertiseScopeArray.push(expertiseScope);
                         } else {
-                            const pos = expertiseScopesDto.indexOf(findExp);
-                            expertiseScopesDto[pos].committedWorkload += expertiseScope.committedWorkload;
+                            const pos = expertiseScopeArray.indexOf(findExp);
+                            expertiseScopeArray[pos].committedWorkload += expertiseScope.committedWorkload;
+                            expertiseScopeArray[pos].plannedWorkload += expertiseScope.plannedWorkload;
                         }
                     }
                 });
+                const valueStreamShortDto = new ValueStreamShortDto(
+                    Number(valueStreamItem.id),
+                    valueStreamItem.name,
+                );
                 const valueStreamDto = new ValueStreamsDto(
-                    valueStreamItem,
-                    expertiseScopesDto,
+                    valueStreamShortDto,
+                    expertiseScopeArray,
                     );
                 data.push(valueStreamDto);
                 });
@@ -103,7 +114,7 @@ export class GetOverviewSummaryYearUseCase
             }
 
             return left(
-                    new GetOverviewSummaryYearErrors.UserNotFound(userId.toString()),
+                    new GetOverviewSummaryYearErrors.NotFound(),
                 ) as Response;
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
