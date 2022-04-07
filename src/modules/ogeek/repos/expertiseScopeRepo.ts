@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 
+import { MomentService } from '../../../providers/moment.service';
 import { DomainId } from '../domain/domainId';
 import { ExpertiseScope } from '../domain/expertiseScope';
 import { ExpertiseScopeEntity } from '../infra/database/entities/expertiseScope.entity';
 import { ExpertiseScopeMap } from '../mappers/expertiseScopeMap';
-import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface IExpertiseScopeRepo {
     findById(expertiseScopeId: DomainId | number): Promise<ExpertiseScope>;

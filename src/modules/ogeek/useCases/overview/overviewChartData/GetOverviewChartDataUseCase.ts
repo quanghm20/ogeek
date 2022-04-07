@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { MomentService } from '../../../../../providers/moment.service';
 import { InputGetOverviewChartDto } from '../../../infra/dtos/overviewChart/inputGetOverviewChart.dto';
 import { OverviewChartDataDto } from '../../../infra/dtos/overviewChart/overviewChartData.dto';
 import { WorkloadOverviewDto } from '../../../infra/dtos/overviewChart/workloadOverview.dto';
@@ -16,8 +17,7 @@ import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IExpertiseScopeRepo } from '../../../repos/expertiseScopeRepo';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
 import { IUserRepo } from '../../../repos/userRepo';
-import { MomentService } from '../../moment/configMomentService/ConfigMomentService';
-import { GetOverviewChartDataErrors } from './OverviewChartDataErrors';
+import { GetOverviewChartDataErrors } from './GetOverviewChartDataErrors';
 
 type Response = Either<
     AppError.UnexpectedError | GetOverviewChartDataErrors.GetOverviewChartDataFailed,
@@ -62,14 +62,17 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
             const committedWorkloadDtos = CommittedWorkloadMap.fromDomainAll(committedWorkloads);
             const expertiseScopeDtos = ExpertiseScopeMap.fromDomainAll(expertiseScopes);
             const overviewChartDataDtos = new Array<OverviewChartDataDto>();
+
+            const numOfTwelvePrecedingWeeks = 12;
+            const numOfWeekInChart = 18;
             expertiseScopeDtos.forEach((expertiseScope) => {
                 const id = Number(expertiseScope.id.toString());
 
                 const contributedValue = Array<WorkloadOverviewDto>();
-                for (const plannedWorkloadDto of plannedWorkloadDtos) {
-
+                // for (const plannedWorkloadDto of plannedWorkloadDtos)
+                plannedWorkloadDtos.forEach((plannedWorkloadDto) => {
                     const week = moment(plannedWorkloadDto.startDate).week();
-                    const exId = Number(plannedWorkloadDto.contributedValue.expertiseScope.id.toString());
+                    const exId = Number(plannedWorkloadDto.contributedValue?.expertiseScope?.id?.toString());
                     if (exId === id) {
                         contributedValue.push({
                             week,
@@ -77,18 +80,18 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
                             actualWorkload: 0,
                         } as WorkloadOverviewDto);
                     }
-                }
+                });
                 if (contributedValue.length !== 0) {
                     overviewChartDataDtos.push({
                         expertiseScopes: contributedValue,
                         expertiseScope: expertiseScope.name,
                         expertiseScopeId: Number(expertiseScope.id),
-                        worklogLength: input.week - moment(user.createdAt).week() >= 12
+                        worklogLength: input.week - moment(user.createdAt).week() >= numOfTwelvePrecedingWeeks
                         || input.week - moment(user.createdAt).week() < 0 ?
-                                        12 : input.week - moment(user.createdAt).week(),
-                        actualPlannedWorkloadLength: 18 - (input.week - moment(user.createdAt).week() >= 12
+                                        numOfTwelvePrecedingWeeks : input.week - moment(user.createdAt).week(),
+                        actualPlannedWorkloadLength: numOfWeekInChart - (input.week - moment(user.createdAt).week() >= numOfTwelvePrecedingWeeks
                         || input.week - moment(user.createdAt).week() < 0 ?
-                                        12 : input.week - moment(user.createdAt).week()),
+                                        numOfTwelvePrecedingWeeks : input.week - moment(user.createdAt).week()),
                     } as OverviewChartDataDto);
                 }
             });
@@ -96,10 +99,10 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
                 if (!overviewChartDataDtos.find(item => item.expertiseScopeId === Number(committedWL.contributedValue.expertiseScope.id.toString())))
                     {overviewChartDataDtos.push({
                         expertiseScopes: [],
-                        expertiseScope: committedWL.contributedValue.expertiseScope.name,
-                        expertiseScopeId: Number(committedWL.contributedValue.expertiseScope.id),
+                        expertiseScope: committedWL.contributedValue?.expertiseScope?.name,
+                        expertiseScopeId: Number(committedWL.contributedValue?.expertiseScope?.id),
                         worklogLength: 0,
-                        actualPlannedWorkloadLength: 18,
+                        actualPlannedWorkloadLength: numOfWeekInChart,
                     } as OverviewChartDataDto); }
             });
 

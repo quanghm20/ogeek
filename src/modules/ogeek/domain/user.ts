@@ -6,12 +6,12 @@ import { Result } from '../../../core/logic/Result';
 import { DomainId } from './domainId';
 
 interface IUserProps {
-    alias: string;
-    name: string;
-    phone: string;
-    email: string;
-    avatar: string;
-    role: RoleType;
+    alias?: string;
+    name?: string;
+    phone?: string;
+    email?: string;
+    avatar?: string;
+    role?: RoleType;
     createdBy?: number;
     updatedBy?: number;
     deletedBy?: number;

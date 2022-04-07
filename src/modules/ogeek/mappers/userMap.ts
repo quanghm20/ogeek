@@ -9,7 +9,8 @@ import { UserDto } from '../infra/dtos/user.dto';
 export class UserMap implements Mapper<User> {
     public static fromDomain(user: User): UserDto {
         const dto = new UserDto();
-        dto.id = new UniqueEntityID(user.userId.id.toValue());
+        dto.id = new UniqueEntityID(user.id.toValue());
+
         dto.alias = user.alias;
         dto.email = user.email;
         dto.name = user.name;
@@ -19,7 +20,7 @@ export class UserMap implements Mapper<User> {
         return dto;
     }
     public static fromUserShort(user: User): UserCompactDto {
-        const id = Number(user.id.toValue());
+        const id = Number(user.id.toString());
         return new UserCompactDto(id, user.alias, user.name);
     }
 

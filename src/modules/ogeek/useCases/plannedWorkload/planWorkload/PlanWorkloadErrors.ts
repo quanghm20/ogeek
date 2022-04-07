@@ -9,4 +9,11 @@ export namespace PlanWorkloadErrors {
             } as UseCaseError);
         }
     }
+    export class InputValidationFailed extends Result<UseCaseError> {
+        constructor() {
+            super(false, {
+                message: 'Failed to validate input!',
+            } as UseCaseError);
+        }
+    }
 }

@@ -1,5 +1,6 @@
 import {
     BadRequestException,
+    Body,
     Controller,
     HttpCode,
     HttpStatus,
@@ -10,11 +11,13 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
+import * as moment from 'moment';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwt-auth-guard';
 import { JwtPayload } from '../../../../jwtAuth/jwt-auth.strategy';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
-import { MessageDto } from '../../../infra/dtos/message.dto';
+import { StartWeekDto } from '../../../infra/dtos/startWeek/startWeek.dto';
+import { StartWeekResponseDto } from '../../../infra/dtos/startWeek/startWeekResponse.dto';
 import { StartWeekErrors } from './StartWeekErrors';
 import { StartWeekUseCase } from './StartWeekUseCase';
 
@@ -30,21 +33,25 @@ export class StartWeekController {
     @ApiOkResponse({
         description: 'Start week for Geek',
     })
-    async execute(@Req() req: Request): Promise<MessageDto> {
+    async execute(
+        @Req() req: Request,
+        @Body() startWeekDto: StartWeekDto,
+    ): Promise<StartWeekResponseDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
+        const { userId } = findUserDto;
 
-        const result = await this.useCase.execute(findUserDto);
+        const { startDate } = startWeekDto;
+        const result = await this.useCase.execute(startDate, userId);
 
         if (result.isLeft()) {
             const error = result.value;
 
             switch (error.constructor) {
-                case StartWeekErrors.StartWeekFailed:
-                    throw new BadRequestException(
-                        error.errorValue(),
-                        'Cannot execute without planning',
-                    );
+                case StartWeekErrors.PreviousWeekNotClose:
+                    throw new BadRequestException(error.errorValue());
+                case StartWeekErrors.NotPlan:
+                    throw new BadRequestException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(
                         error.errorValue(),
@@ -53,9 +60,6 @@ export class StartWeekController {
             }
         }
 
-        return {
-            statusCode: HttpStatus.OK,
-            message: 'OK',
-        } as MessageDto;
+        return { week: moment(startDate).week() } as StartWeekResponseDto;
     }
 }
