@@ -4,8 +4,8 @@ import { AxiosRequestConfig } from 'axios';
 import { Strategy } from 'passport-oauth2';
 import { map } from 'rxjs/operators';
 
-import { UserDto } from '../../modules/o-geek/infra/dtos/user.dto';
 import { ConfigService } from '../../shared/services/config.service';
+import { UserDto } from '../ogeek/infra/dtos/user.dto';
 
 @Injectable()
 export class OAuthStrategy extends PassportStrategy(Strategy, 'oauth') {

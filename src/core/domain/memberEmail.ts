@@ -11,11 +11,11 @@ export class MemberEmail extends ValueObject<IMemberEmailProps> {
         return this.props.value;
     }
 
-    private constructor(props: IMemberEmailProps) {
+    private constructor(props?: IMemberEmailProps) {
         super(props);
     }
 
-    public static create(email: string): Result<MemberEmail> {
+    public static create(email?: string): Result<MemberEmail> {
         const guardResult = Guard.combine([
             Guard.againstNullOrUndefined(email, 'email'),
             Guard.isEmail(email, 'email'),
