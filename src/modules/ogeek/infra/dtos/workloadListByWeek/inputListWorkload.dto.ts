@@ -1,5 +1,12 @@
+import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber } from 'class-validator';
 
+export class InputWeekDto {
+    @IsNumber()
+    @IsNotEmpty()
+    @Type(() => Number)
+    week: number;
+}
 export class InputListWorkloadDto {
     @IsNumber()
     @IsNotEmpty()

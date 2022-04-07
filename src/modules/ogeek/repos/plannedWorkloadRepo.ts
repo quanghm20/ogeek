@@ -6,6 +6,7 @@ import {
     Connection,
     getConnection,
     LessThanOrEqual,
+    Not,
     Repository,
 } from 'typeorm';
 
@@ -136,8 +137,10 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }: InputGetPlanWLDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: !PlannedWorkloadStatus.ARCHIVE,
-                user: userId,
+                status: Not(PlannedWorkloadStatus.ARCHIVE),
+                user: {
+                    id: Number(userId),
+                },
                 startDate: Between(startDateOfWeek, endDateOfWeek),
             },
             relations: [
@@ -145,9 +148,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
                 'committedWorkload',
-                'committedWorkload.contributedValue',
-                'committedWorkload.contributedValue.expertiseScope',
-                'committedWorkload.contributedValue.valueStream',
                 'user',
                 'committedWorkload.user',
             ],
@@ -179,12 +179,14 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     ): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                user: userId,
+                user: {
+                    id: Number(userId),
+                },
                 startDate: Between(
                     MomentService.shiftFirstDateChart(startDate),
                     MomentService.shiftLastDateChart(startDate),
                 ),
-                status: !PlannedWorkloadStatus.ARCHIVE,
+                status: Not(PlannedWorkloadStatus.ARCHIVE),
             },
             relations: [
                 'contributedValue',
@@ -211,7 +213,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }: StartEndDateOfWeekWLInputDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: !PlannedWorkloadStatus.ARCHIVE,
+                status: Not(PlannedWorkloadStatus.ARCHIVE),
                 startDate: Between(startDateOfWeek, endDateOfWeek),
             },
             relations: [
@@ -220,9 +222,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'contributedValue.valueStream',
                 'committedWorkload',
                 'committedWorkload.user',
-                'committedWorkload.contributedValue',
-                'committedWorkload.contributedValue.expertiseScope',
-                'committedWorkload.contributedValue.valueStream',
                 'user',
             ],
         });
