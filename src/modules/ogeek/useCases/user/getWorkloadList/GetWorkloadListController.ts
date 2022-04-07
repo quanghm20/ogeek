@@ -6,6 +6,8 @@ import {
     Query,
     Req,
     UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -14,7 +16,10 @@ import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { InputListWorkloadDto } from '../../../infra/dtos/workloadListByWeek/inputListWorkload.dto';
+import {
+    InputListWorkloadDto,
+    InputWeekDto,
+} from '../../../infra/dtos/workloadListByWeek/inputListWorkload.dto';
 import { WorkloadListByWeekDto } from '../../../infra/dtos/workloadListByWeek/workloadListByWeek.dto';
 import { GetWorkloadListError } from './GetWorkloadListErrors';
 import { GetWorkloadListUseCase } from './GetWorkloadListUseCase';
@@ -28,16 +33,18 @@ export class GetWorkloadListController {
     @ApiBearerAuth()
     @Get()
     @Roles(RoleType.PP)
+    @UsePipes(new ValidationPipe({ transform: true }))
     @ApiOkResponse({
         type: WorkloadListByWeekDto,
         description: 'Get all workload list of geeks in a week',
     })
     async execute(
         @Req() req: Request,
-        @Query('week') week: number,
+        @Query() inputWeek: InputWeekDto,
     ): Promise<WorkloadListByWeekDto[]> {
         const { userId } = req.user as JwtPayload;
-        const input = new InputListWorkloadDto(week, userId);
+
+        const input = new InputListWorkloadDto(inputWeek.week, userId);
         const result = await this.useCase.execute(input);
         if (result.isLeft()) {
             const error = result.value;

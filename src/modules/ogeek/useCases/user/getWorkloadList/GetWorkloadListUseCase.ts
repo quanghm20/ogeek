@@ -1,11 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
-import * as moment from 'moment';
 
 import { RoleType } from '../../../../../common/constants/roleType';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { MomentService } from '../../../../../providers/moment.service';
 import { SenteService } from '../../../../../shared/services/sente.service';
 import { ActualWorkloadListDto } from '../../../infra/dtos/workloadListByWeek/actualWorkloadList.dto';
 import { InputListWorkloadDto } from '../../../infra/dtos/workloadListByWeek/inputListWorkload.dto';
@@ -45,45 +45,29 @@ export class GetWorkloadListUseCase
         @Inject('IIssueRepo')
         public readonly issueRepo: IIssueRepo,
         public readonly senteService: SenteService,
-    ) { }
+    ) {}
 
     async execute(params: InputListWorkloadDto): Promise<Response> {
         try {
             const user = await this.userRepo.findById(params.userId);
 
+            const week = Number(params.week);
+
             if (user.role !== RoleType.PP) {
                 return left(new GetWorkloadListError.Forbidden()) as Response;
             }
-            if (params.week < 1 && params.week > 52) {
+            if (week < 1 || week > 52) {
                 return left(new GetWorkloadListError.WeekError()) as Response;
             }
 
-            // const url = `${process.env.MOCK_URL}/api/overview/list-workload/${params.week}`;
-            // const request = await Axios.get<ServerResponse>(url, {
-            //     headers: {
-            //         'x-api-key': process.env.MOCK_API_KEY,
-            //     },
-            // });
-            const request = await this.senteService.getOverviewListWorkload<ServerResponse>(params.week.toString());
+            const request =
+                await this.senteService.getOverviewListWorkload<ServerResponse>(
+                    params.week.toString(),
+                );
             const response = request.data.data;
 
-            const dateOfWeek = moment()
-                .utcOffset(420)
-                .week(params.week)
-                .format();
-
-            const numDateOfWeek = moment(dateOfWeek).format('e');
-
-            const startDateOfWeek = moment(dateOfWeek)
-                .utcOffset(420)
-                .add(-numDateOfWeek, 'days')
-                .startOf('day')
-                .toDate();
-            const endDateOfWeek = moment(startDateOfWeek)
-                .utcOffset(420)
-                .add(6, 'days')
-                .endOf('day')
-                .toDate();
+            const startDateOfWeek = MomentService.firstDateOfWeek(week);
+            const endDateOfWeek = MomentService.lastDateOfWeek(week);
 
             const users = await this.userRepo.findAllUser();
             const issues = await this.issueRepo.findAllByWeek({
