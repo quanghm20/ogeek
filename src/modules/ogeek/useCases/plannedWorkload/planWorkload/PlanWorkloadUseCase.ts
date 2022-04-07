@@ -92,7 +92,7 @@ export class PlanWorkloadUseCase
         await this.plannedWorkloadRepo.updateMany(
           {
             user: { id: userId },
-            startDate: Equal(formattedStartDate),
+            startDate: Equal(formattedStartDate.toISOString()),
           },
           {
             status: PlannedWorkloadStatus.ARCHIVE,
@@ -111,7 +111,7 @@ export class PlanWorkloadUseCase
             user,
             contributedValue,
             committedWorkload,
-            startDate: new Date(formattedStartDate),
+            startDate: new Date(formattedStartDate.toISOString()),
             plannedWorkload: workload,
             status: newPlannedWorkloadStatus,
           },
