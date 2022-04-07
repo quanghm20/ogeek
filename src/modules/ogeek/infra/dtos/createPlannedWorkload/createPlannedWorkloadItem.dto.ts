@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePlannedWorkloadItemDto {
-    @ApiProperty()
+    @ApiProperty({ example: 20 })
     workload?: number;
 
-    @ApiProperty()
+    @ApiProperty({ example: 'Product Backend' })
     committedWorkloadId?: number;
 
-    @ApiProperty()
+    @ApiProperty({ example: 1 })
     contributedValueId?: number;
 }
