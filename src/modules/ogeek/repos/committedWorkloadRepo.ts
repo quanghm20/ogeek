@@ -299,12 +299,11 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     LessThanOrEqual(
                         MomentService.shiftLastDateChart(startDateInWeek),
                     ),
-                status: WorkloadStatus.ACTIVE,
+                status: CommittedWorkloadStatus.ACTIVE,
             },
             relations: [
                 'contributedValue',
                 'user',
-                'pic',
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
             ],
@@ -392,7 +391,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'user',
                 'contributedValue',
                 'contributedValue.expertiseScope',
-                'pic',
             ],
         });
         if (entities.length <= 0) {
@@ -471,7 +469,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
                 'user',
-                'pic',
             ],
         });
         return entities
