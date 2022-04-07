@@ -7,7 +7,7 @@ export class MomentService {
         return this.moment();
     }
     public static getDateInWeek(week: number): Date {
-        return moment().utcOffset(420).week(week).toDate();
+        return moment().utcOffset('+07:00').week(week).toDate();
     }
 
     public static getNumOfWeek(injectedDate: Date): string {
@@ -21,16 +21,17 @@ export class MomentService {
     public static getFirstDateOfWeek(injectedDate: Date): string {
         const num = moment(injectedDate).day();
         return moment(injectedDate)
-            .utcOffset(420)
+            .utcOffset('+07:00')
             .add(-num, 'days')
             .startOf('day')
             .format('MM-DD-YYYY');
     }
 
     public static getLastDateOfWeek(injectedDate: Date): string {
+        const num = 6;
         return moment(injectedDate)
-            .utcOffset(420)
-            .add(6, 'days')
+            .utcOffset('+07:00')
+            .add(num, 'days')
             .endOf('day')
             .format('MM-DD-YYYY');
     }
@@ -40,7 +41,7 @@ export class MomentService {
         const numOfDaysInAWeek = 7;
         const result = new Date(
             moment(this.getLastDateOfWeek(injectedDate))
-                .utcOffset(420)
+                .utcOffset('+07:00')
                 .add(
                     numOfDaysInAWeek *
                         numOfWeekAfterCurrentWeekWhichContainsPlannedWorkload,
