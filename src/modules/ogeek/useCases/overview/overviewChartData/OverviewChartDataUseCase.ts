@@ -1,11 +1,12 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable, Response } from '@nestjs/common';
-import Axios from 'axios';
 import * as moment from 'moment';
 
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { MomentService } from '../../../../../providers/moment.service';
+import { SenteService } from '../../../../../shared/services/sente.service';
 import { InputGetOverviewChartDto } from '../../../infra/dtos/overviewChart/inputGetOverviewChart.dto';
 import { OverviewChartDataDto } from '../../../infra/dtos/overviewChart/overviewChartData.dto';
 import { WorkloadOverviewDto } from '../../../infra/dtos/overviewChart/workloadOverview.dto';
@@ -16,7 +17,6 @@ import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IExpertiseScopeRepo } from '../../../repos/expertiseScopeRepo';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
 import { IUserRepo } from '../../../repos/userRepo';
-import { MomentService } from '../../moment/configMomentService/ConfigMomentService';
 import { GetOverviewChartDataErrors } from './OverviewChartDataErrors';
 
 type Response = Either<
@@ -33,15 +33,13 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
     constructor(
         @Inject('IUserRepo')
         public readonly userRepo: IUserRepo,
-
         @Inject('IExpertiseScopeRepo')
         public readonly expertiseScopeRepo: IExpertiseScopeRepo,
-
         @Inject('IPlannedWorkloadRepo')
         public readonly plannedWorkloadRepo: IPlannedWorkloadRepo,
-
         @Inject('ICommittedWorkloadRepo')
         public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
+        public readonly senteService: SenteService,
     ) { }
 
     async execute(input: InputGetOverviewChartDto): Promise<Response> {
@@ -84,23 +82,25 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
                         expertiseScope: expertiseScope.name,
                         expertiseScopeId: Number(expertiseScope.id),
                         worklogLength: input.week - moment(user.createdAt).week() >= 12
-                        || input.week - moment(user.createdAt).week() < 0 ?
-                                        12 : input.week - moment(user.createdAt).week(),
+                            || input.week - moment(user.createdAt).week() < 0 ?
+                            12 : input.week - moment(user.createdAt).week(),
                         actualPlannedWorkloadLength: 18 - (input.week - moment(user.createdAt).week() >= 12
-                        || input.week - moment(user.createdAt).week() < 0 ?
-                                        12 : input.week - moment(user.createdAt).week()),
+                            || input.week - moment(user.createdAt).week() < 0 ?
+                            12 : input.week - moment(user.createdAt).week()),
                     } as OverviewChartDataDto);
                 }
             });
             committedWorkloadDtos.forEach(committedWL => {
-                if (!overviewChartDataDtos.find(item => item.expertiseScopeId === Number(committedWL.contributedValue.expertiseScope.id.toString())))
-                    {overviewChartDataDtos.push({
+                if (!overviewChartDataDtos.find(item =>
+                    item.expertiseScopeId === Number(committedWL.contributedValue.expertiseScope.id.toString()))) {
+                    overviewChartDataDtos.push({
                         expertiseScopes: [],
                         expertiseScope: committedWL.contributedValue.expertiseScope.name,
                         expertiseScopeId: Number(committedWL.contributedValue.expertiseScope.id),
                         worklogLength: 0,
                         actualPlannedWorkloadLength: 18,
-                    } as OverviewChartDataDto); }
+                    } as OverviewChartDataDto);
+                }
             });
 
             overviewChartDataDtos.forEach(overviewChartDataDto => {
@@ -119,12 +119,13 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
                 }
                 overviewChartDataDto.expertiseScopes.sort((a, b) => a.week - b.week);
             });
-            const url = `${process.env.MOCK_URL}/api/overview/actual-workload?userId=${input.userId.toString()}`;
-            const request = await Axios.post<ServerResponse>(url, overviewChartDataDtos, {
-                headers: {
-                    'x-api-key': process.env.MOCK_API_KEY,
-                },
-            });
+            // const url = `${process.env.MOCK_URL}/api/overview/actual-workload?userId=${input.userId.toString()}`;
+            // const request = await Axios.post<ServerResponse>(url, overviewChartDataDtos, {
+            //     headers: {
+            //         'x-api-key': process.env.MOCK_API_KEY,
+            //     },
+            // });
+            const request = await this.senteService.getActualWorkload<ServerResponse>(overviewChartDataDtos, input.userId.toString());
             const worklogs = request.data.data;
             if (overviewChartDataDtos) {
                 return right(Result.ok(worklogs));

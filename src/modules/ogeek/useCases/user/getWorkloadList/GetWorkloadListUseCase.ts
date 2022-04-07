@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
-import Axios from 'axios';
 import * as moment from 'moment';
 
 import { RoleType } from '../../../../../common/constants/roleType';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { SenteService } from '../../../../../shared/services/sente.service';
 import { ActualWorkloadListDto } from '../../../infra/dtos/workloadListByWeek/actualWorkloadList.dto';
 import { InputListWorkloadDto } from '../../../infra/dtos/workloadListByWeek/inputListWorkload.dto';
 import { StartEndDateOfWeekWLInputDto } from '../../../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
@@ -44,7 +44,8 @@ export class GetWorkloadListUseCase
         public readonly userRepo: IUserRepo,
         @Inject('IIssueRepo')
         public readonly issueRepo: IIssueRepo,
-    ) {}
+        public readonly senteService: SenteService,
+    ) { }
 
     async execute(params: InputListWorkloadDto): Promise<Response> {
         try {
@@ -57,12 +58,13 @@ export class GetWorkloadListUseCase
                 return left(new GetWorkloadListError.WeekError()) as Response;
             }
 
-            const url = `${process.env.MOCK_URL}/api/overview/list-workload/${params.week}`;
-            const request = await Axios.get<ServerResponse>(url, {
-                headers: {
-                    'x-api-key': process.env.MOCK_API_KEY,
-                },
-            });
+            // const url = `${process.env.MOCK_URL}/api/overview/list-workload/${params.week}`;
+            // const request = await Axios.get<ServerResponse>(url, {
+            //     headers: {
+            //         'x-api-key': process.env.MOCK_API_KEY,
+            //     },
+            // });
+            const request = await this.senteService.getOverviewListWorkload<ServerResponse>(params.week.toString());
             const response = request.data.data;
 
             const dateOfWeek = moment()

@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import Axios from 'axios';
 import * as moment from 'moment';
 
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { SenteService } from '../../../../../shared/services/sente.service';
 import { AverageActualWorkloadDto } from '../../../infra/dtos/getAverageActualWorkload/averageActualWorkload.dto';
 import { InputGetAverageActualWorkloadDto } from '../../../infra/dtos/getAverageActualWorkload/inputAverageActualWorkload.dto';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
@@ -30,6 +30,7 @@ export class GetAverageActualWorkloadUseCase
         public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
         @Inject('IExpertiseScopeRepo')
         public readonly expertiseScopeRepo: IExpertiseScopeRepo,
+        public readonly senteService: SenteService,
     ) {}
 
     async execute(params: InputGetAverageActualWorkloadDto): Promise<Response> {
@@ -44,17 +45,22 @@ export class GetAverageActualWorkloadUseCase
                     userId,
                     startDateOfYear,
                 );
-            const queryExpertiseScopeId = expertiseScopeIdArray.reduce(
-                (qExpertiseScopeId, expertiseScopeId) =>
-                    `${qExpertiseScopeId}exId=${expertiseScopeId}&`,
-                '',
-            );
-            const url = `${process.env.MOCK_URL}/api/overview/average-actual-workload?userId=${userId}&${queryExpertiseScopeId}`;
-            const request = await Axios.get<ServerResponse>(url, {
-                headers: {
-                    'x-api-key': process.env.MOCK_API_KEY,
-                },
-            });
+            // const queryExpertiseScopeId = expertiseScopeIdArray.reduce(
+            //     (qExpertiseScopeId, expertiseScopeId) =>
+            //         `${qExpertiseScopeId}exId=${expertiseScopeId}&`,
+            //     '',
+            // );
+            // const url = `${process.env.MOCK_URL}/api/overview/average-actual-workload?userId=${userId}&${queryExpertiseScopeId}`;
+            // const request = await Axios.get<ServerResponse>(url, {
+            //     headers: {
+            //         'x-api-key': process.env.MOCK_API_KEY,
+            //     },
+            // });
+            const request =
+                await this.senteService.getAverageActualWorkload<ServerResponse>(
+                    expertiseScopeIdArray,
+                    userId.toString(),
+                );
 
             const avgActualWorkload = request.data.data;
 
