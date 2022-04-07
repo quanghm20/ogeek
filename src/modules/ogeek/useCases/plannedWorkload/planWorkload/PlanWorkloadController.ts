@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     HttpCode,
@@ -28,7 +29,7 @@ export class PlanWorkloadController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Post('plan-workload')
+    @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiOkResponse({
         type: [PlannedWorkloadDto],
@@ -40,16 +41,22 @@ export class PlanWorkloadController {
     ): Promise<MessageDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
-        const { userId } = findUserDto;
+        const userId = findUserDto.userId;
 
         const result = await this.useCase.execute(
             createPlannedWorkloadsListDto,
             userId,
         );
+
         if (result.isLeft()) {
             const error = result.value;
 
             switch (error.constructor) {
+                case PlanWorkloadErrors.InputValidationFailed:
+                    throw new BadRequestException(
+                        error.errorValue(),
+                        'Failed to validate input',
+                    );
                 case PlanWorkloadErrors.PlanWorkloadFailed:
                     throw new NotFoundException(
                         error.errorValue(),

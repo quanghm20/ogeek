@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import {
     Between,
     Connection,
+    FindManyOptions,
     getConnection,
     LessThanOrEqual,
     Repository,
@@ -39,6 +40,7 @@ export interface IPlannedWorkloadRepo {
         startDateOfWeek,
         endDateOfWeek,
     }: InputGetPlanWLDto): Promise<PlannedWorkload[]>;
+    find(condition: any): Promise<PlannedWorkload[]>;
     getPlanWLNotClosed({
         startDateOfWeek,
         userId,
@@ -81,7 +83,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'committedWorkload.contributedValue.expertiseScope',
                 'committedWorkload.contributedValue.valueStream',
                 'committedWorkload.user',
-                'committedWorkload.pic',
                 'user',
             ],
         });
@@ -151,7 +152,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'committedWorkload.contributedValue.valueStream',
                 'user',
                 'committedWorkload.user',
-                'committedWorkload.pic',
             ],
         });
         return entities
@@ -173,6 +173,24 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             },
         });
         return entitie ? PlannedWorkloadMap.toDomain(entitie) : null;
+    }
+
+    async find(condition: any): Promise<PlannedWorkload[]> {
+        const entities = await this.repo.find({
+            where: condition as FindManyOptions<PlannedWorkload>,
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'committedWorkload',
+                'committedWorkload.contributedValue',
+                'committedWorkload.contributedValue.expertiseScope',
+                'committedWorkload.contributedValue.valueStream',
+                'user',
+                'committedWorkload.user',
+            ],
+        });
+        return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;
     }
 
     async findByIdWithTimeRange(
@@ -198,7 +216,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'committedWorkload.contributedValue.valueStream',
                 'user',
                 'committedWorkload.user',
-                'committedWorkload.pic',
             ],
         });
         return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;
@@ -242,7 +259,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            // console.log(committedWorkload);
             let startDate = moment(committedWorkload.startDate);
             const expiredDate = moment(committedWorkload.expiredDate);
             const workload = committedWorkload.committedWorkload;
@@ -273,7 +289,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             return result;
         } catch (err) {
             // since we have errors lets rollback the changes we made
-            // console.log(err);
             await queryRunner.rollbackTransaction();
             return null;
         } finally {

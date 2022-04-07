@@ -1,16 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 import { CreatePlannedWorkloadItemDto } from './createPlannedWorkloadItem.dto';
 
 export class CreatePlannedWorkloadsListDto {
     @IsString()
-    @IsEmpty()
+    @IsNotEmpty()
     @ApiProperty()
     startDate?: Date;
 
-    @IsEmpty()
     @IsString()
+    @IsNotEmpty()
     @ApiProperty({ example: 'Early Bird' })
     reason?: string;
 

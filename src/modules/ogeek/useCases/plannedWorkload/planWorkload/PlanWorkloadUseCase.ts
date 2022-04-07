@@ -43,30 +43,64 @@ export class PlanWorkloadUseCase
     userId: number,
   ): Promise<Response> {
     const { startDate, reason, plannedWorkloads } = createPlannedWorkloadsListDto;
+    // is start date start date of week?
+    const startDateOfWeek = moment(startDate).clone().startOf('week');
 
-    // format startDate
-    const formattedStartDate = moment(startDate).toDate();
-
-    const plannedWorkloadEntitiesList = [] as PlannedWorkloadEntity[];
-    const user = await this.userRepo.findById(userId);
+    // validate cannot plan last week
+    const plannedWeek = moment(startDateOfWeek).week();
+    const currentWeek = moment(Date.now()).week();
+    if (plannedWeek < currentWeek) {
+      return left(
+        new PlanWorkloadErrors.InputValidationFailed(),
+      ) as Response;
+    }
 
     try {
-      // deactive all planned workload of current user
-      await this.plannedWorkloadRepo.updateMany(
-        {
-          startDate: Equal(formattedStartDate),
-          user: { id: userId },
-        },
-        { status: PlannedWorkloadStatus.ARCHIVE },
-      );
+      // format startDate
+      const formattedStartDate = moment(startDateOfWeek).toDate();
 
-      // change week status of user to planning
-      // await this.userRepo.update(
-      //   { id: userId, weekStatus: WeekStatus.PLANNING },
-      //   { weekStatus: WeekStatus.PLANNED },
-      // );
+      const plannedWorkloadEntitiesList = [] as PlannedWorkloadEntity[];
+      const user = await this.userRepo.findById(userId);
 
-      // create new planned workloads
+      const oldPlannedWorkloads = await this.plannedWorkloadRepo.find({
+        user: { id: userId },
+        startDate: Equal(formattedStartDate),
+      });
+
+      if (!oldPlannedWorkloads) {
+        return left(
+          new PlanWorkloadErrors.PlanWorkloadFailed(),
+        ) as Response;
+      }
+
+      let newPlannedWorkloadStatus = PlannedWorkloadStatus.PLANNING;
+
+      if (oldPlannedWorkloads.length !== 0) {
+        const closedPlannedWorkloads = oldPlannedWorkloads.filter(plannedWL => plannedWL.isClosed);
+        // if in planned week, there is any planned wl record is closed, user cannot plan workload
+        if (closedPlannedWorkloads.length !== 0) {
+          return left(
+            new PlanWorkloadErrors.PlanWorkloadFailed(),
+          ) as Response;
+        }
+
+        // new planned workloads status is the same old active planned workloads
+        const activePlannedWorkloads = oldPlannedWorkloads.filter(plannedWL => plannedWL.isActive);
+        newPlannedWorkloadStatus = activePlannedWorkloads[0].status;
+
+        // update old planned workloads' status to ARCHIVED
+        await this.plannedWorkloadRepo.updateMany(
+          {
+            user: { id: userId },
+            startDate: Equal(formattedStartDate),
+          },
+          {
+            status: PlannedWorkloadStatus.ARCHIVE,
+          },
+        );
+      }
+
+      // create planned workload based on createPlannedWorkloadDtos
       for (const plannedWorkloadDto of plannedWorkloads) {
         const { contributedValueId, committedWorkloadId, workload } = plannedWorkloadDto;
         const committedWorkload = await this.committedWorkloadRepo.findById(committedWorkloadId);
@@ -74,12 +108,12 @@ export class PlanWorkloadUseCase
         const plannedWorkload = PlannedWorkload.create(
           {
             reason,
-            contributedValue,
             user,
+            contributedValue,
             committedWorkload,
             startDate: new Date(formattedStartDate),
             plannedWorkload: workload,
-            status: PlannedWorkloadStatus.PLANNING,
+            status: newPlannedWorkloadStatus,
           },
           new UniqueEntityID(uuidv4()),
         );
@@ -88,13 +122,10 @@ export class PlanWorkloadUseCase
         plannedWorkloadEntitiesList.push(plannedWorkloadEntity);
       }
       const savedPlannedWorkloads = await this.plannedWorkloadRepo.createMany(plannedWorkloadEntitiesList);
+
       if (savedPlannedWorkloads) {
         return right(Result.ok(savedPlannedWorkloads));
       }
-
-      return left(
-        new PlanWorkloadErrors.PlanWorkloadFailed(),
-      ) as Response;
     } catch (err) {
       return left(new AppError.UnexpectedError(err));
     }
