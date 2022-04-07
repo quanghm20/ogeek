@@ -20,23 +20,23 @@ import { IUserRepo } from '../../../repos/userRepo';
 import { PlanWorkloadErrors } from './PlanWorkloadErrors';
 
 type Response = Either<
-    AppError.UnexpectedError | PlanWorkloadErrors.PlanWorkloadFailed,
-    Result<PlannedWorkload[]>
+  AppError.UnexpectedError | PlanWorkloadErrors.PlanWorkloadFailed,
+  Result<PlannedWorkload[]>
 >;
 
 @Injectable()
 export class PlanWorkloadUseCase
-    implements IUseCase<CreatePlannedWorkloadsListDto, Promise<Response>>
+  implements IUseCase<CreatePlannedWorkloadsListDto, Promise<Response>>
 {
-    constructor(
-        @Inject('IPlannedWorkloadRepo')
-        public readonly plannedWorkloadRepo: IPlannedWorkloadRepo,
-        @Inject('ICommittedWorkloadRepo')
-        public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
-        @Inject('IContributedValueRepo')
-        public readonly contributedValueloadRepo: IContributedValueRepo,
-        @Inject('IUserRepo') public readonly userRepo: IUserRepo,
-    ) {}
+  constructor(
+    @Inject('IPlannedWorkloadRepo')
+    public readonly plannedWorkloadRepo: IPlannedWorkloadRepo,
+    @Inject('ICommittedWorkloadRepo')
+    public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
+    @Inject('IContributedValueRepo')
+    public readonly contributedValueloadRepo: IContributedValueRepo,
+    @Inject('IUserRepo') public readonly userRepo: IUserRepo,
+  ) { }
 
   async execute(
     createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
@@ -129,4 +129,5 @@ export class PlanWorkloadUseCase
     } catch (err) {
       return left(new AppError.UnexpectedError(err));
     }
+  }
 }
