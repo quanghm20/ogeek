@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
-import Axios from 'axios';
 import * as moment from 'moment';
 
 import { dateRange } from '../../../../../common/constants/dateRange';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { SenteService } from '../../../../../shared/services/sente.service';
 import { DomainId } from '../../../domain/domainId';
 import { DataResponseDto } from '../../../infra/dtos/overviewSummaryYear/dataResponse.dto';
 import { ExpertiseScopesDto } from '../../../infra/dtos/overviewSummaryYear/expertiseScopes.dto';
@@ -23,10 +23,6 @@ type Response = Either<
     Result<DataResponseDto>
 >;
 
-interface ServerResponse {
-    data: ValueStreamsDto[];
-}
-
 @Injectable()
 export class GetOverviewSummaryYearUseCase
     implements IUseCase<DomainId | number, Promise<Response>> {
@@ -34,7 +30,8 @@ export class GetOverviewSummaryYearUseCase
         @Inject('ICommittedWorkloadRepo') public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
         @Inject('IPlannedWorkloadRepo') public readonly plannedWorkloadRepo: IPlannedWorkloadRepo,
         @Inject('IValueStreamRepo') public readonly valueStreamRepo: IValueStreamRepo,
-    ) {}
+        public readonly senteService: SenteService,
+    ) { }
 
     async execute(userId: DomainId | number): Promise<Response> {
         try {
@@ -58,7 +55,7 @@ export class GetOverviewSummaryYearUseCase
                         const committedWorkload = committedWorkloadItem.calculateCommittedWorkload(startDateOfYear, endDateOfYear);
                         const plannedWorkload = plannedWorkloads.reduce((preTotalPlannedWL, currentPlannedWL) =>
                             preTotalPlannedWL + (currentPlannedWL.committedWorkload.id.toValue() === committedWorkloadItem.id.toValue()
-                            ? currentPlannedWL.plannedWorkload : 0), 0);
+                                ? currentPlannedWL.plannedWorkload : 0), 0);
                         const expertiseScopeShortDto = new ExpertiseScopeShortDto(
                             committedWorkloadItem.getExpertiseScopeId(),
                             committedWorkloadItem.contributedValue.expertiseScope.name,
@@ -83,18 +80,18 @@ export class GetOverviewSummaryYearUseCase
                 const valueStreamDto = new ValueStreamsDto(
                     valueStreamItem,
                     expertiseScopesDto,
-                    );
+                );
                 data.push(valueStreamDto);
-                });
-
-            // get actual plans and worklogs
-            const url = `${process.env.MOCK_URL}/api/overview/summary-year?userId=${userId.toString()}`;
-            const request = await Axios.post<ValueStreamsDto[]>(url, data, {
-                headers: {
-                    'x-api-key': process.env.MOCK_API_KEY,
-                },
             });
 
+            // get actual plans and worklogs
+            // const url = `${process.env.MOCK_URL}/api/overview/summary-year?userId=${userId.toString()}`;
+            // const request = await Axios.post<ValueStreamsDto[]>(url, data, {
+            //     headers: {
+            //         'x-api-key': process.env.MOCK_API_KEY,
+            //     },
+            // });
+            const request = await this.senteService.getOverviewSumaryYearWorkload<ValueStreamsDto[]>(data, userId.toString());
             const response = request.data;
             const dataResponse = new DataResponseDto(response, true);
 
@@ -103,8 +100,8 @@ export class GetOverviewSummaryYearUseCase
             }
 
             return left(
-                    new GetOverviewSummaryYearErrors.UserNotFound(userId.toString()),
-                ) as Response;
+                new GetOverviewSummaryYearErrors.UserNotFound(userId.toString()),
+            ) as Response;
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
         }

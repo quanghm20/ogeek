@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import Axios from 'axios';
 
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { SenteService } from '../../../../../shared/services/sente.service';
 import {
     DetailActualPlannedWorkloadAndWorklogDto,
     InputDetailPlannedWorkloadAndWorklogDto,
@@ -21,7 +21,10 @@ export class GetDetailActualPlannedWorkloadUseCase
     implements
         IUseCase<InputDetailPlannedWorkloadAndWorklogDto, Promise<Response>>
 {
-    constructor(@Inject('IUserRepo') public readonly userRepo: IUserRepo) {}
+    constructor(
+        @Inject('IUserRepo') public readonly userRepo: IUserRepo,
+        public readonly senteService: SenteService,
+    ) {}
 
     async execute(
         inputDetailPlannedWorkloadAndWorklog: InputDetailPlannedWorkloadAndWorklogDto,
@@ -30,19 +33,22 @@ export class GetDetailActualPlannedWorkloadUseCase
             const user = await this.userRepo.findById(
                 inputDetailPlannedWorkloadAndWorklog.userId,
             );
-            const queryString =
-                inputDetailPlannedWorkloadAndWorklog.expertiseScopes.reduce(
-                    (qString, expertiseScope) =>
-                        `${qString}data=${expertiseScope}&`,
-                    '',
-                );
-            const url = `
-            ${process.env.MOCK_URL}/api/overview/detail-actual-workload?${queryString}userId=${inputDetailPlannedWorkloadAndWorklog.userId}`;
-            const request = await Axios.get(url.trim(), {
-                headers: {
-                    'x-api-key': process.env.MOCK_API_KEY,
-                },
-            });
+            // const queryString =
+            //     inputDetailPlannedWorkloadAndWorklog.expertiseScopes.reduce(
+            //         (qString, expertiseScope) =>
+            //             `${qString}data=${expertiseScope}&`,
+            //         '',
+            //     );
+            // const url = `
+            // ${process.env.MOCK_URL}/api/overview/detail-actual-workload?${queryString}userId=${inputDetailPlannedWorkloadAndWorklog.userId}`;
+            // const request = await Axios.get(url.trim(), {
+            //     headers: {
+            //         'x-api-key': process.env.MOCK_API_KEY,
+            //     },
+            // });
+            const request = await this.senteService.getDetailedActualWorkload(
+                inputDetailPlannedWorkloadAndWorklog,
+            );
             const projects = request.data as ProjectDto[];
 
             const response = new DetailActualPlannedWorkloadAndWorklogDto();
