@@ -11,7 +11,7 @@ import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { PlannedWorkload } from '../../../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../../../infra/database/entities/plannedWorkload.entity';
-import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkloadsList.dto';
+import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkload/createPlannedWorkloadsList.dto';
 import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IContributedValueRepo } from '../../../repos/contributedValueRepo';
@@ -40,12 +40,12 @@ export class PlanWorkloadUseCase
 
   async execute(
     createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
+    userId: number,
   ): Promise<Response> {
-    const { startDate, reason, plannedWorkloads, userId } =
-      createPlannedWorkloadsListDto;
+    const { startDate, reason, plannedWorkloads } = createPlannedWorkloadsListDto;
 
     // format startDate
-    const formattedStartDate = moment(startDate).format('YYYY-MM-DD hh:mm:ss');
+    const formattedStartDate = moment(startDate).toDate();
 
     const plannedWorkloadEntitiesList = [] as PlannedWorkloadEntity[];
     const user = await this.userRepo.findById(userId);

@@ -14,7 +14,7 @@ import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkloadsList.dto';
+import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkload/createPlannedWorkloadsList.dto';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { MessageDto } from '../../../infra/dtos/message.dto';
 import { PlannedWorkloadDto } from '../../../infra/dtos/plannedWorkload.dto';
@@ -41,10 +41,10 @@ export class PlanWorkloadController {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
         const { userId } = findUserDto;
-        createPlannedWorkloadsListDto.userId = userId;
 
         const result = await this.useCase.execute(
             createPlannedWorkloadsListDto,
+            userId,
         );
         if (result.isLeft()) {
             const error = result.value;
