@@ -6,6 +6,7 @@ import {
     Connection,
     getConnection,
     LessThanOrEqual,
+    Not,
     Repository,
 } from 'typeorm';
 
@@ -146,12 +147,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
                 'committedWorkload',
-                'committedWorkload.contributedValue',
-                'committedWorkload.contributedValue.expertiseScope',
-                'committedWorkload.contributedValue.valueStream',
                 'user',
-                'committedWorkload.user',
-                'committedWorkload.pic',
             ],
         });
         return entities
@@ -214,7 +210,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }: StartEndDateOfWeekWLInputDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: !PlannedWorkloadStatus.ARCHIVE,
+                status: Not(PlannedWorkloadStatus.ARCHIVE),
                 startDate: Between(startDateOfWeek, endDateOfWeek),
             },
             relations: [
@@ -223,9 +219,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'contributedValue.valueStream',
                 'committedWorkload',
                 'committedWorkload.user',
-                'committedWorkload.contributedValue',
-                'committedWorkload.contributedValue.expertiseScope',
-                'committedWorkload.contributedValue.valueStream',
                 'user',
             ],
         });

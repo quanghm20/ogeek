@@ -8,7 +8,7 @@ import { UserEntity } from './user.entity';
 export class IssueEntity extends AbstractEntity {
     @Column({
         enum: IssueStatus,
-        name: 'type',
+        name: 'status',
     })
     status: IssueStatus;
 
