@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
 
-import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
+import { ICommittedWorkloadRepo } from '../modules/ogeek/repos/committedWorkloadRepo';
 
 @Injectable()
 export class MomentService {

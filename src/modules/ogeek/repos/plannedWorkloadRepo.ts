@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
+import { MomentService } from '../../../providers/moment.service';
 import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { CommittedWorkloadEntity } from '../infra/database/entities';
@@ -17,7 +18,6 @@ import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkloa
 import { InputGetPlanWLDto } from '../infra/dtos/valueStreamsByWeek/inputGetPlanWL.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
-import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface IPlannedWorkloadRepo {
     findAllByWeek({

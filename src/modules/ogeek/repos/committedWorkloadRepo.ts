@@ -15,6 +15,7 @@ import { CommittedWorkloadStatus } from '../../../common/constants/committedStat
 import { dateRange } from '../../../common/constants/dateRange';
 import { Order } from '../../../common/constants/order';
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
+import { MomentService } from '../../../providers/moment.service';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
@@ -27,7 +28,6 @@ import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/s
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
 import { FilterCommittedWorkload } from '../useCases/committedWorkload/CommittedWorkloadController';
-import { MomentService } from '../useCases/moment/configMomentService/ConfigMomentService';
 
 export interface ICommittedWorkloadRepo {
     findAllByWeek({
