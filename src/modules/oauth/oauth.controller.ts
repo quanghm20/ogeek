@@ -2,7 +2,7 @@ import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { ConfigService } from '../../shared/services/config.service';
-import { JwtAuthService } from '../jwtAuth/jwt-auth.service';
+import { JwtAuthService } from '../jwtAuth/jwtAuth.service';
 import { User } from '../ogeek/domain/user';
 import { FindUserDto } from '../ogeek/infra/dtos/findUser.dto';
 import { UserDto } from '../ogeek/infra/dtos/user.dto';
@@ -26,7 +26,7 @@ export class OauthController {
         return '';
     }
     // if user is authenticated, they are redirected here
-    @Get('oauth/otable/callback')
+    @Get('api/oauth/otable/callback')
     @UseGuards(OAuthGuard)
     async redirectLogin(
         @Req() req: Request,

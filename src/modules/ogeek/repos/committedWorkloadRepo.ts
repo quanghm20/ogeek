@@ -103,7 +103,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
                 'user',
-                'pic',
             ],
         });
 
@@ -136,7 +135,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
                 'user',
-                'pic',
             ],
         });
         return entities ? entities : null;
@@ -159,7 +157,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.valueStream',
                 'contributedValue.expertiseScope',
                 'user',
-                'pic',
             ],
         });
         return entity ? CommittedWorkloadMap.toArrayDomain(entity) : null;
@@ -181,7 +178,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.valueStream',
                 'contributedValue.expertiseScope',
                 'user',
-                'pic',
             ],
         });
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
@@ -272,7 +268,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     'contributedValue.valueStream',
                     'contributedValue.expertiseScope',
                     'user',
-                    'pic',
                 ],
             });
             return commits ? CommittedWorkloadMap.toArrayDomain(commits) : null;
@@ -303,7 +298,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             relations: [
                 'contributedValue',
                 'user',
-                'pic',
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
             ],
@@ -391,7 +385,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'user',
                 'contributedValue',
                 'contributedValue.expertiseScope',
-                'pic',
             ],
         });
         if (entities.length <= 0) {
@@ -463,14 +456,13 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 status: CommittedWorkloadStatus.ACTIVE,
                 user: userId,
                 startDate: LessThan(endDateOfWeek),
-                endDate: MoreThan(startDateOfWeek),
+                expiredDate: MoreThan(startDateOfWeek),
             },
             relations: [
                 'contributedValue',
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
                 'user',
-                'pic',
             ],
         });
         return entities

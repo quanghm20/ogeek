@@ -13,6 +13,9 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
     public static fromDomain(
         contributedValue: ContributedValue,
     ): ContributedValueDto {
+        if (!contributedValue) {
+            return null;
+        }
         const dto = new ContributedValueDto();
         dto.id = contributedValue.id;
         dto.valueStream = contributedValue.props.valueStream
@@ -29,32 +32,39 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
     public static fromDomainShort(
         contributedValue: ContributedValue,
     ): ContributedValueShortDto {
-        const valueStream = ValueStreamMap.fromDomainShort(
-            contributedValue.valueStream,
-        );
-        const expertiseScope = ExpertiseScopeMap.fromDomainShort(
-            contributedValue.expertiseScope,
-        );
-        return new ContributedValueShortDto(
-            Number(contributedValue.id.toValue()),
-            valueStream,
-            expertiseScope,
-        );
+        const contributedValueShortDto = new ContributedValueShortDto();
+        if (contributedValue) {
+            const valueStream = ValueStreamMap.fromDomainShort(
+                contributedValue.valueStream,
+            );
+            const expertiseScope = ExpertiseScopeMap.fromDomainShort(
+                contributedValue.expertiseScope,
+            );
+            contributedValueShortDto.id = Number(contributedValue.id.toValue());
+            contributedValueShortDto.valueStream = valueStream;
+            contributedValueShortDto.expertiseScope = expertiseScope;
+        }
+        return contributedValueShortDto;
     }
     public static fromDomainShortAll(
-        raw: ContributedValue[],
+        raws: ContributedValue[],
     ): ContributedValueShortDto[] {
         const contributedValuesOrError = Array<ContributedValueShortDto>();
-        raw.forEach(function get(item) {
-            const contributed = ContributedValueMap.fromDomainShort(item);
-            contributedValuesOrError.push(contributed);
-        });
-        return contributedValuesOrError ? contributedValuesOrError : null;
+        if (raws) {
+            raws.forEach(function get(item) {
+                const contributed = ContributedValueMap.fromDomainShort(item);
+                contributedValuesOrError.push(contributed);
+            });
+        }
+        return contributedValuesOrError;
     }
 
     public static toDomainOverview(
         raw: ContributedValueEntity,
     ): ContributedValue {
+        if (!raw) {
+            return null;
+        }
         const { id } = raw;
         const valueStreamId = raw.valueStream.id;
         const valueStream = ValueStream.create(
@@ -93,23 +103,28 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
     public static toEntity(
         contributedValue: ContributedValue,
     ): ContributedValueEntity {
-        const entity = {} as ContributedValueEntity;
+        const contributedValueEntity = new ContributedValueEntity();
+        if (contributedValue) {
+            contributedValueEntity.id = Number(
+                contributedValue.contributedValueId.id.toValue(),
+            );
+            contributedValueEntity.expertiseScope = ExpertiseScopeMap.toEntity(
+                contributedValue.expertiseScope,
+            );
 
-        entity.id = Number(contributedValue.contributedValueId.id.toValue());
-        entity.expertiseScope = ExpertiseScopeMap.toEntity(
-            contributedValue.expertiseScope,
-        );
-
-        entity.valueStream = ValueStreamMap.toEntity(
-            contributedValue.valueStream,
-        );
-
-        return entity;
+            contributedValueEntity.valueStream = ValueStreamMap.toEntity(
+                contributedValue.valueStream,
+            );
+        }
+        return contributedValueEntity;
     }
 
     public static toDomain(
         contributedValueEntity: ContributedValueEntity,
     ): ContributedValue {
+        if (!contributedValueEntity) {
+            return null;
+        }
         const { id } = contributedValueEntity;
 
         const contributedValueOrError = ContributedValue.create(
@@ -134,13 +149,15 @@ export class ContributedValueMap implements Mapper<ContributedValue> {
     }
 
     public static toDomainAll(
-        raw: ContributedValueEntity[],
+        raws: ContributedValueEntity[],
     ): ContributedValue[] {
         const contributedValuesOrError = Array<ContributedValue>();
-        raw.forEach(function get(item) {
-            const contributed = ContributedValueMap.toDomain(item);
-            contributedValuesOrError.push(contributed);
-        });
-        return contributedValuesOrError ? contributedValuesOrError : null;
+        if (raws) {
+            raws.forEach(function get(item) {
+                const contributed = ContributedValueMap.toDomain(item);
+                contributedValuesOrError.push(contributed);
+            });
+        }
+        return contributedValuesOrError;
     }
 }

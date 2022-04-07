@@ -12,7 +12,7 @@ import { Request } from 'express';
 import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../../guards/roles.guard';
-import { JwtPayload } from '../../../../jwtAuth/jwt-auth.strategy';
+import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { UserDto } from '../../../infra/dtos/user.dto';
 import { UserMap } from '../../../mappers/userMap';

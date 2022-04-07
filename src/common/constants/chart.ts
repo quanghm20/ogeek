@@ -1,0 +1,2 @@
+export const MAXWORKLOGLENGTH = 12;
+export const MAXVIEWCHARTLENGTH = 18;

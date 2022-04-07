@@ -3,6 +3,7 @@ import {
     Body,
     Controller,
     InternalServerErrorException,
+    NotFoundException,
     Post,
     UseGuards,
 } from '@nestjs/common';
@@ -37,6 +38,8 @@ export class CreateUserController {
             switch (error.constructor) {
                 case FailToCreateUserErrors.FailToCreateUser:
                     throw new BadRequestException(error.errorValue());
+                case FailToCreateUserErrors.UserNotFound:
+                    throw new NotFoundException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(
                         error.errorValue(),

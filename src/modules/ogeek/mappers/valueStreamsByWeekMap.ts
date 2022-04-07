@@ -1,3 +1,5 @@
+import { ASSIGNNUMBER } from '../../../common/constants/number';
+import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { ActualPlanAndWorkLogDto } from '../infra/dtos/actualPlansAndWorkLogs.dto';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { ExpertiseScopeDto } from '../infra/dtos/expertiseScope.dto';
@@ -9,6 +11,12 @@ import { ValueStreamByWeekDto } from '../infra/dtos/valueStreamsByWeek/valueStre
 import { ValueStreamsByWeekDto } from '../infra/dtos/valueStreamsByWeek/valueStreamsByWeek.dto';
 
 export class ValueStreamsByWeekMap {
+    public static getStatusWeek(
+        plannedWLDtos: PlannedWorkloadDto[],
+    ): PlannedWorkloadStatus | undefined {
+        return plannedWLDtos.find((plannedWLDto) => !plannedWLDto).status;
+    }
+
     public static addValueStreamEmpty(
         valueStreamByWeekDtos: ValueStreamByWeekDto[],
         valueStreamDtos: ValueStreamDto[],
@@ -48,9 +56,9 @@ export class ValueStreamsByWeekMap {
             ? plannedWLFinded.plannedWorkload
             : committedWLDto.committedWorkload;
 
-        let actual = 0;
+        let actual = ASSIGNNUMBER;
 
-        let worklog = 0;
+        let worklog = ASSIGNNUMBER;
 
         if (actualPlanAndWorkLog) {
             actual = actualPlanAndWorkLog.actualPlannedWorkload;
@@ -140,7 +148,7 @@ export class ValueStreamsByWeekMap {
         );
         return {
             week,
-            status: plannedWLDtos[0].status,
+            status: ValueStreamsByWeekMap.getStatusWeek(plannedWLDtos),
             startDate: startDateOfWeek,
             endDate: endDateOfWeek,
             valueStreams: valueStreamByWeekDtos,

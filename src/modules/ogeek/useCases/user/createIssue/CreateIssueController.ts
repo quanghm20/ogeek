@@ -16,8 +16,8 @@ import { Request } from 'express';
 
 import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
-import { JwtAuthGuard } from '../../../../jwtAuth/jwt-auth-guard';
-import { JwtPayload } from '../../../../jwtAuth/jwt-auth.strategy';
+import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
+import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { CreateIssueDto } from '../../../infra/dtos/createIssue/createIssue.dto';
 import { MessageDto } from '../../../infra/dtos/message.dto';
 import { CreateIssueErrors } from './CreateIssueErrors';

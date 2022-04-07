@@ -9,33 +9,42 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
     public static fromDomain(
         expertiseScope: ExpertiseScope,
     ): ExpertiseScopeDto {
-        const dto = new ExpertiseScopeDto();
-        dto.id = expertiseScope.expertiseScopeId.id;
-        dto.name = expertiseScope.name;
-        return dto;
+        const expertiseScopeDto = new ExpertiseScopeDto();
+        if (expertiseScope) {
+            expertiseScopeDto.id = expertiseScope.expertiseScopeId.id;
+            expertiseScopeDto.name = expertiseScope.name;
+        }
+        return expertiseScopeDto;
     }
     public static fromDomainShort(
         expertiseScope: ExpertiseScope,
     ): ExpertiseScopeShortDto {
-        const dto = new ExpertiseScopeShortDto();
-        dto.id = Number(expertiseScope.expertiseScopeId.id);
-        dto.name = expertiseScope.name;
-        return dto;
+        const expertiseScopeDto = new ExpertiseScopeShortDto();
+        if (expertiseScope) {
+            expertiseScopeDto.id = Number(expertiseScope.expertiseScopeId.id);
+            expertiseScopeDto.name = expertiseScope.name;
+        }
+        return expertiseScopeDto;
     }
 
     public static fromDomainAll(
         expertiseScopes: ExpertiseScope[],
     ): ExpertiseScopeDto[] {
         const listExpertiseScopesDto = new Array<ExpertiseScopeDto>();
-        expertiseScopes.forEach((expertiseScope) => {
-            listExpertiseScopesDto.push(
-                ExpertiseScopeMap.fromDomain(expertiseScope),
-            );
-        });
+        if (expertiseScopes) {
+            expertiseScopes.forEach((expertiseScope) => {
+                listExpertiseScopesDto.push(
+                    ExpertiseScopeMap.fromDomain(expertiseScope),
+                );
+            });
+        }
         return listExpertiseScopesDto;
     }
 
     public static toDomain(raw: ExpertiseScopeEntity): ExpertiseScope {
+        if (!raw) {
+            return null;
+        }
         const { id } = raw;
         const expertiseScopeOrError = ExpertiseScope.create(
             {
@@ -51,10 +60,11 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
     public static toEntity(
         expertiseScope: ExpertiseScope,
     ): ExpertiseScopeEntity {
-        const expertiseScopeEntity = {} as ExpertiseScopeEntity;
-        expertiseScopeEntity.id = Number(expertiseScope.id.toValue());
-        expertiseScopeEntity.name = expertiseScope.name;
-
+        const expertiseScopeEntity = new ExpertiseScopeEntity();
+        if (expertiseScope) {
+            expertiseScopeEntity.id = Number(expertiseScope.id.toValue());
+            expertiseScopeEntity.name = expertiseScope.name;
+        }
         return expertiseScopeEntity;
     }
 
@@ -62,16 +72,17 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
         expertiseScopes: ExpertiseScopeEntity[],
     ): ExpertiseScope[] {
         const listExpertiseScopes = new Array<ExpertiseScope>();
-        expertiseScopes.forEach((expertiseScope) => {
-            const expertiseScopesOrError =
-                ExpertiseScopeMap.toDomain(expertiseScope);
-            if (expertiseScopesOrError) {
-                listExpertiseScopes.push(expertiseScopesOrError);
-            } else {
-                return null;
-            }
-        });
-
+        if (expertiseScopes) {
+            expertiseScopes.forEach((expertiseScope) => {
+                const expertiseScopesOrError =
+                    ExpertiseScopeMap.toDomain(expertiseScope);
+                if (expertiseScopesOrError) {
+                    listExpertiseScopes.push(expertiseScopesOrError);
+                } else {
+                    return null;
+                }
+            });
+        }
         return listExpertiseScopes;
     }
 }

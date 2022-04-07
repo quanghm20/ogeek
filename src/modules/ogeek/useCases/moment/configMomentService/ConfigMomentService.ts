@@ -35,37 +35,40 @@ export class MomentService {
     }
 
     public static shiftLastDateChart(injectedDate: Date): Date {
-        const result = new Date(
+        return new Date(
             moment(this.getLastDateOfWeek(injectedDate))
                 .utcOffset(420)
                 .add(7 * 5, 'days')
                 .endOf('day')
                 .format('MM-DD-YYYY'),
         );
-        // eslint-disable-next-line @typescript-eslint/tslint/config
-        return result;
     }
 
     public static firstDateOfWeek(week: number): Date {
-        const date = moment().utcOffset(420).week(week).format();
+        const date = moment().week(week).format();
 
-        const num = moment(date).day();
-        return moment(date)
-            .utcOffset(420)
+        const num = moment(date).format('e');
+
+        const firstDateOfWeek = moment(date)
             .add(-num, 'days')
             .startOf('day')
-            .toDate();
+            .format();
+
+        return new Date(firstDateOfWeek);
     }
 
     public static lastDateOfWeek(week: number): Date {
-        const date = moment().utcOffset(420).week(week).format();
+        const date = moment().week(week).format();
 
-        const num = 7 - moment(date).day();
-        return moment(date)
-            .utcOffset(420)
-            .add(num, 'days')
-            .startOf('day')
-            .toDate();
+        const num = moment(date).format('e');
+
+        const endNum = 6 - Number(num);
+        const endDateOfWeek = moment(date)
+            .add(endNum, 'days')
+            .endOf('day')
+            .format();
+
+        return new Date(endDateOfWeek);
     }
 
     public static shiftFirstDateChart(injectedDate: Date): Date {

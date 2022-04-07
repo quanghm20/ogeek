@@ -30,7 +30,9 @@ export class CreateUserUseCase implements IUseCase<UserDto, Promise<Response>> {
             const response = request.data;
             if (!response) {
                 return left(
-                    new AppError.UnexpectedError('User is not finded in Sente'),
+                    new FailToCreateUserErrors.UserNotFound(
+                        'User is not finded in Sente',
+                    ),
                 ) as Response;
             }
 

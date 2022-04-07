@@ -10,8 +10,11 @@ import {
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { JwtAuthGuard } from '../../../../jwtAuth/jwt-auth-guard';
-import { JwtPayload } from '../../../../jwtAuth/jwt-auth.strategy';
+import { Member } from '../../../../../core/domain/member';
+import { MemberEmail } from '../../../../../core/domain/memberEmail';
+import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
+import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
+import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { InputValueStreamByWeekDto } from '../../../infra/dtos/valueStreamsByWeek/inputValueStream.dto';
 import { ValueStreamsByWeekDto } from '../../../infra/dtos/valueStreamsByWeek/valueStreamsByWeek.dto';
 import { GetValueStreamError } from './GetValueStreamErrors';
@@ -31,11 +34,19 @@ export class GetValueStreamController {
     })
     async execute(
         @Req() req: Request,
-        @Query('week') week: number,
+        @Query() { week }: InputValueStreamByWeekDto,
     ): Promise<ValueStreamsByWeekDto> {
         const { userId } = req.user as JwtPayload;
-        const inputValueStream = new InputValueStreamByWeekDto(userId, week);
-        const result = await this.useCase.execute(inputValueStream);
+        const member = Member.create(
+            {
+                alias: '',
+                email: MemberEmail.create().isSuccess
+                    ? MemberEmail.create().getValue()
+                    : MemberEmail.create().errorValue(),
+            },
+            new UniqueEntityID(userId),
+        ).getValue();
+        const result = await this.useCase.execute(week, member);
         if (result.isLeft()) {
             const error = result.value;
 
