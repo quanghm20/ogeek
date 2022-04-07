@@ -1,20 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
 
-import { ICommittedWorkloadRepo } from '../modules/ogeek/repos/committedWorkloadRepo';
-
-@Injectable()
 export class MomentService {
-    @Inject('ICommittedWorkload')
-    public static readonly COMMITTEDWORKLOAD: ICommittedWorkloadRepo;
-
     moment(): moment.Moment {
         // eslint-disable-next-line import/namespace
         moment.updateLocale('en', { week: { dow: 6 } });
         return this.moment();
     }
     public static getDateInWeek(week: number): Date {
-        return moment().utcOffset(420).week(week).toDate();
+        return moment().utcOffset('+07:00').week(week).toDate();
     }
 
     public static getNumOfWeek(injectedDate: Date): string {
@@ -28,25 +21,32 @@ export class MomentService {
     public static getFirstDateOfWeek(injectedDate: Date): string {
         const num = moment(injectedDate).day();
         return moment(injectedDate)
-            .utcOffset(420)
+            .utcOffset('+07:00')
             .add(-num, 'days')
             .startOf('day')
             .format('MM-DD-YYYY');
     }
 
     public static getLastDateOfWeek(injectedDate: Date): string {
+        const num = 6;
         return moment(injectedDate)
-            .utcOffset(420)
-            .add(6, 'days')
+            .utcOffset('+07:00')
+            .add(num, 'days')
             .endOf('day')
             .format('MM-DD-YYYY');
     }
 
     public static shiftLastDateChart(injectedDate: Date): Date {
+        const numOfWeekAfterCurrentWeekWhichContainsPlannedWorkload = 5;
+        const numOfDaysInAWeek = 7;
         const result = new Date(
             moment(this.getLastDateOfWeek(injectedDate))
-                .utcOffset(420)
-                .add(7 * 5, 'days')
+                .utcOffset('+07:00')
+                .add(
+                    numOfDaysInAWeek *
+                        numOfWeekAfterCurrentWeekWhichContainsPlannedWorkload,
+                    'days',
+                )
                 .endOf('day')
                 .format('MM-DD-YYYY'),
         );
@@ -82,34 +82,37 @@ export class MomentService {
     }
 
     public static shiftFirstDateChart(injectedDate: Date): Date {
-        const result = new Date(
+        const numOfWeekToContainWorklog = 12;
+        const numOfDaysInAWeek = 7;
+
+        return new Date(
             moment(this.getFirstDateOfWeek(injectedDate))
-                .utcOffset(420)
-                .subtract(7 * 12, 'days')
+                .utcOffset('+07:00') // Change timezone to +7 UTC
+                .subtract(numOfDaysInAWeek * numOfWeekToContainWorklog, 'days')
                 .endOf('day')
                 .format('MM-DD-YYYY'),
         );
-        // eslint-disable-next-line @typescript-eslint/tslint/config
-        return result;
     }
 
     public static shiftFirstWeekChart(injectedDate: Date): number {
         const createdWeek = moment(injectedDate).week();
         const currentWeek = moment().week();
         const subtract = currentWeek - createdWeek;
+        const weekOne = 1;
+        const numOfWeekToContainWorklog = 12;
         if (moment(injectedDate).year() < moment().year()) {
-            if (currentWeek > 0 && currentWeek < 12) {
-                return 1;
+            if (currentWeek > 0 && currentWeek < numOfWeekToContainWorklog) {
+                return weekOne;
             }
-            return currentWeek - 11;
+            return currentWeek - numOfWeekToContainWorklog + 1;
         }
-        if (moment(injectedDate).year === moment(injectedDate).year) {
-            if (currentWeek > 0 && currentWeek <= 12) {
+        if (moment(injectedDate).year === moment().year) {
+            if (currentWeek > 0 && currentWeek <= numOfWeekToContainWorklog) {
                 return createdWeek;
             }
-            if (currentWeek > 12) {
+            if (currentWeek > numOfWeekToContainWorklog) {
                 if (subtract > 0) {
-                    return currentWeek - 11;
+                    return currentWeek - numOfWeekToContainWorklog + 1;
                 }
                 return createdWeek;
             }
@@ -117,9 +120,11 @@ export class MomentService {
     }
 
     public static shiftLastWeekChart(startWeekChart: number): number {
-        if (startWeekChart + 17 > 52) {
-            return 52;
+        const weekAmountInChart = 17;
+        const numOfWeekInYear = 52;
+        if (startWeekChart + weekAmountInChart > numOfWeekInYear) {
+            return numOfWeekInYear;
         }
-        return startWeekChart + 17;
+        return startWeekChart + weekAmountInChart;
     }
 }

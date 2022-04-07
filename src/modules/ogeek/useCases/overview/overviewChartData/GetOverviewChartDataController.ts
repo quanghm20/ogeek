@@ -21,8 +21,8 @@ import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { InputGetOverviewChartDto } from '../../../infra/dtos/overviewChart/inputGetOverviewChart.dto';
 import { OverviewChartDataDto } from '../../../infra/dtos/overviewChart/overviewChartData.dto';
-import { GetOverviewChartDataErrors } from './OverviewChartDataErrors';
-import { GetOverviewChartDataUseCase } from './OverviewChartDataUseCase';
+import { GetOverviewChartDataErrors } from './GetOverviewChartDataErrors';
+import { GetOverviewChartDataUseCase } from './GetOverviewChartDataUseCase';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
