@@ -10,12 +10,12 @@ export class StartEndDateOfWeekWLInputDto {
     @ApiProperty({ example: new Date() })
     @IsDateString()
     @IsNotEmpty()
-    startDateOfWeek: string;
+    startDateOfWeek: Date;
 
     @ApiProperty({ example: new Date() })
     @IsDateString()
     @IsNotEmpty()
-    endDateOfWeek: string;
+    endDateOfWeek: Date;
 
     @ApiProperty({ example: 1 })
     @IsNumber()
