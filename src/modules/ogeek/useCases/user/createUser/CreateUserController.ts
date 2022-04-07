@@ -15,7 +15,7 @@ import { UserMap } from '../../../mappers/userMap';
 import { FailToCreateUserErrors } from './CreateUserErrors';
 import { CreateUserUseCase } from './CreateUserUseCase';
 
-@Controller('api/user')
+@Controller('api/admin/user')
 @ApiTags('User')
 export class CreateUserController {
     constructor(public readonly useCase: CreateUserUseCase) {}

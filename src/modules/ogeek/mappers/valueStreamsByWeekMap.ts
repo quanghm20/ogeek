@@ -13,8 +13,13 @@ import { ValueStreamsByWeekDto } from '../infra/dtos/valueStreamsByWeek/valueStr
 export class ValueStreamsByWeekMap {
     public static getStatusWeek(
         plannedWLDtos: PlannedWorkloadDto[],
-    ): PlannedWorkloadStatus | undefined {
-        return plannedWLDtos.find((plannedWLDto) => !plannedWLDto).status;
+    ): PlannedWorkloadStatus {
+        const plannedWLStatus = plannedWLDtos.find(
+            (plannedWLDto) => plannedWLDto,
+        );
+        return plannedWLStatus
+            ? plannedWLStatus.status
+            : PlannedWorkloadStatus.ARCHIVE;
     }
 
     public static addValueStreamEmpty(

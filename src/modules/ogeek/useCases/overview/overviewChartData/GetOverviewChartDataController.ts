@@ -21,13 +21,13 @@ import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { InputGetOverviewChartDto } from '../../../infra/dtos/overviewChart/inputGetOverviewChart.dto';
 import { OverviewChartDataDto } from '../../../infra/dtos/overviewChart/overviewChartData.dto';
-import { GetOverviewChartDataErrors } from './OverviewChartDataErrors';
-import { GetOverviewChartDataUseCase } from './OverviewChartDataUseCase';
+import { GetOverviewChartDataErrors } from './GetOverviewChartDataErrors';
+import { GetOverviewChartDataUseCase } from './GetOverviewChartDataUseCase';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
-@Controller('api/overview/overview-chart')
-@ApiTags('Overview Chart')
+@Controller('api/chart')
+@ApiTags('Overview')
 export class OverviewChartDataController {
     constructor(public readonly useCase: GetOverviewChartDataUseCase) {}
     @Get()

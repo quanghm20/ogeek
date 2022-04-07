@@ -2,10 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import Axios from 'axios';
 import * as moment from 'moment';
 
-import { Member } from '../../../../../core/domain/member';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { MomentService } from '../../../../../providers/moment.service';
+import { SenteService } from '../../../../../shared/services/sente.service';
 import { StartAndEndDateOfWeekDto } from '../../../../ogeek/infra/dtos/valueStreamsByWeek/startAndEndDateOfWeek.dto';
 import { ActualPlanAndWorkLogDto } from '../../../infra/dtos/actualPlansAndWorkLogs.dto';
 import { InputGetPlanWLDto } from '../../../infra/dtos/valueStreamsByWeek/inputGetPlanWL.dto';
@@ -19,7 +20,6 @@ import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
 import { IUserRepo } from '../../../repos/userRepo';
 import { IValueStreamRepo } from '../../../repos/valueStreamRepo';
-import { MomentService } from '../../moment/configMomentService/ConfigMomentService';
 import { GetValueStreamError } from './GetValueStreamErrors';
 
 type Response = Either<
@@ -43,14 +43,15 @@ export class GetValueStreamUseCase
         public readonly plannedWLRepo: IPlannedWorkloadRepo,
         @Inject('IUserRepo')
         public readonly userRepo: IUserRepo,
+        public readonly senteService: SenteService,
     ) {}
 
     async getWeekByEachUseCase(
         week: number,
-        member: Member,
+        member: number,
     ): Promise<StartAndEndDateOfWeekDto> {
         const planNotClosed = await this.plannedWLRepo.getPlanWLNotClosed({
-            userId: member.memberId.id.toValue(),
+            userId: member,
             startDateOfWeek: MomentService.firstDateOfWeek(week),
         } as InputGetPlanWLDto);
         if (planNotClosed) {
@@ -69,12 +70,10 @@ export class GetValueStreamUseCase
         };
     }
 
-    async execute(week: number, member: Member): Promise<Response> {
+    async execute(week: number, member: number): Promise<Response> {
         try {
             // get actual plans and worklogs
-            const url = `${
-                process.env.MOCK_URL
-            }/api/overview/value-stream?userid=${member.memberId.id.toValue()}&week=${week}`;
+            const url = `${process.env.MOCK_URL}/api/overview/value-stream?userid=${member}&week=${week}`;
             const request = await Axios.get<ServerResponse>(url, {
                 headers: {
                     'x-api-key': process.env.MOCK_API_KEY,
@@ -87,19 +86,17 @@ export class GetValueStreamUseCase
                 week,
                 member,
             );
-            const user = await this.userRepo.findById(
-                Number(member.memberId.id.toValue()),
-            );
+            const user = await this.userRepo.findById(Number(member));
             const valueStreams = await this.valueStreamRepo.findAll();
             const committedWLs =
                 await this.committedWLRepo.findByUserIdValueStream(
-                    Number(member.memberId.id.toValue()),
+                    Number(member),
                     startAndEndDateOfWeek.startDateOfWeek,
                     startAndEndDateOfWeek.endDateOfWeek,
                 );
             const plannedWLs = await this.plannedWLRepo.findByUserId({
                 ...startAndEndDateOfWeek,
-                userId: member.memberId.id.toValue(),
+                userId: member,
             } as InputGetPlanWLDto);
 
             const committedWLDtos =

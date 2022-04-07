@@ -6,6 +6,7 @@ import { ASSIGNNUMBER } from '../../../../../common/constants/number';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { MomentService } from '../../../../../providers/moment.service';
 import { InputGetOverviewChartDto } from '../../../infra/dtos/overviewChart/inputGetOverviewChart.dto';
 import { OverviewChartDataDto } from '../../../infra/dtos/overviewChart/overviewChartData.dto';
 import { WorkloadOverviewDto } from '../../../infra/dtos/overviewChart/workloadOverview.dto';
@@ -16,8 +17,7 @@ import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IExpertiseScopeRepo } from '../../../repos/expertiseScopeRepo';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
 import { IUserRepo } from '../../../repos/userRepo';
-import { MomentService } from '../../moment/configMomentService/ConfigMomentService';
-import { GetOverviewChartDataErrors } from './OverviewChartDataErrors';
+import { GetOverviewChartDataErrors } from './GetOverviewChartDataErrors';
 
 type Response = Either<
     | AppError.UnexpectedError

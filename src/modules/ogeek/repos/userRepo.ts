@@ -9,7 +9,6 @@ import { UserDto } from '../infra/dtos/user.dto';
 import { UserMap } from '../mappers/userMap';
 
 export interface IUserRepo {
-    findAllUsers(): Promise<User[]>;
     findById(userId: DomainId | number): Promise<User>;
     findByAlias(alias: string): Promise<User>;
     findAllUser(): Promise<User[]>;
@@ -36,11 +35,6 @@ export class UserRepository implements IUserRepo {
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entity = await this.repo.findOne(id);
         return entity ? UserMap.toDomain(entity) : null;
-    }
-
-    async findAllUsers(): Promise<User[]> {
-        const entities = await this.repo.find();
-        return entities ? UserMap.toDomainAll(entities) : null;
     }
 
     async createUser(userDto: UserDto): Promise<User> {

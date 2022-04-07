@@ -16,7 +16,7 @@ import { GetUserErrors } from './GetUsersErrors';
 import { GetUsersUseCase } from './GetUsersUseCase';
 
 @ApiTags('User')
-@Controller('api/users')
+@Controller('api/admin/user')
 export class GetUsersController {
     constructor(public readonly useCase: GetUsersUseCase) {}
 
