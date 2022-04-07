@@ -8,11 +8,11 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "startDate": "2022-04-09 00:00:00",
+    "startDate": "2022-04-16 00:00:00",
     "reason": "Owl Night",
     "plannedWorkloads": [
         {
-	        "workload": 12.5,
+	        "workload": 13,
             "contributedValueId": 1,
             "committedWorkloadId": 1
         },

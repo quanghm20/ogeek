@@ -32,6 +32,7 @@ export interface IPlannedWorkloadRepo {
         endDateOfYear: string,
     ): Promise<PlannedWorkload[]>;
     findById(plannedWorkloadId: DomainId | number): Promise<PlannedWorkload>;
+    findOne(condition: any): Promise<PlannedWorkload>;
     findByIdWithTimeRange(
         userId: DomainId | number,
         startDate: Date,
@@ -189,6 +190,24 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             ],
         });
         return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;
+    }
+
+    async findOne(condition: any): Promise<PlannedWorkload> {
+        const entities = await this.repo.findOne({
+            where: condition as FindManyOptions<PlannedWorkload>,
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'committedWorkload',
+                'committedWorkload.contributedValue',
+                'committedWorkload.contributedValue.expertiseScope',
+                'committedWorkload.contributedValue.valueStream',
+                'user',
+                'committedWorkload.user',
+            ],
+        });
+        return entities ? PlannedWorkloadMap.toDomain(entities) : null;
     }
 
     async findByIdWithTimeRange(
