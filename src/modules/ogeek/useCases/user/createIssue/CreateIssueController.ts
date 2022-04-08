@@ -37,7 +37,6 @@ export class CreateIssueController {
         type: MessageDto,
         description: 'Create potential issue',
     })
-    // @UsePipes(new ValidationPipe({ transform: true }))
     async execute(
         @Body() body: CreateIssueDto,
         @Req() req: Request,
