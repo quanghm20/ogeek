@@ -11,8 +11,10 @@ import {
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
+    ApiInternalServerErrorResponse,
     ApiOkResponse,
     ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
@@ -34,10 +36,16 @@ export class GetOverviewSummaryYearController {
     @ApiOkResponse({
         type: DataResponseDto,
         isArray: true,
-        description: 'Get overview summary year',
+        description: 'OK',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
     })
     @ApiBadRequestResponse({
-        description: 'Can not get overview summary year',
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async getOverviewSummaryYear(
         @Req() req: Request,

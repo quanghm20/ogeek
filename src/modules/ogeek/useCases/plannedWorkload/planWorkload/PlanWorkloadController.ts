@@ -10,14 +10,20 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiCreatedResponse,
+    ApiInternalServerErrorResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkload/createPlannedWorkloadsList.dto';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
-import { PlannedWorkloadDto } from '../../../infra/dtos/plannedWorkload.dto';
 import { PlanWorkloadErrors } from './PlanWorkloadErrors';
 import { PlanWorkloadUseCase } from './PlanWorkloadUseCase';
 
@@ -30,9 +36,18 @@ export class PlanWorkloadController {
     @ApiBearerAuth()
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    @ApiOkResponse({
-        type: [PlannedWorkloadDto],
-        description: 'Plan workload for Geek',
+    @ApiCreatedResponse({
+        type: [CreatePlannedWorkloadsListDto],
+        description: 'Created',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async execute(
         @Req() req: Request,

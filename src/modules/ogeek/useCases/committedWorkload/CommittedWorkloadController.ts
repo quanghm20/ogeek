@@ -16,11 +16,16 @@ import {
     ValidationPipe,
 } from '@nestjs/common';
 import {
+    ApiBadRequestResponse,
     ApiBearerAuth,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
     ApiOkResponse,
     ApiProperty,
     ApiPropertyOptional,
     ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
@@ -68,11 +73,23 @@ export class CommittedWorkloadController {
     ) {}
 
     @Post()
-    @HttpCode(HttpStatus.OK)
+    @HttpCode(HttpStatus.CREATED)
     @Roles(RoleType.PP)
-    @ApiOkResponse({
+    @ApiCreatedResponse({
         type: DataCommittedWorkload,
-        description: 'Created committed workload',
+        description: 'Created',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiForbiddenResponse({
+        description: 'Forbidden',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     @UsePipes(new ValidationPipe({ transform: true }))
     async execute(
@@ -108,7 +125,19 @@ export class CommittedWorkloadController {
     @Roles(RoleType.PP)
     @ApiOkResponse({
         type: DataCommittedWorkload,
-        description: 'Get all committed workload',
+        description: 'OK',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiForbiddenResponse({
+        description: 'Forbidden',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     @UsePipes(
         new ValidationPipe({
