@@ -57,7 +57,7 @@ export class FilterCommittedWorkload {
 }
 
 @Controller('api/committed-workloads')
-@ApiTags('API committed workload ')
+@ApiTags('Committed Workload')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class CommittedWorkloadController {
