@@ -24,7 +24,7 @@ import { CreateIssueErrors } from './CreateIssueErrors';
 import { CreateIssueUseCase } from './CreateIssueUseCase';
 
 @Controller('api/user/workloads/issue')
-@ApiTags('API create issue')
+@ApiTags('User')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class CreateIssueController {

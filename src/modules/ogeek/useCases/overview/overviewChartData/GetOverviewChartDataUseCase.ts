@@ -1,5 +1,4 @@
 import { Inject, Injectable, Response } from '@nestjs/common';
-import Axios from 'axios';
 
 import { MAXVIEWCHARTLENGTH } from '../../../../../common/constants/chart';
 import { ASSIGNNUMBER } from '../../../../../common/constants/number';
@@ -7,7 +6,7 @@ import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { MomentService } from '../../../../../providers/moment.service';
-import { InputGetOverviewChartDto } from '../../../infra/dtos/overviewChart/inputGetOverviewChart.dto';
+import { SenteService } from '../../../../../shared/services/sente.service';
 import { OverviewChartDataDto } from '../../../infra/dtos/overviewChart/overviewChartData.dto';
 import { WorkloadOverviewDto } from '../../../infra/dtos/overviewChart/workloadOverview.dto';
 import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
@@ -31,7 +30,7 @@ interface ServerResponse {
 
 @Injectable()
 export class GetOverviewChartDataUseCase
-    implements IUseCase<InputGetOverviewChartDto, Promise<Response>>
+    implements IUseCase<number, Promise<Response>>
 {
     constructor(
         @Inject('IUserRepo')
@@ -45,6 +44,8 @@ export class GetOverviewChartDataUseCase
 
         @Inject('ICommittedWorkloadRepo')
         public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
+
+        public readonly senteService: SenteService,
     ) {}
 
     isBetweenWeek(week: number, plannedDate: Date): boolean {
@@ -56,19 +57,17 @@ export class GetOverviewChartDataUseCase
         return false;
     }
 
-    async execute(input: InputGetOverviewChartDto): Promise<Response> {
+    async execute(week: number, member: number): Promise<Response> {
         try {
             // get date week
-            const user = await this.userRepo.findById(input.userId);
+            const user = await this.userRepo.findById(member);
 
             const startWeekChart = MomentService.shiftFirstWeekChart(
                 user.createdAt,
             );
             const endWeekChart =
                 MomentService.shiftLastWeekChart(startWeekChart);
-            const startDate = new Date(
-                MomentService.firstDateOfWeek(input.week),
-            );
+            const startDate = new Date(MomentService.firstDateOfWeek(week));
             const endDate = new Date(
                 MomentService.lastDateOfWeek(endWeekChart),
             );
@@ -80,13 +79,13 @@ export class GetOverviewChartDataUseCase
 
             const plannedWorkloads =
                 await this.plannedWorkloadRepo.findByIdWithTimeRange(
-                    input.userId,
+                    member,
                     startDate,
                     endDate,
                 );
             const committedWorkloads =
                 await this.committedWorkloadRepo.findByUserIdInTimeRange(
-                    input.userId,
+                    member,
                     startDate,
                 );
             // fetch data of workload from database and push to dto
@@ -109,7 +108,7 @@ export class GetOverviewChartDataUseCase
                 );
                 if (myCommittedWorkload) {
                     const contributedValue = Array<WorkloadOverviewDto>();
-                    weekChartArray.forEach((week) => {
+                    weekChartArray.forEach((weekItem) => {
                         const plannedBetWeenWeek = plannedWorkloadDtos.find(
                             (plannedWl) =>
                                 this.isBetweenWeek(week, plannedWl.startDate) &&
@@ -118,7 +117,7 @@ export class GetOverviewChartDataUseCase
                         );
                         if (plannedBetWeenWeek) {
                             contributedValue.push({
-                                week,
+                                week: weekItem,
                                 plannedWorkload:
                                     plannedBetWeenWeek.plannedWorkload,
                                 actualWorkload: ASSIGNNUMBER,
@@ -127,7 +126,7 @@ export class GetOverviewChartDataUseCase
                             myPlannedLength++;
                         } else {
                             contributedValue.push({
-                                week,
+                                week: weekItem,
                                 plannedWorkload:
                                     myCommittedWorkload.committedWorkload,
                                 actualWorkload: ASSIGNNUMBER,
@@ -143,26 +142,18 @@ export class GetOverviewChartDataUseCase
                     } as OverviewChartDataDto);
                 }
             });
-
-            const url = `${
-                process.env.MOCK_URL
-            }/api/overview/actual-workload?userId=${input.userId.toString()}`;
-            const request = await Axios.post<ServerResponse>(
-                url,
-                overviewChartDataDtos.sort(),
-                {
-                    headers: {
-                        'x-api-key': process.env.MOCK_API_KEY,
-                    },
-                },
-            );
+            const request =
+                await this.senteService.getActualWorkload<ServerResponse>(
+                    overviewChartDataDtos,
+                    member,
+                );
             const worklogs = request.data.data;
             if (overviewChartDataDtos) {
                 return right(Result.ok(worklogs));
             }
             return left(
                 new GetOverviewChartDataErrors.GetOverviewChartDataFailed(
-                    input.userId,
+                    member,
                 ),
             ) as Response;
         } catch (err) {

@@ -9,9 +9,7 @@ import {
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { RoleType } from '../../../../../common/constants/roleType';
-import { Roles } from '../../../../../decorators/roles.decorator';
-import { RolesGuard } from '../../../../../guards/roles.guard';
+import { JwtAuthGuard } from '../../../../../modules/jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { UserDto } from '../../../infra/dtos/user.dto';
@@ -24,13 +22,12 @@ import { GetUserUseCase } from './GetUserUseCase';
 export class GetUserController {
     constructor(public readonly useCase: GetUserUseCase) {}
 
-    @Roles(RoleType.PP)
-    @UseGuards(RolesGuard)
+    @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Get()
     @ApiOkResponse({
         type: UserDto,
-        description: 'Get user by alias with jwt token',
+        description: 'Get user by userId with jwt token',
     })
     async execute(@Req() req: Request): Promise<UserDto> {
         const jwtPayload = req.user as JwtPayload;
@@ -44,7 +41,7 @@ export class GetUserController {
                 case GetUserErrors.UserNotFound:
                     throw new NotFoundException(
                         error.errorValue(),
-                        'Can not get user by alias',
+                        'Can not get user by userId',
                     );
                 default:
                     throw new InternalServerErrorException(

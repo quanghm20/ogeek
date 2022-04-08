@@ -21,7 +21,7 @@ import {
 import { GetDetailActualPlannedWorkloadAndWorklogError } from './GetDetailActualPlannedWorkloadErrors';
 import { GetDetailActualPlannedWorkloadUseCase } from './GetDetailActualPlannedWorkloadUseCase';
 
-@Controller('api/detail-planned-workload')
+@Controller('api/planned-workload/detail')
 @ApiTags('Planned Workload')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)

@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import Axios from 'axios';
 import * as moment from 'moment';
 
 import { IUseCase } from '../../../../../core/domain/UseCase';
@@ -73,13 +72,13 @@ export class GetValueStreamUseCase
     async execute(week: number, member: number): Promise<Response> {
         try {
             // get actual plans and worklogs
-            const url = `${process.env.MOCK_URL}/api/overview/value-stream?userid=${member}&week=${week}`;
-            const request = await Axios.get<ServerResponse>(url, {
-                headers: {
-                    'x-api-key': process.env.MOCK_API_KEY,
-                },
-            });
+            const request =
+                await this.senteService.getOverviewValueStreamCard<ServerResponse>(
+                    week,
+                    member,
+                );
             const response = request.data.data;
+
             const actualPlanAndWorkLogDtos = response;
 
             const startAndEndDateOfWeek = await this.getWeekByEachUseCase(
