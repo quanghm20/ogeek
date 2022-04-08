@@ -18,7 +18,7 @@ import { GetValueStreamError } from './GetValueStreamErrors';
 import { GetValueStreamUseCase } from './GetValueStreamUseCase';
 
 @Controller('api/value-stream')
-@ApiTags('Value Stream card')
+@ApiTags('Value Stream Card')
 export class GetValueStreamController {
     constructor(public readonly useCase: GetValueStreamUseCase) {}
 

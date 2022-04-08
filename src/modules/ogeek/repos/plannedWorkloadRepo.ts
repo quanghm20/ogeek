@@ -74,7 +74,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             where: {
                 user: { id: userId },
                 startDate: Between(startDateOfYear, endDateOfYear),
-                status: !PlannedWorkloadStatus.ARCHIVE,
+                status: Not(PlannedWorkloadStatus.ARCHIVE),
             },
             relations: [
                 'contributedValue',
@@ -88,7 +88,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'user',
             ],
         });
-
         return entity ? PlannedWorkloadMap.toArrayDomain(entity) : null;
     }
 

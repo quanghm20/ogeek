@@ -3,10 +3,10 @@ import { Result } from '../../../../../core/logic/Result';
 import { UseCaseError } from '../../../../../core/logic/UseCaseError';
 
 export namespace GetOverviewSummaryYearErrors {
-    export class UserNotFound extends Result<UseCaseError> {
-        constructor(id: string) {
+    export class NotFound extends Result<UseCaseError> {
+        constructor() {
             super(false, {
-                message: `The user ${id} is not found`,
+                message: 'User not found.',
             } as UseCaseError);
         }
     }

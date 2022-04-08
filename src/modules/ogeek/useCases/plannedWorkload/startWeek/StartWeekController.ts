@@ -22,7 +22,7 @@ import { StartWeekErrors } from './StartWeekErrors';
 import { StartWeekUseCase } from './StartWeekUseCase';
 
 @Controller('api/planned-workload')
-@ApiTags('Start Week')
+@ApiTags('Planned Workload')
 export class StartWeekController {
     constructor(public readonly useCase: StartWeekUseCase) {}
 

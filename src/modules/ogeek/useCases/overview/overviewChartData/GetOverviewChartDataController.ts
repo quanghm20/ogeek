@@ -26,8 +26,8 @@ import { GetOverviewChartDataUseCase } from './GetOverviewChartDataUseCase';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
-@Controller('api/overview/overview-chart')
-@ApiTags('Overview Chart')
+@Controller('api/overview/chart')
+@ApiTags('Overview')
 export class OverviewChartDataController {
     constructor(public readonly useCase: GetOverviewChartDataUseCase) {}
     @Get()
