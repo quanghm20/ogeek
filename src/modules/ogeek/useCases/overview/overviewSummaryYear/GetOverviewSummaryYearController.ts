@@ -18,7 +18,7 @@ import { GetOverviewSummaryYearErrors } from './GetOverviewSummaryYearErrors';
 import { GetOverviewSummaryYearUseCase } from './GetOverviewSummaryYearUseCase';
 
 @Controller('api/overview/summary-year')
-@ApiTags('API Overview')
+@ApiTags('Overview')
 @ApiBearerAuth()
 export class GetOverviewSummaryYearController {
     constructor(public readonly useCase: GetOverviewSummaryYearUseCase) {}
