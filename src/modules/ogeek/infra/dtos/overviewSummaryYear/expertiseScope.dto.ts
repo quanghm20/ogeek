@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { ExpertiseScopeShortDto } from './expertiseScopeShort.dto';
 
-export class ExpertiseScopesDto {
+export class ExpertiseScopeDto {
     @ApiProperty({ type: ExpertiseScopeShortDto })
     expertiseScope: ExpertiseScopeShortDto;
 

@@ -21,7 +21,7 @@ import { GetAverageActualWorkloadUseCase as GetAverageActualWorkloadUseCase } fr
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
-@Controller('/api/average-actual-workload')
+@Controller('/api/overview/average-actual-workload')
 @ApiTags('Overview')
 export class GetAverageActualWorkloadController {
     constructor(public readonly useCase: GetAverageActualWorkloadUseCase) {}

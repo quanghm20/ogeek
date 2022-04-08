@@ -88,7 +88,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'user',
             ],
         });
-
         return entity ? PlannedWorkloadMap.toArrayDomain(entity) : null;
     }
 

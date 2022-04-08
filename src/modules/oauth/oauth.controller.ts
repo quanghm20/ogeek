@@ -1,4 +1,5 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 
 import { ConfigService } from '../../shared/services/config.service';
@@ -12,6 +13,7 @@ import { GetUserUseCase } from '../ogeek/useCases/user/getUser/GetUserUseCase';
 import { OAuthGuard } from './oauth.guard';
 
 @Controller('')
+@ApiTags('OAuth')
 export class OauthController {
     constructor(
         private _configService: ConfigService,

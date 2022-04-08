@@ -100,14 +100,31 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         return this.props.status === CommittedWorkloadStatus.ACTIVE;
     }
     public getValueStreamId(): number {
-        return Number(this.contributedValue.valueStream.id.toValue());
+        return Number(this.contributedValue.valueStream.id);
     }
     public getExpertiseScopeId(): number {
-        return Number(this.contributedValue.expertiseScope.id.toValue());
+        return Number(this.contributedValue.expertiseScope.id);
     }
     public getExpertiseScopeName(): string {
         return this.contributedValue.expertiseScope.name;
     }
+
+    public static create(
+        props: ICommittedWorkloadProps,
+        id: UniqueEntityID,
+    ): Result<CommittedWorkload> {
+        const propsResult = Guard.againstNullOrUndefinedBulk([]);
+        if (!propsResult.succeeded) {
+            return Result.fail<CommittedWorkload>(propsResult.message);
+        }
+        const defaultValues = {
+            ...props,
+        };
+        defaultValues.contributedValue = props.contributedValue;
+        const committedWorkload = new CommittedWorkload(defaultValues, id);
+        return Result.ok<CommittedWorkload>(committedWorkload);
+    }
+
     public durationDay(startDate: Date, endDate: Date): number {
         if (startDate < endDate) {
             return Math.floor(
@@ -159,39 +176,26 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
             );
         }
     }
-    public calculateCommittedWorkload(
+    public calculate(
         startDateOfYearString: string,
         endDateOfYearString: string,
+        valueStreamId: number,
     ): number {
-        const startDateOfYear = new Date(startDateOfYearString);
-        const endDateOfYear = new Date(endDateOfYearString);
-        if (this.startDate < startDateOfYear) {
-            return this.calculateExpiredDateOne(
-                startDateOfYear,
-                endDateOfYear,
+        if (this.getValueStreamId() === valueStreamId) {
+            const startDateOfYear = new Date(startDateOfYearString);
+            const endDateOfYear = new Date(endDateOfYearString);
+            if (this.startDate < startDateOfYear) {
+                return this.calculateExpiredDateOne(
+                    startDateOfYear,
+                    endDateOfYear,
+                    this.expiredDate,
+                );
+            } // startDate >= startDateOfYear
+            return this.calculateExpiredDateTwo(
+                this.startDate,
                 this.expiredDate,
+                endDateOfYear,
             );
-        } // startDate >= startDateOfYear
-        return this.calculateExpiredDateTwo(
-            this.startDate,
-            this.expiredDate,
-            endDateOfYear,
-        );
-    }
-
-    public static create(
-        props: ICommittedWorkloadProps,
-        id: UniqueEntityID,
-    ): Result<CommittedWorkload> {
-        const propsResult = Guard.againstNullOrUndefinedBulk([]);
-        if (!propsResult.succeeded) {
-            return Result.fail<CommittedWorkload>(propsResult.message);
         }
-        const defaultValues = {
-            ...props,
-        };
-        defaultValues.contributedValue = props.contributedValue;
-        const committedWorkload = new CommittedWorkload(defaultValues, id);
-        return Result.ok<CommittedWorkload>(committedWorkload);
     }
 }

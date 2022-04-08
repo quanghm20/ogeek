@@ -23,8 +23,8 @@ import { MessageDto } from '../../../infra/dtos/message.dto';
 import { CreateIssueErrors } from './CreateIssueErrors';
 import { CreateIssueUseCase } from './CreateIssueUseCase';
 
-@Controller('api/user/workloads/issue')
-@ApiTags('User')
+@Controller('api/admin/user/potential-issue')
+@ApiTags('Potential Issue')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class CreateIssueController {
@@ -35,7 +35,7 @@ export class CreateIssueController {
     @Roles(RoleType.PP)
     @ApiOkResponse({
         type: MessageDto,
-        description: 'Create issue',
+        description: 'Create potential issue',
     })
     // @UsePipes(new ValidationPipe({ transform: true }))
     async execute(

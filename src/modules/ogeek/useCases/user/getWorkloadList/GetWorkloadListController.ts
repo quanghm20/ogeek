@@ -25,7 +25,7 @@ import { GetWorkloadListError } from './GetWorkloadListErrors';
 import { GetWorkloadListUseCase } from './GetWorkloadListUseCase';
 
 @Controller('api/admin/user/workloads')
-@ApiTags('User')
+@ApiTags('List Workload Table')
 export class GetWorkloadListController {
     constructor(public readonly useCase: GetWorkloadListUseCase) {}
 

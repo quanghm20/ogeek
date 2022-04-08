@@ -30,13 +30,13 @@ export class CreateCommittedWorkloadUseCase
     ) {}
     async execute(
         body: CreateCommittedWorkloadDto,
-        userId: number,
+        member: number,
     ): Promise<Response> {
         try {
-            const user = await this.userRepo.findById(userId);
+            const user = await this.userRepo.findById(member);
             const startDate = body.startDate;
             const expiredDate = body.expiredDate;
-            const userCreated = await this.userRepo.findById(userId);
+            const userCreated = await this.userRepo.findById(member);
             const createdBy = UserMap.toEntity(userCreated);
             if (!userCreated.isPeopleOps) {
                 return left(
@@ -46,7 +46,7 @@ export class CreateCommittedWorkloadUseCase
             if (!user) {
                 return left(
                     new CreateCommittedWorkloadErrors.NotFound(
-                        userId.toString(),
+                        member.toString(),
                     ),
                 ) as Response;
             }
@@ -59,7 +59,7 @@ export class CreateCommittedWorkloadUseCase
             }
             const result = await this.committedWorkloadRepo.saveCommits(
                 committedWorkloads,
-                userId,
+                member,
                 startDate,
                 expiredDate,
                 createdBy.id,

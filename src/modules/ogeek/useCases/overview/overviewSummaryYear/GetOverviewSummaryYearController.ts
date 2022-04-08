@@ -17,7 +17,7 @@ import { DataResponseDto } from '../../../infra/dtos/overviewSummaryYear/dataRes
 import { GetOverviewSummaryYearErrors } from './GetOverviewSummaryYearErrors';
 import { GetOverviewSummaryYearUseCase } from './GetOverviewSummaryYearUseCase';
 
-@Controller('api/summary-year')
+@Controller('api/overview/summary')
 @ApiTags('Overview')
 @ApiBearerAuth()
 export class GetOverviewSummaryYearController {
@@ -34,22 +34,17 @@ export class GetOverviewSummaryYearController {
     async getOverviewSummaryYear(
         @Req() req: Request,
     ): Promise<DataResponseDto> {
-        const jwtPayload = req.user as JwtPayload;
+        const { userId } = req.user as JwtPayload;
 
-        const result = await this.useCase.execute(jwtPayload.userId);
+        const result = await this.useCase.execute(userId);
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {
-                case GetOverviewSummaryYearErrors.UserNotFound:
-                    throw new NotFoundException(
-                        error.errorValue(),
-                        'Can not get overview summary year by userId',
-                    );
+                case GetOverviewSummaryYearErrors.NotFound:
+                    throw new NotFoundException(error.errorValue());
+
                 default:
-                    throw new InternalServerErrorException(
-                        error.errorValue(),
-                        'Can not search contributed ',
-                    );
+                    throw new InternalServerErrorException(error.errorValue());
             }
         }
 
