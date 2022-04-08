@@ -6,7 +6,15 @@ import {
     Post,
     UseGuards,
 } from '@nestjs/common';
-import { ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiHeader,
+    ApiInternalServerErrorResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
 import { ApiKeyAuthGuard } from '../../../../headerApiKeyAuth/headerApiKeyAuth.guard';
 import { UserDto } from '../../../infra/dtos/user.dto';
@@ -25,9 +33,21 @@ export class CreateUserController {
     })
     @UseGuards(ApiKeyAuthGuard)
     @Post()
-    @ApiOkResponse({
+    @ApiCreatedResponse({
         type: UserDto,
-        description: 'Create user',
+        description: 'Created',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiForbiddenResponse({
+        description: 'Forbidden',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async execute(@Body() userInfo: UserDto): Promise<UserDto> {
         const result = await this.useCase.execute(userInfo);

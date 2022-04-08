@@ -9,7 +9,14 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiInternalServerErrorResponse,
+    ApiOkResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 import * as moment from 'moment';
 
@@ -31,7 +38,17 @@ export class StartWeekController {
     @Patch('start-week')
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
+        type: [StartWeekResponseDto],
         description: 'Start week for Geek',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async execute(
         @Req() req: Request,

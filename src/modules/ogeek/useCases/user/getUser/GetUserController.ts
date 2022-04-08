@@ -6,7 +6,14 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiInternalServerErrorResponse,
+    ApiOkResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
@@ -27,7 +34,16 @@ export class GetUserController {
     @Get()
     @ApiOkResponse({
         type: UserDto,
-        description: 'Get user by alias with jwt token',
+        description: 'OK',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async execute(@Req() req: Request): Promise<UserDto> {
         const jwtPayload = req.user as JwtPayload;
