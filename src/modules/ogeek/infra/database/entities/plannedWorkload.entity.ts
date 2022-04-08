@@ -56,7 +56,6 @@ export class PlannedWorkloadEntity extends AbstractEntity {
     status: PlannedWorkloadStatus;
 
     @Column({
-        nullable: false,
         name: 'reason',
     })
     reason: string;

@@ -23,7 +23,7 @@ export class UserRepository implements IUserRepo {
         protected repo: Repository<UserEntity>,
     ) {}
     async findAllUser(): Promise<User[]> {
-        const users = await this.repo.find({});
+        const users = await this.repo.find();
         return users ? UserMap.toArrayDomain(users) : null;
     }
     async findByAlias(alias: string): Promise<User> {

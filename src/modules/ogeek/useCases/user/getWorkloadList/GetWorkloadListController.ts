@@ -41,7 +41,6 @@ export class GetWorkloadListController {
         const result = await this.useCase.execute(input);
         if (result.isLeft()) {
             const error = result.value;
-
             switch (error.constructor) {
                 case GetWorkloadListError.WorkloadListNotFound:
                     throw new NotFoundException(
