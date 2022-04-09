@@ -14,6 +14,7 @@ interface IPlannedWorkloadProps {
     contributedValue?: ContributedValue;
     user?: User;
     plannedWorkload?: number;
+    sumPlannedWorkload?: number;
     committedWorkload?: CommittedWorkload;
     startDate?: Date;
     reason?: string;
@@ -40,6 +41,12 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     }
     set plannedWorkload(workload: number) {
         this.props.plannedWorkload = workload;
+    }
+    get sumPlannedWorkload(): number {
+        return this.props.sumPlannedWorkload;
+    }
+    set sumPlannedWorkload(sum: number) {
+        this.props.sumPlannedWorkload = sum;
     }
     get committedWorkload(): CommittedWorkload {
         return this.props.committedWorkload;
