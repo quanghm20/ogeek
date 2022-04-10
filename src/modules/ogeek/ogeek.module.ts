@@ -60,6 +60,8 @@ import { GetUsersController } from './useCases/user/getUsers/GetUsersController'
 import { GetUsersUseCase } from './useCases/user/getUsers/GetUsersUseCase';
 import { GetWorkloadListController } from './useCases/user/getWorkloadList/GetWorkloadListController';
 import { GetWorkloadListUseCase } from './useCases/user/getWorkloadList/GetWorkloadListUseCase';
+import { GetWorkloadListsController } from './useCases/user/getWorkloadLists/GetWorkloadListsController';
+import { GetWorkloadListsUseCase } from './useCases/user/getWorkloadLists/GetWorkloadListsUseCase';
 import { GetValueStreamController } from './useCases/valueStream/getValueStream/GetValueStreamController';
 import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/GetValueStreamUseCase';
 @Module({
@@ -92,6 +94,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetWorkloadListController,
         CreateIssueController,
         StartWeekController,
+        GetWorkloadListsController,
     ],
     providers: [
         CreateUserUseCase,
@@ -114,6 +117,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetCommittedWorkloadUseCase,
         GetHistoryCommittedWorkloadUseCase,
         CronCommittedWorkload,
+        GetWorkloadListsUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

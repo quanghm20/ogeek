@@ -144,4 +144,9 @@ export class SenteService {
         const endpoint = `/overview/value-stream?userid=${userId}&week=${week}`;
         return this._getData<T>(endpoint);
     }
+
+    async getOverviewHistoryActualWorkload<T>(): Promise<AxiosResponse<T>> {
+        const endpoint = '/overview/history-workloads';
+        return this._getData<T>(endpoint);
+    }
 }
