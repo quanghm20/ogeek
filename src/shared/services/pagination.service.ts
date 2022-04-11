@@ -2,16 +2,23 @@ import { Injectable } from '@nestjs/common';
 
 import { Order } from '../../common/constants/order';
 import { paginationDefault } from '../../common/constants/pagination';
-import { PaginationDto } from '../../modules/ogeek/infra/dtos/pagination.dto';
+import {
+    PaginationDto,
+    PaginationRepoDto,
+} from '../../modules/ogeek/infra/dtos/pagination.dto';
+
+export interface SortDefault {
+    [key: string]: Order;
+}
 
 @Injectable()
 export class PaginationService {
     static pagination(
         query: PaginationDto,
         allowSortColumnArray: string[],
-        sortDefault: string,
-    ): PaginationDto {
-        let orderBy = '';
+        sortDefault: SortDefault,
+    ): PaginationRepoDto {
+        let orderBy = {};
         if (!query.sort) {
             orderBy = sortDefault;
         }
@@ -26,23 +33,19 @@ export class PaginationService {
             if (filterSortArray.length === 0) {
                 orderBy = sortDefault;
             } else {
-                const handleSortArray = filterSortArray.map((sort) => {
-                    const myArray = sort.split('.');
-                    return myArray.map((item) => `"${item}"`).join('.');
-                });
                 let orderArray: string[] = [];
                 if (query.order) {
                     orderArray = query.order.split(',');
                 }
-                handleSortArray.forEach((sort, index) => {
+
+                filterSortArray.forEach((sort, index) => {
                     if (orderArray[index]) {
-                        orderBy += sort + ' ' + orderArray[index] + ',';
+                        orderBy[sort] = orderArray[index].toUpperCase();
                         return;
                     }
 
-                    orderBy += sort + ` ${Order.DESC},`;
+                    orderBy[sort] = Order.DESC;
                 });
-                orderBy = orderBy.slice(0, orderBy.length - 1);
             }
         }
 
@@ -66,6 +69,6 @@ export class PaginationService {
             order: orderBy,
             limit: query.limit,
             page: query.page,
-        } as PaginationDto;
+        } as PaginationRepoDto;
     }
 }

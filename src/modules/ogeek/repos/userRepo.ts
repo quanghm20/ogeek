@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-    // Connection,
-    getConnection,
-    Repository,
-    // SelectQueryBuilder,
-} from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 
+import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
 import { DomainId } from '../domain/domainId';
 import { User } from '../domain/user';
+import { IssueEntity } from '../infra/database/entities';
 import { UserEntity } from '../infra/database/entities/user.entity';
-import { PaginationDto } from '../infra/dtos/pagination.dto';
+import { PaginationRepoDto } from '../infra/dtos/pagination.dto';
 import { UserDto } from '../infra/dtos/user.dto';
 import { HistoryWorkloadDto } from '../infra/dtos/workloadListUsers/historyWorkload.dto';
 import { UserMap } from '../mappers/userMap';
@@ -21,11 +18,8 @@ export interface IUserRepo {
     findAllUser(): Promise<User[]>;
     update(condition: any, update: any): Promise<void>;
     findListUserWorkload(
-        pagination: PaginationDto,
+        pagination: PaginationRepoDto,
     ): Promise<HistoryWorkloadDto[]>;
-    // findListUserWorkloadTest(
-    //     pagination: PaginationDto,
-    // ): Promise<HistoryWorkloadDto[]>;
 }
 
 @Injectable()
@@ -33,6 +27,8 @@ export class UserRepository implements IUserRepo {
     constructor(
         @InjectRepository(UserEntity)
         protected repo: Repository<UserEntity>,
+        @InjectRepository(IssueEntity)
+        protected issueRepo: Repository<IssueEntity>,
     ) {}
     async findAllUser(): Promise<User[]> {
         const users = await this.repo.find({});
@@ -72,45 +68,58 @@ export class UserRepository implements IUserRepo {
     }
 
     async findListUserWorkload(
-        pagination: PaginationDto,
+        pagination: PaginationRepoDto,
     ): Promise<HistoryWorkloadDto[]> {
-        return (await getConnection()
-            .query(`select "user"."alias", "user"."id", "user"."avatar", "issue"."note", "issue"."status",
-             SUM("com"."committed_workload") as "committed_workload" from "user"
-left join "committed_workload" as com on "user"."id" = "com"."user_id"
-left join (
-select * from (
-select "id", 
-           "user_id",
-           "updated_at",
-           "status",
-           "note",
-           row_number() over (partition by "user_id" order by "updated_at" desc) as rank 
-    from "issue") ranks
-where rank = 1) as issue on "user"."id" = "issue"."user_id"
-where "com"."status" = 'ACTIVE' or "com"."status" = 'NOT RENEW'
-group by "user"."alias", "issue"."status", "user"."avatar", "issue"."note", "user"."id"
-order by ${pagination.order}
-limit ${pagination.limit} offset ${
-            pagination.limit * pagination.page
-        }`)) as HistoryWorkloadDto[];
+        const subQuery = this.issueRepo
+            .createQueryBuilder('issue')
+            .select('issue.note', 'note')
+            .addSelect('issue.status', 'status')
+            .addSelect('issue.user_id', 'id')
+            .addSelect(
+                'row_number() over (partition by "user_id" order by "updated_at" desc) as rank',
+            );
+
+        const issueQuery = getConnection()
+            .createQueryBuilder()
+            .select(['note', 'status', 'id'])
+            .from('(' + subQuery.getQuery() + ')', 'ranks')
+            .where('rank = 1');
+
+        const historyWorkloads = this.repo
+            .createQueryBuilder('user')
+            .select('user.id', 'userId')
+            .addSelect('user.alias', 'alias')
+            .addSelect('user.avatar', 'avatar')
+            .leftJoin('user.committedWorkloads', 'committed_workload')
+            .leftJoin(
+                '(' + issueQuery.getQuery() + ')',
+                'issue',
+                '"user"."id" = "issue"."id"',
+            )
+            .addSelect(
+                'SUM("committed_workload"."committed_workload")',
+                'committedWorkload',
+            )
+            .addSelect(['issue.note', 'issue.status'])
+            .groupBy('user.id')
+            .addGroupBy('user.alias')
+            .addGroupBy('user.avatar')
+            .addGroupBy('issue.status')
+            .addGroupBy('issue.note')
+            .addGroupBy('committed_workload.status')
+            .having('committed_workload.status = :name', {
+                name: CommittedWorkloadStatus.ACTIVE,
+            })
+            .orHaving('committed_workload.status = :name2', {
+                name2: CommittedWorkloadStatus.NOT_RENEW,
+            });
+
+        const historyWorkloadsQuery = await historyWorkloads
+            .orderBy(pagination.order)
+            .offset(pagination.page)
+            .limit(pagination.limit)
+            .getRawMany();
+
+        return historyWorkloadsQuery as HistoryWorkloadDto[];
     }
-
-    // async findListUserWorkloadTest(
-    //     pagination: PaginationDto,
-    // ): Promise<HistoryWorkloadDto[]> {
-    //     // console.log(pagination);
-
-    //     const users = await this.repo
-    //         .createQueryBuilder('user')
-    //         .leftJoinAndSelect('user.issue', 'issue')
-    //         .leftJoinAndSelect('user.committedWorkloads', 'committed_workloads')
-    //         // .groupBy('user.id')
-    //         .orderBy('issue.status', 'DESC')
-    //         .skip(0)
-    //         .take(3)
-    //         .getRawMany();
-
-    //     return users as HistoryWorkloadDto[];
-    // }
 }

@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 
+import { Order } from '../../../../../common/constants/order';
 import { RoleType } from '../../../../../common/constants/roleType';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
@@ -53,10 +54,14 @@ export class GetWorkloadListsUseCase
                 'committed_workload',
             ];
 
+            const sortDefault = {
+                'issue.status': Order.ASC,
+            };
+
             const pagination = PaginationService.pagination(
                 query,
                 allowSortColumnArray,
-                '"issue"."status" ASC',
+                sortDefault,
             );
 
             const listUserWorkloads = await this.userRepo.findListUserWorkload(

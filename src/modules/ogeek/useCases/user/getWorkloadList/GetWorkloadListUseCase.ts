@@ -1,14 +1,12 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 
-// import { InputPaginationDto } from 'modules/ogeek/infra/dtos/workloadListUsers/InputPagination.dto';
 import { RoleType } from '../../../../../common/constants/roleType';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { MomentService } from '../../../../../providers/moment.service';
 import { SenteService } from '../../../../../shared/services/sente.service';
-// import { PaginationDto } from '../../../infra/dtos/pagination.dto';
 import { ActualWorkloadListDto } from '../../../infra/dtos/workloadListByWeek/actualWorkloadList.dto';
 import { InputListWorkloadDto } from '../../../infra/dtos/workloadListByWeek/inputListWorkload.dto';
 import { StartEndDateOfWeekWLInputDto } from '../../../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
@@ -104,19 +102,6 @@ export class GetWorkloadListUseCase
                 response,
                 issueDtos,
             );
-
-            // const pagination = {
-            //     sort: null,
-            //     order: 'DESC',
-            //     limit: 10,
-            //     page: 1,
-            // } as PaginationDto;
-
-            // const test = await this.userRepo.findListUserWorkloadTest(
-            //     pagination,
-            // );
-
-            // console.log('116', test);
 
             if (!workloadListByWeekDto) {
                 return left(

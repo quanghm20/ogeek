@@ -75,7 +75,7 @@ export class SenteService {
         data?: any,
         method = 'get',
     ): Promise<AxiosResponse<T>> {
-        const url = `${process.env.MOCK_URL}/api/${endpoint}`;
+        const url = `${process.env.MOCK_URL}/api${endpoint}`;
         const axiosOptions = {
             headers: {
                 'x-api-key': this.configService.get('MOCK_API_KEY'),
