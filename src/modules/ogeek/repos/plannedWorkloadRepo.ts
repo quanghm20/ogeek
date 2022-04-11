@@ -226,12 +226,14 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 startDate: Between(startDate, endDate),
                 status: Not(PlannedWorkloadStatus.ARCHIVE.toString()),
             },
+
             relations: [
                 'contributedValue',
                 'contributedValue.expertiseScope',
                 'committedWorkload',
             ],
         });
+
         return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;
     }
 

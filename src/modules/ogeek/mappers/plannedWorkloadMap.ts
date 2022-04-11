@@ -76,7 +76,7 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
                     raw.committedWorkload,
                 ),
             },
-            new UniqueEntityID(id),
+            id ? new UniqueEntityID(id) : new UniqueEntityID(),
         );
         return plannedWorkloadOrError.isSuccess
             ? plannedWorkloadOrError.getValue()

@@ -117,10 +117,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             useClass: UserRepository,
         },
         {
-            provide: 'IUserRepo',
-            useClass: UserRepository,
-        },
-        {
             provide: 'ICommittedWorkloadRepo',
             useClass: CommittedWorkloadRepository,
         },
@@ -136,7 +132,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             provide: 'IPlannedWorkloadRepo',
             useClass: PlannedWorkloadRepository,
         },
-        UserRepository,
         {
             provide: 'IValueStreamRepo',
             useClass: ValueStreamRepository,
@@ -147,7 +142,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         },
     ],
     exports: [
-        UserRepository,
         CreateUserUseCase,
         GetUserUseCase,
         GetValueStreamUseCase,

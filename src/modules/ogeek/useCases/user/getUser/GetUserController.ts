@@ -9,11 +9,10 @@ import {
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { JwtAuthGuard } from '../../../../../modules/jwtAuth/jwtAuth.guard';
+import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
+import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { UserDto } from '../../../infra/dtos/user.dto';
-import { UserMap } from '../../../mappers/userMap';
 import { GetUserErrors } from './GetUserErrors';
 import { GetUserUseCase } from './GetUserUseCase';
 
@@ -31,9 +30,11 @@ export class GetUserController {
     })
     async execute(@Req() req: Request): Promise<UserDto> {
         const jwtPayload = req.user as JwtPayload;
-        const findUserDto = { ...jwtPayload } as FindUserDto;
+        const userDto = new UserDto();
+        userDto.id = new UniqueEntityID(jwtPayload.userId);
+        userDto.role = jwtPayload.role;
 
-        const result = await this.useCase.execute(findUserDto);
+        const result = await this.useCase.execute(userDto);
         if (result.isLeft()) {
             const error = result.value;
 
@@ -51,6 +52,6 @@ export class GetUserController {
             }
         }
 
-        return UserMap.fromDomain(result.value.getValue());
+        return result.value.getValue();
     }
 }

@@ -4,7 +4,6 @@ import { ActualPlanAndWorkLogDto } from '../infra/dtos/actualPlansAndWorkLogs.dt
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { ExpertiseScopeDto } from '../infra/dtos/expertiseScope.dto';
 import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';
-import { UserDto } from '../infra/dtos/user.dto';
 import { ValueStreamDto } from '../infra/dtos/valueStream.dto';
 import { ExpertiseScopeWithinValueStreamDto } from '../infra/dtos/valueStreamsByWeek/expertiseScopeWithinValueStream.dto';
 import { ValueStreamByWeekDto } from '../infra/dtos/valueStreamsByWeek/valueStream.dto';
@@ -51,14 +50,14 @@ export class ValueStreamsByWeekMap {
         plannedWLDtos: PlannedWorkloadDto[],
         actualPlanAndWorkLog: ActualPlanAndWorkLogDto,
     ): ExpertiseScopeWithinValueStreamDto[] {
-        const plannedWLFinded = plannedWLDtos.find(
+        const foundPlannedWl = plannedWLDtos.find(
             (planned) =>
                 Number(planned.committedWorkload.id.toString()) ===
                 Number(committedWLDto.id.toString()),
         );
 
-        const plannedWorkload = plannedWLFinded
-            ? plannedWLFinded.plannedWorkload
+        const plannedWorkload = foundPlannedWl
+            ? foundPlannedWl.plannedWorkload
             : committedWLDto.committedWorkload;
 
         let actual = ASSIGNNUMBER;
@@ -93,7 +92,6 @@ export class ValueStreamsByWeekMap {
         plannedWLDtos: PlannedWorkloadDto[],
         actualPlanAndWorkLogDtos: ActualPlanAndWorkLogDto[],
         valueStreamDtos: ValueStreamDto[],
-        userDto: UserDto,
         week: number,
         startDateOfWeek: Date,
         endDateOfWeek: Date,
@@ -131,7 +129,7 @@ export class ValueStreamsByWeekMap {
             } else {
                 let expertiseScopeWithinValueStreamDtos =
                     valueStreamByWeekDto.expertiseScopes;
-                if (!valueStreamByWeekDto.expertiseScopes) {
+                if (!expertiseScopeWithinValueStreamDtos) {
                     expertiseScopeWithinValueStreamDtos =
                         new Array<ExpertiseScopeWithinValueStreamDto>();
                 }

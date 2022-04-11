@@ -11,7 +11,6 @@ import { ApiHeader, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { ApiKeyAuthGuard } from '../../../../headerApiKeyAuth/headerApiKeyAuth.guard';
 import { UserDto } from '../../../infra/dtos/user.dto';
-import { UserMap } from '../../../mappers/userMap';
 import { FailToCreateUserErrors } from './CreateUserErrors';
 import { CreateUserUseCase } from './CreateUserUseCase';
 
@@ -30,8 +29,8 @@ export class CreateUserController {
         type: UserDto,
         description: 'Create user',
     })
-    async execute(@Body() userInfo: UserDto): Promise<UserDto> {
-        const result = await this.useCase.execute(userInfo);
+    async execute(@Body() userDto: UserDto): Promise<UserDto> {
+        const result = await this.useCase.execute(userDto);
         if (result.isLeft()) {
             const error = result.value;
 
@@ -48,6 +47,6 @@ export class CreateUserController {
             }
         }
 
-        return UserMap.fromDomain(result.value.getValue());
+        return result.value.getValue();
     }
 }

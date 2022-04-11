@@ -6,13 +6,12 @@ import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { MomentService } from '../../../../../providers/moment.service';
 import { SenteService } from '../../../../../shared/services/sente.service';
-import { StartAndEndDateOfWeekDto } from '../../../../ogeek/infra/dtos/valueStreamsByWeek/startAndEndDateOfWeek.dto';
 import { ActualPlanAndWorkLogDto } from '../../../infra/dtos/actualPlansAndWorkLogs.dto';
 import { InputGetPlanWLDto } from '../../../infra/dtos/valueStreamsByWeek/inputGetPlanWL.dto';
+import { StartAndEndDateOfWeekDto } from '../../../infra/dtos/valueStreamsByWeek/startAndEndDateOfWeek.dto';
 import { ValueStreamsByWeekDto } from '../../../infra/dtos/valueStreamsByWeek/valueStreamsByWeek.dto';
 import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
-import { UserMap } from '../../../mappers/userMap';
 import { ValueStreamMap } from '../../../mappers/valueStreamMap';
 import { ValueStreamsByWeekMap } from '../../../mappers/valueStreamsByWeekMap';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
@@ -85,7 +84,6 @@ export class GetValueStreamUseCase
                 week,
                 member,
             );
-            const user = await this.userRepo.findById(Number(member));
             const valueStreams = await this.valueStreamRepo.findAll();
             const committedWLs =
                 await this.committedWLRepo.findByUserIdValueStream(
@@ -102,13 +100,11 @@ export class GetValueStreamUseCase
                 CommittedWorkloadMap.fromDomainAll(committedWLs);
             const plannedWLDtos = PlannedWorkloadMap.fromDomainAll(plannedWLs);
             const valueStreamDtos = ValueStreamMap.fromDomainAll(valueStreams);
-            const userDto = UserMap.fromDomain(user);
             const valueStreamsByWeekDto = ValueStreamsByWeekMap.combineAllDto(
                 committedWLDtos,
                 plannedWLDtos,
                 actualPlanAndWorkLogDtos,
                 valueStreamDtos,
-                userDto,
                 week,
                 startAndEndDateOfWeek.startDateOfWeek,
                 startAndEndDateOfWeek.endDateOfWeek,

@@ -28,7 +28,7 @@ export class UserMap implements Mapper<User> {
         return new UserCompactDto(id, user.alias, user.name);
     }
 
-    public static toDomain(raw: UserEntity): User {
+    public static toDomain(raw: UserEntity | UserDto): User {
         if (!raw) {
             return null;
         }
@@ -43,7 +43,7 @@ export class UserMap implements Mapper<User> {
                 avatar: raw.avatar,
                 createdAt: raw.createdAt,
             },
-            new UniqueEntityID(id),
+            id ? new UniqueEntityID(id.toString()) : new UniqueEntityID(),
         );
         return userOrError.isSuccess ? userOrError.getValue() : null;
     }

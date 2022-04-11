@@ -3,6 +3,7 @@ import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
+import { MomentService } from '../../../providers/moment.service';
 import { CommittedWorkload } from './committedWorkload';
 import { ContributedValue } from './contributedValue';
 import { DomainId } from './domainId';
@@ -80,6 +81,31 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     get isActive(): boolean {
         return this.props.status !== PlannedWorkloadStatus.ARCHIVE;
     }
+
+    isBetweenWeek(week: number): boolean {
+        const startDateOfWeek = new Date(MomentService.firstDateOfWeek(week));
+        const endDateOfWeek = new Date(MomentService.lastDateOfWeek(week));
+        if (
+            this.props.startDate >= startDateOfWeek &&
+            this.props.startDate <= endDateOfWeek
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    isBelongToCommit(committedWlId: number | string) {
+        return this.committedWorkload.id.toValue() === committedWlId;
+    }
+
+    isBelongToExpScope(expScopeId: number | string) {
+        return this.contributedValue.expertiseScope.id.toValue() === expScopeId;
+    }
+
+    plusPlanWorkload(planWorkload: number) {
+        this.props.plannedWorkload += planWorkload;
+    }
+
     public static calculate(
         plannedWorkloads: PlannedWorkload[],
         committedWorkloadItem: CommittedWorkload,

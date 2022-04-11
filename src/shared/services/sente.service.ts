@@ -144,4 +144,9 @@ export class SenteService {
         const endpoint = `/overview/value-stream?userid=${userId}&week=${week}`;
         return this._getData<T>(endpoint);
     }
+
+    async getUser<T>(alias: string) {
+        const endpoint = `/overview/user-info?alias=${alias}`;
+        return this._getData<T>(endpoint);
+    }
 }
