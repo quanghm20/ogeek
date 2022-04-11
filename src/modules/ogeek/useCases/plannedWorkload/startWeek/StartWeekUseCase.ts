@@ -7,6 +7,7 @@ import { PlannedWorkloadStatus } from '../../../../../common/constants/plannedSt
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
 import { IUserRepo } from '../../../repos/userRepo';
 import { StartWeekErrors } from './StartWeekErrors';
@@ -29,11 +30,12 @@ export class StartWeekUseCase
     userId: number,
   ): Promise<Response> {
     try {
+      const startDateOfCurrentWeek = moment(startDate).startOf('week').toDate();
       const newestPlannedWorkload = await this.plannedWorkloadRepo.findOne(
         {
           user: { id: userId },
           status: PlannedWorkloadStatus.PLANNING,
-          startDate: Equal(startDate),
+          startDate: Equal(startDateOfCurrentWeek),
         },
       );
 
@@ -44,11 +46,11 @@ export class StartWeekUseCase
       }
 
       // calculate previous week
-      const startDateOfpreviousWeek = moment(startDate).subtract(7, 'days').startOf('week').toDate();
+      const startDateOfPreviousWeek = moment(startDate).subtract(7, 'days').startOf('week').toDate();
       const latestPlannedWorkloadInPreviousWeek = await this.plannedWorkloadRepo.findOne(
         {
           user: { id: userId },
-          startDate: Equal(startDateOfpreviousWeek),
+          startDate: Equal(startDateOfPreviousWeek),
           status: Not(PlannedWorkloadStatus.ARCHIVE),
         },
       );
@@ -59,16 +61,25 @@ export class StartWeekUseCase
         ) as Response;
       }
 
-      await this.plannedWorkloadRepo.updateMany(
-        {
-          user: { id: userId },
-          startDate: Equal(startDate),
-          status: PlannedWorkloadStatus.PLANNING,
-        },
-        {
-          status: PlannedWorkloadStatus.EXECUTING,
-        },
-      );
+      const planningPlannedWorkloads = await this.plannedWorkloadRepo.find({
+        user: { id: userId },
+        startDate: Equal(startDate),
+        status: PlannedWorkloadStatus.PLANNING,
+      });
+
+      if (!planningPlannedWorkloads) {
+        return left(
+          new StartWeekErrors.PreviousWeekNotClose(),
+        ) as Response;
+      }
+
+      const planningPlannedWorkloadEntities = planningPlannedWorkloads.map(plannedWL => {
+        plannedWL.startWeek(userId);
+        return PlannedWorkloadMap.toEntity(plannedWL);
+      });
+
+      await this.plannedWorkloadRepo.updateMany(planningPlannedWorkloadEntities);
+
       return right(Result.ok());
 
     } catch (err) {

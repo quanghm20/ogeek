@@ -47,7 +47,8 @@ export interface IPlannedWorkloadRepo {
     }: InputGetPlanWLDto): Promise<PlannedWorkload>;
     create(entity: PlannedWorkloadEntity): Promise<PlannedWorkload>;
     createMany(entities: PlannedWorkloadEntity[]): Promise<PlannedWorkload[]>;
-    updateMany(condition: any, update: any): Promise<void>;
+    updateOne(plannedWorkloadEntity: PlannedWorkloadEntity): Promise<void>;
+    updateMany(plannedWorkloadEntity: PlannedWorkloadEntity[]): Promise<void>;
     update(plannedEntities: PlannedWorkloadEntity[]): Promise<void>;
     findByCommittedId(
         committedWorkloadId: string | number,
@@ -240,8 +241,21 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
         return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;
     }
 
-    async updateMany(condition: any, update: any): Promise<void> {
-        await this.repo.update(condition, update);
+    async updateOne(
+        plannedWorkloadEntity: PlannedWorkloadEntity,
+    ): Promise<void> {
+        await this.repo.update(
+            { id: plannedWorkloadEntity.id },
+            plannedWorkloadEntity,
+        );
+    }
+
+    async updateMany(
+        plannedWorkloadEntities: PlannedWorkloadEntity[],
+    ): Promise<void> {
+        for (const plannedWLEntity of plannedWorkloadEntities) {
+            await this.repo.update({ id: plannedWLEntity.id }, plannedWLEntity);
+        }
     }
 
     async findAllByWeek({

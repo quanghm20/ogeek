@@ -48,6 +48,10 @@ import {
     PlanWorkloadUseCase,
 } from './useCases/plannedWorkload/planWorkload';
 import {
+    ReviewRetroController,
+    ReviewRetroUseCase,
+} from './useCases/plannedWorkload/reviewRetro';
+import {
     StartWeekController,
     StartWeekUseCase,
 } from './useCases/plannedWorkload/startWeek';
@@ -92,6 +96,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetWorkloadListController,
         CreateIssueController,
         StartWeekController,
+        ReviewRetroController,
     ],
     providers: [
         CreateUserUseCase,
@@ -112,6 +117,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         CreateIssueUseCase,
         GetCommittedWorkloadUseCase,
         GetHistoryCommittedWorkloadUseCase,
+        ReviewRetroUseCase,
         CronCommittedWorkload,
         CommittedWorkloadCreatedListener,
         {

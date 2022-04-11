@@ -25,17 +25,17 @@ import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { StartWeekDto } from '../../../infra/dtos/startWeek/startWeek.dto';
 import { StartWeekResponseDto } from '../../../infra/dtos/startWeek/startWeekResponse.dto';
-import { StartWeekErrors } from './StartWeekErrors';
-import { StartWeekUseCase } from './StartWeekUseCase';
+import { ReviewRetroErrors } from './ReviewRetroErrors';
+import { ReviewRetroUseCase } from './ReviewRetroUseCase';
 
 @Controller('api/planned-workload')
-@ApiTags('Planned Workload')
-export class StartWeekController {
-    constructor(public readonly useCase: StartWeekUseCase) {}
+@ApiTags('Review Retro')
+export class ReviewRetroController {
+    constructor(public readonly useCase: ReviewRetroUseCase) {}
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Patch('start-week')
+    @Patch('review-retro')
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: [StartWeekResponseDto],
@@ -65,9 +65,7 @@ export class StartWeekController {
             const error = result.value;
 
             switch (error.constructor) {
-                case StartWeekErrors.PreviousWeekNotClose:
-                    throw new BadRequestException(error.errorValue());
-                case StartWeekErrors.NotPlan:
+                case ReviewRetroErrors.NotStartWeek:
                     throw new BadRequestException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(
