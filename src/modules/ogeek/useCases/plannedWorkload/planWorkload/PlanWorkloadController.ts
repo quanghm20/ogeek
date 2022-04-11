@@ -5,7 +5,6 @@ import {
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
-    NotFoundException,
     Post,
     Req,
     UseGuards,
@@ -72,7 +71,7 @@ export class PlanWorkloadController {
                         'Failed to validate input',
                     );
                 case PlanWorkloadErrors.PlanWorkloadFailed:
-                    throw new NotFoundException(
+                    throw new BadRequestException(
                         error.errorValue(),
                         'Failed to plan workload',
                     );
