@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsArray, IsNumber, IsString } from 'class-validator';
 
 import { IssueStatus } from '../../../../../common/constants/issueStatus';
@@ -27,6 +28,7 @@ export class HistoryWorkloadDto {
 
     @ApiProperty({ example: 40 })
     @IsNumber()
+    @Type(() => Number)
     committedWorkload: number;
 
     @ApiProperty()

@@ -17,6 +17,10 @@ export class MomentService {
         return moment().utcOffset(420).week(week).toDate();
     }
 
+    public static getCurrentWeek(): number {
+        return moment().week();
+    }
+
     public static getNumOfWeek(injectedDate: Date): string {
         return moment(injectedDate).format('e');
     }

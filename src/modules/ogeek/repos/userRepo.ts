@@ -19,6 +19,8 @@ export interface IUserRepo {
     update(condition: any, update: any): Promise<void>;
     findListUserWorkload(
         pagination: PaginationRepoDto,
+        firstDateOfWeek: Date,
+        endDateOfCurrentWeek: Date,
     ): Promise<HistoryWorkloadDto[]>;
 }
 
@@ -69,6 +71,8 @@ export class UserRepository implements IUserRepo {
 
     async findListUserWorkload(
         pagination: PaginationRepoDto,
+        firstDateOfWeek: Date,
+        endDateOfCurrentWeek: Date,
     ): Promise<HistoryWorkloadDto[]> {
         const subQuery = this.issueRepo
             .createQueryBuilder('issue')
@@ -77,6 +81,10 @@ export class UserRepository implements IUserRepo {
             .addSelect('issue.user_id', 'id')
             .addSelect(
                 'row_number() over (partition by "user_id" order by "updated_at" desc) as rank',
+            )
+            .where(
+                `issue.created_at >= '${firstDateOfWeek.toISOString()}' 
+                AND issue.created_at <= '${endDateOfCurrentWeek.toISOString()}'`,
             );
 
         const issueQuery = getConnection()
@@ -98,7 +106,7 @@ export class UserRepository implements IUserRepo {
             )
             .addSelect(
                 'SUM("committed_workload"."committed_workload")',
-                'committedWorkload',
+                'committed_workload',
             )
             .addSelect(['issue.note', 'issue.status'])
             .groupBy('user.id')
@@ -113,6 +121,9 @@ export class UserRepository implements IUserRepo {
             .orHaving('committed_workload.status = :name2', {
                 name2: CommittedWorkloadStatus.NOT_RENEW,
             });
+
+        // const total = await historyWorkloads.getRawMany();
+        // const count = total.length;
 
         const historyWorkloadsQuery = await historyWorkloads
             .orderBy(pagination.order)

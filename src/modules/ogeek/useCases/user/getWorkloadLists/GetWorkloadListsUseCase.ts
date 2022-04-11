@@ -6,6 +6,7 @@ import { RoleType } from '../../../../../common/constants/roleType';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { MomentService } from '../../../../../providers/moment.service';
 import { PaginationService } from '../../../../../shared/services/pagination.service';
 import { SenteService } from '../../../../../shared/services/sente.service';
 import { PaginationDto } from '../../../infra/dtos/pagination.dto';
@@ -64,8 +65,16 @@ export class GetWorkloadListsUseCase
                 sortDefault,
             );
 
+            const week = MomentService.getCurrentWeek();
+            const firstDateOfThreeWeekAgo = MomentService.firstDateOfWeek(
+                week - 3,
+            );
+            const endDateOfCurrentWeek = MomentService.lastDateOfWeek(week);
+
             const listUserWorkloads = await this.userRepo.findListUserWorkload(
                 pagination,
+                firstDateOfThreeWeekAgo,
+                endDateOfCurrentWeek,
             );
 
             const userWorkloads = listUserWorkloads.map((workloadItem) => {
@@ -73,6 +82,7 @@ export class GetWorkloadListsUseCase
                     if (workloadItem.userId === res.userId) {
                         return {
                             ...workloadItem,
+                            // committedWorkload: workloadItem,
                             actualWorkloads: res.actualWorkloads,
                         };
                     }
