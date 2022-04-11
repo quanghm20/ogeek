@@ -52,12 +52,19 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
                 plannedWorkload: raw.plannedWorkload,
                 startDate: raw.startDate,
                 status: raw.status,
+                reason: raw.reason,
                 contributedValue: ContributedValueMap.toDomain(
                     raw.contributedValue,
                 ),
                 committedWorkload: CommittedWorkloadMap.toDomain(
                     raw.committedWorkload,
                 ),
+                createdBy: raw.createdBy,
+                updatedBy: raw.updatedBy,
+                deletedBy: raw.deletedBy,
+                createdAt: raw.createdAt,
+                updatedAt: raw.updatedAt,
+                deletedAt: raw.deletedAt,
             },
             new UniqueEntityID(id),
         );
@@ -69,24 +76,36 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
     public static toEntity(
         plannedWorkload: PlannedWorkload,
     ): PlannedWorkloadEntity {
-        const entity = {} as PlannedWorkloadEntity;
-
+        const id =
+            Number(plannedWorkload.plannedWorkloadId?.id?.toValue()) || null;
+        const entity = new PlannedWorkloadEntity(id);
         entity.status = plannedWorkload.status;
         entity.user = UserMap.toEntity(plannedWorkload.user);
         entity.reason = plannedWorkload.reason;
         entity.startDate = plannedWorkload.startDate;
         entity.plannedWorkload = plannedWorkload.plannedWorkload;
-
         entity.contributedValue = ContributedValueMap.toEntity(
             plannedWorkload.contributedValue,
         );
-        plannedWorkload.committedWorkload.contributedValue =
-            plannedWorkload.contributedValue;
-        plannedWorkload.committedWorkload.user = plannedWorkload.user;
         entity.committedWorkload = CommittedWorkloadMap.toEntity(
             plannedWorkload.committedWorkload,
         );
+        entity.createdAt = plannedWorkload.createdAt;
+        entity.createdBy = plannedWorkload.createdBy;
+        entity.updatedAt = plannedWorkload.updatedAt;
+        entity.updatedBy = plannedWorkload.updatedBy;
+        entity.deletedAt = plannedWorkload.deletedAt;
+        entity.deletedBy = plannedWorkload.deletedBy;
         return entity;
+    }
+    public static toEntities(
+        plannedWorkload: PlannedWorkload[],
+    ): PlannedWorkloadEntity[] {
+        const entities = new Array<PlannedWorkloadEntity>();
+        for (const commit of plannedWorkload) {
+            entities.push(this.toEntity(commit));
+        }
+        return entities;
     }
 
     public static toArrayDomain(

@@ -24,7 +24,7 @@ export class GetCommittedWorkloadUseCase
     async execute(query: FilterCommittedWorkload): Promise<Response> {
         try {
             const committedWorkloadsDomain =
-                await this.committedWorkloadRepo.findAllActiveCommittedWorkload(
+                await this.committedWorkloadRepo.findCommittedWorkloadActiveOrIncoming(
                     query,
                 );
             if (committedWorkloadsDomain.length <= 0) {

@@ -6,3 +6,4 @@ export const dateRange = {
     DURATION_BETWEEN_START_AND_END: 6,
     UTC: 7,
 };
+export const MOMENT_DAY_OF_WEEK = 6;

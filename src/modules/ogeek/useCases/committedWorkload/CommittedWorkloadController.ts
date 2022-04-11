@@ -27,6 +27,8 @@ import {
     ApiTags,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional } from 'class-validator';
 import { Request } from 'express';
 
 import { RoleType } from '../../../../common/constants/roleType';
@@ -35,7 +37,6 @@ import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
 import { CreateCommittedWorkloadDto } from '../../infra/dtos/createCommittedWorkload.dto';
 import { CommittedWorkloadShortDto } from '../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
-import { MessageDto } from '../../infra/dtos/message.dto';
 import { CreateCommittedWorkloadErrors } from './createCommittedWorkload/CreateCommittedWorkloadErrors';
 import { CreateCommittedWorkloadUseCase } from './createCommittedWorkload/CreateCommittedWorkloadUseCase';
 import { GetCommittedWorkloadErrors } from './getCommittedWorkload/GetCommittedWorkloadErrors';
@@ -55,10 +56,10 @@ export class DataCommittedWorkload {
 export class FilterCommittedWorkload {
     @ApiProperty()
     @ApiPropertyOptional()
+    @Type(() => Number)
+    @IsOptional()
+    @IsInt()
     userId?: number;
-    constructor(userId?: number) {
-        this.userId = userId;
-    }
 }
 
 @Controller('api/committed-workloads')
@@ -95,11 +96,11 @@ export class CommittedWorkloadController {
     async execute(
         @Body() body: CreateCommittedWorkloadDto,
         @Req() req: Request,
-    ): Promise<MessageDto> {
-        const createdBy = req.user as JwtPayload;
+    ): Promise<DataCommittedWorkload> {
+        const createBy = req.user as JwtPayload;
         const result = await this.createCommitUseCase.execute(
             body,
-            createdBy.userId,
+            createBy.userId,
         );
         if (result.isLeft()) {
             const error = result.value;
@@ -110,14 +111,13 @@ export class CommittedWorkloadController {
                     throw new NotFoundException(error.errorValue());
                 case CreateCommittedWorkloadErrors.DateError:
                     throw new BadRequestException(error.errorValue());
+                case CreateCommittedWorkloadErrors.ExistCommittedWorkloadInComing:
+                    throw new BadRequestException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(error.errorValue());
             }
         }
-        return new MessageDto(
-            HttpStatus.CREATED,
-            'Created committed workload successfully !',
-        );
+        return new DataCommittedWorkload(result.value.getValue());
     }
 
     @Get()
@@ -137,7 +137,7 @@ export class CommittedWorkloadController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     @UsePipes(
         new ValidationPipe({
