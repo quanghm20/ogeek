@@ -172,6 +172,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     ): CommittedWorkloadShortDto {
         try {
             const committed = new CommittedWorkloadShortDto();
+            committed.id = Number(committedDomain.id.toString());
             committed.user = UserMap.fromUserShort(committedDomain.user);
             committed.expertiseScope = ExpertiseScopeMap.fromDomainShort(
                 committedDomain.contributedValue.expertiseScope,

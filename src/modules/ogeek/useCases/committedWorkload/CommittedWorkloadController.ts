@@ -94,6 +94,8 @@ export class CommittedWorkloadController {
                     throw new NotFoundException(error.errorValue());
                 case CreateCommittedWorkloadErrors.DateError:
                     throw new BadRequestException(error.errorValue());
+                case CreateCommittedWorkloadErrors.ExistCommittedWorkloadInComing:
+                    throw new BadRequestException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(error.errorValue());
             }

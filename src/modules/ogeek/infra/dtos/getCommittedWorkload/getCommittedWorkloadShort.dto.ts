@@ -21,6 +21,9 @@ export class UserCompactDto {
 }
 
 export class CommittedWorkloadShortDto {
+    @ApiProperty({ example: 10 })
+    id: number;
+
     @ApiProperty({ type: UserCompactDto })
     user: UserCompactDto;
 

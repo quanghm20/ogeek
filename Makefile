@@ -14,6 +14,10 @@ dev_up:
 	docker-compose -f $(DOCKER_FILE) up -d --remove-orphans
 	npm run start:dev
 
+dev-up-debug:
+	docker-compose -f $(DOCKER_FILE) up -d --remove-orphans
+	npm run start:debug
+
 down:
 	docker-compose -f $(DOCKER_FILE) down
 

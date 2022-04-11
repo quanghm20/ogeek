@@ -1,4 +1,5 @@
 import { HttpModule, Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -27,6 +28,7 @@ import {
     GetHistoryCommittedWorkloadUseCase,
 } from './useCases/committedWorkload';
 import { CronCommittedWorkload } from './useCases/committedWorkload/cronCommittedWorkload.service';
+import { CommittedWorkloadCreatedListener } from './useCases/committedWorkload/listeners/CommittedWorkloadListeners';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,
@@ -75,6 +77,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             ValueStreamEntity,
         ]),
         ScheduleModule.forRoot(),
+        EventEmitterModule.forRoot(),
     ],
     controllers: [
         CommittedWorkloadController,
@@ -114,6 +117,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetCommittedWorkloadUseCase,
         GetHistoryCommittedWorkloadUseCase,
         CronCommittedWorkload,
+        CommittedWorkloadCreatedListener,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

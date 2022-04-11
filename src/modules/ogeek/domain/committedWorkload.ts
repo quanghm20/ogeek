@@ -237,6 +237,15 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         return plannedWorkloads;
     }
 
+    public isComingOrActive(): boolean {
+        return (
+            this.status === CommittedWorkloadStatus.INCOMING ||
+            this.status === CommittedWorkloadStatus.ACTIVE
+        );
+    }
+    public isComing(): boolean {
+        return this.status === CommittedWorkloadStatus.INCOMING;
+    }
     public static create(
         props: ICommittedWorkloadProps,
         id?: UniqueEntityID,

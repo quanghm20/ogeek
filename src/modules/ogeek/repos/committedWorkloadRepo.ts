@@ -72,6 +72,7 @@ export interface ICommittedWorkloadRepo {
         startDateOfWeek: Date,
         endDateOfWeek: Date,
     ): Promise<CommittedWorkload[]>;
+    findCommittedInComing(userId: number): Promise<CommittedWorkload>;
 }
 
 @Injectable()
@@ -106,6 +107,29 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             : new Array<CommittedWorkload>();
     }
 
+    async findCommittedActiveAndInComing(
+        userId: DomainId | number,
+    ): Promise<CommittedWorkload[]> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        const entities = await this.repo.find({
+            where: {
+                status:
+                    CommittedWorkloadStatus.ACTIVE ||
+                    CommittedWorkloadStatus.INCOMING,
+                user: userId,
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'user',
+            ],
+        });
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
+    }
     async findByValueStreamAndExpertiseScope(
         valueStreamId: number,
         expertiseScopeId: number,
@@ -364,6 +388,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 user: {
                     id: userId,
                 },
+                status: CommittedWorkloadStatus.ACTIVE,
             },
             relations: [
                 'contributedValue',
@@ -384,13 +409,25 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         await queryRunner.startTransaction();
 
         try {
-            await this.repo.update(
+            await queryRunner.manager.update(
+                CommittedWorkloadEntity,
                 {
                     expiredDate: now,
                     status: CommittedWorkloadStatus.ACTIVE,
                 },
                 {
                     status: CommittedWorkloadStatus.INACTIVE,
+                    updatedAt: new Date(),
+                },
+            );
+            await queryRunner.manager.update(
+                CommittedWorkloadEntity,
+                {
+                    startDate: now,
+                    status: CommittedWorkloadStatus.INCOMING,
+                },
+                {
+                    status: CommittedWorkloadStatus.ACTIVE,
                     updatedAt: new Date(),
                 },
             );
@@ -420,7 +457,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.expertiseScope',
                 'contributedValue.valueStream',
                 'user',
-                'pic',
             ],
         });
         return entities
@@ -469,5 +505,22 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         } finally {
             await queryRunner.release();
         }
+    }
+    async findCommittedInComing(userId: number): Promise<CommittedWorkload> {
+        const entity = await this.repo.findOne({
+            where: {
+                user: {
+                    id: userId,
+                },
+                status: CommittedWorkloadStatus.INCOMING,
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'user',
+            ],
+        });
+        return entity ? CommittedWorkloadMap.toDomain(entity) : null;
     }
 }
