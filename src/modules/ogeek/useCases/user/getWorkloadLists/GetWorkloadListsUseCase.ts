@@ -9,15 +9,18 @@ import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { MomentService } from '../../../../../providers/moment.service';
 import { PaginationService } from '../../../../../shared/services/pagination.service';
 import { SenteService } from '../../../../../shared/services/sente.service';
-import { PaginationDto } from '../../../infra/dtos/pagination.dto';
+import {
+    PaginationDto,
+    PaginationResponseDto,
+} from '../../../infra/dtos/pagination.dto';
 import { HistoryActualWLResponse } from '../../../infra/dtos/workloadListUsers/historyActualWLResponse.dto';
-import { HistoryWorkloadDto } from '../../../infra/dtos/workloadListUsers/historyWorkload.dto';
+import { HistoryWorkloadResponseDto } from '../../../infra/dtos/workloadListUsers/historyWorkloadResponses.dto';
 import { IUserRepo } from '../../../repos/userRepo';
 import { GetWorkloadListsError } from './GetWorkloadListsErrors';
 
 type Response = Either<
     AppError.UnexpectedError | GetWorkloadListsError.WorkloadListNotFound,
-    Result<HistoryWorkloadDto[]>
+    Result<HistoryWorkloadResponseDto>
 >;
 
 interface ServerResponse {
@@ -49,7 +52,6 @@ export class GetWorkloadListsUseCase
             const allowSortColumnArray = [
                 'user.alias',
                 'user.id',
-                'user.avatar',
                 'issue.note',
                 'issue.status',
                 'committed_workload',
@@ -77,24 +79,36 @@ export class GetWorkloadListsUseCase
                 endDateOfCurrentWeek,
             );
 
-            const userWorkloads = listUserWorkloads.map((workloadItem) => {
+            const listUserWorkloadData = listUserWorkloads.data;
+
+            const paginationResponse = new PaginationResponseDto(
+                pagination.page + 1,
+                pagination.limit,
+                listUserWorkloads.itemCount,
+            );
+
+            const userWorkloads = listUserWorkloadData.map((workloadItem) => {
                 for (const res of response) {
                     if (workloadItem.userId === res.userId) {
                         return {
                             ...workloadItem,
-                            // committedWorkload: workloadItem,
                             actualWorkloads: res.actualWorkloads,
                         };
                     }
                 }
             });
 
-            if (!userWorkloads) {
+            const userWorkloadsResponse = {
+                pagination: paginationResponse,
+                data: userWorkloads,
+            } as HistoryWorkloadResponseDto;
+
+            if (!userWorkloadsResponse) {
                 return left(
                     new GetWorkloadListsError.WorkloadListNotFound(),
                 ) as Response;
             }
-            return right(Result.ok(userWorkloads));
+            return right(Result.ok(userWorkloadsResponse));
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
         }

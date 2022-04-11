@@ -18,6 +18,8 @@ export class PaginationService {
         allowSortColumnArray: string[],
         sortDefault: SortDefault,
     ): PaginationRepoDto {
+        let page = query.page;
+        let limit = query.take;
         let orderBy = {};
         if (!query.sort) {
             orderBy = sortDefault;
@@ -49,26 +51,26 @@ export class PaginationService {
             }
         }
 
-        if (!query.page) {
-            query.page = paginationDefault.PAGE_DEFAULT;
+        if (!page) {
+            page = paginationDefault.PAGE_DEFAULT;
         }
 
-        if (query.page) {
-            query.page = query.page - 1;
+        if (page) {
+            page = query.page - 1;
         }
 
-        if (!query.limit) {
-            query.limit = paginationDefault.LIMIT_DEFAULT;
+        if (!limit) {
+            limit = paginationDefault.LIMIT_DEFAULT;
         }
 
-        if (query.limit > paginationDefault.LIMIT_MAX) {
-            query.limit = paginationDefault.LIMIT_MAX;
+        if (limit > paginationDefault.LIMIT_MAX) {
+            limit = paginationDefault.LIMIT_MAX;
         }
 
         return {
+            limit,
+            page,
             order: orderBy,
-            limit: query.limit,
-            page: query.page,
         } as PaginationRepoDto;
     }
 }

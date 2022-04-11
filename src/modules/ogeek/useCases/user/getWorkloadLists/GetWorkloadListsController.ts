@@ -17,7 +17,7 @@ import { Roles } from '../../../../../decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { PaginationDto } from '../../../infra/dtos/pagination.dto';
-import { HistoryWorkloadDto } from '../../../infra/dtos/workloadListUsers/historyWorkload.dto';
+import { HistoryWorkloadResponseDto } from '../../../infra/dtos/workloadListUsers/historyWorkloadResponses.dto';
 import { GetWorkloadListsError } from './GetWorkloadListsErrors';
 import { GetWorkloadListsUseCase } from './GetWorkloadListsUseCase';
 
@@ -32,13 +32,13 @@ export class GetWorkloadListsController {
     @Roles(RoleType.PP)
     @UsePipes(new ValidationPipe({ transform: true }))
     @ApiOkResponse({
-        type: HistoryWorkloadDto,
+        type: HistoryWorkloadResponseDto,
         description: 'Get all workload list of geeks in a week',
     })
     async execute(
         @Req() req: Request,
         @Query() query: PaginationDto,
-    ): Promise<HistoryWorkloadDto[]> {
+    ): Promise<HistoryWorkloadResponseDto> {
         const { userId } = req.user as JwtPayload;
         const result = await this.useCase.execute(query, userId);
         if (result.isLeft()) {

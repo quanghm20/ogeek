@@ -25,14 +25,10 @@ export class PaginationDto {
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
-    limit?: number;
+    take?: number;
 }
 
 export class PaginationRepoDto {
-    @ApiProperty()
-    @IsOptional()
-    order?: SortDefault;
-
     @ApiProperty()
     @IsNumber()
     @IsOptional()
@@ -44,4 +40,33 @@ export class PaginationRepoDto {
     @IsOptional()
     @Type(() => Number)
     limit?: number;
+
+    @ApiProperty()
+    @IsOptional()
+    order?: SortDefault;
+}
+
+export class PaginationResponseDto {
+    @ApiProperty()
+    @IsNumber()
+    itemCount: number;
+
+    @ApiProperty()
+    @IsNumber()
+    pageCount: number;
+
+    @ApiProperty()
+    @IsNumber()
+    page: number;
+
+    @ApiProperty()
+    @IsNumber()
+    take: number;
+
+    constructor(page: number, take: number, itemCount: number) {
+        this.page = page;
+        this.take = take;
+        this.itemCount = itemCount;
+        this.pageCount = Math.ceil(itemCount / this.take);
+    }
 }

@@ -10,6 +10,7 @@ import { UserEntity } from '../infra/database/entities/user.entity';
 import { PaginationRepoDto } from '../infra/dtos/pagination.dto';
 import { UserDto } from '../infra/dtos/user.dto';
 import { HistoryWorkloadDto } from '../infra/dtos/workloadListUsers/historyWorkload.dto';
+import { HistoryWorkloadDataDto } from '../infra/dtos/workloadListUsers/historyWorkloadData.dto';
 import { UserMap } from '../mappers/userMap';
 
 export interface IUserRepo {
@@ -21,7 +22,7 @@ export interface IUserRepo {
         pagination: PaginationRepoDto,
         firstDateOfWeek: Date,
         endDateOfCurrentWeek: Date,
-    ): Promise<HistoryWorkloadDto[]>;
+    ): Promise<HistoryWorkloadDataDto>;
 }
 
 @Injectable()
@@ -73,7 +74,7 @@ export class UserRepository implements IUserRepo {
         pagination: PaginationRepoDto,
         firstDateOfWeek: Date,
         endDateOfCurrentWeek: Date,
-    ): Promise<HistoryWorkloadDto[]> {
+    ): Promise<HistoryWorkloadDataDto> {
         const subQuery = this.issueRepo
             .createQueryBuilder('issue')
             .select('issue.note', 'note')
@@ -122,15 +123,18 @@ export class UserRepository implements IUserRepo {
                 name2: CommittedWorkloadStatus.NOT_RENEW,
             });
 
-        // const total = await historyWorkloads.getRawMany();
-        // const count = total.length;
+        const total = await historyWorkloads.getRawMany();
+        const count = total.length;
 
         const historyWorkloadsQuery = await historyWorkloads
             .orderBy(pagination.order)
-            .offset(pagination.page)
+            .offset(pagination.page * pagination.limit)
             .limit(pagination.limit)
             .getRawMany();
 
-        return historyWorkloadsQuery as HistoryWorkloadDto[];
+        return {
+            itemCount: count,
+            data: historyWorkloadsQuery as HistoryWorkloadDto[],
+        } as HistoryWorkloadDataDto;
     }
 }
