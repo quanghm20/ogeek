@@ -326,7 +326,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     'valueStream',
                 )
                 .leftJoinAndSelect('commit.user', 'user')
-                .orderBy('user.createdAt', query.order)
+                .orderBy(`commit.${query.sortBy}`, query.order)
                 .skip(query.skip)
                 .take(query.take);
 

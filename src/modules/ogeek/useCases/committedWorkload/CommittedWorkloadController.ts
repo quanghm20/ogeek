@@ -145,7 +145,7 @@ export class CommittedWorkloadController {
         description: 'StartDate or ExpiredDate is not valid !',
     })
     @ApiBadRequestResponse({
-        description: 'This user existing committed workload upcoming!',
+        description: 'This user has existing upcoming committed workload.',
     })
     @ApiBadRequestResponse({
         description: 'Bad Request',
