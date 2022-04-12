@@ -6,6 +6,9 @@ export class MessageDto {
     @ApiProperty({ example: "Can't create committed workloads." })
     message: string;
 
+    @ApiProperty({ isArray: true })
+    data?: Record<string, unknown>;
+
     constructor(statusCode: number, message: string) {
         this.statusCode = statusCode;
         this.message = message;
