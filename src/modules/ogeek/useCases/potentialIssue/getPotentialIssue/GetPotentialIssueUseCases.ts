@@ -28,7 +28,7 @@ export class GetPotentialIssueUseCase
         try {
             const potentialIssue =
                 await this.potentialIssueRepo.findByUserIdAndWeek(query);
-            const pic = await this.userRepo.findById(potentialIssue.createdBy);
+            const pic = await this.userRepo.findById(potentialIssue?.createdBy);
 
             if (!potentialIssue) {
                 return left(new GetPotentialIssueErrors.NotFound());
@@ -39,9 +39,10 @@ export class GetPotentialIssueUseCase
                 ...potentialIssueDto,
                 picName: pic.alias,
             } as DataPotentialIssueDto;
+
             return right(Result.ok(dataPotentialIssueDto));
         } catch (err) {
-            return left(err);
+            return left(new AppError.UnexpectedError(err));
         }
     }
 }

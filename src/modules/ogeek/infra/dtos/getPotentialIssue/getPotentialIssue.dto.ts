@@ -22,7 +22,7 @@ export class PotentialIssueDto {
     @IsDate()
     @ApiProperty()
     @IsNotEmpty()
-    dateOfWeek: Date;
+    firstDateOfWeek: Date;
 
     @ApiProperty()
     @IsDate()

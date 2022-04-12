@@ -16,7 +16,7 @@ export class IssueEntity extends AbstractEntity {
     note: string;
 
     @Column({ name: 'date_of_week' })
-    dateOfWeek: Date;
+    firstDateOfWeek: Date;
 
     @ManyToOne(() => UserEntity, (user) => user.id)
     @JoinColumn({
@@ -28,7 +28,7 @@ export class IssueEntity extends AbstractEntity {
         id?: number,
         note?: string,
         status?: IssueStatus,
-        dateOfWeek?: Date,
+        firstDateOfWeek?: Date,
         user?: UserEntity,
         createdBy?: number,
         updatedBy?: number,
@@ -40,7 +40,7 @@ export class IssueEntity extends AbstractEntity {
         super(id);
         this.note = note;
         this.status = status;
-        this.dateOfWeek = dateOfWeek;
+        this.firstDateOfWeek = firstDateOfWeek;
         this.user = user;
         this.createdBy = createdBy;
         this.updatedBy = updatedBy;

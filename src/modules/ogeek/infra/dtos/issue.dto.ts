@@ -19,7 +19,7 @@ export class IssueDto {
 
     @ApiProperty()
     @IsDate()
-    dateOfWeek: Date;
+    firstDateOfWeek: Date;
 
     @ApiProperty()
     @IsOptional()

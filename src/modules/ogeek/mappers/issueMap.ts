@@ -11,7 +11,7 @@ export class IssueMap implements Mapper<Issue> {
         return {
             id: issue.id,
             status: issue.status,
-            dateOfWeek: issue.dateOfWeek,
+            firstDateOfWeek: issue.firstDateOfWeek,
             note: issue.note,
             user: issue.user,
         };
@@ -21,7 +21,7 @@ export class IssueMap implements Mapper<Issue> {
             userId: Number(issue.user.id),
             status: issue.status,
             note: issue.note,
-            dateOfWeek: issue.dateOfWeek,
+            firstDateOfWeek: issue.firstDateOfWeek,
             createdAt: issue.createdAt,
         };
     }
@@ -40,7 +40,7 @@ export class IssueMap implements Mapper<Issue> {
             {
                 status: raw.status,
                 note: raw.note,
-                dateOfWeek: raw.dateOfWeek,
+                firstDateOfWeek: raw.firstDateOfWeek,
                 user: UserMap.toDomain(raw.user),
                 updatedBy: raw.updatedBy,
                 createdBy: raw.createdBy,
@@ -58,7 +58,7 @@ export class IssueMap implements Mapper<Issue> {
                 user: UserMap.toDomain(raw.user),
                 status: raw.status,
                 note: raw.note,
-                dateOfWeek: raw.dateOfWeek,
+                firstDateOfWeek: raw.firstDateOfWeek,
                 createdAt: raw.createdAt,
             },
             new UniqueEntityID(id),

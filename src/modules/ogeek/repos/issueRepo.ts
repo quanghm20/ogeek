@@ -93,7 +93,7 @@ export class IssueRepository implements IIssueRepo {
         const entity = await this.repo.findOne({
             where: {
                 user: { id: userId },
-                dateOfWeek: Equal(firstDateOfWeek),
+                firstDateOfWeek: Equal(firstDateOfWeek),
             },
             relations: ['user'],
         });

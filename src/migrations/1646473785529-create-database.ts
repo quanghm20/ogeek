@@ -147,7 +147,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "id" SERIAL NOT NULL, 
                 "status" "public"."issue_status_enum" NULL, 
                 "note" text NULL,
-                "date_of_week" TIMESTAMP NOT NULL,
+                "first_date_of_week" TIMESTAMP NOT NULL,
                 "user_id" integer, 
                 "created_by" integer,
                 "updated_by" integer,

@@ -8,7 +8,7 @@ import { User } from './user';
 interface IIssueProps {
     note: string;
     status: IssueStatus;
-    dateOfWeek: Date;
+    firstDateOfWeek: Date;
     user: User;
     createdBy?: number;
     updatedBy?: number;
@@ -36,11 +36,11 @@ export class Issue extends AggregateRoot<IIssueProps> {
     set note(note: string) {
         this.props.note = note;
     }
-    get dateOfWeek(): Date {
-        return this.props.dateOfWeek;
+    get firstDateOfWeek(): Date {
+        return this.props.firstDateOfWeek;
     }
-    set dateOfWeek(dateOfWeek: Date) {
-        this.props.dateOfWeek = dateOfWeek;
+    set firstDateOfWeek(firstDateOfWeek: Date) {
+        this.props.firstDateOfWeek = firstDateOfWeek;
     }
     get user(): User {
         return this.props.user;
