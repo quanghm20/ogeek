@@ -105,22 +105,25 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
         this.props.createdBy = createdBy;
     }
     get updatedBy(): number {
-        return this.props.createdBy;
+        return this.props.updatedBy;
     }
     set updatedBy(updatedBy: number) {
         this.props.updatedBy = updatedBy;
     }
     get deletedBy(): number {
-        return this.props.createdBy;
+        return this.props.deletedBy;
     }
     set deletedBy(deletedBy: number) {
         this.props.deletedBy = deletedBy;
+    }
+    get createdAt(): Date {
+        return this.props.createdAt;
     }
     set createdAt(createdAt: Date) {
         this.props.createdAt = createdAt;
     }
     get updatedAt(): Date {
-        return this.props.createdAt;
+        return this.props.updatedAt;
     }
     set updatedAt(updatedAt: Date) {
         this.props.updatedAt = updatedAt;
@@ -130,6 +133,27 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     }
     set deletedAt(deletedAt: Date) {
         this.props.deletedAt = deletedAt;
+    }
+    public closeWeek(userId: number): void {
+        if (this.status !== PlannedWorkloadStatus.EXECUTING) {
+            return;
+        }
+        this.status = PlannedWorkloadStatus.CLOSED;
+        this.props.updatedBy = userId;
+    }
+    public startWeek(userId: number): void {
+        if (this.status !== PlannedWorkloadStatus.PLANNING) {
+            return;
+        }
+        this.status = PlannedWorkloadStatus.EXECUTING;
+        this.updatedBy = userId;
+    }
+    public deactive(userId: number): void {
+        if (this.status === PlannedWorkloadStatus.ARCHIVE) {
+            return;
+        }
+        this.status = PlannedWorkloadStatus.ARCHIVE;
+        this.updatedBy = userId;
     }
     public setArchivePlannedWorkload(startDate: Date): void {
         if (

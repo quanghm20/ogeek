@@ -39,7 +39,7 @@ export class StartWeekController {
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: [StartWeekResponseDto],
-        description: 'Start week for Geek',
+        description: 'OK',
     })
     @ApiUnauthorizedResponse({
         description: 'Unauthorized',

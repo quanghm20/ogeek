@@ -90,12 +90,14 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
         entity.committedWorkload = CommittedWorkloadMap.toEntity(
             plannedWorkload.committedWorkload,
         );
+
         entity.createdAt = plannedWorkload.createdAt;
         entity.createdBy = plannedWorkload.createdBy;
         entity.updatedAt = plannedWorkload.updatedAt;
         entity.updatedBy = plannedWorkload.updatedBy;
         entity.deletedAt = plannedWorkload.deletedAt;
         entity.deletedBy = plannedWorkload.deletedBy;
+
         return entity;
     }
     public static toEntities(
