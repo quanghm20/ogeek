@@ -54,7 +54,7 @@ export class GetWorkloadListsUseCase
                 'user.id',
                 'issue.note',
                 'issue.status',
-                'committed_workload',
+                'committed',
             ];
 
             const sortDefault = {

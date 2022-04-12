@@ -107,7 +107,7 @@ export class UserRepository implements IUserRepo {
             )
             .addSelect(
                 'SUM("committed_workload"."committed_workload")',
-                'committed_workload',
+                'committed',
             )
             .addSelect(['issue.note', 'issue.status'])
             .groupBy('user.id')
