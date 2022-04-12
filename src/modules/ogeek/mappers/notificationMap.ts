@@ -3,12 +3,13 @@ import { Mapper } from '../../../core/infra/Mapper';
 import { Notification } from '../domain/notification';
 import { NotificationEntity } from '../infra/database/entities';
 import { NotificationDto } from '../infra/dtos/notification/getNotifications/notification.dto';
+import { UserMap } from './userMap';
 
 export class NotificationMap implements Mapper<Notification> {
     public static fromDomain(notification: Notification): NotificationDto {
         const notificationDto = new NotificationDto();
         notificationDto.id = Number(notification.id);
-        notificationDto.message = notification.props.message;
+        notificationDto.notificationMessage = notification.props.message;
         notificationDto.read = notification.props.read;
         notificationDto.createdAt = notification.props.createdAt;
 
@@ -31,6 +32,7 @@ export class NotificationMap implements Mapper<Notification> {
             {
                 message: raw.message,
                 read: raw.read,
+                user: UserMap.toDomain(raw.user),
                 createdAt: raw.createdAt,
             },
             new UniqueEntityID(id),
@@ -40,12 +42,13 @@ export class NotificationMap implements Mapper<Notification> {
             : null;
     }
     public static toEntity(notification: Notification): NotificationEntity {
-        const notificationEntity = {} as NotificationEntity;
-        notificationEntity.id = Number(notification.id.toValue());
+        const id = Number(notification.id?.toValue()) || null;
+        const notificationEntity = new NotificationEntity(id);
         notificationEntity.message = notification.message;
         notificationEntity.read = notification.read;
+        notificationEntity.user = UserMap.toEntity(notification.user);
+        notificationEntity.createdBy = notification.createdBy;
         notificationEntity.createdAt = notification.createdAt;
-
         return notificationEntity;
     }
 

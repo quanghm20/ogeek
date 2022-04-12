@@ -241,6 +241,10 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         return plannedWorkloads;
     }
 
+    // public autoGenerateNotification(): Notification {
+
+    // }
+
     public isComing(): boolean {
         return this.status === CommittedWorkloadStatus.INCOMING;
     }
@@ -265,4 +269,6 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         const committedWorkload = new CommittedWorkload(defaultValues, id);
         return Result.ok<CommittedWorkload>(committedWorkload);
     }
+
+    public;
 }

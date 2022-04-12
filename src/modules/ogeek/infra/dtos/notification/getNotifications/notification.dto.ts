@@ -12,7 +12,7 @@ export class NotificationDto {
         example: 'Admin has added 45 hr (s) committed workload for you.',
     })
     @IsNotEmpty({ message: 'ERROR_EMPTY_MESSAGE_FIELD' })
-    message: string;
+    notificationMessage: string;
 
     @ApiProperty({ example: 'UNREAD' })
     @IsNotEmpty({ message: 'ERROR_EMPTY_READ_FIELD' })

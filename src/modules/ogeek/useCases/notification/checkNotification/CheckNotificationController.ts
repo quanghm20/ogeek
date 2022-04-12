@@ -39,7 +39,7 @@ export class CheckNotificationController {
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: NotificationDto,
-        isArray: false,
+        isArray: true,
         description: 'OK',
     })
     @ApiUnauthorizedResponse({
@@ -59,7 +59,6 @@ export class CheckNotificationController {
         @Req() req: Request,
     ): Promise<NotificationDto> {
         const { userId } = req.user as JwtPayload;
-
         const result = await this.useCase.execute(body, userId);
         if (result.isLeft()) {
             const error = result.value;
@@ -74,6 +73,6 @@ export class CheckNotificationController {
                     throw new InternalServerErrorException(error.errorValue());
             }
         }
-        return result;
+        return result.value.getValue()[0];
     }
 }

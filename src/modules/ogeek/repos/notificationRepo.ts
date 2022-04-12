@@ -10,7 +10,7 @@ import { NotificationMap } from '../mappers/notificationMap';
 export interface INotificationRepo {
     findByUserId(userId: DomainId | number): Promise<Notification[]>;
     findById(notificationId: DomainId | number): Promise<Notification>;
-    update(condition: any, update: any): Promise<void>;
+    save(notificationEntity: NotificationEntity): Promise<NotificationEntity>;
 }
 
 @Injectable()
@@ -48,7 +48,11 @@ export class NotificationRepository implements INotificationRepo {
         return entity ? NotificationMap.toDomain(entity) : null;
     }
 
-    async update(condition: any, update: any): Promise<void> {
-        await this.repo.update(condition, update);
+    async save(
+        notificationEntity: NotificationEntity,
+    ): Promise<NotificationEntity> {
+        notificationEntity = await this.repo.save(notificationEntity);
+
+        return notificationEntity;
     }
 }

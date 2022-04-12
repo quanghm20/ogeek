@@ -81,7 +81,7 @@ export class Notification extends AggregateRoot<INotificationProps> {
 
     public static create(
         props: INotificationProps,
-        id: UniqueEntityID,
+        id?: UniqueEntityID,
     ): Result<Notification> {
         const propsResult = Guard.againstNullOrUndefinedBulk([]);
         if (!propsResult.succeeded) {
@@ -90,7 +90,12 @@ export class Notification extends AggregateRoot<INotificationProps> {
         const defaultValues = {
             ...props,
         };
+        defaultValues.user = props.user;
         const notification = new Notification(defaultValues, id);
         return Result.ok<Notification>(notification);
+    }
+
+    public markRead(): void {
+        this.props.read = NotificationStatus.READ;
     }
 }

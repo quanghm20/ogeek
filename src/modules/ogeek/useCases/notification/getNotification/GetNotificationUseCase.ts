@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 
 import { IUseCase } from '../../../../../core/domain/UseCase';
@@ -10,7 +11,7 @@ import { IUserRepo } from '../../../repos/userRepo';
 import { GetNotificationErrors } from './GetNotificationErrors';
 
 type Response = Either<
-    | AppError.UnexpectedError
+    AppError.UnexpectedError
     | GetNotificationErrors.UserNotFound
     | GetNotificationErrors.NotificationNotFound,
     Result<NotificationDto[]>

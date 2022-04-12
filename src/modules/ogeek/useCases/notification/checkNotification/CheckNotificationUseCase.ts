@@ -3,8 +3,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
-import { NotificationMap } from '../../../..//ogeek/mappers/notificationMap';
 import { CheckNotificationDto } from '../../../../ogeek/infra/dtos/notification/checkNotification/checkNotification.dto';
+import { NotificationMap } from '../../../../ogeek/mappers/notificationMap';
 import { INotificationRepo } from '../../../../ogeek/repos/notificationRepo';
 import { NotificationDto } from '../../../infra/dtos/notification/getNotifications/notification.dto';
 import { IUserRepo } from '../../../repos/userRepo';
@@ -14,12 +14,12 @@ type Response = Either<
     | AppError.UnexpectedError
     | CheckNotificationErrors.UserNotFound
     | CheckNotificationErrors.NotificationNotFound,
-    Result<NotificationDto>
+    Result<NotificationDto[]>
 >;
 
 @Injectable()
 export class CheckNotificationUseCase
-    implements IUseCase<CheckNotificationDto | number, Promise<Response>>
+    implements IUseCase<CheckNotificationDto, Promise<Response>>
 {
     constructor(
         @Inject('IUserRepo') public readonly userRepo: IUserRepo,
@@ -27,11 +27,11 @@ export class CheckNotificationUseCase
         public readonly notificationRepo: INotificationRepo,
     ) {}
     async execute(
-        body: CheckNotificationDto,
+        checkNotification: CheckNotificationDto,
         userId: number,
     ): Promise<Response> {
         try {
-            const notificationId = body.id;
+            const notificationId = checkNotification.id;
             const user = await this.userRepo.findById(userId);
 
             if (!user) {
@@ -41,19 +41,25 @@ export class CheckNotificationUseCase
             const notification = await this.notificationRepo.findById(
                 notificationId,
             );
-
-            if (notification === null) {
+            if (!notification) {
                 return left(
                     new CheckNotificationErrors.NotificationNotFound(
                         notificationId,
                     ),
                 );
             }
+            const notificationDto = NotificationMap.fromDomain(notification);
             if (notification.isRead()) {
-                const notificationDto =
-                    NotificationMap.fromDomain(notification);
-                return right(Result.ok(notificationDto));
+                return right(Result.ok([notificationDto]));
             }
+            notification.markRead();
+
+            const notificationEntity = NotificationMap.toEntity(notification);
+            await this.notificationRepo.save(notificationEntity);
+
+            const notificationReadDto =
+                NotificationMap.fromDomain(notification);
+            return right(Result.ok([notificationReadDto]));
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
         }
