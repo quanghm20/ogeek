@@ -8,7 +8,6 @@ import { User } from '../domain/user';
 import { IssueEntity } from '../infra/database/entities';
 import { UserEntity } from '../infra/database/entities/user.entity';
 import { PaginationRepoDto } from '../infra/dtos/pagination.dto';
-import { UserDto } from '../infra/dtos/user.dto';
 import { HistoryWorkloadDto } from '../infra/dtos/workloadListUsers/historyWorkload.dto';
 import { HistoryWorkloadDataDto } from '../infra/dtos/workloadListUsers/historyWorkloadData.dto';
 import { UserMap } from '../mappers/userMap';
@@ -50,15 +49,15 @@ export class UserRepository implements IUserRepo {
         return entity ? UserMap.toDomain(entity) : null;
     }
 
-    async createUser(userDto: UserDto): Promise<User> {
+    async createUser(user: User): Promise<User> {
         try {
             const entity = this.repo.create({
-                alias: userDto.alias,
-                name: userDto.name,
-                phone: userDto.phone,
-                email: userDto.email,
-                avatar: userDto.avatar,
-                role: userDto.role,
+                alias: user.alias,
+                name: user.name,
+                phone: user.phone,
+                email: user.email,
+                avatar: user.avatar,
+                role: user.role,
             });
             const createdUser = await this.repo.save(entity);
             return createdUser ? UserMap.toDomain(entity) : null;

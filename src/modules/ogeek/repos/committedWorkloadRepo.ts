@@ -15,6 +15,7 @@ import {
 import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
 import { Order } from '../../../common/constants/order';
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
+import { SortBy } from '../../../common/constants/sortBy';
 import { PageMetaDto } from '../../../common/dto/PageMetaDto';
 import { PageOptionsDto } from '../../../common/dto/PageOptionsDto';
 import { MomentService } from '../../../providers/moment.service';
@@ -311,6 +312,18 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         query?: FilterCommittedWorkload,
     ): Promise<PaginationCommittedWorkload> {
         try {
+            if (!query.order) {
+                query.order = Order.ASC;
+            }
+            if (!query.sortBy) {
+                query.sortBy = SortBy.ID;
+            }
+            if (!query.page) {
+                query.page = 1;
+            }
+            if (!query.take) {
+                query.take = 10;
+            }
             const queryBuilder = this.repo
                 .createQueryBuilder('commit')
                 .leftJoinAndSelect(
@@ -475,7 +488,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     CommittedWorkloadStatus.NOT_RENEW,
                 user: userId,
                 startDate: LessThan(endDateOfWeek),
-                endDate: MoreThan(startDateOfWeek),
+                expiredDate: MoreThan(startDateOfWeek),
             },
             relations: [
                 'contributedValue',

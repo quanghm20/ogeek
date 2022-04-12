@@ -23,13 +23,14 @@ import * as moment from 'moment';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
+import { MessageDto } from '../../../infra/dtos/message.dto';
 import { StartWeekDto } from '../../../infra/dtos/startWeek/startWeek.dto';
 import { StartWeekResponseDto } from '../../../infra/dtos/startWeek/startWeekResponse.dto';
 import { ReviewRetroErrors } from './ReviewRetroErrors';
 import { ReviewRetroUseCase } from './ReviewRetroUseCase';
 
 @Controller('api/planned-workload')
-@ApiTags('Review Retro')
+@ApiTags('Planned Workload')
 export class ReviewRetroController {
     constructor(public readonly useCase: ReviewRetroUseCase) {}
 
@@ -53,7 +54,7 @@ export class ReviewRetroController {
     async execute(
         @Req() req: Request,
         @Body() startWeekDto: StartWeekDto,
-    ): Promise<StartWeekResponseDto> {
+    ): Promise<MessageDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
         const { userId } = findUserDto;
@@ -75,6 +76,14 @@ export class ReviewRetroController {
             }
         }
 
-        return { week: moment(startDate).week() } as StartWeekResponseDto;
+        // return { week: moment(startDate).week() } as StartWeekResponseDto;
+        const reviewRetroWeek = moment(startDate).week();
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Review retro successfully',
+            data: {
+                week: reviewRetroWeek.toString(),
+            },
+        } as MessageDto;
     }
 }

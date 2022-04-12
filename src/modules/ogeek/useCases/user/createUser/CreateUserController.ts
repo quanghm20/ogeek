@@ -3,6 +3,7 @@ import {
     Body,
     Controller,
     InternalServerErrorException,
+    NotFoundException,
     Post,
     UseGuards,
 } from '@nestjs/common';
@@ -18,11 +19,10 @@ import {
 
 import { ApiKeyAuthGuard } from '../../../../headerApiKeyAuth/headerApiKeyAuth.guard';
 import { UserDto } from '../../../infra/dtos/user.dto';
-import { UserMap } from '../../../mappers/userMap';
 import { FailToCreateUserErrors } from './CreateUserErrors';
 import { CreateUserUseCase } from './CreateUserUseCase';
 
-@Controller('api/user')
+@Controller('api/admin/user')
 @ApiTags('User')
 export class CreateUserController {
     constructor(public readonly useCase: CreateUserUseCase) {}
@@ -49,14 +49,16 @@ export class CreateUserController {
     @ApiInternalServerErrorResponse({
         description: 'Interal Server Error',
     })
-    async execute(@Body() userInfo: UserDto): Promise<UserDto> {
-        const result = await this.useCase.execute(userInfo);
+    async execute(@Body() userDto: UserDto): Promise<UserDto> {
+        const result = await this.useCase.execute(userDto);
         if (result.isLeft()) {
             const error = result.value;
 
             switch (error.constructor) {
                 case FailToCreateUserErrors.FailToCreateUser:
                     throw new BadRequestException(error.errorValue());
+                case FailToCreateUserErrors.UserNotFound:
+                    throw new NotFoundException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(
                         error.errorValue(),
@@ -65,6 +67,6 @@ export class CreateUserController {
             }
         }
 
-        return UserMap.fromDomain(result.value.getValue());
+        return result.value.getValue();
     }
 }

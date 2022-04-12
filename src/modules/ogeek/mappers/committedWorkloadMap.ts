@@ -16,19 +16,21 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         committedWorkload: CommittedWorkload,
     ): CommittedWorkloadDto {
         const dto = new CommittedWorkloadDto();
-        dto.id = committedWorkload.id;
-        dto.user = UserMap.fromDomain(committedWorkload.props.user);
-        dto.contributedValue = committedWorkload.props.contributedValue
-            ? ContributedValueMap.fromDomain(
-                  committedWorkload.props.contributedValue,
-              )
-            : null;
-        dto.committedWorkload = committedWorkload.props.committedWorkload;
-        dto.startDate = committedWorkload.props.startDate;
-        dto.expiredDate = committedWorkload.props.expiredDate;
-        dto.createdBy = committedWorkload.props.createdBy;
-        dto.createdAt = committedWorkload.props.createdAt;
-        dto.updatedAt = committedWorkload.props.updatedAt;
+        if (committedWorkload) {
+            dto.id = committedWorkload.id;
+            dto.user = UserMap.fromDomain(committedWorkload.props.user);
+            dto.contributedValue = committedWorkload.props.contributedValue
+                ? ContributedValueMap.fromDomain(
+                      committedWorkload.props.contributedValue,
+                  )
+                : null;
+            dto.committedWorkload = committedWorkload.props.committedWorkload;
+            dto.startDate = committedWorkload.props.startDate;
+            dto.expiredDate = committedWorkload.props.expiredDate;
+            dto.createdBy = committedWorkload.props.createdBy;
+            dto.createdAt = committedWorkload.props.createdAt;
+            dto.updatedAt = committedWorkload.props.updatedAt;
+        }
         return dto;
     }
 
@@ -52,38 +54,41 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             ? committedWorkloadOrError.getValue()
             : null;
     }
+
     public static toEntity(
         committedWorkload: CommittedWorkload,
     ): CommittedWorkloadEntity {
-        const user = UserMap.toEntity(committedWorkload.user);
+        if (committedWorkload) {
+            const user = UserMap.toEntity(committedWorkload.user);
 
-        const contributedValue = ContributedValueMap.toEntity(
-            committedWorkload.contributedValue,
-        );
-        const id =
-            Number(committedWorkload.committedWorkloadId?.id?.toValue()) ||
-            null;
-        const entity = new CommittedWorkloadEntity(
-            id,
-            user,
-            contributedValue,
-            committedWorkload.committedWorkload,
-            committedWorkload.startDate,
-            committedWorkload.expiredDate,
-        );
-        entity.contributedValue = ContributedValueMap.toEntity(
-            committedWorkload.contributedValue,
-        );
-        entity.status = committedWorkload.status;
+            const contributedValue = ContributedValueMap.toEntity(
+                committedWorkload.contributedValue,
+            );
+            const id =
+                Number(committedWorkload.committedWorkloadId?.id?.toValue()) ||
+                null;
+            const entity = new CommittedWorkloadEntity(
+                id,
+                user,
+                contributedValue,
+                committedWorkload.committedWorkload,
+                committedWorkload.startDate,
+                committedWorkload.expiredDate,
+            );
+            entity.contributedValue = ContributedValueMap.toEntity(
+                committedWorkload.contributedValue,
+            );
+            entity.status = committedWorkload.status;
 
-        entity.createdAt = committedWorkload.createdAt;
-        entity.createdBy = committedWorkload.createdBy;
-        entity.updatedAt = committedWorkload.updatedAt;
-        entity.updatedBy = committedWorkload.updatedBy;
-        entity.deletedAt = committedWorkload.deletedAt;
-        entity.deletedBy = committedWorkload.deletedBy;
+            entity.createdAt = committedWorkload.createdAt;
+            entity.createdBy = committedWorkload.createdBy;
+            entity.updatedAt = committedWorkload.updatedAt;
+            entity.updatedBy = committedWorkload.updatedBy;
+            entity.deletedAt = committedWorkload.deletedAt;
+            entity.deletedBy = committedWorkload.deletedBy;
 
-        return entity;
+            return entity;
+        }
     }
     public static toEntities(
         committedWorkload: CommittedWorkload[],
@@ -99,9 +104,11 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         committedWLs: CommittedWorkload[],
     ): CommittedWorkloadDto[] {
         const arrCommittedWLDto = new Array<CommittedWorkloadDto>();
-        committedWLs.forEach((committedWL) => {
-            arrCommittedWLDto.push(this.fromDomain(committedWL));
-        });
+        if (committedWLs) {
+            committedWLs.forEach((committedWL) => {
+                arrCommittedWLDto.push(this.fromDomain(committedWL));
+            });
+        }
         return arrCommittedWLDto;
     }
 
@@ -144,14 +151,16 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         committedWLs: CommittedWorkloadEntity[],
     ): CommittedWorkload[] {
         const arrCommittedWL = new Array<CommittedWorkload>();
-        committedWLs.forEach((committedWL) => {
-            const committedOrError = this.toDomain(committedWL);
-            if (committedOrError) {
-                arrCommittedWL.push(committedOrError);
-            } else {
-                return null;
-            }
-        });
+        if (committedWLs) {
+            committedWLs.forEach((committedWL) => {
+                const committedOrError = this.toDomain(committedWL);
+                if (committedOrError) {
+                    arrCommittedWL.push(committedOrError);
+                } else {
+                    return null;
+                }
+            });
+        }
         return arrCommittedWL;
     }
 
@@ -159,11 +168,13 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         raws: CommittedWorkloadEntity[],
     ): CommittedWorkload[] {
         const committedWorkloadsOrError = Array<CommittedWorkload>();
-        raws.forEach(function get(item) {
-            const committedWorkloadOrError =
-                CommittedWorkloadMap.toDomain(item);
-            committedWorkloadsOrError.push(committedWorkloadOrError);
-        });
+        if (raws) {
+            raws.forEach(function get(item) {
+                const committedWorkloadOrError =
+                    CommittedWorkloadMap.toDomain(item);
+                committedWorkloadsOrError.push(committedWorkloadOrError);
+            });
+        }
         return committedWorkloadsOrError ? committedWorkloadsOrError : null;
     }
 
@@ -196,8 +207,10 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         committees: CommittedWorkload[],
     ): CommittedWorkloadShortDto[] {
         const commits = Array<CommittedWorkloadShortDto>();
-        for (const commit of committees) {
-            commits.push(this.fromCommittedWorkloadShort(commit));
+        if (committees) {
+            committees.forEach((committee) => {
+                commits.push(this.fromCommittedWorkloadShort(committee));
+            });
         }
         return commits;
     }
