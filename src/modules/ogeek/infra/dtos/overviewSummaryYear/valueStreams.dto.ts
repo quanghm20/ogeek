@@ -1,20 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { ExpertiseScopeDto } from './expertiseScope.dto';
-import { ValueStreamShortDto } from './valueStreamShort.dto';
 
 export class ValueStreamsDto {
-    @ApiProperty({ type: ValueStreamShortDto })
-    valueStream: ValueStreamShortDto;
+    @ApiProperty({ example: 1 })
+    id: number;
+
+    @ApiProperty({ example: 'Delivery' })
+    name: string;
 
     @ApiProperty({ type: ExpertiseScopeDto, isArray: true })
     expertiseScopes: ExpertiseScopeDto[];
 
     constructor(
-        valueStream: ValueStreamShortDto,
-        expertiseScopes: ExpertiseScopeDto[],
+        id?: number,
+        name?: string,
+        expertiseScopes?: ExpertiseScopeDto[],
     ) {
-        this.valueStream = valueStream;
+        this.id = id;
+        this.name = name;
         this.expertiseScopes = expertiseScopes;
     }
 }
