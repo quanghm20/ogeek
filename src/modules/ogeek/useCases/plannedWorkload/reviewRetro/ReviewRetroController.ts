@@ -30,7 +30,7 @@ import { ReviewRetroErrors } from './ReviewRetroErrors';
 import { ReviewRetroUseCase } from './ReviewRetroUseCase';
 
 @Controller('api/planned-workload')
-@ApiTags('Review Retro')
+@ApiTags('Planned Workload')
 export class ReviewRetroController {
     constructor(public readonly useCase: ReviewRetroUseCase) {}
 

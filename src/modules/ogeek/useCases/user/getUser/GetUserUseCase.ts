@@ -1,42 +1,41 @@
-/* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { UserDto } from '../../../../ogeek/infra/dtos/user.dto';
+import { UserMap } from '../../../../ogeek/mappers/userMap';
 import { User } from '../../../domain/user';
-import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { IUserRepo } from '../../../repos/userRepo';
 import { GetUserErrors } from './GetUserErrors';
 
 type Response = Either<
     AppError.UnexpectedError | GetUserErrors.UserNotFound,
-    Result<User>
+    Result<UserDto>
 >;
 
 @Injectable()
-export class GetUserUseCase
-    implements IUseCase<FindUserDto , Promise<Response> > {
-    constructor(
-        @Inject('IUserRepo') public readonly repo: IUserRepo,
-    ) {}
+export class GetUserUseCase implements IUseCase<UserDto, Promise<Response>> {
+    constructor(@Inject('IUserRepo') public readonly repo: IUserRepo) {}
 
-    async getUserByEachUseCase(findUserDto: FindUserDto): Promise<User> {
-        if (findUserDto.alias) {
-            return this.repo.findByAlias(findUserDto.alias);
+    async getUserByEachUseCase(user: User): Promise<User> {
+        if (user.alias) {
+            return this.repo.findByAlias(user.alias);
         }
 
-        if (findUserDto.userId) {
-            return this.repo.findById(findUserDto.userId);
+        if (user.id) {
+            return this.repo.findById(user.userId);
         }
         return null;
     }
 
-    async execute(findUserDto: FindUserDto): Promise<Response> {
+    async execute(userDto: UserDto): Promise<Response> {
         try {
-            const user = await this.getUserByEachUseCase(findUserDto);
-            if (user) {
-                return right(Result.ok(user));
+            const user = UserMap.toDomain(userDto);
+            const foundUser = await this.getUserByEachUseCase(user);
+            if (foundUser) {
+                const resultUserDto = UserMap.fromDomain(foundUser);
+                return right(Result.ok(resultUserDto));
             }
             return left(new GetUserErrors.UserNotFound()) as Response;
         } catch (err) {

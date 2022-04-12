@@ -1,26 +1,23 @@
-/* eslint-disable prettier/prettier */
 import { Inject, Injectable, Response } from '@nestjs/common';
-import Axios from 'axios';
-import * as moment from 'moment';
+import * as _ from 'lodash';
 
+import { MAX_VIEWCHART_LENGTH } from '../../../../../common/constants/chart';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { MomentService } from '../../../../../providers/moment.service';
-import { InputGetOverviewChartDto } from '../../../infra/dtos/overviewChart/inputGetOverviewChart.dto';
+import { SenteService } from '../../../../../shared/services/sente.service';
+import { PlannedWorkload } from '../../../../ogeek/domain/plannedWorkload';
+import { OverViewChartMap } from '../../../../ogeek/mappers/overViewChartMap';
 import { OverviewChartDataDto } from '../../../infra/dtos/overviewChart/overviewChartData.dto';
-import { WorkloadOverviewDto } from '../../../infra/dtos/overviewChart/workloadOverview.dto';
-import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
-import { ExpertiseScopeMap } from '../../../mappers/expertiseScopeMap';
-import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IExpertiseScopeRepo } from '../../../repos/expertiseScopeRepo';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
 import { IUserRepo } from '../../../repos/userRepo';
 import { GetOverviewChartDataErrors } from './GetOverviewChartDataErrors';
-
 type Response = Either<
-    AppError.UnexpectedError | GetOverviewChartDataErrors.GetOverviewChartDataFailed,
+    | AppError.UnexpectedError
+    | GetOverviewChartDataErrors.GetOverviewChartDataFailed,
     Result<OverviewChartDataDto[]>
 >;
 
@@ -29,7 +26,9 @@ interface ServerResponse {
 }
 
 @Injectable()
-export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewChartDto, Promise<Response>> {
+export class GetOverviewChartDataUseCase
+    implements IUseCase<number, Promise<Response>>
+{
     constructor(
         @Inject('IUserRepo')
         public readonly userRepo: IUserRepo,
@@ -42,100 +41,102 @@ export class GetOverviewChartDataUseCase implements IUseCase<InputGetOverviewCha
 
         @Inject('ICommittedWorkloadRepo')
         public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
-    ) { }
 
-    async execute(input: InputGetOverviewChartDto): Promise<Response> {
+        public readonly senteService: SenteService,
+    ) {}
+
+    getArrayWeekChart(startWeekChart: number) {
+        return [...Array(MAX_VIEWCHART_LENGTH).keys()].map(
+            (item) => item + startWeekChart,
+        );
+    }
+
+    getTotalPlannedWorkloadByExp(plannedWorkloads: PlannedWorkload[]) {
+        const totalPlannedWorkloadsByExpArray = new Array<PlannedWorkload>();
+        const totalPlannedWorkloadsByExpObj = _.groupBy(
+            plannedWorkloads,
+            (plannedWorkload) => [
+                plannedWorkload.contributedValue.expertiseScope.id.toValue(),
+                plannedWorkload.startDate,
+            ],
+        );
+        _.forOwn(
+            totalPlannedWorkloadsByExpObj,
+            (totalPlannedWorkloadByExpObj) => {
+                const firstElementTotalPlannedWorkload = _.head(
+                    totalPlannedWorkloadByExpObj,
+                );
+                const totalPlannedWl = _.reduce(
+                    totalPlannedWorkloadByExpObj,
+                    (sum, current) => sum + current.props.plannedWorkload,
+                    0,
+                );
+                if (firstElementTotalPlannedWorkload) {
+                    firstElementTotalPlannedWorkload.plannedWorkload =
+                        totalPlannedWl;
+                    totalPlannedWorkloadsByExpArray.push(
+                        firstElementTotalPlannedWorkload,
+                    );
+                }
+            },
+        );
+        return totalPlannedWorkloadsByExpArray;
+    }
+
+    async execute(week: number, member: number): Promise<Response> {
         try {
             // get date week
-            const user = await this.userRepo.findById(input.userId);
+            const user = await this.userRepo.findById(member);
 
-            const startDateInWeek = new Date(MomentService.firstDateOfWeek(input.week));
-            const startWeekChart = MomentService.shiftFirstWeekChart(user.createdAt);
-            const endWeekChart = MomentService.shiftLastWeekChart(startWeekChart);
+            const startWeekChart = MomentService.shiftFirstWeekChart(
+                user.createdAt,
+            );
+            const endWeekChart =
+                MomentService.shiftLastWeekChart(startWeekChart);
+            const startDate = new Date(MomentService.firstDateOfWeek(week));
+            const endDate = new Date(
+                MomentService.lastDateOfWeek(endWeekChart),
+            );
+            const weekChartArray = this.getArrayWeekChart(startWeekChart);
             // get data from database
             const expertiseScopes = await this.expertiseScopeRepo.findAll();
 
-            const plannedWorkloads = await this.plannedWorkloadRepo.findByIdWithTimeRange(input.userId, startDateInWeek);
-            const committedWorkloads = await this.committedWorkloadRepo.findByUserIdInTimeRange(input.userId, startDateInWeek);
-            // fetch data of workload from database and push to dto
-            const plannedWorkloadDtos = PlannedWorkloadMap.fromDomainAll(plannedWorkloads);
-            const committedWorkloadDtos = CommittedWorkloadMap.fromDomainAll(committedWorkloads);
-            const expertiseScopeDtos = ExpertiseScopeMap.fromDomainAll(expertiseScopes);
-            const overviewChartDataDtos = new Array<OverviewChartDataDto>();
+            const plannedWorkloads =
+                await this.plannedWorkloadRepo.findByIdWithTimeRange(
+                    member,
+                    startDate,
+                    endDate,
+                );
 
-            const numOfTwelvePrecedingWeeks = 12;
-            const numOfWeekInChart = 18;
-            expertiseScopeDtos.forEach((expertiseScope) => {
-                const id = Number(expertiseScope.id.toString());
+            const totalPlannedWorkloadsByExpArray =
+                this.getTotalPlannedWorkloadByExp(plannedWorkloads);
+            const committedWorkloads =
+                await this.committedWorkloadRepo.findByUserIdInTimeRange(
+                    member,
+                    startDate,
+                );
 
-                const contributedValue = Array<WorkloadOverviewDto>();
-                // for (const plannedWorkloadDto of plannedWorkloadDtos)
-                plannedWorkloadDtos.forEach((plannedWorkloadDto) => {
-                    const week = moment(plannedWorkloadDto.startDate).week();
-                    const exId = Number(plannedWorkloadDto.contributedValue?.expertiseScope?.id?.toString());
-                    if (exId === id) {
-                        contributedValue.push({
-                            week,
-                            plannedWorkload: plannedWorkloadDto.plannedWorkload,
-                            actualWorkload: 0,
-                        } as WorkloadOverviewDto);
-                    }
-                });
-                if (contributedValue.length !== 0) {
-                    overviewChartDataDtos.push({
-                        expertiseScopes: contributedValue,
-                        expertiseScope: expertiseScope.name,
-                        expertiseScopeId: Number(expertiseScope.id),
-                        worklogLength: input.week - moment(user.createdAt).week() >= numOfTwelvePrecedingWeeks
-                        || input.week - moment(user.createdAt).week() < 0 ?
-                                        numOfTwelvePrecedingWeeks : input.week - moment(user.createdAt).week(),
-                        actualPlannedWorkloadLength: numOfWeekInChart - (input.week - moment(user.createdAt).week() >= numOfTwelvePrecedingWeeks
-                        || input.week - moment(user.createdAt).week() < 0 ?
-                                        numOfTwelvePrecedingWeeks : input.week - moment(user.createdAt).week()),
-                    } as OverviewChartDataDto);
-                }
-            });
-            committedWorkloadDtos.forEach(committedWL => {
-                if (!overviewChartDataDtos.find(item => item.expertiseScopeId === Number(committedWL.contributedValue.expertiseScope.id.toString())))
-                    {overviewChartDataDtos.push({
-                        expertiseScopes: [],
-                        expertiseScope: committedWL.contributedValue?.expertiseScope?.name,
-                        expertiseScopeId: Number(committedWL.contributedValue?.expertiseScope?.id),
-                        worklogLength: 0,
-                        actualPlannedWorkloadLength: numOfWeekInChart,
-                    } as OverviewChartDataDto); }
-            });
+            const overviewChartDataDtos = OverViewChartMap.combineAllToDto(
+                expertiseScopes,
+                committedWorkloads,
+                totalPlannedWorkloadsByExpArray,
+                weekChartArray,
+            );
 
-            overviewChartDataDtos.forEach(overviewChartDataDto => {
-                for (let week = startWeekChart; week <= endWeekChart; week++) {
-                    if (!overviewChartDataDto.expertiseScopes.find(item => item.week === week)) {
-                        overviewChartDataDto.expertiseScopes.push({
-                            week,
-                            plannedWorkload: committedWorkloadDtos.find(
-                                committedWorkloadDto =>
-                                    Number(committedWorkloadDto.contributedValue.expertiseScope.id.toString())
-                                    ===
-                                    overviewChartDataDto.expertiseScopeId).committedWorkload,
-                            actualWorkload: 0,
-                        });
-                    }
-                }
-                overviewChartDataDto.expertiseScopes.sort((a, b) => a.week - b.week);
-            });
-            const url = `${process.env.MOCK_URL}/api/overview/actual-workload?userId=${input.userId.toString()}`;
-            const request = await Axios.post<ServerResponse>(url, overviewChartDataDtos, {
-                headers: {
-                    'x-api-key': process.env.MOCK_API_KEY,
-                },
-            });
+            const request =
+                await this.senteService.getActualWorkload<ServerResponse>(
+                    overviewChartDataDtos,
+                    member,
+                );
             const worklogs = request.data.data;
             if (overviewChartDataDtos) {
                 return right(Result.ok(worklogs));
             }
             return left(
-                new GetOverviewChartDataErrors.GetOverviewChartDataFailed(input.userId),
+                new GetOverviewChartDataErrors.GetOverviewChartDataFailed(
+                    member,
+                ),
             ) as Response;
-
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
         }

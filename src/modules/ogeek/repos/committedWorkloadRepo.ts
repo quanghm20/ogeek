@@ -475,7 +475,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     CommittedWorkloadStatus.NOT_RENEW,
                 user: userId,
                 startDate: LessThan(endDateOfWeek),
-                endDate: MoreThan(startDateOfWeek),
+                expiredDate: MoreThan(startDateOfWeek),
             },
             relations: [
                 'contributedValue',
