@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, getConnection, Repository } from 'typeorm';
+import { Between, Equal, getConnection, Repository } from 'typeorm';
 
 import { IssueStatus } from '../../../common/constants/issueStatus';
 import { DomainId } from '../domain/domainId';
 import { Issue } from '../domain/issue';
 import { UserEntity } from '../infra/database/entities';
 import { IssueEntity } from '../infra/database/entities/issue.entity';
+import { InputPotentialIssueDto } from '../infra/dtos/getPotentialIssue/inputPotentialIssue.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { IssueMap } from '../mappers/issueMap';
 
@@ -24,6 +25,10 @@ export interface IIssueRepo {
         endDateOfWeek: string,
         userId: number,
     ): Promise<Issue>;
+    findByUserIdAndWeek({
+        userId,
+        firstDateOfWeek,
+    }: InputPotentialIssueDto): Promise<Issue>;
     update(condition: any, update: any): Promise<void>;
     createMany(entities: IssueEntity[]): Promise<Issue[]>;
 }
@@ -78,6 +83,20 @@ export class IssueRepository implements IIssueRepo {
             relations: ['user'],
         });
 
+        return entity ? IssueMap.toDomain(entity) : null;
+    }
+
+    async findByUserIdAndWeek({
+        userId,
+        firstDateOfWeek,
+    }: InputPotentialIssueDto): Promise<Issue> {
+        const entity = await this.repo.findOne({
+            where: {
+                user: { id: userId },
+                dateOfWeek: Equal(firstDateOfWeek),
+            },
+            relations: ['user'],
+        });
         return entity ? IssueMap.toDomain(entity) : null;
     }
 

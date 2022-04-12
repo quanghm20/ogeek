@@ -2,6 +2,7 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { Issue } from '../domain/issue';
 import { IssueEntity } from '../infra/database/entities/issue.entity';
+import { PotentialIssueDto } from '../infra/dtos/getPotentialIssue/getPotentialIssue.dto';
 import { IssueDto } from '../infra/dtos/issue.dto';
 import { UserMap } from './userMap';
 
@@ -10,8 +11,18 @@ export class IssueMap implements Mapper<Issue> {
         return {
             id: issue.id,
             status: issue.status,
+            dateOfWeek: issue.dateOfWeek,
             note: issue.note,
             user: issue.user,
+        };
+    }
+    public static fromDomainOne(issue: Issue): PotentialIssueDto {
+        return {
+            userId: Number(issue.user.id),
+            status: issue.status,
+            note: issue.note,
+            dateOfWeek: issue.dateOfWeek,
+            createdAt: issue.createdAt,
         };
     }
 
@@ -29,6 +40,7 @@ export class IssueMap implements Mapper<Issue> {
             {
                 status: raw.status,
                 note: raw.note,
+                dateOfWeek: raw.dateOfWeek,
                 user: UserMap.toDomain(raw.user),
                 updatedBy: raw.updatedBy,
                 createdBy: raw.createdBy,
@@ -37,6 +49,23 @@ export class IssueMap implements Mapper<Issue> {
         );
 
         return issueOrError.isSuccess ? issueOrError.getValue() : null;
+    }
+
+    public static toDomainOne(raw: IssueEntity): Issue {
+        const { id } = raw;
+        const potentialIssueOrError = Issue.create(
+            {
+                user: UserMap.toDomain(raw.user),
+                status: raw.status,
+                note: raw.note,
+                dateOfWeek: raw.dateOfWeek,
+                createdAt: raw.createdAt,
+            },
+            new UniqueEntityID(id),
+        );
+        return potentialIssueOrError.isSuccess
+            ? potentialIssueOrError.getValue()
+            : null;
     }
 
     public static toDomainAll(issues: IssueEntity[]): Issue[] {

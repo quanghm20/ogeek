@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsDate, IsNotEmpty, IsOptional } from 'class-validator';
 
 import { IssueStatus } from '../../../../common/constants/issueStatus';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
@@ -16,6 +16,10 @@ export class IssueDto {
     @ApiProperty({ type: () => UserDto })
     @IsOptional()
     user?: UserDto;
+
+    @ApiProperty()
+    @IsDate()
+    dateOfWeek: Date;
 
     @ApiProperty()
     @IsOptional()
