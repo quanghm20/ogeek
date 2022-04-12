@@ -31,7 +31,7 @@ import { InputPotentialIssueDto } from '../../../infra/dtos/getPotentialIssue/in
 import { GetPotentialIssueErrors } from './GetPotentialIssueErrors';
 import { GetPotentialIssueUseCase } from './GetPotentialIssueUseCases';
 
-@Controller('api/user/potential-issue')
+@Controller('api/admin/user/potential-issue')
 @ApiTags('User')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)

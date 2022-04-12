@@ -463,6 +463,20 @@ VALUES
                 ( 1, 3, 2, 24, '2022-05-14 00:00:00', 'PLANNING', 'create planned workload w20', 1, '2022-04-17 18:02:01');
             `,
         );
+        await queryRunner.query(
+            `INSERT INTO
+                issue (
+                    user_id,
+                    status,
+                    note,
+                    first_date_of_week,
+                    created_at,
+                    created_by
+                )
+            VALUES
+                ( 1, 'POTENTIAL ISSUE', 'Just a note from PP Ops', '2022-04-02 16:12:01', '2022-04-08 16:12:01', 3);
+            `,
+        );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
