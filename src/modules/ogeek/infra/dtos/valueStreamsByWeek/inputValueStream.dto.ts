@@ -1,10 +1,13 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsInt, IsNotEmpty, Max, Min } from 'class-validator';
+
 export class InputValueStreamByWeekDto {
-    userId?: number;
-
-    week?: number;
-
-    constructor(userId: number, week: number) {
-        this.userId = userId;
-        this.week = week > 52 || week < 1 ? 1 : week;
-    }
+    @Type(() => Number)
+    @ApiProperty()
+    @IsInt()
+    @Min(1, { message: 'week must bigger than 1' })
+    @Max(52, { message: 'Week must less than 52' })
+    @IsNotEmpty({ message: 'You need to attach week to request' })
+    week: number;
 }

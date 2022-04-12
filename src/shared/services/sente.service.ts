@@ -105,7 +105,7 @@ export class SenteService {
 
     async getActualWorkload<T>(
         overviewChartDataDtos: OverviewChartDataDto[],
-        userId: string,
+        userId: number,
     ): Promise<AxiosResponse<T>> {
         const endpoint = `/overview/actual-workload?userId=${userId}`;
         return this._getData<T>(endpoint, overviewChartDataDtos, 'post');
@@ -138,10 +138,15 @@ export class SenteService {
     }
 
     async getOverviewValueStreamCard<T>(
-        week: string,
-        userId: string,
+        week: number,
+        userId: number,
     ): Promise<AxiosResponse<T>> {
         const endpoint = `/overview/value-stream?userid=${userId}&week=${week}`;
+        return this._getData<T>(endpoint);
+    }
+
+    async getUser<T>(alias: string) {
+        const endpoint = `/overview/user-info?alias=${alias}`;
         return this._getData<T>(endpoint);
     }
 }

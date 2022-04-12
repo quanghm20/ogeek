@@ -12,4 +12,12 @@ export namespace FailToCreateUserErrors {
             } as UseCaseError);
         }
     }
+
+    export class UserNotFound extends Result<UseCaseError> {
+        constructor(message?: string) {
+            super(false, {
+                message: message ? message : ' User is not found in Sente',
+            } as UseCaseError);
+        }
+    }
 }

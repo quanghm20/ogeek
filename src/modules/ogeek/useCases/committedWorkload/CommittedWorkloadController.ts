@@ -21,17 +21,17 @@ import {
     ApiCreatedResponse,
     ApiForbiddenResponse,
     ApiInternalServerErrorResponse,
+    ApiNotFoundResponse,
     ApiOkResponse,
     ApiProperty,
     ApiPropertyOptional,
     ApiTags,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsInt, IsOptional } from 'class-validator';
 import { Request } from 'express';
 
 import { RoleType } from '../../../../common/constants/roleType';
+import { PageMetaDto } from '../../../../common/dto/PageMetaDto';
 import { Roles } from '../../../../decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
@@ -39,6 +39,7 @@ import { CreateCommittedWorkloadDto } from '../../infra/dtos/createCommittedWork
 import { CommittedWorkloadShortDto } from '../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
 import { CreateCommittedWorkloadErrors } from './createCommittedWorkload/CreateCommittedWorkloadErrors';
 import { CreateCommittedWorkloadUseCase } from './createCommittedWorkload/CreateCommittedWorkloadUseCase';
+import { FilterCommittedWorkload } from './FilterCommittedWorkload';
 import { GetCommittedWorkloadErrors } from './getCommittedWorkload/GetCommittedWorkloadErrors';
 import { GetCommittedWorkloadUseCase } from './getCommittedWorkload/GetCommittedWorkloadsUseCase';
 import { GetHistoryCommittedWorkloadUseCase } from './getHistoryCommittedWorkload/GetCommittedWorkloadsUseCase';
@@ -49,19 +50,15 @@ export class DataCommittedWorkload {
         isArray: true,
     })
     data: CommittedWorkloadShortDto[];
-    constructor(data: CommittedWorkloadShortDto[]) {
+
+    @ApiPropertyOptional()
+    meta?: PageMetaDto;
+
+    constructor(data: CommittedWorkloadShortDto[], meta?: PageMetaDto) {
         this.data = data;
+        this.meta = meta;
     }
 }
-export class FilterCommittedWorkload {
-    @ApiProperty()
-    @ApiPropertyOptional()
-    @Type(() => Number)
-    @IsOptional()
-    @IsInt()
-    userId?: number;
-}
-
 @Controller('api/committed-workloads')
 @ApiTags('Committed Workload')
 @ApiBearerAuth()
@@ -76,9 +73,9 @@ export class CommittedWorkloadController {
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @Roles(RoleType.PP)
+    @UseGuards(JwtAuthGuard)
     @ApiCreatedResponse({
         type: DataCommittedWorkload,
-        description: 'Created',
     })
     @ApiUnauthorizedResponse({
         description: 'Unauthorized',
@@ -86,11 +83,20 @@ export class CommittedWorkloadController {
     @ApiForbiddenResponse({
         description: 'Forbidden',
     })
+    @ApiNotFoundResponse({
+        description: 'Could not find User :userId .',
+    })
+    @ApiBadRequestResponse({
+        description: 'StartDate or ExpiredDate is not valid !',
+    })
+    @ApiBadRequestResponse({
+        description: 'This user existing committed workload upcoming!',
+    })
     @ApiBadRequestResponse({
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     @UsePipes(new ValidationPipe({ transform: true }))
     async execute(
@@ -125,13 +131,21 @@ export class CommittedWorkloadController {
     @Roles(RoleType.PP)
     @ApiOkResponse({
         type: DataCommittedWorkload,
-        description: 'OK',
     })
     @ApiUnauthorizedResponse({
         description: 'Unauthorized',
     })
     @ApiForbiddenResponse({
         description: 'Forbidden',
+    })
+    @ApiNotFoundResponse({
+        description: 'Could not find User :userId .',
+    })
+    @ApiBadRequestResponse({
+        description: 'StartDate or ExpiredDate is not valid !',
+    })
+    @ApiBadRequestResponse({
+        description: 'This user has existing upcoming committed workload.',
     })
     @ApiBadRequestResponse({
         description: 'Bad Request',
@@ -157,6 +171,7 @@ export class CommittedWorkloadController {
                     throw new InternalServerErrorException(error.errorValue());
             }
         }
-        return new DataCommittedWorkload(result.value.getValue());
+
+        return result.value.getValue();
     }
 }

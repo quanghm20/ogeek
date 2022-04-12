@@ -21,7 +21,6 @@ import * as moment from 'moment';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { InputGetOverviewChartDto } from '../../../infra/dtos/overviewChart/inputGetOverviewChart.dto';
 import { OverviewChartDataDto } from '../../../infra/dtos/overviewChart/overviewChartData.dto';
 import { GetOverviewChartDataErrors } from './GetOverviewChartDataErrors';
 import { GetOverviewChartDataUseCase } from './GetOverviewChartDataUseCase';
@@ -50,8 +49,8 @@ export class OverviewChartDataController {
     async execute(@Req() req: Request): Promise<OverviewChartDataDto[]> {
         const currentWeek = moment(new Date()).week();
         const { userId } = req.user as JwtPayload;
-        const query = new InputGetOverviewChartDto(userId, currentWeek);
-        const result = await this.useCase.execute(query);
+
+        const result = await this.useCase.execute(currentWeek, userId);
         if (result.isLeft()) {
             const error = result.value;
 
