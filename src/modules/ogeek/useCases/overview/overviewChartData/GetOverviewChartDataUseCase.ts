@@ -1,7 +1,7 @@
 import { Inject, Injectable, Response } from '@nestjs/common';
 import * as _ from 'lodash';
 
-import { MAXVIEWCHARTLENGTH } from '../../../../../common/constants/chart';
+import { MAX_VIEWCHART_LENGTH } from '../../../../../common/constants/chart';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
@@ -46,7 +46,7 @@ export class GetOverviewChartDataUseCase
     ) {}
 
     getArrayWeekChart(startWeekChart: number) {
-        return [...Array(MAXVIEWCHARTLENGTH).keys()].map(
+        return [...Array(MAX_VIEWCHART_LENGTH).keys()].map(
             (item) => item + startWeekChart,
         );
     }

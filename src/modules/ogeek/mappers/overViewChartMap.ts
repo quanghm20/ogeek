@@ -1,4 +1,4 @@
-import { MAXVIEWCHARTLENGTH } from '../../../common/constants/chart';
+import { MAX_VIEWCHART_LENGTH } from '../../../common/constants/chart';
 import { ASSIGNNUMBER } from '../../../common/constants/number';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { ExpertiseScope } from '../domain/expertiseScope';
@@ -54,7 +54,7 @@ export class OverViewChartMap {
                     expertiseScopeId,
                     expertiseScopes: contributedValue,
                     expertiseScope: expertiseScope.name,
-                    worklogLength: MAXVIEWCHARTLENGTH - myPlannedLength,
+                    worklogLength: MAX_VIEWCHART_LENGTH - myPlannedLength,
                     actualPlannedWorkloadLength: myPlannedLength,
                 } as OverviewChartDataDto);
             }
