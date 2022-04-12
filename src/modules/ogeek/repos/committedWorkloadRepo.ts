@@ -15,6 +15,9 @@ import {
 import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
 import { Order } from '../../../common/constants/order';
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
+import { SortBy } from '../../../common/constants/sortBy';
+import { PageMetaDto } from '../../../common/dto/PageMetaDto';
+import { PageOptionsDto } from '../../../common/dto/PageOptionsDto';
 import { MomentService } from '../../../providers/moment.service';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
@@ -25,8 +28,19 @@ import { ContributedValueEntity } from '../infra/database/entities/contributedVa
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
-import { FilterCommittedWorkload } from '../useCases/committedWorkload/CommittedWorkloadController';
+import { FilterCommittedWorkload } from '../useCases/committedWorkload/FilterCommittedWorkload';
 import { IPlannedWorkloadRepo } from './plannedWorkloadRepo';
+
+export class PaginationCommittedWorkload {
+    meta?: PageMetaDto;
+
+    data?: CommittedWorkload[];
+    constructor(meta: PageMetaDto, data: CommittedWorkload[]) {
+        this.meta = meta;
+
+        this.data = data;
+    }
+}
 
 export interface ICommittedWorkloadRepo {
     findAllByWeek({
@@ -55,9 +69,9 @@ export interface ICommittedWorkloadRepo {
     findByUserIdOverview(
         userId: DomainId | number,
     ): Promise<CommittedWorkload[]>;
-    findCommittedWorkloadActiveOrIncoming(
+    findAllCommittedWorkload(
         query?: FilterCommittedWorkload,
-    ): Promise<CommittedWorkload[]>;
+    ): Promise<PaginationCommittedWorkload>;
     findAllExpertiseScope(userId: number, startDate: string): Promise<number[]>;
     findByValueStreamAndExpertiseScope(
         valueStreamId: number,
@@ -294,16 +308,24 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
     }
 
-    async findCommittedWorkloadActiveOrIncoming(
+    async findAllCommittedWorkload(
         query?: FilterCommittedWorkload,
-    ): Promise<CommittedWorkload[]> {
+    ): Promise<PaginationCommittedWorkload> {
         try {
+            if (!query.order) {
+                query.order = Order.ASC;
+            }
+            if (!query.sortBy) {
+                query.sortBy = SortBy.ID;
+            }
+            if (!query.page) {
+                query.page = 1;
+            }
+            if (!query.take) {
+                query.take = 10;
+            }
             const queryBuilder = this.repo
                 .createQueryBuilder('commit')
-                .where('commit.status = :active OR commit.status = :incoming', {
-                    active: CommittedWorkloadStatus.ACTIVE,
-                    incoming: CommittedWorkloadStatus.INCOMING,
-                })
                 .leftJoinAndSelect(
                     'commit.contributedValue',
                     'contributedValue',
@@ -316,16 +338,33 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     'contributedValue.valueStream',
                     'valueStream',
                 )
-                .leftJoinAndSelect('commit.user', 'user');
+                .leftJoinAndSelect('commit.user', 'user')
+                .orderBy(`commit.${query.sortBy}`, query.order)
+                .skip(query.skip)
+                .take(query.take);
 
             if (query.userId) {
-                queryBuilder.where('commit.user.id = :userId', {
+                queryBuilder.andWhere('commit.user.id = :userId', {
                     userId: query.userId,
+                });
+            }
+            if (query.status) {
+                queryBuilder.andWhere('commit.status = :status', {
+                    status: query.status.toUpperCase(),
                 });
             }
 
             const entities = await queryBuilder.getMany();
-            return entities ? CommittedWorkloadMap.toDomainAll(entities) : null;
+            const itemCount = await queryBuilder.getCount();
+
+            const pageOptionsDto = new PageOptionsDto(
+                query.order,
+                query.page,
+                query.take,
+            );
+            const meta = new PageMetaDto({ pageOptionsDto, itemCount });
+            const data = CommittedWorkloadMap.toDomainAll(entities);
+            return new PaginationCommittedWorkload(meta, data);
         } catch (error) {
             return null;
         }
@@ -449,7 +488,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     CommittedWorkloadStatus.NOT_RENEW,
                 user: userId,
                 startDate: LessThan(endDateOfWeek),
-                endDate: MoreThan(startDateOfWeek),
+                expiredDate: MoreThan(startDateOfWeek),
             },
             relations: [
                 'contributedValue',

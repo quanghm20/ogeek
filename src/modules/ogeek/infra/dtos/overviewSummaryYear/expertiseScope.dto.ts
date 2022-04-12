@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-
-import { ExpertiseScopeShortDto } from './expertiseScopeShort.dto';
-
 export class ExpertiseScopeDto {
-    @ApiProperty({ type: ExpertiseScopeShortDto })
-    expertiseScope: ExpertiseScopeShortDto;
+    @ApiProperty({ example: 1 })
+    id: number;
+
+    @ApiProperty({ example: 'Delivery' })
+    name: string;
 
     @ApiProperty({ example: '1000' })
     committedWorkload: number;
@@ -19,13 +19,15 @@ export class ExpertiseScopeDto {
     workLog: number;
 
     constructor(
-        expertiseScope?: ExpertiseScopeShortDto,
+        id?: number,
+        name?: string,
         committedWorkload?: number,
         plannedWorkload?: number,
         actualPlan?: number,
         workLog?: number,
     ) {
-        this.expertiseScope = expertiseScope;
+        this.id = id;
+        this.name = name;
         this.committedWorkload = committedWorkload;
         this.plannedWorkload = plannedWorkload;
         this.actualPlan = actualPlan;

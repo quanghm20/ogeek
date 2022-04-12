@@ -89,22 +89,26 @@ export class PlanWorkloadUseCase
         newPlannedWorkloadStatus = activePlannedWorkloads[0].status;
 
         // update old planned workloads' status to ARCHIVED
-        await this.plannedWorkloadRepo.updateMany(
-          {
-            user: { id: userId },
-            startDate: Equal(formattedStartDate.toISOString()),
-          },
-          {
-            status: PlannedWorkloadStatus.ARCHIVE,
-          },
-        );
+        const currentWeekPlannedWorkloads = await this.plannedWorkloadRepo.find({
+          user: { id: userId },
+          startDate: Equal(formattedStartDate.toISOString()),
+        });
+
+        const currentWeekPlannedWorkloadEntites = currentWeekPlannedWorkloads.map(plannedWL => {
+          plannedWL.deactive(userId);
+          return PlannedWorkloadMap.toEntity(plannedWL);
+        });
+
+        await this.plannedWorkloadRepo.updateMany(currentWeekPlannedWorkloadEntites);
       }
 
       // create planned workload based on createPlannedWorkloadDtos
       for (const plannedWorkloadDto of plannedWorkloads) {
         const { contributedValueId, committedWorkloadId, workload } = plannedWorkloadDto;
+
         const committedWorkload = await this.committedWorkloadRepo.findById(committedWorkloadId);
         const contributedValue = await this.contributedValueloadRepo.findById(contributedValueId);
+
         const plannedWorkload = PlannedWorkload.create(
           {
             reason,
@@ -114,6 +118,7 @@ export class PlanWorkloadUseCase
             startDate: new Date(formattedStartDate.toISOString()),
             plannedWorkload: workload,
             status: newPlannedWorkloadStatus,
+            createdBy: userId,
           },
           new UniqueEntityID(uuidv4()),
         );

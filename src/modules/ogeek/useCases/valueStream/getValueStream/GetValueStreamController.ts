@@ -25,7 +25,7 @@ import { GetValueStreamError } from './GetValueStreamErrors';
 import { GetValueStreamUseCase } from './GetValueStreamUseCase';
 
 @Controller('api/value-stream')
-@ApiTags('Value Stream Card')
+@ApiTags('Value Stream')
 export class GetValueStreamController {
     constructor(public readonly useCase: GetValueStreamUseCase) {}
 
@@ -47,11 +47,11 @@ export class GetValueStreamController {
     })
     async execute(
         @Req() req: Request,
-        @Query('week') week: number,
+        @Query() { week }: InputValueStreamByWeekDto,
     ): Promise<ValueStreamsByWeekDto> {
         const { userId } = req.user as JwtPayload;
-        const inputValueStream = new InputValueStreamByWeekDto(userId, week);
-        const result = await this.useCase.execute(inputValueStream);
+
+        const result = await this.useCase.execute(week, userId);
         if (result.isLeft()) {
             const error = result.value;
 

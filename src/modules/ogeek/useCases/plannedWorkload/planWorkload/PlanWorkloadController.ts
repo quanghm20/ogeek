@@ -5,7 +5,6 @@ import {
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
-    NotFoundException,
     Post,
     Req,
     UseGuards,
@@ -24,6 +23,7 @@ import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkload/createPlannedWorkloadsList.dto';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
+import { MessageDto } from '../../../infra/dtos/message.dto';
 import { PlanWorkloadErrors } from './PlanWorkloadErrors';
 import { PlanWorkloadUseCase } from './PlanWorkloadUseCase';
 
@@ -52,7 +52,8 @@ export class PlanWorkloadController {
     async execute(
         @Req() req: Request,
         @Body() createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
-    ): Promise<CreatePlannedWorkloadsListDto> {
+        // ): Promise<CreatePlannedWorkloadsListDto> {
+    ): Promise<MessageDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
         const userId = findUserDto.userId;
@@ -72,7 +73,7 @@ export class PlanWorkloadController {
                         'Failed to validate input',
                     );
                 case PlanWorkloadErrors.PlanWorkloadFailed:
-                    throw new NotFoundException(
+                    throw new BadRequestException(
                         error.errorValue(),
                         'Failed to plan workload',
                     );
@@ -84,6 +85,11 @@ export class PlanWorkloadController {
             }
         }
 
-        return createPlannedWorkloadsListDto;
+        // return createPlannedWorkloadsListDto;
+        return {
+            statusCode: HttpStatus.CREATED,
+            message: 'Plan workload successfully',
+            data: createPlannedWorkloadsListDto,
+        } as MessageDto;
     }
 }
