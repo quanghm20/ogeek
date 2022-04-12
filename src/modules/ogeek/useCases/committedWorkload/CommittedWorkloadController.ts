@@ -41,7 +41,6 @@ import { CommittedWorkloadShortDto } from '../../infra/dtos/getCommittedWorkload
 import { CreateCommittedWorkloadErrors } from './createCommittedWorkload/CreateCommittedWorkloadErrors';
 import { CreateCommittedWorkloadUseCase } from './createCommittedWorkload/CreateCommittedWorkloadUseCase';
 import { FilterCommittedWorkload } from './FilterCommittedWorkload';
-import { GetCommittedWorkloadErrors } from './getCommittedWorkload/GetCommittedWorkloadErrors';
 import { GetCommittedWorkloadUseCase } from './getCommittedWorkload/GetCommittedWorkloadsUseCase';
 import { GetHistoryCommittedWorkloadUseCase } from './getHistoryCommittedWorkload/GetCommittedWorkloadsUseCase';
 import { UpdateCommittedWorkloadUseCase } from './updateCommittedWorkload/UpdateCommittedWorkloadUseCase';
@@ -168,8 +167,6 @@ export class CommittedWorkloadController {
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {
-                case GetCommittedWorkloadErrors.NotFound:
-                    throw new NotFoundException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(error.errorValue());
             }

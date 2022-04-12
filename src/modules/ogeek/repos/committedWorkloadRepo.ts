@@ -361,6 +361,11 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     status: query.status.toUpperCase(),
                 });
             }
+            if (query.search) {
+                queryBuilder.andWhere('user.alias like :alias', {
+                    alias: `%${query.search}%`,
+                });
+            }
 
             const entities = await queryBuilder.getMany();
             const itemCount = await queryBuilder.getCount();
