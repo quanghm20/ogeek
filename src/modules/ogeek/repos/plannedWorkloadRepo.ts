@@ -5,13 +5,12 @@ import {
     Connection,
     FindManyOptions,
     getConnection,
-    LessThanOrEqual,
+    LessThan,
     Not,
     Repository,
 } from 'typeorm';
 
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
-import { MomentService } from '../../../providers/moment.service';
 import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
@@ -34,6 +33,7 @@ export interface IPlannedWorkloadRepo {
     findByIdWithTimeRange(
         userId: DomainId | number,
         startDate: Date,
+        endDate: Date,
     ): Promise<PlannedWorkload[]>;
     findByUserId({
         userId,
@@ -74,7 +74,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             where: {
                 user: { id: userId },
                 startDate: Between(startDateOfYear, endDateOfYear),
-                status: Not(PlannedWorkloadStatus.ARCHIVE),
+                status: Not(PlannedWorkloadStatus.ARCHIVE.toString()),
             },
             relations: [
                 'contributedValue',
@@ -137,12 +137,12 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
         endDateOfWeek,
         userId,
     }: InputGetPlanWLDto): Promise<PlannedWorkload[]> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entities = await this.repo.find({
             where: {
-                status: Not(PlannedWorkloadStatus.ARCHIVE),
-                user: {
-                    id: Number(userId),
-                },
+                status: Not(PlannedWorkloadStatus.ARCHIVE.toString()),
+                user: userId,
                 startDate: Between(startDateOfWeek, endDateOfWeek),
             },
             relations: [
@@ -163,16 +163,18 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
         startDateOfWeek,
         userId,
     }: InputGetPlanWLDto): Promise<PlannedWorkload> {
-        const entitie = await this.repo.findOne({
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        const entity = await this.repo.findOne({
             where: {
                 status:
                     PlannedWorkloadStatus.PLANNING ||
                     PlannedWorkloadStatus.EXECUTING,
                 user: userId,
-                endDate: LessThanOrEqual(startDateOfWeek),
+                startDate: LessThan(startDateOfWeek),
             },
         });
-        return entitie ? PlannedWorkloadMap.toDomain(entitie) : null;
+        return entity ? PlannedWorkloadMap.toDomain(entity) : null;
     }
 
     async find(condition: any): Promise<PlannedWorkload[]> {
@@ -214,30 +216,24 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     async findByIdWithTimeRange(
         userId: DomainId | number,
         startDate: Date,
+        endDate: Date,
     ): Promise<PlannedWorkload[]> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entities = await this.repo.find({
             where: {
-                user: {
-                    id: Number(userId),
-                },
-                startDate: Between(
-                    MomentService.shiftFirstDateChart(startDate),
-                    MomentService.shiftLastDateChart(startDate),
-                ),
-                status: Not(PlannedWorkloadStatus.ARCHIVE),
+                user: userId,
+                startDate: Between(startDate, endDate),
+                status: Not(PlannedWorkloadStatus.ARCHIVE.toString()),
             },
+
             relations: [
                 'contributedValue',
                 'contributedValue.expertiseScope',
-                'contributedValue.valueStream',
                 'committedWorkload',
-                'committedWorkload.contributedValue',
-                'committedWorkload.contributedValue.expertiseScope',
-                'committedWorkload.contributedValue.valueStream',
-                'user',
-                'committedWorkload.user',
             ],
         });
+
         return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;
     }
 
@@ -264,7 +260,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }: StartEndDateOfWeekWLInputDto): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
-                status: Not(PlannedWorkloadStatus.ARCHIVE),
+                status: Not(PlannedWorkloadStatus.ARCHIVE.toString()),
                 startDate: Between(startDateOfWeek, endDateOfWeek),
             },
             relations: [

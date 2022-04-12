@@ -15,18 +15,21 @@ import {
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
+import { RoleType } from '../../../../../common/constants/roleType';
+import { Roles } from '../../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { DataUserShortDto } from '../../../infra/dtos/getUsers/getUsersDto';
 import { GetUserErrors } from './GetUsersErrors';
 import { GetUsersUseCase } from './GetUsersUseCase';
 
-@ApiTags('Users')
-@Controller('api/users')
+@ApiTags('User')
+@Controller('api/admin/user')
 export class GetUsersController {
     constructor(public readonly useCase: GetUsersUseCase) {}
 
-    @UseGuards(RolesGuard, JwtAuthGuard)
+    @Roles(RoleType.PP)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
     @Get()
     @ApiOkResponse({

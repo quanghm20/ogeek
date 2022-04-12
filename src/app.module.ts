@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { contextMiddleware } from './middlewares';
+import { HeaderApiKeyAuthModule } from './modules/headerApiKeyAuth/headerApiKeyAuth.module';
 import { JwtAuthModule } from './modules/jwtAuth/jwtAuth.module';
 import { OauthModule } from './modules/oauth/oauth.module';
 import { OGeekModule } from './modules/ogeek/ogeek.module';
@@ -13,6 +14,7 @@ import { SharedModule } from './shared/shared.module';
         JwtAuthModule,
         OGeekModule,
         OauthModule,
+        HeaderApiKeyAuthModule,
         TypeOrmModule.forRootAsync({
             imports: [SharedModule],
             useFactory: (configService: ConfigService) =>

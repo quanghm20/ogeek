@@ -25,7 +25,7 @@ import { GetContributedValueErrors } from './GetContributedValueErrors';
 import { GetContributedValueUseCase } from './GetContributedValueUseCase';
 
 @Controller('api/contributed-values')
-@ApiTags('Contributed Value Workload ')
+@ApiTags('Contributed Value')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class GetContributedValueController {
