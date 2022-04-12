@@ -67,7 +67,7 @@ export interface ICommittedWorkloadRepo {
     ): Promise<CommittedWorkload[]>;
     findByUserId(
         userId: DomainId | number,
-        status?: CommittedWorkloadStatus,
+        status: CommittedWorkloadStatus,
     ): Promise<CommittedWorkload[]>;
     findByUserIdOverview(
         userId: DomainId | number,
@@ -106,13 +106,11 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     ) {}
     async findByUserId(
         userId: DomainId | number,
-        status?: CommittedWorkloadStatus,
+        status: CommittedWorkloadStatus = CommittedWorkloadStatus.ACTIVE,
     ): Promise<CommittedWorkload[]> {
         userId =
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
-        if (!status) {
-            status = CommittedWorkloadStatus.ACTIVE;
-        }
+
         const entities = await this.repo.find({
             where: {
                 status,
