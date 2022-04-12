@@ -5,3 +5,4 @@ export { PlannedWorkloadRepository } from './plannedWorkloadRepo';
 export { ValueStreamRepository } from './valueStreamRepo';
 export { UserRepository } from './userRepo';
 export { IssueRepository } from './issueRepo';
+export { NotificationRepository } from './notificationRepo';

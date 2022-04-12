@@ -42,7 +42,7 @@ export class GetUserController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async execute(@Req() req: Request): Promise<UserDto> {
         const jwtPayload = req.user as JwtPayload;
