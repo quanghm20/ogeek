@@ -16,7 +16,6 @@ import { CommittedWorkloadStatus } from '../../../common/constants/committedStat
 import { Order } from '../../../common/constants/order';
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { PageMetaDto } from '../../../common/dto/PageMetaDto';
-import { PageOptionsDto } from '../../../common/dto/PageOptionsDto';
 import { MomentService } from '../../../providers/moment.service';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
@@ -355,11 +354,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             const entities = await queryBuilder.getMany();
             const itemCount = await queryBuilder.getCount();
 
-            const pageOptionsDto = new PageOptionsDto();
-            pageOptionsDto.order = query.order;
-            pageOptionsDto.page = query.page;
-            pageOptionsDto.take = query.take;
-            const meta = new PageMetaDto({ pageOptionsDto, itemCount });
+            const meta = new PageMetaDto(query, itemCount);
             const data = CommittedWorkloadMap.toDomainAll(entities);
             return new PaginationCommittedWorkload(meta, data);
         } catch (error) {

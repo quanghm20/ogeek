@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { FilterCommittedWorkload } from '../../modules/ogeek/useCases/committedWorkload/FilterCommittedWorkload';
 import { PageOptionsDto } from './PageOptionsDto';
 
-interface IPageMetaDtoParameters {
-    pageOptionsDto: PageOptionsDto;
-    itemCount: number;
-}
+// interface IPageMetaDtoParameters {
+//     pageOptionsDto: PageOptionsDto | FilterCommittedWorkload;
+//     itemCount: number;
+// }
 
 export class PageMetaDto {
     @ApiProperty()
@@ -26,7 +27,10 @@ export class PageMetaDto {
     @ApiProperty()
     hasNextPage: boolean;
 
-    constructor({ pageOptionsDto, itemCount }: IPageMetaDtoParameters) {
+    constructor(
+        pageOptionsDto: PageOptionsDto | FilterCommittedWorkload,
+        itemCount: number,
+    ) {
         this.page = pageOptionsDto.page;
         this.take = pageOptionsDto.take;
         this.itemCount = itemCount;
