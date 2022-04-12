@@ -31,6 +31,7 @@ import {
 } from './useCases/committedWorkload';
 import { CronCommittedWorkload } from './useCases/committedWorkload/cronCommittedWorkload.service';
 import { CommittedWorkloadCreatedListener } from './useCases/committedWorkload/listeners/CommittedWorkloadListeners';
+import { UpdateCommittedWorkloadUseCase } from './useCases/committedWorkload/updateCommittedWorkload/UpdateCommittedWorkloadUseCase';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,
@@ -133,6 +134,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         ReviewRetroUseCase,
         CronCommittedWorkload,
         CommittedWorkloadCreatedListener,
+        UpdateCommittedWorkloadUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

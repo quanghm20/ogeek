@@ -24,7 +24,7 @@ import { GetUserErrors } from './GetUsersErrors';
 import { GetUsersUseCase } from './GetUsersUseCase';
 
 @ApiTags('User')
-@Controller('api/admin/user')
+@Controller('api/admin/users')
 export class GetUsersController {
     constructor(public readonly useCase: GetUsersUseCase) {}
 
@@ -46,7 +46,7 @@ export class GetUsersController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async execute(): Promise<DataUserShortDto> {
         const result = await this.useCase.execute();

@@ -32,6 +32,37 @@ export class CommittedWorkloadCreatedListener {
         for (const oldCommit of committedEvent.oldCommittedWorkloads) {
             let plans = await this.plannedWorkloadRepo.findByCommittedId(
                 oldCommit.id.toValue(),
+                committedEvent.startDate,
+            );
+
+            if (plans) {
+                plans = oldCommit.autoArchivePlannedWorkload(
+                    committedEvent.startDate,
+                    plans,
+                );
+                const plannedEntities = PlannedWorkloadMap.toEntities(plans);
+
+                await this.plannedWorkloadRepo.createMany(plannedEntities);
+            }
+        }
+    }
+
+    @OnEvent('committed-workload.updated')
+    async handleCommittedWorkloadUpdatedEvent(
+        committedEvent: CommittedWorkloadCreatedEvent,
+    ): Promise<void> {
+        for (const commit of committedEvent.committedWorkloads) {
+            const plannedDomain = commit.autoGeneratePlanned();
+
+            const plannedEntities =
+                PlannedWorkloadMap.toEntities(plannedDomain);
+            await this.plannedWorkloadRepo.createMany(plannedEntities);
+        }
+
+        for (const oldCommit of committedEvent.oldCommittedWorkloads) {
+            let plans = await this.plannedWorkloadRepo.findByCommittedId(
+                oldCommit.id.toValue(),
+                committedEvent.startDate,
             );
 
             if (plans) {
