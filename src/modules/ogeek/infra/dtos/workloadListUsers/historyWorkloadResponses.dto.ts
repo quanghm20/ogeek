@@ -5,10 +5,10 @@ import { PaginationResponseDto } from '../pagination.dto';
 import { HistoryWorkloadDto } from './historyWorkload.dto';
 
 export class HistoryWorkloadResponseDto {
-    @ApiProperty()
-    pagination: PaginationResponseDto;
+    @ApiProperty({ type: PaginationResponseDto })
+    meta: PaginationResponseDto;
 
-    @ApiProperty()
+    @ApiProperty({ type: HistoryWorkloadDto })
     @IsArray()
     data: HistoryWorkloadDto[];
 }

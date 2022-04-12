@@ -31,7 +31,7 @@ export class HistoryWorkloadDto {
     @Type(() => Number)
     committedWorkload: number;
 
-    @ApiProperty()
+    @ApiProperty({ type: HistoryActualWorkloadDto })
     @IsArray()
     actualWorkloads?: HistoryActualWorkloadDto[];
 }

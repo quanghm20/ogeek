@@ -99,7 +99,7 @@ export class GetWorkloadListsUseCase
             });
 
             const userWorkloadsResponse = {
-                pagination: paginationResponse,
+                meta: paginationResponse,
                 data: userWorkloads,
             } as HistoryWorkloadResponseDto;
 

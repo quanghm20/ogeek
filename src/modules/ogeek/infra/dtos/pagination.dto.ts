@@ -47,19 +47,19 @@ export class PaginationRepoDto {
 }
 
 export class PaginationResponseDto {
-    @ApiProperty()
+    @ApiProperty({ example: 25 })
     @IsNumber()
     itemCount: number;
 
-    @ApiProperty()
+    @ApiProperty({ example: 3 })
     @IsNumber()
     pageCount: number;
 
-    @ApiProperty()
+    @ApiProperty({ example: 1 })
     @IsNumber()
     page: number;
 
-    @ApiProperty()
+    @ApiProperty({ example: 10 })
     @IsNumber()
     take: number;
 
