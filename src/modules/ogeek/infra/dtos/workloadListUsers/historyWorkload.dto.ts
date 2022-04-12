@@ -29,7 +29,7 @@ export class HistoryWorkloadDto {
     @ApiProperty({ example: 40 })
     @IsNumber()
     @Type(() => Number)
-    committedWorkload: number;
+    committed: number;
 
     @ApiProperty({ type: HistoryActualWorkloadDto })
     @IsArray()

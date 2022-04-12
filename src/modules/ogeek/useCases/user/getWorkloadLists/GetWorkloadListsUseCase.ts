@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 
+import { historyWorkloads } from '../../../../../common/constants/history';
 import { Order } from '../../../../../common/constants/order';
 import { RoleType } from '../../../../../common/constants/roleType';
 import { IUseCase } from '../../../../../core/domain/UseCase';
@@ -50,15 +51,15 @@ export class GetWorkloadListsUseCase
             const response = request.data.data;
 
             const allowSortColumnArray = [
-                'user.alias',
-                'user.id',
-                'issue.note',
-                'issue.status',
+                'alias',
+                'id',
+                'note',
+                'status',
                 'committed',
             ];
 
             const sortDefault = {
-                'issue.status': Order.ASC,
+                status: Order.ASC,
             };
 
             const pagination = PaginationService.pagination(
@@ -69,7 +70,7 @@ export class GetWorkloadListsUseCase
 
             const week = MomentService.getCurrentWeek();
             const firstDateOfThreeWeekAgo = MomentService.firstDateOfWeek(
-                week - 3,
+                week - historyWorkloads.WORKLOAD_IN_THREE_WEEK,
             );
             const endDateOfCurrentWeek = MomentService.lastDateOfWeek(week);
 
@@ -92,7 +93,13 @@ export class GetWorkloadListsUseCase
                     if (workloadItem.userId === res.userId) {
                         return {
                             ...workloadItem,
-                            actualWorkloads: res.actualWorkloads,
+                            committed: Number(workloadItem.committed),
+                            actualWorkloads: res.actualWorkloads.map(
+                                (actual) => ({
+                                    ...actual,
+                                    week: week + actual.week,
+                                }),
+                            ),
                         };
                     }
                 }
