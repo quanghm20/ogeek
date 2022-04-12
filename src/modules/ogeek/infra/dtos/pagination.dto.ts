@@ -26,6 +26,18 @@ export class PaginationDto {
     @IsOptional()
     @Type(() => Number)
     take?: number;
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    q?: string;
+}
+
+export class SearcnPaginationDto extends PaginationDto {
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    search?: string;
 }
 
 export class PaginationRepoDto {

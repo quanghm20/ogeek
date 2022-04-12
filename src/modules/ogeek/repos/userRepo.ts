@@ -22,6 +22,7 @@ export interface IUserRepo {
         pagination: PaginationRepoDto,
         firstDateOfWeek: Date,
         endDateOfCurrentWeek: Date,
+        search?: string,
     ): Promise<HistoryWorkloadDataDto>;
 }
 
@@ -74,6 +75,7 @@ export class UserRepository implements IUserRepo {
         pagination: PaginationRepoDto,
         firstDateOfWeek: Date,
         endDateOfCurrentWeek: Date,
+        search?: string,
     ): Promise<HistoryWorkloadDataDto> {
         const subQuery = this.issueRepo
             .createQueryBuilder('issue')
@@ -108,7 +110,13 @@ export class UserRepository implements IUserRepo {
             .addSelect(
                 'SUM("committed_workload"."committed_workload")',
                 'committed',
-            )
+            );
+
+        if (search) {
+            historyWorkloads.where(`alias ILIKE '%${search}%'`);
+        }
+
+        historyWorkloads
             .addSelect(['issue.note', 'issue.status'])
             .groupBy('user.id')
             .addGroupBy('user.alias')

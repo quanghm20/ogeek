@@ -78,12 +78,13 @@ export class GetWorkloadListsUseCase
                 pagination,
                 firstDateOfThreeWeekAgo,
                 endDateOfCurrentWeek,
+                query.q,
             );
 
             const listUserWorkloadData = listUserWorkloads.data;
 
             const paginationResponse = new PaginationResponseDto(
-                pagination.page + 1,
+                query.page,
                 pagination.limit,
                 listUserWorkloads.itemCount,
             );
