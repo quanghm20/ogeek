@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
+import { CommittedWorkloadStatus } from '../../../../../common/constants/committedStatus';
 import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
@@ -147,6 +148,7 @@ export class CreateCommittedWorkloadUseCase
     ): Promise<CommittedWorkload[]> {
         const oldCommits = await this.committedWorkloadRepo.findByUserId(
             userId,
+            CommittedWorkloadStatus.ACTIVE,
         );
         for await (const oldCommit of oldCommits) {
             oldCommit.handleExpiredDateOldCommittedWorkload(startDate);
