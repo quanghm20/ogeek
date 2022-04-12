@@ -3,14 +3,14 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
-import { CommittedWorkloadShortDto } from '../../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
 import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
-import { FilterCommittedWorkload } from '../CommittedWorkloadController';
+import { DataCommittedWorkload } from '../CommittedWorkloadController';
+import { FilterCommittedWorkload } from '../FilterCommittedWorkload';
 import { GetCommittedWorkloadErrors } from './GetCommittedWorkloadErrors';
 type Response = Either<
     AppError.UnexpectedError | GetCommittedWorkloadErrors.NotFound,
-    Result<CommittedWorkloadShortDto[]>
+    Result<DataCommittedWorkload>
 >;
 
 @Injectable()
@@ -24,17 +24,21 @@ export class GetCommittedWorkloadUseCase
     async execute(query: FilterCommittedWorkload): Promise<Response> {
         try {
             const committedWorkloadsDomain =
-                await this.committedWorkloadRepo.findCommittedWorkloadActiveOrIncoming(
+                await this.committedWorkloadRepo.findAllCommittedWorkload(
                     query,
                 );
-            if (committedWorkloadsDomain.length <= 0) {
+            if (committedWorkloadsDomain.meta.itemCount <= 0) {
                 return left(new GetCommittedWorkloadErrors.NotFound());
             }
             const committedWorkloadsDto =
                 CommittedWorkloadMap.fromCommittedWorkloadShortArray(
-                    committedWorkloadsDomain,
+                    committedWorkloadsDomain.data,
                 );
-            return right(Result.ok(committedWorkloadsDto));
+            const data = new DataCommittedWorkload(
+                committedWorkloadsDto,
+                committedWorkloadsDomain.meta,
+            );
+            return right(Result.ok(data));
         } catch (err) {
             return left(err);
         }
