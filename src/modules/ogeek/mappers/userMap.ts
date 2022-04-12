@@ -42,6 +42,7 @@ export class UserMap implements Mapper<User> {
                 role: raw.role,
                 avatar: raw.avatar,
                 createdAt: raw.createdAt,
+                updatedAt: raw.updatedAt,
             },
             id ? new UniqueEntityID(id.toString()) : new UniqueEntityID(),
         );
@@ -83,14 +84,18 @@ export class UserMap implements Mapper<User> {
 
     public static toEntity(user: User): UserEntity {
         const userEntity = new UserEntity();
-        if (user) {
-            userEntity.id = Number(user.id.toString());
-            userEntity.alias = user.alias;
-            userEntity.phone = user.phone;
-            userEntity.email = user.email;
-            userEntity.name = user.name;
-            userEntity.role = user.role;
-        }
+        userEntity.id = Number(user.id.toString());
+        userEntity.alias = user.alias;
+        userEntity.phone = user.phone;
+        userEntity.email = user.email;
+        userEntity.name = user.name;
+        userEntity.role = user.role;
+        userEntity.createdAt = user.createdAt;
+        userEntity.createdBy = user.createdBy;
+        userEntity.updatedAt = user.updatedAt;
+        userEntity.updatedBy = user.updatedBy;
+        userEntity.deletedAt = user.deletedAt;
+        userEntity.deletedBy = user.deletedBy;
 
         return userEntity;
     }

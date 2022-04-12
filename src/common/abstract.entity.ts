@@ -17,13 +17,13 @@ export abstract class AbstractEntity {
         type: 'timestamp with time zone',
         name: 'created_at',
     })
-    createdAt?: Date;
+    createdAt: Date;
 
     @UpdateDateColumn({
         type: 'timestamp with time zone',
         name: 'updated_at',
     })
-    updatedAt?: Date;
+    updatedAt: Date;
 
     @DeleteDateColumn({
         type: 'timestamp with time zone',

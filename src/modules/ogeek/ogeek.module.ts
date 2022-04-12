@@ -1,4 +1,5 @@
 import { HttpModule, Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -27,6 +28,7 @@ import {
     GetHistoryCommittedWorkloadUseCase,
 } from './useCases/committedWorkload';
 import { CronCommittedWorkload } from './useCases/committedWorkload/cronCommittedWorkload.service';
+import { CommittedWorkloadCreatedListener } from './useCases/committedWorkload/listeners/CommittedWorkloadListeners';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,
@@ -45,6 +47,10 @@ import {
     PlanWorkloadController,
     PlanWorkloadUseCase,
 } from './useCases/plannedWorkload/planWorkload';
+import {
+    ReviewRetroController,
+    ReviewRetroUseCase,
+} from './useCases/plannedWorkload/reviewRetro';
 import {
     StartWeekController,
     StartWeekUseCase,
@@ -74,6 +80,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             ValueStreamEntity,
         ]),
         ScheduleModule.forRoot(),
+        EventEmitterModule.forRoot(),
     ],
     controllers: [
         CommittedWorkloadController,
@@ -91,6 +98,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         CreateIssueController,
         StartWeekController,
         CreateUserController,
+        ReviewRetroController,
     ],
     providers: [
         CreateUserUseCase,
@@ -111,7 +119,9 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         CreateIssueUseCase,
         GetCommittedWorkloadUseCase,
         GetHistoryCommittedWorkloadUseCase,
+        ReviewRetroUseCase,
         CronCommittedWorkload,
+        CommittedWorkloadCreatedListener,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

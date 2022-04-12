@@ -7,7 +7,15 @@ import {
     NotFoundException,
     UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiOkResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
 import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
@@ -17,7 +25,7 @@ import { GetContributedValueErrors } from './GetContributedValueErrors';
 import { GetContributedValueUseCase } from './GetContributedValueUseCase';
 
 @Controller('api/contributed-values')
-@ApiTags('Contributed Value Workload ')
+@ApiTags('Contributed Value')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class GetContributedValueController {
@@ -28,7 +36,19 @@ export class GetContributedValueController {
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: GetContributedValueShortDto,
-        description: 'Get all data contributed value',
+        description: 'OK',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiForbiddenResponse({
+        description: 'Forbidden',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async getContributed(): Promise<GetContributedValueShortDto> {
         const result = await this.useCase.execute();

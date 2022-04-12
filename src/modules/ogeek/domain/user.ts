@@ -20,7 +20,7 @@ interface IUserProps {
     deletedAt?: Date;
 }
 export class User extends AggregateRoot<IUserProps> {
-    private constructor(props?: IUserProps, id?: UniqueEntityID) {
+    private constructor(props: IUserProps, id?: UniqueEntityID) {
         super(props, id);
     }
     get userId(): DomainId {
@@ -67,7 +67,21 @@ export class User extends AggregateRoot<IUserProps> {
     get createdAt(): Date {
         return this.props.createdAt;
     }
-
+    get updatedAt(): Date {
+        return this.props.updatedAt;
+    }
+    get deletedAt(): Date {
+        return this.props.deletedAt;
+    }
+    get deletedBy(): number {
+        return this.props.deletedBy;
+    }
+    get createdBy(): number {
+        return this.props.createdBy;
+    }
+    get updatedBy(): number {
+        return this.props.updatedBy;
+    }
     public isPeopleOps(): boolean {
         return this.props.role === RoleType.PP;
     }

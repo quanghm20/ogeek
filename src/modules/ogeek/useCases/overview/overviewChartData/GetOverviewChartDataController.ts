@@ -11,8 +11,10 @@ import {
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
+    ApiInternalServerErrorResponse,
     ApiOkResponse,
     ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import * as moment from 'moment';
@@ -33,10 +35,16 @@ export class OverviewChartDataController {
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: OverviewChartDataDto,
-        description: 'Data for overview chart',
+        description: 'OK',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
     })
     @ApiBadRequestResponse({
-        description: 'No data to retrieve',
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async execute(@Req() req: Request): Promise<OverviewChartDataDto[]> {
         const currentWeek = moment(new Date()).week();

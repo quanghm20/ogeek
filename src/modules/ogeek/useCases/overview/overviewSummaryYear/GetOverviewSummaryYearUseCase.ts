@@ -21,7 +21,7 @@ import { IValueStreamRepo } from '../../../repos/valueStreamRepo';
 import { GetOverviewSummaryYearErrors } from './GetOverviewSummaryYearErrors';
 
 type Response = Either<
-    AppError.UnexpectedError | GetOverviewSummaryYearErrors.NotFound,
+    AppError.UnexpectedError | GetOverviewSummaryYearErrors.FailToGetOverviewSummaryYear,
     Result<DataResponseDto>
 >;
 
@@ -37,7 +37,6 @@ export class GetOverviewSummaryYearUseCase
 
     async execute(userId: DomainId | number): Promise<Response> {
         try {
-
             const startDateYear = moment().startOf('year').format('YYYY-MM-DD');
             const startDateOfYear = moment(startDateYear, 'YYYY-MM-DD').startOf('week').format('YYYY-MM-DD');
 
@@ -110,7 +109,7 @@ export class GetOverviewSummaryYearUseCase
             }
 
             return left(
-                    new GetOverviewSummaryYearErrors.NotFound(),
+                    new GetOverviewSummaryYearErrors.FailToGetOverviewSummaryYear(),
                 ) as Response;
         } catch (err) {
             return left(new AppError.UnexpectedError(err));

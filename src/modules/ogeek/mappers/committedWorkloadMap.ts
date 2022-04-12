@@ -1,3 +1,5 @@
+import { InternalServerErrorException } from '@nestjs/common';
+
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { CommittedWorkload } from '../domain/committedWorkload';
@@ -52,6 +54,7 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             ? committedWorkloadOrError.getValue()
             : null;
     }
+
     public static toEntity(
         committedWorkload: CommittedWorkload,
     ): CommittedWorkloadEntity {
@@ -61,9 +64,9 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             const contributedValue = ContributedValueMap.toEntity(
                 committedWorkload.contributedValue,
             );
-            const id = Number(
-                committedWorkload.committedWorkloadId.id.toValue(),
-            );
+            const id =
+                Number(committedWorkload.committedWorkloadId?.id?.toValue()) ||
+                null;
             const entity = new CommittedWorkloadEntity(
                 id,
                 user,
@@ -75,9 +78,26 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             entity.contributedValue = ContributedValueMap.toEntity(
                 committedWorkload.contributedValue,
             );
+            entity.status = committedWorkload.status;
+
+            entity.createdAt = committedWorkload.createdAt;
+            entity.createdBy = committedWorkload.createdBy;
+            entity.updatedAt = committedWorkload.updatedAt;
+            entity.updatedBy = committedWorkload.updatedBy;
+            entity.deletedAt = committedWorkload.deletedAt;
+            entity.deletedBy = committedWorkload.deletedBy;
+
             return entity;
         }
-        return new CommittedWorkloadEntity();
+    }
+    public static toEntities(
+        committedWorkload: CommittedWorkload[],
+    ): CommittedWorkloadEntity[] {
+        const committedEntities = new Array<CommittedWorkloadEntity>();
+        for (const commit of committedWorkload) {
+            committedEntities.push(this.toEntity(commit));
+        }
+        return committedEntities;
     }
 
     public static fromDomainAll(
@@ -95,35 +115,36 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     public static toDomain(
         committedWLEntity: CommittedWorkloadEntity,
     ): CommittedWorkload {
-        if (!committedWLEntity) {
-            return null;
-        }
-        const { id } = committedWLEntity;
-        const committedWorkloadOrError = CommittedWorkload.create(
-            {
-                committedWorkload: committedWLEntity.committedWorkload,
-                startDate: committedWLEntity.startDate,
-                expiredDate: committedWLEntity.expiredDate,
-                status: committedWLEntity.status,
-                createdAt: committedWLEntity.createdAt,
-                updatedAt: committedWLEntity.updatedAt,
-                contributedValue: committedWLEntity.contributedValue
-                    ? ContributedValueMap.toDomain(
-                          committedWLEntity.contributedValue,
-                      )
-                    : null,
-                user: committedWLEntity.user
-                    ? UserMap.toDomain(committedWLEntity.user)
-                    : null,
-                createdBy: committedWLEntity.createdBy,
-                updatedBy: committedWLEntity.updatedBy,
-            },
-            new UniqueEntityID(id),
-        );
+        try {
+            const { id } = committedWLEntity;
+            const committedWorkloadOrError = CommittedWorkload.create(
+                {
+                    committedWorkload: committedWLEntity.committedWorkload,
+                    startDate: committedWLEntity.startDate,
+                    expiredDate: committedWLEntity.expiredDate,
+                    status: committedWLEntity.status,
+                    contributedValue: committedWLEntity.contributedValue
+                        ? ContributedValueMap.toDomain(
+                              committedWLEntity.contributedValue,
+                          )
+                        : null,
+                    user: committedWLEntity.user
+                        ? UserMap.toDomain(committedWLEntity.user)
+                        : null,
+                    createdBy: committedWLEntity.createdBy,
+                    updatedBy: committedWLEntity.updatedBy,
+                    createdAt: committedWLEntity.createdAt,
+                    updatedAt: committedWLEntity.updatedAt,
+                },
+                new UniqueEntityID(id),
+            );
 
-        return committedWorkloadOrError.isSuccess
-            ? committedWorkloadOrError.getValue()
-            : null;
+            return committedWorkloadOrError.isSuccess
+                ? committedWorkloadOrError.getValue()
+                : null;
+        } catch (err) {
+            throw new InternalServerErrorException(err);
+        }
     }
 
     public static toDomainAll(
@@ -160,8 +181,9 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     public static fromCommittedWorkloadShort(
         committedDomain: CommittedWorkload,
     ): CommittedWorkloadShortDto {
-        const committed = new CommittedWorkloadShortDto();
-        if (committedDomain) {
+        try {
+            const committed = new CommittedWorkloadShortDto();
+            committed.id = Number(committedDomain.id.toString());
             committed.user = UserMap.fromUserShort(committedDomain.user);
             committed.expertiseScope = ExpertiseScopeMap.fromDomainShort(
                 committedDomain.contributedValue.expertiseScope,
@@ -174,8 +196,11 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
             committed.expiredDate = committedDomain.expiredDate;
             committed.status = committedDomain.status;
             committed.createdAt = committedDomain.createdAt;
+
+            return committed;
+        } catch (error) {
+            return null;
         }
-        return committed;
     }
 
     public static fromCommittedWorkloadShortArray(

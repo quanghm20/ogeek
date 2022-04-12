@@ -8,7 +8,14 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiInternalServerErrorResponse,
+    ApiOkResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
@@ -20,16 +27,25 @@ import { GetOverviewSummaryYearUseCase } from './GetOverviewSummaryYearUseCase';
 @Controller('api/overview/summary')
 @ApiTags('Overview')
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 export class GetOverviewSummaryYearController {
     constructor(public readonly useCase: GetOverviewSummaryYearUseCase) {}
 
-    @UseGuards(JwtAuthGuard)
     @Get()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: DataResponseDto,
         isArray: true,
-        description: 'Get overview summary year',
+        description: 'OK',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async getOverviewSummaryYear(
         @Req() req: Request,
@@ -40,7 +56,7 @@ export class GetOverviewSummaryYearController {
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {
-                case GetOverviewSummaryYearErrors.NotFound:
+                case GetOverviewSummaryYearErrors.FailToGetOverviewSummaryYear:
                     throw new NotFoundException(error.errorValue());
 
                 default:

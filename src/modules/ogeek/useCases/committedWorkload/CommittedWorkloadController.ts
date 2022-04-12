@@ -16,23 +16,30 @@ import {
     ValidationPipe,
 } from '@nestjs/common';
 import {
+    ApiBadRequestResponse,
     ApiBearerAuth,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiNotFoundResponse,
     ApiOkResponse,
     ApiProperty,
     ApiPropertyOptional,
     ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { RoleType } from '../../../../common/constants/roleType';
+import { PageMetaDto } from '../../../../common/dto/PageMetaDto';
 import { Roles } from '../../../../decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
 import { CreateCommittedWorkloadDto } from '../../infra/dtos/createCommittedWorkload.dto';
 import { CommittedWorkloadShortDto } from '../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
-import { MessageDto } from '../../infra/dtos/message.dto';
 import { CreateCommittedWorkloadErrors } from './createCommittedWorkload/CreateCommittedWorkloadErrors';
 import { CreateCommittedWorkloadUseCase } from './createCommittedWorkload/CreateCommittedWorkloadUseCase';
+import { FilterCommittedWorkload } from './FilterCommittedWorkload';
 import { GetCommittedWorkloadErrors } from './getCommittedWorkload/GetCommittedWorkloadErrors';
 import { GetCommittedWorkloadUseCase } from './getCommittedWorkload/GetCommittedWorkloadsUseCase';
 import { GetHistoryCommittedWorkloadUseCase } from './getHistoryCommittedWorkload/GetCommittedWorkloadsUseCase';
@@ -43,19 +50,15 @@ export class DataCommittedWorkload {
         isArray: true,
     })
     data: CommittedWorkloadShortDto[];
-    constructor(data: CommittedWorkloadShortDto[]) {
-        this.data = data;
-    }
-}
-export class FilterCommittedWorkload {
-    @ApiProperty()
-    @ApiPropertyOptional()
-    userId?: number;
-    constructor(userId?: number) {
-        this.userId = userId;
-    }
-}
 
+    @ApiPropertyOptional()
+    meta?: PageMetaDto;
+
+    constructor(data: CommittedWorkloadShortDto[], meta?: PageMetaDto) {
+        this.data = data;
+        this.meta = meta;
+    }
+}
 @Controller('api/committed-workloads')
 @ApiTags('Committed Workload')
 @ApiBearerAuth()
@@ -68,21 +71,42 @@ export class CommittedWorkloadController {
     ) {}
 
     @Post()
-    @HttpCode(HttpStatus.OK)
+    @HttpCode(HttpStatus.CREATED)
     @Roles(RoleType.PP)
-    @ApiOkResponse({
+    @UseGuards(JwtAuthGuard)
+    @ApiCreatedResponse({
         type: DataCommittedWorkload,
-        description: 'Created committed workload',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiForbiddenResponse({
+        description: 'Forbidden',
+    })
+    @ApiNotFoundResponse({
+        description: 'Could not find User :userId .',
+    })
+    @ApiBadRequestResponse({
+        description: 'StartDate or ExpiredDate is not valid !',
+    })
+    @ApiBadRequestResponse({
+        description: 'This user existing committed workload upcoming!',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Internal Server Error',
     })
     @UsePipes(new ValidationPipe({ transform: true }))
     async execute(
         @Body() body: CreateCommittedWorkloadDto,
         @Req() req: Request,
-    ): Promise<MessageDto> {
-        const createdBy = req.user as JwtPayload;
+    ): Promise<DataCommittedWorkload> {
+        const createBy = req.user as JwtPayload;
         const result = await this.createCommitUseCase.execute(
             body,
-            createdBy.userId,
+            createBy.userId,
         );
         if (result.isLeft()) {
             const error = result.value;
@@ -93,14 +117,13 @@ export class CommittedWorkloadController {
                     throw new NotFoundException(error.errorValue());
                 case CreateCommittedWorkloadErrors.DateError:
                     throw new BadRequestException(error.errorValue());
+                case CreateCommittedWorkloadErrors.ExistCommittedWorkloadInComing:
+                    throw new BadRequestException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(error.errorValue());
             }
         }
-        return new MessageDto(
-            HttpStatus.CREATED,
-            'Created committed workload successfully !',
-        );
+        return new DataCommittedWorkload(result.value.getValue());
     }
 
     @Get()
@@ -108,7 +131,27 @@ export class CommittedWorkloadController {
     @Roles(RoleType.PP)
     @ApiOkResponse({
         type: DataCommittedWorkload,
-        description: 'Get all committed workload',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiForbiddenResponse({
+        description: 'Forbidden',
+    })
+    @ApiNotFoundResponse({
+        description: 'Could not find User :userId .',
+    })
+    @ApiBadRequestResponse({
+        description: 'StartDate or ExpiredDate is not valid !',
+    })
+    @ApiBadRequestResponse({
+        description: 'This user has existing upcoming committed workload.',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Internal Server Error',
     })
     @UsePipes(
         new ValidationPipe({
@@ -128,6 +171,7 @@ export class CommittedWorkloadController {
                     throw new InternalServerErrorException(error.errorValue());
             }
         }
-        return new DataCommittedWorkload(result.value.getValue());
+
+        return result.value.getValue();
     }
 }

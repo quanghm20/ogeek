@@ -48,6 +48,12 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     set committedWorkload(committedWorkload: CommittedWorkload) {
         this.props.committedWorkload = committedWorkload;
     }
+    set reason(reason: string) {
+        this.props.reason = reason;
+    }
+    get reason(): string {
+        return this.props.reason;
+    }
     get startDate(): Date {
         return this.props.startDate;
     }
@@ -71,9 +77,6 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     }
     get contributedValue(): ContributedValue {
         return this.props.contributedValue;
-    }
-    get reason(): string {
-        return this.props.reason;
     }
     get isClosed(): boolean {
         return this.props.status === PlannedWorkloadStatus.CLOSED;
@@ -121,9 +124,75 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
         );
     }
 
+    get createdBy(): number {
+        return this.props.createdBy;
+    }
+    set createdBy(createdBy: number) {
+        this.props.createdBy = createdBy;
+    }
+    get updatedBy(): number {
+        return this.props.updatedBy;
+    }
+    set updatedBy(updatedBy: number) {
+        this.props.updatedBy = updatedBy;
+    }
+    get deletedBy(): number {
+        return this.props.deletedBy;
+    }
+    set deletedBy(deletedBy: number) {
+        this.props.deletedBy = deletedBy;
+    }
+    get createdAt(): Date {
+        return this.props.createdAt;
+    }
+    set createdAt(createdAt: Date) {
+        this.props.createdAt = createdAt;
+    }
+    get updatedAt(): Date {
+        return this.props.updatedAt;
+    }
+    set updatedAt(updatedAt: Date) {
+        this.props.updatedAt = updatedAt;
+    }
+    get deletedAt(): Date {
+        return this.props.deletedAt;
+    }
+    set deletedAt(deletedAt: Date) {
+        this.props.deletedAt = deletedAt;
+    }
+    public closeWeek(userId: number): void {
+        if (this.status !== PlannedWorkloadStatus.EXECUTING) {
+            return;
+        }
+        this.status = PlannedWorkloadStatus.CLOSED;
+        this.props.updatedBy = userId;
+    }
+    public startWeek(userId: number): void {
+        if (this.status !== PlannedWorkloadStatus.PLANNING) {
+            return;
+        }
+        this.status = PlannedWorkloadStatus.EXECUTING;
+        this.updatedBy = userId;
+    }
+    public deactive(userId: number): void {
+        if (this.status === PlannedWorkloadStatus.ARCHIVE) {
+            return;
+        }
+        this.status = PlannedWorkloadStatus.ARCHIVE;
+        this.updatedBy = userId;
+    }
+    public setArchivePlannedWorkload(startDate: Date): void {
+        if (
+            this.startDate > startDate &&
+            this.status === PlannedWorkloadStatus.PLANNING
+        ) {
+            this.status = PlannedWorkloadStatus.ARCHIVE;
+            this.reason = `Auto update old planned workload after add committed ${this.committedWorkload.id.toValue()} `;
+        }
+    }
     public static create(
         props: IPlannedWorkloadProps,
-        id: UniqueEntityID,
+        id?: UniqueEntityID,
     ): Result<PlannedWorkload> {
         const propsResult = Guard.againstNullOrUndefinedBulk([]);
         if (!propsResult.succeeded) {

@@ -9,7 +9,14 @@ import {
     UsePipes,
     ValidationPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiInternalServerErrorResponse,
+    ApiOkResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { RoleType } from '../../../../../common/constants/roleType';
@@ -25,7 +32,7 @@ import { GetWorkloadListError } from './GetWorkloadListErrors';
 import { GetWorkloadListUseCase } from './GetWorkloadListUseCase';
 
 @Controller('api/admin/user/workloads')
-@ApiTags('List Workload Table')
+@ApiTags('Workloads')
 export class GetWorkloadListController {
     constructor(public readonly useCase: GetWorkloadListUseCase) {}
 
@@ -36,7 +43,16 @@ export class GetWorkloadListController {
     @UsePipes(new ValidationPipe({ transform: true }))
     @ApiOkResponse({
         type: WorkloadListByWeekDto,
-        description: 'Get all workload list of geeks in a week',
+        description: 'OK',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async execute(
         @Req() req: Request,
@@ -48,7 +64,6 @@ export class GetWorkloadListController {
         const result = await this.useCase.execute(input);
         if (result.isLeft()) {
             const error = result.value;
-
             switch (error.constructor) {
                 case GetWorkloadListError.WorkloadListNotFound:
                     throw new NotFoundException(

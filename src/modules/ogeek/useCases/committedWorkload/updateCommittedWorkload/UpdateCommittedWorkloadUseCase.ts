@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
 import { IUseCase } from '../../../../../core/domain/UseCase';
@@ -11,13 +10,13 @@ import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedW
 import { CommittedWorkloadShortDto } from '../../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
 import { WorkloadDto } from '../../../infra/dtos/workload.dto';
 import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
+import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
 import { UserMap } from '../../../mappers/userMap';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IContributedValueRepo } from '../../../repos/contributedValueRepo';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
 import { IUserRepo } from '../../../repos/userRepo';
-import { CommittedWorkloadCreatedEvent } from '../events/CommittedWorkloadEvent';
-import { CreateCommittedWorkloadErrors } from './CreateCommittedWorkloadErrors';
+import { CreateCommittedWorkloadErrors } from '../createCommittedWorkload/CreateCommittedWorkloadErrors';
 type Response = Either<
     | AppError.UnexpectedError
     | CreateCommittedWorkloadErrors.NotFound
@@ -37,8 +36,6 @@ export class CreateCommittedWorkloadUseCase
         public readonly contributedValueRepo: IContributedValueRepo,
         @Inject('IPlannedWorkloadRepo')
         public readonly plannedWorkloadRepo: IPlannedWorkloadRepo,
-
-        private _event: EventEmitter2,
     ) {}
     async execute(
         body: CreateCommittedWorkloadDto,
@@ -54,15 +51,15 @@ export class CreateCommittedWorkloadUseCase
             if (!user) {
                 return left(
                     new CreateCommittedWorkloadErrors.NotFound(
-                        member.toString(),
+                        userId.toString(),
                     ),
                 ) as Response;
             }
             if (startDate >= expiredDate) {
                 return left(new CreateCommittedWorkloadErrors.DateError());
             }
-            const isUpcoming = await this.checkCommittedInComing(userId);
-            if (isUpcoming) {
+            const isIncoming = await this.checkCommittedInComing(userId);
+            if (isIncoming) {
                 return left(
                     new CreateCommittedWorkloadErrors.ExistCommittedWorkloadInComing(),
                 );
@@ -96,12 +93,23 @@ export class CreateCommittedWorkloadUseCase
                     ),
                 );
             }
-            const dataEvent = new CommittedWorkloadCreatedEvent(
-                result,
-                oldCommitted,
-                startDate,
-            );
-            this._event.emit('committed-workload.created', dataEvent);
+            await this.autoGeneratePlanned(result);
+            for (const oldCommit of oldCommitted) {
+                let plans = await this.plannedWorkloadRepo.findByCommittedId(
+                    oldCommit.id.toValue(),
+                );
+
+                if (plans) {
+                    plans = oldCommit.autoArchivePlannedWorkload(
+                        startDate,
+                        plans,
+                    );
+                    const plannedEntities =
+                        PlannedWorkloadMap.toEntities(plans);
+
+                    await this.plannedWorkloadRepo.createMany(plannedEntities);
+                }
+            }
             const committedWorkloadsDto =
                 CommittedWorkloadMap.fromCommittedWorkloadShortArray(result);
             return right(Result.ok(committedWorkloadsDto));
@@ -154,9 +162,20 @@ export class CreateCommittedWorkloadUseCase
         return oldCommits;
     }
 
+    async autoGeneratePlanned(
+        committedWorkloads: CommittedWorkload[],
+    ): Promise<void> {
+        for await (const commit of committedWorkloads) {
+            const plannedDomain = commit.autoGeneratePlanned();
+
+            const plannedEntities =
+                PlannedWorkloadMap.toEntities(plannedDomain);
+            await this.plannedWorkloadRepo.createMany(plannedEntities);
+        }
+    }
     async checkCommittedInComing(userId: number): Promise<boolean> {
         const committed =
             await this.committedWorkloadRepo.findCommittedInComing(userId);
-        return committed ? committed.isComing() : false;
+        return committed.isComing();
     }
 }
