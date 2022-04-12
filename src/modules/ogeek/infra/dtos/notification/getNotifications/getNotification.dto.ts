@@ -5,6 +5,7 @@ export class NotificationDto {
     @ApiProperty({
         example: 1,
     })
+    @IsNotEmpty({ message: 'ERROR_EMPTY_ID_FIELD' })
     @IsNumber()
     id: number;
 

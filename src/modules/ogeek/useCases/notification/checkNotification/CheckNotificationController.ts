@@ -24,12 +24,12 @@ import { Request } from 'express';
 import { CheckNotificationDto } from '../../../..//ogeek/infra/dtos/notification/checkNotification/checkNotification.dto';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { NotificationDto } from '../../../../ogeek/infra/dtos/notification/getNotifications/notification.dto';
+import { NotificationDto } from '../../../infra/dtos/notification/getNotifications/getNotification.dto';
 import { CheckNotificationErrors } from './CheckNotificationErrors';
 import { CheckNotificationUseCase } from './CheckNotificationUseCase';
 
 @Controller('api/user/notification')
-@ApiTags('Users')
+@ApiTags('User')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class CheckNotificationController {
@@ -39,7 +39,7 @@ export class CheckNotificationController {
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: NotificationDto,
-        isArray: true,
+        isArray: false,
         description: 'OK',
     })
     @ApiUnauthorizedResponse({
@@ -73,6 +73,6 @@ export class CheckNotificationController {
                     throw new InternalServerErrorException(error.errorValue());
             }
         }
-        return result.value.getValue()[0];
+        return result.value.getValue();
     }
 }

@@ -22,12 +22,12 @@ import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { NotificationDto } from '../../../../ogeek/infra/dtos/notification/getNotifications/notification.dto';
+import { NotificationDto } from '../../../infra/dtos/notification/getNotifications/getNotification.dto';
 import { GetNotificationErrors } from './GetNotificationErrors';
 import { GetNotificationUseCase } from './GetNotificationUseCase';
 
 @Controller('api/user/notification')
-@ApiTags('Users')
+@ApiTags('User')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class GetNotificationController {

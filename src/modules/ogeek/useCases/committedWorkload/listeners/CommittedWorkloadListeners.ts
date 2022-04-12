@@ -4,7 +4,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { NotificationStatus } from '../../../../../common/constants/notificationStatus';
 import { SYSTEM } from '../../../../../common/constants/system';
 import { Notification } from '../../../../ogeek/domain/notification';
-import { NotificationMap } from '../../../../ogeek/mappers/notificationMap';
+import { NotificationMap } from '../../../mappers/notificationMap';
 import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
 import { INotificationRepo } from '../../../repos/notificationRepo';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
@@ -45,12 +45,12 @@ export class CommittedWorkloadCreatedListener {
             }
         }
 
-        const committedWorkload = committedEvent.committedWorkloads[0];
+        const committedWorkload = committedEvent.committedWorkloads.pop();
         const user = committedWorkload.user;
 
-        const message = `Admin has added ${committedWorkload.committedWorkload} hr(s) committed workload for you.`;
+        const notificationMessage = `Admin has added ${committedWorkload.committedWorkload} hr(s) committed workload for you.`;
         const notification = Notification.create({
-            message,
+            notificationMessage,
             user,
             read: NotificationStatus.UNREAD,
             createdBy: SYSTEM,

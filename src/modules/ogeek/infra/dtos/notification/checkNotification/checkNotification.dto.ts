@@ -6,8 +6,4 @@ export class CheckNotificationDto {
     @IsNotEmpty()
     @IsNumber()
     id: number;
-
-    // @ApiProperty({ example: new Date() })
-    // @MinDate(new Date())
-    // updatedAt?: Date;
 }

@@ -7,7 +7,7 @@ import { DomainId } from './domainId';
 import { User } from './user';
 
 interface INotificationProps {
-    message?: string;
+    notificationMessage?: string;
     read?: NotificationStatus;
     user?: User;
     createdBy?: number;
@@ -24,11 +24,11 @@ export class Notification extends AggregateRoot<INotificationProps> {
     get notificationId(): DomainId {
         return DomainId.create(this._id).getValue();
     }
-    get message(): string {
-        return this.props.message;
+    get notificationMessage(): string {
+        return this.props.notificationMessage;
     }
-    set message(message: string) {
-        this.props.message = message;
+    set notificationMessage(message: string) {
+        this.props.notificationMessage = message;
     }
     get read(): NotificationStatus {
         return this.props.read;

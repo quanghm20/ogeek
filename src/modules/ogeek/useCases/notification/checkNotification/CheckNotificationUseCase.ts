@@ -6,7 +6,7 @@ import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { CheckNotificationDto } from '../../../../ogeek/infra/dtos/notification/checkNotification/checkNotification.dto';
 import { NotificationMap } from '../../../../ogeek/mappers/notificationMap';
 import { INotificationRepo } from '../../../../ogeek/repos/notificationRepo';
-import { NotificationDto } from '../../../infra/dtos/notification/getNotifications/notification.dto';
+import { NotificationDto } from '../../../infra/dtos/notification/getNotifications/getNotification.dto';
 import { IUserRepo } from '../../../repos/userRepo';
 import { CheckNotificationErrors } from './CheckNotificationErrors';
 
@@ -14,7 +14,7 @@ type Response = Either<
     | AppError.UnexpectedError
     | CheckNotificationErrors.UserNotFound
     | CheckNotificationErrors.NotificationNotFound,
-    Result<NotificationDto[]>
+    Result<NotificationDto>
 >;
 
 @Injectable()
@@ -50,7 +50,7 @@ export class CheckNotificationUseCase
             }
             const notificationDto = NotificationMap.fromDomain(notification);
             if (notification.isRead()) {
-                return right(Result.ok([notificationDto]));
+                return right(Result.ok(notificationDto));
             }
             notification.markRead();
 
@@ -59,7 +59,7 @@ export class CheckNotificationUseCase
 
             const notificationReadDto =
                 NotificationMap.fromDomain(notification);
-            return right(Result.ok([notificationReadDto]));
+            return right(Result.ok(notificationReadDto));
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
         }

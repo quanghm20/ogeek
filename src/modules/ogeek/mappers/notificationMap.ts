@@ -2,35 +2,26 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { Notification } from '../domain/notification';
 import { NotificationEntity } from '../infra/database/entities';
-import { NotificationDto } from '../infra/dtos/notification/getNotifications/notification.dto';
+import { NotificationDto } from '../infra/dtos/notification/getNotifications/getNotification.dto';
 import { UserMap } from './userMap';
 
 export class NotificationMap implements Mapper<Notification> {
     public static fromDomain(notification: Notification): NotificationDto {
         const notificationDto = new NotificationDto();
         notificationDto.id = Number(notification.id);
-        notificationDto.notificationMessage = notification.props.message;
+        notificationDto.notificationMessage =
+            notification.props.notificationMessage;
         notificationDto.read = notification.props.read;
         notificationDto.createdAt = notification.props.createdAt;
 
         return notificationDto;
     }
 
-    public static fromArrayDomain(
-        notifications: Notification[],
-    ): NotificationDto[] {
-        const notificationsDto = new Array<NotificationDto>();
-        notifications.forEach((notification) => {
-            notificationsDto.push(NotificationMap.fromDomain(notification));
-        });
-        return notificationsDto;
-    }
-
     public static toDomain(raw: NotificationEntity): Notification {
         const { id } = raw;
         const notificationOrError = Notification.create(
             {
-                message: raw.message,
+                notificationMessage: raw.message,
                 read: raw.read,
                 user: UserMap.toDomain(raw.user),
                 createdAt: raw.createdAt,
@@ -44,7 +35,7 @@ export class NotificationMap implements Mapper<Notification> {
     public static toEntity(notification: Notification): NotificationEntity {
         const id = Number(notification.id?.toValue()) || null;
         const notificationEntity = new NotificationEntity(id);
-        notificationEntity.message = notification.message;
+        notificationEntity.message = notification.notificationMessage;
         notificationEntity.read = notification.read;
         notificationEntity.user = UserMap.toEntity(notification.user);
         notificationEntity.createdBy = notification.createdBy;

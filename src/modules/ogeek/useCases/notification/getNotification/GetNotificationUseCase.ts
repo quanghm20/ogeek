@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 
 import { IUseCase } from '../../../../../core/domain/UseCase';
@@ -6,12 +5,12 @@ import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { NotificationMap } from '../../../..//ogeek/mappers/notificationMap';
 import { INotificationRepo } from '../../../../ogeek/repos/notificationRepo';
-import { NotificationDto } from '../../../infra/dtos/notification/getNotifications/notification.dto';
+import { NotificationDto } from '../../../infra/dtos/notification/getNotifications/getNotification.dto';
 import { IUserRepo } from '../../../repos/userRepo';
 import { GetNotificationErrors } from './GetNotificationErrors';
 
 type Response = Either<
-    AppError.UnexpectedError
+    | AppError.UnexpectedError
     | GetNotificationErrors.UserNotFound
     | GetNotificationErrors.NotificationNotFound,
     Result<NotificationDto[]>
@@ -38,12 +37,14 @@ export class GetNotificationUseCase
                 userId,
             );
 
-            if (notifications.length <= 0) {
+            if (!notifications.length) {
                 return left(new GetNotificationErrors.NotificationNotFound());
             }
 
-            const notificationsDto =
-                NotificationMap.fromArrayDomain(notifications);
+            const notificationsDto = notifications.map((notification) =>
+                NotificationMap.fromDomain(notification),
+            );
+
             return right(Result.ok(notificationsDto));
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
