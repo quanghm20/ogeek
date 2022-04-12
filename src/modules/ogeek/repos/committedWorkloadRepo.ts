@@ -65,7 +65,10 @@ export interface ICommittedWorkloadRepo {
         userId: DomainId | number,
         startDate: Date,
     ): Promise<CommittedWorkload[]>;
-    findByUserId(userId: DomainId | number): Promise<CommittedWorkload[]>;
+    findByUserId(
+        userId: DomainId | number,
+        status?: CommittedWorkloadStatus,
+    ): Promise<CommittedWorkload[]>;
     findByUserIdOverview(
         userId: DomainId | number,
     ): Promise<CommittedWorkload[]>;
@@ -88,6 +91,7 @@ export interface ICommittedWorkloadRepo {
         endDateOfWeek: Date,
     ): Promise<CommittedWorkload[]>;
     findCommittedInComing(userId: number): Promise<CommittedWorkload>;
+    findAllCommittedInComing(userId: number): Promise<CommittedWorkload[]>;
 }
 
 @Injectable()
@@ -102,12 +106,16 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     ) {}
     async findByUserId(
         userId: DomainId | number,
+        status?: CommittedWorkloadStatus,
     ): Promise<CommittedWorkload[]> {
         userId =
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        if (!status) {
+            status = CommittedWorkloadStatus.ACTIVE;
+        }
         const entities = await this.repo.find({
             where: {
-                status: CommittedWorkloadStatus.ACTIVE,
+                status,
                 user: userId,
             },
             relations: [
@@ -560,5 +568,25 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             ],
         });
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
+    }
+
+    async findAllCommittedInComing(
+        userId: number,
+    ): Promise<CommittedWorkload[]> {
+        const entity = await this.repo.find({
+            where: {
+                user: {
+                    id: userId,
+                },
+                status: CommittedWorkloadStatus.INCOMING,
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'user',
+            ],
+        });
+        return entity ? CommittedWorkloadMap.toDomainAll(entity) : null;
     }
 }

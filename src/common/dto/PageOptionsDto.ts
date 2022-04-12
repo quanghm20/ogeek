@@ -23,7 +23,7 @@ export class PageOptionsDto {
     @IsInt()
     @Min(1)
     @IsOptional()
-    page = 1;
+    page?: number = 1;
 
     @ApiPropertyOptional({
         minimum: 1,
@@ -36,7 +36,7 @@ export class PageOptionsDto {
     @Min(10)
     @Max(500)
     @IsOptional()
-    take = 10;
+    take?: number = 10;
 
     get skip(): number {
         return (this.page - 1) * this.take;

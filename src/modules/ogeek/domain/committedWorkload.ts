@@ -211,11 +211,18 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         );
         return this.sumCommittedWorkload;
     }
+    public changeStatus(status: CommittedWorkloadStatus): void {
+        this.props.status = status;
+    }
 
     public handleExpiredDateOldCommittedWorkload(startDate: Date): void {
         if (this.expiredDate > startDate) {
             this.expiredDate = startDate;
         }
+    }
+
+    public checkExpiredDateWhenUpdate(expiredDate: Date): boolean {
+        return this.expiredDate < expiredDate;
     }
 
     public autoGeneratePlanned(): PlannedWorkload[] {

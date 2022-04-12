@@ -6,6 +6,7 @@ import {
     FindManyOptions,
     getConnection,
     LessThan,
+    MoreThanOrEqual,
     Not,
     Repository,
 } from 'typeorm';
@@ -52,6 +53,7 @@ export interface IPlannedWorkloadRepo {
     update(plannedEntities: PlannedWorkloadEntity[]): Promise<void>;
     findByCommittedId(
         committedWorkloadId: string | number,
+        startDate?: Date,
     ): Promise<PlannedWorkload[]>;
 }
 
@@ -280,12 +282,14 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
 
     async findByCommittedId(
         committedWorkloadId: string | number,
+        startDate?: Date,
     ): Promise<PlannedWorkload[]> {
         const entities = await this.repo.find({
             where: {
                 committedWorkload: {
                     id: committedWorkloadId,
                 },
+                startDate: MoreThanOrEqual(startDate),
             },
             loadEagerRelations: true,
             relations: [

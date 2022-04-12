@@ -8,6 +8,7 @@ import {
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
+    Patch,
     Post,
     Query,
     Req,
@@ -43,6 +44,7 @@ import { FilterCommittedWorkload } from './FilterCommittedWorkload';
 import { GetCommittedWorkloadErrors } from './getCommittedWorkload/GetCommittedWorkloadErrors';
 import { GetCommittedWorkloadUseCase } from './getCommittedWorkload/GetCommittedWorkloadsUseCase';
 import { GetHistoryCommittedWorkloadUseCase } from './getHistoryCommittedWorkload/GetCommittedWorkloadsUseCase';
+import { UpdateCommittedWorkloadUseCase } from './updateCommittedWorkload/UpdateCommittedWorkloadUseCase';
 
 export class DataCommittedWorkload {
     @ApiProperty({
@@ -68,6 +70,7 @@ export class CommittedWorkloadController {
         public readonly createCommitUseCase: CreateCommittedWorkloadUseCase,
         public readonly getCommitUseCase: GetCommittedWorkloadUseCase,
         public readonly getHistoryCommitUseCase: GetHistoryCommittedWorkloadUseCase,
+        public readonly patchCommitUseCase: UpdateCommittedWorkloadUseCase,
     ) {}
 
     @Post()
@@ -173,5 +176,61 @@ export class CommittedWorkloadController {
         }
 
         return result.value.getValue();
+    }
+
+    @Patch()
+    @HttpCode(HttpStatus.CREATED)
+    @Roles(RoleType.PP)
+    @UseGuards(JwtAuthGuard)
+    @ApiCreatedResponse({
+        type: DataCommittedWorkload,
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiForbiddenResponse({
+        description: 'Forbidden',
+    })
+    @ApiNotFoundResponse({
+        description: 'Could not find User :userId .',
+    })
+    @ApiBadRequestResponse({
+        description: 'StartDate or ExpiredDate is not valid !',
+    })
+    @ApiBadRequestResponse({
+        description: 'This user existing committed workload upcoming!',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Internal Server Error',
+    })
+    @UsePipes(new ValidationPipe({ transform: true }))
+    async updateCommitted(
+        @Body() body: CreateCommittedWorkloadDto,
+        @Req() req: Request,
+    ): Promise<DataCommittedWorkload> {
+        const createBy = req.user as JwtPayload;
+        const result = await this.patchCommitUseCase.execute(
+            body,
+            createBy.userId,
+        );
+        if (result.isLeft()) {
+            const error = result.value;
+            switch (error.constructor) {
+                case CreateCommittedWorkloadErrors.Forbidden:
+                    throw new ForbiddenException(error.errorValue());
+                case CreateCommittedWorkloadErrors.NotFound:
+                    throw new NotFoundException(error.errorValue());
+                case CreateCommittedWorkloadErrors.DateError:
+                    throw new BadRequestException(error.errorValue());
+                case CreateCommittedWorkloadErrors.ExistCommittedWorkloadInComing:
+                    throw new BadRequestException(error.errorValue());
+                default:
+                    throw new InternalServerErrorException(error.errorValue());
+            }
+        }
+        return new DataCommittedWorkload(result.value.getValue());
     }
 }
