@@ -19,6 +19,7 @@
     "migration:create": "ts-node node_modules/typeorm/cli.js migration:create -f ormconfig -d src/migrations -n",
     "schema:drop": "ts-node node_modules/typeorm/cli.js schema:drop -f ormconfig",
     "start:prod": "node dist/src/main.js",
+    "start:staging": "ts-node node_modules/typeorm/cli.js migration:run -f ormconfig && TZ=UTC nest start",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint --fix . --ext .ts",
     "test": "jest",

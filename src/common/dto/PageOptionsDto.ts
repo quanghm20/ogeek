@@ -12,7 +12,7 @@ export class PageOptionsDto {
     })
     @IsEnum(Order)
     @IsOptional()
-    order?: Order = Order.ASC;
+    order: Order = Order.ASC;
 
     @ApiPropertyOptional({
         minimum: 1,
@@ -23,7 +23,7 @@ export class PageOptionsDto {
     @IsInt()
     @Min(1)
     @IsOptional()
-    page?: number = 1;
+    page = 1;
 
     @ApiPropertyOptional({
         minimum: 1,
@@ -36,7 +36,7 @@ export class PageOptionsDto {
     @Min(10)
     @Max(500)
     @IsOptional()
-    take?: number = 10;
+    take = 10;
 
     get skip(): number {
         return (this.page - 1) * this.take;
