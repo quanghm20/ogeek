@@ -11,8 +11,10 @@ import {
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
+    ApiInternalServerErrorResponse,
     ApiOkResponse,
     ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import * as moment from 'moment';
@@ -21,23 +23,29 @@ import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { InputGetOverviewChartDto } from '../../../infra/dtos/overviewChart/inputGetOverviewChart.dto';
 import { OverviewChartDataDto } from '../../../infra/dtos/overviewChart/overviewChartData.dto';
-import { GetOverviewChartDataErrors } from './OverviewChartDataErrors';
-import { GetOverviewChartDataUseCase } from './OverviewChartDataUseCase';
+import { GetOverviewChartDataErrors } from './GetOverviewChartDataErrors';
+import { GetOverviewChartDataUseCase } from './GetOverviewChartDataUseCase';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
-@Controller('api/overview/overview-chart')
-@ApiTags('Overview Chart')
+@Controller('api/overview/chart')
+@ApiTags('Overview')
 export class OverviewChartDataController {
     constructor(public readonly useCase: GetOverviewChartDataUseCase) {}
     @Get()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: OverviewChartDataDto,
-        description: 'Data for overview chart',
+        description: 'OK',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
     })
     @ApiBadRequestResponse({
-        description: 'No data to retrieve',
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async execute(@Req() req: Request): Promise<OverviewChartDataDto[]> {
         const currentWeek = moment(new Date()).week();

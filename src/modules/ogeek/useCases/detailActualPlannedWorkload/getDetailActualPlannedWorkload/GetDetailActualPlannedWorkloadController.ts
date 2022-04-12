@@ -9,7 +9,14 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiInternalServerErrorResponse,
+    ApiOkResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
@@ -21,8 +28,8 @@ import {
 import { GetDetailActualPlannedWorkloadAndWorklogError } from './GetDetailActualPlannedWorkloadErrors';
 import { GetDetailActualPlannedWorkloadUseCase } from './GetDetailActualPlannedWorkloadUseCase';
 
-@Controller('api/user/planned-workload-in-projects')
-@ApiTags('API detail actual planned workload')
+@Controller('api/planned-workload/detail')
+@ApiTags('Planned Workload')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class GetDetailActualPlannedWorkloadController {
@@ -34,7 +41,16 @@ export class GetDetailActualPlannedWorkloadController {
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: DetailActualPlannedWorkloadAndWorklogDto,
-        description: 'Get detail actual planned workload from each project',
+        description: 'OK',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async execute(
         @Req() req: Request,

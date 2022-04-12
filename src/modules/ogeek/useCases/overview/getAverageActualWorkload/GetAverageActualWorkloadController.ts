@@ -9,7 +9,14 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiInternalServerErrorResponse,
+    ApiOkResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
@@ -22,7 +29,7 @@ import { GetAverageActualWorkloadUseCase as GetAverageActualWorkloadUseCase } fr
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @Controller('/api/overview/average-actual-workload')
-@ApiTags('Average Actual Workload')
+@ApiTags('Overview')
 export class GetAverageActualWorkloadController {
     constructor(public readonly useCase: GetAverageActualWorkloadUseCase) {}
 
@@ -30,7 +37,16 @@ export class GetAverageActualWorkloadController {
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: AverageActualWorkloadDto,
-        description: 'Average actual workload of Geek',
+        description: 'OK',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async execute(
         @Req() req: Request,

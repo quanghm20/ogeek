@@ -8,7 +8,14 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiInternalServerErrorResponse,
+    ApiOkResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
@@ -17,39 +24,43 @@ import { DataResponseDto } from '../../../infra/dtos/overviewSummaryYear/dataRes
 import { GetOverviewSummaryYearErrors } from './GetOverviewSummaryYearErrors';
 import { GetOverviewSummaryYearUseCase } from './GetOverviewSummaryYearUseCase';
 
-@Controller('api/overview/summary-year')
-@ApiTags('API overview summary year ')
+@Controller('api/overview/summary')
+@ApiTags('Overview')
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 export class GetOverviewSummaryYearController {
     constructor(public readonly useCase: GetOverviewSummaryYearUseCase) {}
 
-    @UseGuards(JwtAuthGuard)
     @Get()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: DataResponseDto,
         isArray: true,
-        description: 'Get overview summary year',
+        description: 'OK',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async getOverviewSummaryYear(
         @Req() req: Request,
     ): Promise<DataResponseDto> {
-        const jwtPayload = req.user as JwtPayload;
+        const { userId } = req.user as JwtPayload;
 
-        const result = await this.useCase.execute(jwtPayload.userId);
+        const result = await this.useCase.execute(userId);
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {
-                case GetOverviewSummaryYearErrors.UserNotFound:
-                    throw new NotFoundException(
-                        error.errorValue(),
-                        'Can not get overview summary year by userId',
-                    );
+                case GetOverviewSummaryYearErrors.FailToGetOverviewSummaryYear:
+                    throw new NotFoundException(error.errorValue());
+
                 default:
-                    throw new InternalServerErrorException(
-                        error.errorValue(),
-                        'Can not search contributed ',
-                    );
+                    throw new InternalServerErrorException(error.errorValue());
             }
         }
 

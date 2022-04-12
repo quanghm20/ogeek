@@ -1,11 +1,16 @@
+import * as moment from 'moment';
+
 import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
 import { dateRange } from '../../../common/constants/dateRange';
+import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
+import { SYSTEM } from '../../../common/constants/system';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
 import { ContributedValue } from './contributedValue';
 import { DomainId } from './domainId';
+import { PlannedWorkload } from './plannedWorkload';
 import { User } from './user';
 
 interface ICommittedWorkloadProps {
@@ -96,18 +101,25 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     set updatedAt(updatedAt: Date) {
         this.props.updatedAt = updatedAt;
     }
+    get deletedAt(): Date {
+        return this.props.deletedAt;
+    }
+    set deletedAt(deletedAt: Date) {
+        this.props.deletedAt = deletedAt;
+    }
     public isActive(): boolean {
         return this.props.status === CommittedWorkloadStatus.ACTIVE;
     }
     public getValueStreamId(): number {
-        return Number(this.contributedValue.valueStream.id.toValue());
+        return Number(this.contributedValue.valueStream.id);
     }
     public getExpertiseScopeId(): number {
-        return Number(this.contributedValue.expertiseScope.id.toValue());
+        return Number(this.contributedValue.expertiseScope.id);
     }
     public getExpertiseScopeName(): string {
         return this.contributedValue.expertiseScope.name;
     }
+
     public durationDay(startDate: Date, endDate: Date): number {
         if (startDate < endDate) {
             return Math.floor(
@@ -159,29 +171,82 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
             );
         }
     }
-    public calculateCommittedWorkload(
+    public calculate(
         startDateOfYearString: string,
         endDateOfYearString: string,
+        valueStreamId: number,
     ): number {
-        const startDateOfYear = new Date(startDateOfYearString);
-        const endDateOfYear = new Date(endDateOfYearString);
-        if (this.startDate < startDateOfYear) {
-            return this.calculateExpiredDateOne(
-                startDateOfYear,
-                endDateOfYear,
+        if (this.getValueStreamId() === valueStreamId) {
+            const startDateOfYear = new Date(startDateOfYearString);
+            const endDateOfYear = new Date(endDateOfYearString);
+            if (this.startDate < startDateOfYear) {
+                return this.calculateExpiredDateOne(
+                    startDateOfYear,
+                    endDateOfYear,
+                    this.expiredDate,
+                );
+            } // startDate >= startDateOfYear
+            return this.calculateExpiredDateTwo(
+                this.startDate,
                 this.expiredDate,
+                endDateOfYear,
             );
-        } // startDate >= startDateOfYear
-        return this.calculateExpiredDateTwo(
-            this.startDate,
-            this.expiredDate,
-            endDateOfYear,
-        );
+        }
     }
 
+    public handleExpiredDateOldCommittedWorkload(startDate: Date): void {
+        if (this.expiredDate > startDate) {
+            this.expiredDate = startDate;
+        }
+    }
+
+    public autoGeneratePlanned(): PlannedWorkload[] {
+        let startDate = moment(this.startDate);
+
+        const expiredDate = moment(this.expiredDate);
+        const plannedAutoGen = new Array<PlannedWorkload>();
+        if (startDate.weekday() !== 0) {
+            startDate = startDate.add(-startDate.weekday() - 1, 'd');
+        }
+
+        for (
+            let i = startDate;
+            i <= expiredDate;
+            i.add(dateRange.DAY_OF_WEEK, 'd')
+        ) {
+            const reason = `Auto generate planned workload by committed workload ${this._id.toValue()} week ${i.weeks()} year ${i.year()} `;
+            const planned = PlannedWorkload.create({
+                reason,
+                startDate: startDate.toDate(),
+                committedWorkload: this,
+                contributedValue: this.contributedValue,
+                plannedWorkload: this.committedWorkload,
+                user: this.user,
+                status: PlannedWorkloadStatus.PLANNING,
+                createdBy: SYSTEM,
+                updatedBy: SYSTEM,
+            });
+            plannedAutoGen.push(planned.getValue());
+        }
+        return plannedAutoGen;
+    }
+
+    public autoArchivePlannedWorkload(
+        startDate: Date,
+        plannedWorkloads: PlannedWorkload[],
+    ): PlannedWorkload[] {
+        for (const plan of plannedWorkloads) {
+            plan.setArchivePlannedWorkload(startDate);
+        }
+        return plannedWorkloads;
+    }
+
+    public isComing(): boolean {
+        return this.status === CommittedWorkloadStatus.INCOMING;
+    }
     public static create(
         props: ICommittedWorkloadProps,
-        id: UniqueEntityID,
+        id?: UniqueEntityID,
     ): Result<CommittedWorkload> {
         const propsResult = Guard.againstNullOrUndefinedBulk([]);
         if (!propsResult.succeeded) {
@@ -191,6 +256,12 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
             ...props,
         };
         defaultValues.contributedValue = props.contributedValue;
+        if (!defaultValues.createdBy) {
+            defaultValues.createdBy = SYSTEM;
+        }
+        if (!defaultValues.updatedBy) {
+            defaultValues.updatedBy = SYSTEM;
+        }
         const committedWorkload = new CommittedWorkload(defaultValues, id);
         return Result.ok<CommittedWorkload>(committedWorkload);
     }

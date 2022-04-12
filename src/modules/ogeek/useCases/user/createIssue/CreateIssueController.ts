@@ -11,7 +11,15 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { RoleType } from '../../../../../common/constants/roleType';
@@ -23,21 +31,32 @@ import { MessageDto } from '../../../infra/dtos/message.dto';
 import { CreateIssueErrors } from './CreateIssueErrors';
 import { CreateIssueUseCase } from './CreateIssueUseCase';
 
-@Controller('api/user/workloads/issue')
-@ApiTags('API create issue')
+@Controller('api/admin/user/potential-issue')
+@ApiTags('Potential Issue')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class CreateIssueController {
     constructor(public readonly useCase: CreateIssueUseCase) {}
 
     @Post()
-    @HttpCode(HttpStatus.OK)
+    @HttpCode(HttpStatus.CREATED)
     @Roles(RoleType.PP)
-    @ApiOkResponse({
+    @ApiCreatedResponse({
         type: MessageDto,
-        description: 'Create issue',
+        description: 'Created',
     })
-    // @UsePipes(new ValidationPipe({ transform: true }))
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiForbiddenResponse({
+        description: 'Forbidden',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
+    })
     async execute(
         @Body() body: CreateIssueDto,
         @Req() req: Request,

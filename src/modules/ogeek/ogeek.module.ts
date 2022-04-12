@@ -1,4 +1,5 @@
 import { HttpModule, Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -27,6 +28,7 @@ import {
     GetHistoryCommittedWorkloadUseCase,
 } from './useCases/committedWorkload';
 import { CronCommittedWorkload } from './useCases/committedWorkload/cronCommittedWorkload.service';
+import { CommittedWorkloadCreatedListener } from './useCases/committedWorkload/listeners/CommittedWorkloadListeners';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,
@@ -37,16 +39,18 @@ import {
 } from './useCases/detailActualPlannedWorkload/getDetailActualPlannedWorkload';
 import { GetAverageActualWorkloadController } from './useCases/overview/getAverageActualWorkload/GetAverageActualWorkloadController';
 import { GetAverageActualWorkloadUseCase } from './useCases/overview/getAverageActualWorkload/GetAverageActualWorkloadUseCase';
-import { GetWeekStatusController } from './useCases/overview/message/GetWeekStatusController';
-import { GetWeekStatusUseCase } from './useCases/overview/message/GetWeekStatusUseCase';
-import { OverviewChartDataController } from './useCases/overview/overviewChartData/OverviewChartDataController';
-import { GetOverviewChartDataUseCase } from './useCases/overview/overviewChartData/OverviewChartDataUseCase';
+import { OverviewChartDataController } from './useCases/overview/overviewChartData/GetOverviewChartDataController';
+import { GetOverviewChartDataUseCase } from './useCases/overview/overviewChartData/GetOverviewChartDataUseCase';
 import { GetOverviewSummaryYearController } from './useCases/overview/overviewSummaryYear/GetOverviewSummaryYearController';
 import { GetOverviewSummaryYearUseCase } from './useCases/overview/overviewSummaryYear/GetOverviewSummaryYearUseCase';
 import {
     PlanWorkloadController,
     PlanWorkloadUseCase,
 } from './useCases/plannedWorkload/planWorkload';
+import {
+    ReviewRetroController,
+    ReviewRetroUseCase,
+} from './useCases/plannedWorkload/reviewRetro';
 import {
     StartWeekController,
     StartWeekUseCase,
@@ -77,13 +81,13 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             ValueStreamEntity,
         ]),
         ScheduleModule.forRoot(),
+        EventEmitterModule.forRoot(),
     ],
     controllers: [
         CommittedWorkloadController,
         GetContributedValueController,
         GetUserController,
         GetValueStreamController,
-        GetWeekStatusController,
         OverviewChartDataController,
         GetAverageActualWorkloadController,
         GetOverviewSummaryYearController,
@@ -95,6 +99,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         CreateIssueController,
         StartWeekController,
         GetWorkloadListsController,
+        ReviewRetroController,
     ],
     providers: [
         CreateUserUseCase,
@@ -110,14 +115,15 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetUserUseCase,
         GetValueStreamUseCase,
         GetWorkloadListUseCase,
-        GetWeekStatusUseCase,
         GetUsersUseCase,
         GetDetailActualPlannedWorkloadUseCase,
         CreateIssueUseCase,
         GetCommittedWorkloadUseCase,
         GetHistoryCommittedWorkloadUseCase,
+        ReviewRetroUseCase,
         CronCommittedWorkload,
         GetWorkloadListsUseCase,
+        CommittedWorkloadCreatedListener,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

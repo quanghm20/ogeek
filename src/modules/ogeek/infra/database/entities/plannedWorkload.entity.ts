@@ -34,8 +34,19 @@ export class PlannedWorkloadEntity extends AbstractEntity {
     committedWorkload: CommittedWorkloadEntity;
 
     @Column({
+        type: 'decimal',
         nullable: false,
         name: 'planned_workload',
+        precision: 4,
+        scale: 2,
+        transformer: {
+            to(value: number): number {
+                return value;
+            },
+            from(value: string): number {
+                return parseFloat(value);
+            },
+        },
     })
     plannedWorkload: number;
 
@@ -56,7 +67,6 @@ export class PlannedWorkloadEntity extends AbstractEntity {
     status: PlannedWorkloadStatus;
 
     @Column({
-        nullable: false,
         name: 'reason',
     })
     reason: string;

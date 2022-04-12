@@ -23,4 +23,11 @@ export namespace CreateCommittedWorkloadErrors {
             } as UseCaseError);
         }
     }
+    export class ExistCommittedWorkloadInComing extends Result<UseCaseError> {
+        constructor() {
+            super(false, {
+                message: 'This user existing committed workload upcoming!',
+            } as UseCaseError);
+        }
+    }
 }

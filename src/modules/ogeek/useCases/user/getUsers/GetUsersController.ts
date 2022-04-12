@@ -5,10 +5,16 @@ import {
     NotFoundException,
     UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiOkResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
-import { RoleType } from '../../../../../common/constants/roleType';
-import { Roles } from '../../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { DataUserShortDto } from '../../../infra/dtos/getUsers/getUsersDto';
@@ -20,13 +26,24 @@ import { GetUsersUseCase } from './GetUsersUseCase';
 export class GetUsersController {
     constructor(public readonly useCase: GetUsersUseCase) {}
 
-    @Roles(RoleType.PP)
     @UseGuards(RolesGuard, JwtAuthGuard)
     @ApiBearerAuth()
     @Get()
     @ApiOkResponse({
         type: DataUserShortDto,
-        description: 'Get all user',
+        description: 'OK',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiForbiddenResponse({
+        description: 'Forbidden',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async execute(): Promise<DataUserShortDto> {
         const result = await this.useCase.execute();

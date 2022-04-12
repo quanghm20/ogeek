@@ -5,39 +5,41 @@ import {
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
-    Post,
+    Patch,
     Req,
     UseGuards,
 } from '@nestjs/common';
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
-    ApiCreatedResponse,
     ApiInternalServerErrorResponse,
+    ApiOkResponse,
     ApiTags,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
+import * as moment from 'moment';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkload/createPlannedWorkloadsList.dto';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
-import { PlanWorkloadErrors } from './PlanWorkloadErrors';
-import { PlanWorkloadUseCase } from './PlanWorkloadUseCase';
+import { StartWeekDto } from '../../../infra/dtos/startWeek/startWeek.dto';
+import { StartWeekResponseDto } from '../../../infra/dtos/startWeek/startWeekResponse.dto';
+import { ReviewRetroErrors } from './ReviewRetroErrors';
+import { ReviewRetroUseCase } from './ReviewRetroUseCase';
 
 @Controller('api/planned-workload')
-@ApiTags('Planned Workload')
-export class PlanWorkloadController {
-    constructor(public readonly useCase: PlanWorkloadUseCase) {}
+@ApiTags('Review Retro')
+export class ReviewRetroController {
+    constructor(public readonly useCase: ReviewRetroUseCase) {}
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Post()
-    @HttpCode(HttpStatus.CREATED)
-    @ApiCreatedResponse({
-        type: [CreatePlannedWorkloadsListDto],
-        description: 'Created',
+    @Patch('review-retro')
+    @HttpCode(HttpStatus.OK)
+    @ApiOkResponse({
+        type: [StartWeekResponseDto],
+        description: 'OK',
     })
     @ApiUnauthorizedResponse({
         description: 'Unauthorized',
@@ -50,31 +52,21 @@ export class PlanWorkloadController {
     })
     async execute(
         @Req() req: Request,
-        @Body() createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
-    ): Promise<CreatePlannedWorkloadsListDto> {
+        @Body() startWeekDto: StartWeekDto,
+    ): Promise<StartWeekResponseDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
-        const userId = findUserDto.userId;
+        const { userId } = findUserDto;
 
-        const result = await this.useCase.execute(
-            createPlannedWorkloadsListDto,
-            userId,
-        );
+        const { startDate } = startWeekDto;
+        const result = await this.useCase.execute(startDate, userId);
 
         if (result.isLeft()) {
             const error = result.value;
 
             switch (error.constructor) {
-                case PlanWorkloadErrors.InputValidationFailed:
-                    throw new BadRequestException(
-                        error.errorValue(),
-                        'Failed to validate input',
-                    );
-                case PlanWorkloadErrors.PlanWorkloadFailed:
-                    throw new BadRequestException(
-                        error.errorValue(),
-                        'Failed to plan workload',
-                    );
+                case ReviewRetroErrors.NotStartWeek:
+                    throw new BadRequestException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(
                         error.errorValue(),
@@ -83,6 +75,6 @@ export class PlanWorkloadController {
             }
         }
 
-        return createPlannedWorkloadsListDto;
+        return { week: moment(startDate).week() } as StartWeekResponseDto;
     }
 }

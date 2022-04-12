@@ -60,7 +60,9 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         const contributedValue = ContributedValueMap.toEntity(
             committedWorkload.contributedValue,
         );
-        const id = Number(committedWorkload.committedWorkloadId.id.toValue());
+        const id =
+            Number(committedWorkload.committedWorkloadId?.id?.toValue()) ||
+            null;
         const entity = new CommittedWorkloadEntity(
             id,
             user,
@@ -72,7 +74,25 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         entity.contributedValue = ContributedValueMap.toEntity(
             committedWorkload.contributedValue,
         );
+        entity.status = committedWorkload.status;
+
+        entity.createdAt = committedWorkload.createdAt;
+        entity.createdBy = committedWorkload.createdBy;
+        entity.updatedAt = committedWorkload.updatedAt;
+        entity.updatedBy = committedWorkload.updatedBy;
+        entity.deletedAt = committedWorkload.deletedAt;
+        entity.deletedBy = committedWorkload.deletedBy;
+
         return entity;
+    }
+    public static toEntities(
+        committedWorkload: CommittedWorkload[],
+    ): CommittedWorkloadEntity[] {
+        const committedEntities = new Array<CommittedWorkloadEntity>();
+        for (const commit of committedWorkload) {
+            committedEntities.push(this.toEntity(commit));
+        }
+        return committedEntities;
     }
 
     public static fromDomainAll(
@@ -96,8 +116,6 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
                     startDate: committedWLEntity.startDate,
                     expiredDate: committedWLEntity.expiredDate,
                     status: committedWLEntity.status,
-                    createdAt: committedWLEntity.createdAt,
-                    updatedAt: committedWLEntity.updatedAt,
                     contributedValue: committedWLEntity.contributedValue
                         ? ContributedValueMap.toDomain(
                               committedWLEntity.contributedValue,
@@ -108,6 +126,8 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
                         : null,
                     createdBy: committedWLEntity.createdBy,
                     updatedBy: committedWLEntity.updatedBy,
+                    createdAt: committedWLEntity.createdAt,
+                    updatedAt: committedWLEntity.updatedAt,
                 },
                 new UniqueEntityID(id),
             );
@@ -150,21 +170,26 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
     public static fromCommittedWorkloadShort(
         committedDomain: CommittedWorkload,
     ): CommittedWorkloadShortDto {
-        const committed = new CommittedWorkloadShortDto();
-        committed.user = UserMap.fromUserShort(committedDomain.user);
-        committed.expertiseScope = ExpertiseScopeMap.fromDomainShort(
-            committedDomain.contributedValue.expertiseScope,
-        );
-        committed.valueStream = ValueStreamMap.fromDomainShort(
-            committedDomain.contributedValue.valueStream,
-        );
-        committed.committedWorkload = committedDomain.committedWorkload;
-        committed.startDate = committedDomain.startDate;
-        committed.expiredDate = committedDomain.expiredDate;
-        committed.status = committedDomain.status;
-        committed.createdAt = committedDomain.createdAt;
+        try {
+            const committed = new CommittedWorkloadShortDto();
+            committed.id = Number(committedDomain.id.toString());
+            committed.user = UserMap.fromUserShort(committedDomain.user);
+            committed.expertiseScope = ExpertiseScopeMap.fromDomainShort(
+                committedDomain.contributedValue.expertiseScope,
+            );
+            committed.valueStream = ValueStreamMap.fromDomainShort(
+                committedDomain.contributedValue.valueStream,
+            );
+            committed.committedWorkload = committedDomain.committedWorkload;
+            committed.startDate = committedDomain.startDate;
+            committed.expiredDate = committedDomain.expiredDate;
+            committed.status = committedDomain.status;
+            committed.createdAt = committedDomain.createdAt;
 
-        return committed;
+            return committed;
+        } catch (error) {
+            return null;
+        }
     }
 
     public static fromCommittedWorkloadShortArray(
