@@ -1,11 +1,16 @@
+import * as moment from 'moment';
+
 import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
 import { dateRange } from '../../../common/constants/dateRange';
+import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
+import { SYSTEM } from '../../../common/constants/system';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
 import { ContributedValue } from './contributedValue';
 import { DomainId } from './domainId';
+import { PlannedWorkload } from './plannedWorkload';
 import { User } from './user';
 
 interface ICommittedWorkloadProps {
@@ -110,6 +115,12 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     set updatedAt(updatedAt: Date) {
         this.props.updatedAt = updatedAt;
     }
+    get deletedAt(): Date {
+        return this.props.deletedAt;
+    }
+    set deletedAt(deletedAt: Date) {
+        this.props.deletedAt = deletedAt;
+    }
     public isActive(): boolean {
         return this.props.status === CommittedWorkloadStatus.ACTIVE;
     }
@@ -123,20 +134,8 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         return this.contributedValue.expertiseScope.name;
     }
 
-    public static create(
-        props: ICommittedWorkloadProps,
-        id: UniqueEntityID,
-    ): Result<CommittedWorkload> {
-        const propsResult = Guard.againstNullOrUndefinedBulk([]);
-        if (!propsResult.succeeded) {
-            return Result.fail<CommittedWorkload>(propsResult.message);
-        }
-        const defaultValues = {
-            ...props,
-        };
-        defaultValues.contributedValue = props.contributedValue;
-        const committedWorkload = new CommittedWorkload(defaultValues, id);
-        return Result.ok<CommittedWorkload>(committedWorkload);
+    isBelongToExpertiseScope(expertiseScopeId: number | string) {
+        return this.id.toValue() === expertiseScopeId;
     }
 
     public durationDay(startDate: Date, endDate: Date): number {
@@ -211,5 +210,77 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
             endDateOfYear,
         );
         return this.sumCommittedWorkload;
+    }
+
+    public handleExpiredDateOldCommittedWorkload(startDate: Date): void {
+        if (this.expiredDate > startDate) {
+            this.expiredDate = startDate;
+        }
+    }
+
+    public autoGeneratePlanned(): PlannedWorkload[] {
+        let startDate = moment(this.startDate);
+
+        const expiredDate = moment(this.expiredDate);
+        const plannedAutoGen = new Array<PlannedWorkload>();
+        if (startDate.weekday() !== 0) {
+            startDate = startDate.add(-startDate.weekday() - 1, 'd');
+        }
+
+        for (
+            let i = startDate;
+            i <= expiredDate;
+            i.add(dateRange.DAY_OF_WEEK, 'd')
+        ) {
+            const reason = `Auto generate planned workload by committed workload ${this._id.toValue()} week ${i.weeks()} year ${i.year()} `;
+            const planned = PlannedWorkload.create({
+                reason,
+                startDate: startDate.toDate(),
+                committedWorkload: this,
+                contributedValue: this.contributedValue,
+                plannedWorkload: this.committedWorkload,
+                user: this.user,
+                status: PlannedWorkloadStatus.PLANNING,
+                createdBy: SYSTEM,
+                updatedBy: SYSTEM,
+            });
+            plannedAutoGen.push(planned.getValue());
+        }
+        return plannedAutoGen;
+    }
+
+    public autoArchivePlannedWorkload(
+        startDate: Date,
+        plannedWorkloads: PlannedWorkload[],
+    ): PlannedWorkload[] {
+        for (const plan of plannedWorkloads) {
+            plan.setArchivePlannedWorkload(startDate);
+        }
+        return plannedWorkloads;
+    }
+
+    public isComing(): boolean {
+        return this.status === CommittedWorkloadStatus.INCOMING;
+    }
+    public static create(
+        props: ICommittedWorkloadProps,
+        id?: UniqueEntityID,
+    ): Result<CommittedWorkload> {
+        const propsResult = Guard.againstNullOrUndefinedBulk([]);
+        if (!propsResult.succeeded) {
+            return Result.fail<CommittedWorkload>(propsResult.message);
+        }
+        const defaultValues = {
+            ...props,
+        };
+        defaultValues.contributedValue = props.contributedValue;
+        if (!defaultValues.createdBy) {
+            defaultValues.createdBy = SYSTEM;
+        }
+        if (!defaultValues.updatedBy) {
+            defaultValues.updatedBy = SYSTEM;
+        }
+        const committedWorkload = new CommittedWorkload(defaultValues, id);
+        return Result.ok<CommittedWorkload>(committedWorkload);
     }
 }

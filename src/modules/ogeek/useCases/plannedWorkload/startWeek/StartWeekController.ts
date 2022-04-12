@@ -9,13 +9,21 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiInternalServerErrorResponse,
+    ApiOkResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 import * as moment from 'moment';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
+import { MessageDto } from '../../../infra/dtos/message.dto';
 import { StartWeekDto } from '../../../infra/dtos/startWeek/startWeek.dto';
 import { StartWeekResponseDto } from '../../../infra/dtos/startWeek/startWeekResponse.dto';
 import { StartWeekErrors } from './StartWeekErrors';
@@ -31,12 +39,22 @@ export class StartWeekController {
     @Patch('start-week')
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
-        description: 'Start week for Geek',
+        type: [StartWeekResponseDto],
+        description: 'OK',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async execute(
         @Req() req: Request,
         @Body() startWeekDto: StartWeekDto,
-    ): Promise<StartWeekResponseDto> {
+    ): Promise<MessageDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
         const { userId } = findUserDto;
@@ -60,6 +78,15 @@ export class StartWeekController {
             }
         }
 
-        return { week: moment(startDate).week() } as StartWeekResponseDto;
+        // return { week: moment(startDate).week() } as StartWeekResponseDto;
+        const executingWeek = moment(startDate).week();
+
+        return {
+            statusCode: HttpStatus.OK,
+            message: 'Start week successfully',
+            data: {
+                week: executingWeek.toString(),
+            },
+        } as MessageDto;
     }
 }

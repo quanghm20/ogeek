@@ -11,7 +11,15 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBadRequestResponse,
+    ApiBearerAuth,
+    ApiCreatedResponse,
+    ApiForbiddenResponse,
+    ApiInternalServerErrorResponse,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { RoleType } from '../../../../../common/constants/roleType';
@@ -31,11 +39,23 @@ export class CreateIssueController {
     constructor(public readonly useCase: CreateIssueUseCase) {}
 
     @Post()
-    @HttpCode(HttpStatus.OK)
+    @HttpCode(HttpStatus.CREATED)
     @Roles(RoleType.PP)
-    @ApiOkResponse({
+    @ApiCreatedResponse({
         type: MessageDto,
-        description: 'Create potential issue',
+        description: 'Created',
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiForbiddenResponse({
+        description: 'Forbidden',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Interal Server Error',
     })
     async execute(
         @Body() body: CreateIssueDto,

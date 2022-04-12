@@ -3,10 +3,12 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
+import { RoleType } from '../../common/constants/roleType';
 import { ConfigService } from '../../shared/services/config.service';
 
 export interface JwtPayload {
     userId: number;
+    role: RoleType;
 }
 
 @Injectable()

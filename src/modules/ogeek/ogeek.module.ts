@@ -1,4 +1,5 @@
 import { HttpModule, Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -27,6 +28,7 @@ import {
     GetHistoryCommittedWorkloadUseCase,
 } from './useCases/committedWorkload';
 import { CronCommittedWorkload } from './useCases/committedWorkload/cronCommittedWorkload.service';
+import { CommittedWorkloadCreatedListener } from './useCases/committedWorkload/listeners/CommittedWorkloadListeners';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,
@@ -46,11 +48,16 @@ import {
     PlanWorkloadUseCase,
 } from './useCases/plannedWorkload/planWorkload';
 import {
+    ReviewRetroController,
+    ReviewRetroUseCase,
+} from './useCases/plannedWorkload/reviewRetro';
+import {
     StartWeekController,
     StartWeekUseCase,
 } from './useCases/plannedWorkload/startWeek';
 import { CreateIssueController } from './useCases/user/createIssue/CreateIssueController';
 import { CreateIssueUseCase } from './useCases/user/createIssue/CreateIssueUseCase';
+import { CreateUserController } from './useCases/user/createUser/CreateUserController';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
 import { GetUserController } from './useCases/user/getUser/GetUserController';
 import { GetUserUseCase } from './useCases/user/getUser/GetUserUseCase';
@@ -73,6 +80,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             ValueStreamEntity,
         ]),
         ScheduleModule.forRoot(),
+        EventEmitterModule.forRoot(),
     ],
     controllers: [
         CommittedWorkloadController,
@@ -89,6 +97,8 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetWorkloadListController,
         CreateIssueController,
         StartWeekController,
+        CreateUserController,
+        ReviewRetroController,
     ],
     providers: [
         CreateUserUseCase,
@@ -109,11 +119,9 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         CreateIssueUseCase,
         GetCommittedWorkloadUseCase,
         GetHistoryCommittedWorkloadUseCase,
+        ReviewRetroUseCase,
         CronCommittedWorkload,
-        {
-            provide: 'IUserRepo',
-            useClass: UserRepository,
-        },
+        CommittedWorkloadCreatedListener,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,
@@ -134,7 +142,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             provide: 'IPlannedWorkloadRepo',
             useClass: PlannedWorkloadRepository,
         },
-        UserRepository,
         {
             provide: 'IValueStreamRepo',
             useClass: ValueStreamRepository,
@@ -145,7 +152,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         },
     ],
     exports: [
-        UserRepository,
         CreateUserUseCase,
         GetUserUseCase,
         GetValueStreamUseCase,

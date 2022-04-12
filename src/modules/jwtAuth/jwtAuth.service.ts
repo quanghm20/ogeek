@@ -10,6 +10,7 @@ export class JwtAuthService {
     signJwt(user: UserDto): string {
         const payload = {
             userId: user.id.toValue(),
+            role: user.role,
         } as JwtPayload;
         return this._jwtService.sign(payload);
     }

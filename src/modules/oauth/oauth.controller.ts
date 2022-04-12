@@ -1,17 +1,16 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 
 import { ConfigService } from '../../shared/services/config.service';
 import { JwtAuthService } from '../jwtAuth/jwtAuth.service';
-import { User } from '../ogeek/domain/user';
-import { FindUserDto } from '../ogeek/infra/dtos/findUser.dto';
 import { UserDto } from '../ogeek/infra/dtos/user.dto';
-import { UserMap } from '../ogeek/mappers/userMap';
 import { CreateUserUseCase } from '../ogeek/useCases/user/createUser/CreateUserUseCase';
 import { GetUserUseCase } from '../ogeek/useCases/user/getUser/GetUserUseCase';
 import { OAuthGuard } from './oauth.guard';
 
 @Controller('')
+@ApiTags('OAuth')
 export class OauthController {
     constructor(
         private _configService: ConfigService,
@@ -33,21 +32,18 @@ export class OauthController {
         @Res({ passthrough: true }) res: Response,
     ): Promise<void> {
         const { username } = req.user as { username: string };
-        const userDto = { alias: username, ...req.user } as UserDto;
         // error from user info server
         if (!username) {
             res.redirect(`${this._configService.get('HOME_URL')}/error`);
         }
+        const userDto = { alias: username, ...req.user } as UserDto;
 
-        const findUserDto = { alias: userDto.alias } as FindUserDto;
-        let user = await this._getUserUseCase.execute(findUserDto);
-        if (user.isLeft()) {
-            user = await this._createdUserUseCase.execute(userDto);
+        let result = await this._getUserUseCase.execute(userDto);
+        if (result.isLeft()) {
+            result = await this._createdUserUseCase.execute(userDto);
         }
-
-        const mappedUser = UserMap.fromDomain(user.value.getValue() as User);
-        const jwtToken = this._jwtService.signJwt(mappedUser);
-
+        const user = result.value.getValue() as UserDto;
+        const jwtToken = this._jwtService.signJwt(user);
         res.redirect(`${this._configService.get(
             'HOME_URL',
         )}/user/callback/?accessToken=${jwtToken}
