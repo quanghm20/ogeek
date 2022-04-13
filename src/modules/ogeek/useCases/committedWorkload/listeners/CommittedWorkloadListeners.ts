@@ -45,7 +45,9 @@ export class CommittedWorkloadCreatedListener {
                 await this.plannedWorkloadRepo.createMany(plannedEntities);
             }
         }
-        const committedWorkload = committedEvent.committedWorkloads.pop();
+        const committedWorkload = committedEvent.committedWorkloads.find(
+            (committedWl) => committedWl,
+        );
         const user = committedWorkload.user;
         const sumCommit = committedEvent.committedWorkloads.reduce(
             (prev, curr) => prev + curr.committedWorkload,
