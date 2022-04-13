@@ -9,6 +9,7 @@ export class UserCommittedWorkload {
         example: 1,
     })
     userId: number;
+
     @ApiProperty({
         example: 'thai.ls',
     })
