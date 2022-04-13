@@ -1,4 +1,4 @@
-import { ASSIGNNUMBER } from '../../../common/constants/number';
+import { ASSIGN_NUMBER } from '../../../common/constants/number';
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { ActualPlanAndWorkLogDto } from '../infra/dtos/actualPlansAndWorkLogs.dto';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
@@ -56,9 +56,9 @@ export class ValueStreamsByWeekMap {
                 Number(committedWLDto.id.toString()),
         );
 
-        let actual = ASSIGNNUMBER;
+        let actual = ASSIGN_NUMBER;
 
-        let worklog = ASSIGNNUMBER;
+        let worklog = ASSIGN_NUMBER;
 
         if (actualPlanAndWorkLog) {
             actual = actualPlanAndWorkLog.actualPlannedWorkload;

@@ -1,5 +1,5 @@
 import { MAX_VIEWCHART_LENGTH } from '../../../common/constants/chart';
-import { ASSIGNNUMBER } from '../../../common/constants/number';
+import { ASSIGN_NUMBER } from '../../../common/constants/number';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { ExpertiseScope } from '../domain/expertiseScope';
 import { PlannedWorkload } from '../domain/plannedWorkload';
@@ -37,7 +37,7 @@ export class OverViewChartMap {
                         contributedValue.push({
                             week: weekItem,
                             plannedWorkload: plannedBetWeenWeek.plannedWorkload,
-                            actualWorkload: ASSIGNNUMBER,
+                            actualWorkload: ASSIGN_NUMBER,
                         } as WorkloadOverviewDto);
 
                         myPlannedLength++;
@@ -46,7 +46,7 @@ export class OverViewChartMap {
                             week: weekItem,
                             plannedWorkload:
                                 myCommittedWorkload.committedWorkload,
-                            actualWorkload: ASSIGNNUMBER,
+                            actualWorkload: ASSIGN_NUMBER,
                         } as WorkloadOverviewDto);
                     }
                 });
