@@ -2,8 +2,10 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { Issue } from '../domain/issue';
 import { IssueEntity } from '../infra/database/entities/issue.entity';
+import { CreatePotentialIssueDto } from '../infra/dtos/createPotentialIssue/createPotentialIssue.dto';
 import { PotentialIssueDto } from '../infra/dtos/getPotentialIssue/getPotentialIssue.dto';
 import { IssueDto } from '../infra/dtos/issue.dto';
+import { UpdatePotentialIssueDto } from '../infra/dtos/updatePotentialIssue/updatePotentialIssue.dto';
 import { UserMap } from './userMap';
 
 export class IssueMap implements Mapper<Issue> {
@@ -14,6 +16,25 @@ export class IssueMap implements Mapper<Issue> {
             firstDateOfWeek: issue.firstDateOfWeek,
             note: issue.note,
             user: issue.user,
+        };
+    }
+    public static fromDomainCreateIssue(
+        potentialIssue: Issue,
+    ): CreatePotentialIssueDto {
+        return {
+            userId: Number(potentialIssue.user.id),
+            status: potentialIssue.status,
+            firstDateOfWeek: potentialIssue.firstDateOfWeek,
+            note: potentialIssue.note,
+        };
+    }
+    public static fromDomainUpdateIssue(
+        potentialIssue: Issue,
+    ): UpdatePotentialIssueDto {
+        return {
+            id: Number(potentialIssue.id),
+            status: potentialIssue.status,
+            note: potentialIssue.note,
         };
     }
     public static fromDomainOne(issue: Issue): PotentialIssueDto {

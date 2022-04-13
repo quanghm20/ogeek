@@ -84,6 +84,9 @@ export class Issue extends AggregateRoot<IIssueProps> {
     set deletedBy(deletedBy: number) {
         this.props.deletedBy = deletedBy;
     }
+    public isResolve(): boolean {
+        return this.status === IssueStatus.RESOLVED;
+    }
     public static create(
         props: IIssueProps,
         id: UniqueEntityID,

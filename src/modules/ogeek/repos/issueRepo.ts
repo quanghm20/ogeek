@@ -19,7 +19,12 @@ export interface IIssueRepo {
         startDateOfWeek,
         endDateOfWeek,
     }: StartEndDateOfWeekWLInputDto): Promise<Issue[]>;
-    save(userId: number, week: number, type: IssueStatus): Promise<Issue>;
+    save(
+        userId: number,
+        status: IssueStatus,
+        note: string,
+        firstDateOfWeek: Date,
+    ): Promise<Issue>;
     findByUserId(
         startDateOfWeek: string,
         endDateOfWeek: string,
@@ -106,8 +111,9 @@ export class IssueRepository implements IIssueRepo {
 
     async save(
         userId: number,
-        week: number,
-        type: IssueStatus,
+        status: IssueStatus,
+        note: string,
+        firstDateOfWeek: Date,
     ): Promise<Issue> {
         const queryRunner = getConnection().createQueryRunner();
         await queryRunner.connect();
@@ -115,14 +121,17 @@ export class IssueRepository implements IIssueRepo {
             const user = new UserEntity(userId);
 
             await queryRunner.startTransaction();
-            const issue = new IssueEntity();
-            await queryRunner.manager.save(issue);
+            const potentialIssue = new IssueEntity();
+            potentialIssue.status = status;
+            potentialIssue.note = note;
+            potentialIssue.firstDateOfWeek = firstDateOfWeek;
+            potentialIssue.createdAt = new Date();
+
+            await queryRunner.manager.save(potentialIssue);
             await queryRunner.commitTransaction();
-            // return HttpStatus.CREATED;
-            return issue ? IssueMap.toDomain(issue) : null;
+            return potentialIssue ? IssueMap.toDomain(potentialIssue) : null;
         } catch (error) {
             await queryRunner.rollbackTransaction();
-            // return HttpStatus.INTERNAL_SERVER_ERROR;
         } finally {
             await queryRunner.release();
         }

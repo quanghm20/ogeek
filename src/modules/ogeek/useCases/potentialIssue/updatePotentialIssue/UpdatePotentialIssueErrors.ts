@@ -1,7 +1,8 @@
 import { Result } from '../../../../../core/logic/Result';
 import { UseCaseError } from '../../../../../core/logic/UseCaseError';
-export namespace CreatePotentialIssueErrors {
-    export class FailToCreatePotentialIssue extends Result<UseCaseError> {
+
+export namespace UpdatePotentialIssueErrors {
+    export class FailToUpdatePotentialIssue extends Result<UseCaseError> {
         constructor() {
             super(false, {
                 message: 'Can not mark potential issue',
@@ -12,6 +13,13 @@ export namespace CreatePotentialIssueErrors {
         constructor(userId: number) {
             super(false, {
                 message: `Can not find User ${userId}`,
+            } as UseCaseError);
+        }
+    }
+    export class NotFound extends Result<UseCaseError> {
+        constructor(potentialIssueId: number) {
+            super(false, {
+                message: `Can not find potential issue ${potentialIssueId}`,
             } as UseCaseError);
         }
     }

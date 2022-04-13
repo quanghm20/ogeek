@@ -55,11 +55,11 @@ export class CheckNotificationController {
         description: 'Interal Server Error',
     })
     async execute(
-        @Body() body: CheckNotificationDto,
+        @Body() checkNotification: CheckNotificationDto,
         @Req() req: Request,
     ): Promise<NotificationDto> {
         const { userId } = req.user as JwtPayload;
-        const result = await this.useCase.execute(body, userId);
+        const result = await this.useCase.execute(checkNotification, userId);
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {
