@@ -81,6 +81,19 @@ export class MomentService {
         return new Date(endDateOfWeek);
     }
 
+    public static firstDateOfWeekByYear(week: number, year: number): Date {
+        const date = moment().week(week).year(year).format();
+
+        const num = moment(date).format('e');
+
+        const firstDateOfWeek = moment(date)
+            .add(-num, 'days')
+            .startOf('day')
+            .format();
+
+        return new Date(firstDateOfWeek);
+    }
+
     public static shiftFirstDateChart(injectedDate: Date): Date {
         const numOfWeekToContainWorklog = 12;
         const numOfDaysInAWeek = 7;

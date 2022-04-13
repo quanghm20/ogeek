@@ -62,6 +62,10 @@ import {
     StartWeekController,
     StartWeekUseCase,
 } from './useCases/plannedWorkload/startWeek';
+import {
+    GetPotentialIssuesController,
+    GetPotentialIssuesUseCase,
+} from './useCases/potentialIssue/getPotentialIssuesHistory';
 import { CreateIssueController } from './useCases/user/createIssue/CreateIssueController';
 import { CreateIssueUseCase } from './useCases/user/createIssue/CreateIssueUseCase';
 import { CreateUserController } from './useCases/user/createUser/CreateUserController';
@@ -109,6 +113,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         CheckNotificationController,
         CreateUserController,
         ReviewRetroController,
+        GetPotentialIssuesController,
     ],
     providers: [
         CreateUserUseCase,
@@ -133,8 +138,9 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         CheckNotificationUseCase,
         ReviewRetroUseCase,
         CronCommittedWorkload,
-        CommittedWorkloadCreatedListener,
         UpdateCommittedWorkloadUseCase,
+        GetPotentialIssuesUseCase,
+        CommittedWorkloadCreatedListener,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

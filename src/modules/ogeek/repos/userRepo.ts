@@ -12,6 +12,11 @@ export interface IUserRepo {
     findByAlias(alias: string): Promise<User>;
     findAllUser(): Promise<User[]>;
     update(condition: any, update: any): Promise<void>;
+    findPotentialIssuesHistoryInTimeRange(
+        userId: number,
+        startDateOfStartWeek: Date,
+        startDateOfEndWeek: Date,
+    ): Promise<any[]>;
 }
 
 @Injectable()
@@ -55,5 +60,20 @@ export class UserRepository implements IUserRepo {
 
     async update(condition: any, update: any): Promise<void> {
         await this.repo.update(condition, update);
+    }
+
+    async findPotentialIssuesHistoryInTimeRange(
+        userId: number,
+        // startDateOfStartWeek: Date,
+        // startDateOfEndWeek: Date,
+    ): Promise<any[]> {
+        return this.repo
+            .createQueryBuilder('user')
+            .select('user.id', 'userId')
+            .addSelect('user.alias', 'alias')
+            .where('user.id = :userId', { userId })
+            .innerJoinAndSelect('user.issue', 'issue')
+            .addSelect('issue.created_at', 'created_at')
+            .getRawMany();
     }
 }
