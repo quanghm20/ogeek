@@ -313,7 +313,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     }
 
     async findAllCommittedWorkload(
-        query?: FilterCommittedWorkload,
+        query: FilterCommittedWorkload,
     ): Promise<PaginationCommittedWorkload> {
         try {
             const queryBuilder = this.repo
