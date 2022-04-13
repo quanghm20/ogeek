@@ -26,9 +26,9 @@ import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
-import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkload/createPlannedWorkloadsList.dto';
-import { FindUserDto } from '../../../infra/dtos/findUser.dto';
+// import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
+// import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { GetPotentialIssuesInputDto } from '../../../infra/dtos/getPotentialIssues/getPotentialIssuesInput.dto';
 import { MessageDto } from '../../../infra/dtos/message.dto';
 import { GetPotentialIssuesErrors } from './GetPotentialIssuesErrors';
@@ -65,14 +65,14 @@ export class GetPotentialIssuesController {
         @Param('userId') userId: number,
         @Body() getPotentialIssuesInputDto: GetPotentialIssuesInputDto,
     ): Promise<MessageDto> {
-        const jwtPayload = req.user as JwtPayload;
-        const findUserDto = { ...jwtPayload } as FindUserDto;
-        const picId = findUserDto.userId;
+        // const jwtPayload = req.user as JwtPayload;
+        // const findUserDto = { ...jwtPayload } as FindUserDto;
+        // const picId = findUserDto.userId;
 
         getPotentialIssuesInputDto.userId = userId;
         const result = await this.useCase.execute(
             getPotentialIssuesInputDto,
-            picId,
+            // picId,
         );
 
         if (result.isLeft()) {
@@ -100,7 +100,7 @@ export class GetPotentialIssuesController {
         return {
             statusCode: HttpStatus.OK,
             message: 'Get potential issues sucessfully',
-            // data: getPotentialIssuesInputDto,
+            // data: result.value.getValue(),
         } as MessageDto;
     }
 }

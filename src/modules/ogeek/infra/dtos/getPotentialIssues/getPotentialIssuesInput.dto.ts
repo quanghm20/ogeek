@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class GetPotentialIssuesInputDto {
-    @IsNumber()
     userId?: number;
 
     @IsNumber()
@@ -12,7 +11,7 @@ export class GetPotentialIssuesInputDto {
 
     @IsNumber()
     @IsNotEmpty()
-    @ApiProperty({ example: 3 })
+    @ApiProperty({ example: 2022 })
     startYear: number;
 
     @IsNumber()
@@ -22,7 +21,7 @@ export class GetPotentialIssuesInputDto {
 
     @IsNumber()
     @IsNotEmpty()
-    @ApiProperty({ example: 3 })
+    @ApiProperty({ example: 2023 })
     endYear: number;
 
     constructor(

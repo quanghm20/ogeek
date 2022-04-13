@@ -77,16 +77,26 @@ export class UserRepository implements IUserRepo {
 
     async findPotentialIssuesHistoryInTimeRange(
         userId: number,
-        // startDateOfStartWeek: Date,
-        // startDateOfEndWeek: Date,
+        startDateOfStartWeek: Date,
+        startDateOfEndWeek: Date,
     ): Promise<any[]> {
         return this.repo
             .createQueryBuilder('user')
             .select('user.id', 'userId')
             .addSelect('user.alias', 'alias')
             .where('user.id = :userId', { userId })
-            .innerJoinAndSelect('user.issue', 'issue')
+            .leftJoin('user.issue', 'issue')
             .addSelect('issue.created_at', 'created_at')
+            .addSelect('issue.updated_at', 'updated_at')
+            .addSelect('issue.first_date_of_week', 'first_date_of_week')
+            .addSelect('issue.status', 'status')
+            .andWhere(
+                'issue.first_date_of_week >= :startDateOfStartWeek AND issue.first_date_of_week <= :startDateOfEndWeek',
+                {
+                    startDateOfStartWeek,
+                    startDateOfEndWeek,
+                },
+            )
             .getRawMany();
     }
 
