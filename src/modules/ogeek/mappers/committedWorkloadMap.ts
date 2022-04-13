@@ -116,6 +116,9 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
         committedWLEntity: CommittedWorkloadEntity,
     ): CommittedWorkload {
         try {
+            if (!committedWLEntity) {
+                return null;
+            }
             const { id } = committedWLEntity;
             const committedWorkloadOrError = CommittedWorkload.create(
                 {
@@ -156,8 +159,6 @@ export class CommittedWorkloadMap implements Mapper<CommittedWorkload> {
                 const committedOrError = this.toDomain(committedWL);
                 if (committedOrError) {
                     arrCommittedWL.push(committedOrError);
-                } else {
-                    return null;
                 }
             });
         }
