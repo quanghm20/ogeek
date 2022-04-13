@@ -465,6 +465,29 @@ VALUES
         );
         await queryRunner.query(
             `INSERT INTO
+                issue (
+                    user_id,
+                    status,
+                    note,
+                    first_date_of_week,
+                    created_at,
+                    created_by
+                )
+            VALUES
+                (1, 'POTENTIAL ISSUE', 'Just a note 1 from PP Ops', '2022-04-02', '2022-04-08', 12),
+                (2, 'POTENTIAL ISSUE', 'Just a note 2 from PP Ops', '2022-04-09', '2022-04-13', 12),
+                (3, 'POTENTIAL ISSUE', 'Just a note 3 from PP Ops', '2022-02-05', '2022-02-07', 12),
+                (4, 'POTENTIAL ISSUE', 'Just a note 4 from PP Ops', '2022-01-01', '2022-01-04', 12),
+                (5, 'POTENTIAL ISSUE', 'Just a note 5 from PP Ops', '2022-01-22', '2022-01-23', 12),
+                (6, 'RESOLVED', 'Just a note 6 from PP Ops', '2022-01-01', '2022-01-04', 12),
+                (7, 'POTENTIAL ISSUE', 'Just a note 7 from PP Ops', '2022-01-01', '2022-01-04', 12),
+                (8, 'RESOLVED', 'Just a note 8 from PP Ops', '2022-01-01', '2022-01-04', 12),
+                (9, 'POTENTIAL ISSUE', 'Just a note 9 from PP Ops', '2022-01-01', '2022-01-04', 12),
+                (10, 'POTENTIAL ISSUE', 'Just a note 10 from PP Ops', '2022-01-01', '2022-01-04', 12)
+            `,
+        );
+        await queryRunner.query(
+            `INSERT INTO
                 notification (
                     message,
                     read,

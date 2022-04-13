@@ -45,6 +45,27 @@ export class CommittedWorkloadCreatedListener {
                 await this.plannedWorkloadRepo.createMany(plannedEntities);
             }
         }
+        const committedWorkload = committedEvent.committedWorkloads.pop();
+        const user = committedWorkload.user;
+        const sumCommit = committedEvent.committedWorkloads.reduce(
+            (prev, curr) => prev + curr.committedWorkload,
+            0,
+        );
+
+        const notificationMessage = `Admin has added ${sumCommit} hr(s) committed workload for you.`;
+        const notification = Notification.create({
+            notificationMessage,
+            user,
+            read: NotificationStatus.UNREAD,
+            createdBy: SYSTEM,
+            updatedBy: SYSTEM,
+        });
+
+        const notificationEntity = NotificationMap.toEntity(
+            notification.getValue(),
+        );
+
+        await this.notificationRepo.save(notificationEntity);
     }
 
     @OnEvent('committed-workload.updated')
@@ -78,8 +99,12 @@ export class CommittedWorkloadCreatedListener {
 
         const committedWorkload = committedEvent.committedWorkloads.pop();
         const user = committedWorkload.user;
+        const sumCommit = committedEvent.committedWorkloads.reduce(
+            (prev, curr) => prev + curr.committedWorkload,
+            0,
+        );
 
-        const notificationMessage = `Admin has added ${committedWorkload.committedWorkload} hr(s) committed workload for you.`;
+        const notificationMessage = `Admin has updated ${sumCommit} hr(s) committed workload for you.`;
         const notification = Notification.create({
             notificationMessage,
             user,

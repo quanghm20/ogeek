@@ -6,7 +6,7 @@ import {
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
-    Put,
+    Patch,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -35,7 +35,7 @@ import { CheckNotificationUseCase } from './CheckNotificationUseCase';
 export class CheckNotificationController {
     constructor(public readonly useCase: CheckNotificationUseCase) {}
 
-    @Put()
+    @Patch()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: NotificationDto,
@@ -55,11 +55,11 @@ export class CheckNotificationController {
         description: 'Interal Server Error',
     })
     async execute(
-        @Body() body: CheckNotificationDto,
+        @Body() checkNotification: CheckNotificationDto,
         @Req() req: Request,
     ): Promise<NotificationDto> {
         const { userId } = req.user as JwtPayload;
-        const result = await this.useCase.execute(body, userId);
+        const result = await this.useCase.execute(checkNotification, userId);
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {

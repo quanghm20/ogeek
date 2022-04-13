@@ -10,9 +10,7 @@ import { IUserRepo } from '../../../repos/userRepo';
 import { GetNotificationErrors } from './GetNotificationErrors';
 
 type Response = Either<
-    | AppError.UnexpectedError
-    | GetNotificationErrors.UserNotFound
-    | GetNotificationErrors.NotificationNotFound,
+    AppError.UnexpectedError | GetNotificationErrors.UserNotFound,
     Result<NotificationDto[]>
 >;
 
@@ -36,10 +34,6 @@ export class GetNotificationUseCase
             const notifications = await this.notificationRepo.findByUserId(
                 userId,
             );
-
-            if (!notifications.length) {
-                return left(new GetNotificationErrors.NotificationNotFound());
-            }
 
             const notificationsDto = notifications.map((notification) =>
                 NotificationMap.fromDomain(notification),

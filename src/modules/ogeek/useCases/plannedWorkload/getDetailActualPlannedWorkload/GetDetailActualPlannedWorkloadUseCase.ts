@@ -33,19 +33,7 @@ export class GetDetailActualPlannedWorkloadUseCase
             const user = await this.userRepo.findById(
                 inputDetailPlannedWorkloadAndWorklog.userId,
             );
-            // const queryString =
-            //     inputDetailPlannedWorkloadAndWorklog.expertiseScopes.reduce(
-            //         (qString, expertiseScope) =>
-            //             `${qString}data=${expertiseScope}&`,
-            //         '',
-            //     );
-            // const url = `
-            // ${process.env.MOCK_URL}/api/overview/detail-actual-workload?${queryString}userId=${inputDetailPlannedWorkloadAndWorklog.userId}`;
-            // const request = await Axios.get(url.trim(), {
-            //     headers: {
-            //         'x-api-key': process.env.MOCK_API_KEY,
-            //     },
-            // });
+
             const request = await this.senteService.getDetailedActualWorkload(
                 inputDetailPlannedWorkloadAndWorklog,
             );

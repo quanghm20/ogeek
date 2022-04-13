@@ -18,6 +18,9 @@ export class NotificationMap implements Mapper<Notification> {
     }
 
     public static toDomain(raw: NotificationEntity): Notification {
+        if (!raw) {
+            return null;
+        }
         const { id } = raw;
         const notificationOrError = Notification.create(
             {

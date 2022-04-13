@@ -1,32 +1,31 @@
 import { Result } from '../../../../../core/logic/Result';
 import { UseCaseError } from '../../../../../core/logic/UseCaseError';
-
-export namespace CreateIssueErrors {
-    export class CreateIssueFailed extends Result<UseCaseError> {
+export namespace CreatePotentialIssueErrors {
+    export class FailToCreatePotentialIssue extends Result<UseCaseError> {
         constructor() {
             super(false, {
-                message: 'Failed to create issue!',
+                message: 'Can not mark potential issue',
             } as UseCaseError);
         }
     }
-    export class NotFound extends Result<UseCaseError> {
-        constructor(message: string) {
+    export class UserNotFound extends Result<UseCaseError> {
+        constructor(userId: number) {
             super(false, {
-                message: `Can not find User ${message} .`,
+                message: `Can not find User ${userId}`,
             } as UseCaseError);
         }
     }
     export class Forbidden extends Result<UseCaseError> {
         constructor() {
             super(false, {
-                message: 'Forbidden !!! ',
+                message: 'Forbidden',
             } as UseCaseError);
         }
     }
-    export class WeekError extends Result<UseCaseError> {
+    export class BadRequest extends Result<UseCaseError> {
         constructor() {
             super(false, {
-                message: 'Week is not found !',
+                message: 'Empty input',
             } as UseCaseError);
         }
     }

@@ -34,6 +34,7 @@ import { Request } from 'express';
 import { RoleType } from '../../../../common/constants/roleType';
 import { PageMetaDto } from '../../../../common/dto/PageMetaDto';
 import { Roles } from '../../../../decorators/roles.decorator';
+import { RolesGuard } from '../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
 import { CreateCommittedWorkloadDto } from '../../infra/dtos/createCommittedWorkload.dto';
@@ -63,7 +64,6 @@ export class DataCommittedWorkload {
 @Controller('api/committed-workloads')
 @ApiTags('Committed Workload')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 export class CommittedWorkloadController {
     constructor(
         public readonly createCommitUseCase: CreateCommittedWorkloadUseCase,
@@ -75,7 +75,7 @@ export class CommittedWorkloadController {
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @Roles(RoleType.PP)
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiCreatedResponse({
         type: DataCommittedWorkload,
     })
@@ -130,7 +130,6 @@ export class CommittedWorkloadController {
 
     @Get()
     @HttpCode(HttpStatus.OK)
-    @Roles(RoleType.PP)
     @ApiOkResponse({
         type: DataCommittedWorkload,
     })

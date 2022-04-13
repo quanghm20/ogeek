@@ -1,6 +1,5 @@
 import {
     Controller,
-    ForbiddenException,
     Get,
     HttpCode,
     HttpStatus,
@@ -12,7 +11,6 @@ import {
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
-    ApiForbiddenResponse,
     ApiInternalServerErrorResponse,
     ApiOkResponse,
     ApiTags,
@@ -20,31 +18,29 @@ import {
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
+import { RoleType } from '../../../../../common/constants/roleType';
+import { Roles } from '../../../../../decorators/roles.decorator';
+import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { NotificationDto } from '../../../infra/dtos/notification/getNotifications/getNotification.dto';
-import { GetNotificationErrors } from './GetNotificationErrors';
-import { GetNotificationUseCase } from './GetNotificationUseCase';
+import { DetailCommittedWorkloadsDto } from '../../../../ogeek/infra/dtos/getDetailCommittedWorkload/DetailCommittedWorkloads.dto';
+import { GetDetailCommittedWorkloadErrors } from './GetDetailCommittedWorkloadErrors';
+import { GetDetailCommittedWorkloadUseCase } from './GetDetailCommittedWorkloadsUseCase';
 
-@Controller('api/user/notification')
-@ApiTags('User')
+@Controller('api/admin/committed-workload/detail')
+@ApiTags('Committed Workload')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
-export class GetNotificationController {
-    constructor(public readonly useCase: GetNotificationUseCase) {}
+export class GetDetailCommittedWorkloadController {
+    constructor(public readonly useCase: GetDetailCommittedWorkloadUseCase) {}
 
     @Get()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
-        type: NotificationDto,
-        isArray: true,
+        type: DetailCommittedWorkloadsDto,
         description: 'OK',
     })
     @ApiUnauthorizedResponse({
         description: 'Unauthorized',
-    })
-    @ApiForbiddenResponse({
-        description: 'Forbidden',
     })
     @ApiBadRequestResponse({
         description: 'Bad Request',
@@ -52,21 +48,24 @@ export class GetNotificationController {
     @ApiInternalServerErrorResponse({
         description: 'Interal Server Error',
     })
-    async execute(@Req() req: Request): Promise<NotificationDto[]> {
+    @Roles(RoleType.PP)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    async execute(@Req() req: Request): Promise<DetailCommittedWorkloadsDto> {
         const { userId } = req.user as JwtPayload;
-
         const result = await this.useCase.execute(userId);
         if (result.isLeft()) {
             const error = result.value;
+
             switch (error.constructor) {
-                case GetNotificationErrors.UserNotFound:
+                case GetDetailCommittedWorkloadErrors.NotFoundCommittedWorkload:
                     throw new NotFoundException(error.errorValue());
-                case GetNotificationErrors.Forbidden:
-                    throw new ForbiddenException(error.errorValue());
+                case GetDetailCommittedWorkloadErrors.NotFoundActualWorklogs:
+                    throw new NotFoundException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(error.errorValue());
             }
         }
+
         return result.value.getValue();
     }
 }
