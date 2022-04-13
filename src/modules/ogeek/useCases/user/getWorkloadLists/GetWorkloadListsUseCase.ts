@@ -98,24 +98,31 @@ export class GetWorkloadListsUseCase
                 });
             }
 
-            // handle duplicate user
-            listUserWorkloads.forEach((userWorkload) => {
+            const userWorkloadsData = listUserWorkloads.data;
+
+            // handle duplicate user and change status
+            userWorkloadsData.forEach((userWorkload) => {
+                let actualWorkloadsTemp = [...actualWorkloads];
                 if (!hashMap[userWorkload.userId]) {
-                    const actualWorkloadsTemp = actualWorkloads;
-                    // console.log('105', actualWorkloadsTemp);
                     if (userWorkload.status) {
-                        actualWorkloadsTemp.forEach((actual) => {
-                            if (
-                                actual.week ===
-                                MomentService.convertDateToWeek(
-                                    userWorkload.mark,
-                                )
-                            ) {
-                                actual.status = userWorkload.status;
-                            }
-                        });
+                        actualWorkloadsTemp = actualWorkloadsTemp.map(
+                            (actual) => {
+                                if (
+                                    actual.week ===
+                                    MomentService.convertDateToWeek(
+                                        userWorkload.mark,
+                                    )
+                                ) {
+                                    return {
+                                        ...actual,
+                                        status: userWorkload.status,
+                                    };
+                                }
+                                return { ...actual };
+                            },
+                        );
                     }
-                    // console.log('118', actualWorkloadsTemp);
+
                     hashMap[userWorkload.userId] = {
                         ...userWorkload,
                         actualWorkloads: actualWorkloadsTemp,
@@ -135,7 +142,9 @@ export class GetWorkloadListsUseCase
                 );
             });
 
-            const hashMapArray = Object.values(hashMap);
+            let hashMapArray = Object.values(hashMap);
+
+            hashMapArray = hashMapArray.slice(0, 10);
 
             const userWorkloads = hashMapArray.map((workloadItem) => {
                 for (const res of response) {
@@ -156,12 +165,10 @@ export class GetWorkloadListsUseCase
                 }
             });
 
-            const itemCount = hashMapArray.length;
-
             const paginationResponse = new PaginationResponseDto(
                 query.page,
                 pagination.limit,
-                itemCount,
+                listUserWorkloads.itemCount,
             );
 
             const userWorkloadsResponse = {

@@ -9,7 +9,7 @@ import { IssueEntity } from '../infra/database/entities';
 import { UserEntity } from '../infra/database/entities/user.entity';
 import { PaginationRepoDto } from '../infra/dtos/pagination.dto';
 import { HistoryWorkloadDto } from '../infra/dtos/workloadListUsers/historyWorkload.dto';
-// import { HistoryWorkloadDataDto } from '../infra/dtos/workloadListUsers/historyWorkloadData.dto';
+import { HistoryWorkloadDataDto } from '../infra/dtos/workloadListUsers/historyWorkloadData.dto';
 import { UserMap } from '../mappers/userMap';
 
 export interface IUserRepo {
@@ -22,7 +22,7 @@ export interface IUserRepo {
         firstDateOfWeek: Date,
         endDateOfCurrentWeek: Date,
         search?: string,
-    ): Promise<HistoryWorkloadDto[]>;
+    ): Promise<HistoryWorkloadDataDto>;
 }
 
 @Injectable()
@@ -75,28 +75,19 @@ export class UserRepository implements IUserRepo {
         firstDateOfWeek: Date,
         endDateOfCurrentWeek: Date,
         search?: string,
-    ): Promise<HistoryWorkloadDto[]> {
+    ): Promise<HistoryWorkloadDataDto> {
         const subQuery = this.issueRepo
             .createQueryBuilder('issue')
             .select('issue.note', 'note')
             .addSelect('issue.status', 'status')
             .addSelect('issue.user_id', 'id')
             .addSelect('issue.first_date_of_week', 'mark')
-            // .addSelect(
-            //     'row_number() over (partition by "user_id" order by "updated_at" desc) as rank',
-            // )
             .where(
                 `issue.first_date_of_week >= '${firstDateOfWeek.toISOString()}'`,
             )
             .andWhere(
                 `issue.first_date_of_week <= '${endDateOfCurrentWeek.toISOString()}'`,
             );
-
-        // const issueQuery = getConnection()
-        //     .createQueryBuilder()
-        //     .select(['note', 'status', 'id'])
-        //     .from('(' + subQuery.getQuery() + ')', 'ranks')
-        //     .where('rank = 1');
 
         const historyWorkloads = this.repo
             .createQueryBuilder('user')
@@ -134,15 +125,26 @@ export class UserRepository implements IUserRepo {
                 name2: CommittedWorkloadStatus.NOT_RENEW,
             });
 
-        // const total = await historyWorkloads.getRawMany();
-        // const count = total.length;
-
         const historyWorkloadsQuery = await historyWorkloads
             .orderBy(pagination.order)
             .offset(pagination.page * pagination.limit)
-            .limit(pagination.limit)
+            .limit(pagination.limit * 3)
             .getRawMany();
 
-        return historyWorkloadsQuery as HistoryWorkloadDto[];
+        const userItem = await this.repo
+            .createQueryBuilder('user')
+            .innerJoin('user.committedWorkloads', 'committedWorkload')
+            .where('committedWorkload.status = :status1', {
+                status1: CommittedWorkloadStatus.ACTIVE,
+            })
+            .orWhere('committedWorkload.status = :status2', {
+                status2: CommittedWorkloadStatus.NOT_RENEW,
+            })
+            .getMany();
+
+        return {
+            itemCount: userItem.length,
+            data: historyWorkloadsQuery as HistoryWorkloadDto[],
+        } as HistoryWorkloadDataDto;
     }
 }
