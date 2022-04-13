@@ -474,7 +474,7 @@ VALUES
                     created_by
                 )
             VALUES
-                (1, 'POTENTIAL ISSUE', 'Just a note from PP Ops', '2022-04-02 16:12:01', '2022-04-08 16:12:01', 12);
+                (1, 'POTENTIAL ISSUE', 'Just a note from PP Ops', '2022-04-02', '2022-04-08', 12);
             `,
         );
         await queryRunner.query(
