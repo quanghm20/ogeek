@@ -76,13 +76,11 @@ export class UpdateCommittedWorkloadUseCase
 
             if (isIncoming) {
                 const oldCommitted =
-                    await this.getAndHandleOldCommittedWorkload(
-                        userId,
-                        startDate,
-                    );
+                    await this.getAndHandleOldCommittedWorkload(userId);
 
                 const oldCommittedEntities =
                     CommittedWorkloadMap.toEntities(oldCommitted);
+
                 const result =
                     await this.committedWorkloadRepo.addCommittedWorkload(
                         committedWorkloadEntities,
@@ -200,14 +198,12 @@ export class UpdateCommittedWorkloadUseCase
 
     async getAndHandleOldCommittedWorkload(
         userId: number,
-        startDate: Date,
     ): Promise<CommittedWorkload[]> {
         const oldCommits = await this.committedWorkloadRepo.findByUserId(
             userId,
             CommittedWorkloadStatus.INCOMING,
         );
         for await (const oldCommit of oldCommits) {
-            oldCommit.handleExpiredDateOldCommittedWorkload(startDate);
             oldCommit.changeStatus(CommittedWorkloadStatus.INACTIVE);
         }
         return oldCommits;
