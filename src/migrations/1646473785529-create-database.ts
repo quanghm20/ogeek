@@ -4,7 +4,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
     name = 'createDatabase1646473785529';
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`SET TIMEZONE=${process.env.TIMEZONE}`);
+        await queryRunner.query(`SET TIMEZONE='${process.env.TIMEZONE}'`);
         await queryRunner.query(
             `CREATE TYPE "public"."user_role_enum" AS 
             ENUM('USER', 'PEOPLE_OPS')`,
