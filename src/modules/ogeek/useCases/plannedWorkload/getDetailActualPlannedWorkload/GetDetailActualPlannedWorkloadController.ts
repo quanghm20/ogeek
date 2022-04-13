@@ -21,6 +21,7 @@ import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
+import { InputValueStreamByWeekDto } from '../../../../ogeek/infra/dtos/valueStreamsByWeek/inputValueStream.dto';
 import {
     DetailActualPlannedWorkloadAndWorklogDto,
     InputDetailPlannedWorkloadAndWorklogDto,
@@ -55,7 +56,7 @@ export class GetDetailActualPlannedWorkloadController {
     async execute(
         @Req() req: Request,
         @Query('data') expertiseScopes: string[],
-        @Query('week') week: number,
+        @Query() { week }: InputValueStreamByWeekDto,
     ): Promise<DetailActualPlannedWorkloadAndWorklogDto> {
         const { userId } = req.user as JwtPayload;
         const inputDetailPlannedWorkloadAndWorklog = {
