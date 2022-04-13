@@ -32,7 +32,7 @@ import { GetPotentialIssueErrors } from './GetPotentialIssueErrors';
 import { GetPotentialIssueUseCase } from './GetPotentialIssueUseCases';
 
 @Controller('api/admin/user/potential-issue')
-@ApiTags('User')
+@ApiTags('Potential Issue')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class GetPotentialIssueController {
