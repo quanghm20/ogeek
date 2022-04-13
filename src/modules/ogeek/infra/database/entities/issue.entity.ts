@@ -15,7 +15,7 @@ export class IssueEntity extends AbstractEntity {
     @Column({ name: 'note' })
     note: string;
 
-    @Column({ name: 'date_of_week' })
+    @Column({ name: 'first_date_of_week' })
     firstDateOfWeek: Date;
 
     @ManyToOne(() => UserEntity, (user) => user.id)
