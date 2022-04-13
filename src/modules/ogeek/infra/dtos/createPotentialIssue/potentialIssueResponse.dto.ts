@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 import { IssueStatus } from '../../../../../common/constants/issueStatus';
 
-export class CreatePotentialIssueDto {
+export class PotentialIssueResponseDto {
     @ApiProperty({ example: 2 })
     @IsNumber()
     @IsNotEmpty()
-    userId: number;
+    id: number;
 
     @ApiProperty({ example: new Date() })
     @IsString()
@@ -15,7 +15,7 @@ export class CreatePotentialIssueDto {
     firstDateOfWeek: Date;
 
     @ApiProperty({ enum: IssueStatus, example: IssueStatus.POTENTIAL_ISSUE })
-    @IsString()
+    @IsDateString()
     @IsNotEmpty()
     status: IssueStatus;
 
@@ -24,6 +24,6 @@ export class CreatePotentialIssueDto {
             'Nam is overloading in Project Aqua 2.0 due to its several technical issues.',
     })
     @IsString()
-    @IsOptional()
-    note?: string;
+    @IsNotEmpty()
+    note: string;
 }

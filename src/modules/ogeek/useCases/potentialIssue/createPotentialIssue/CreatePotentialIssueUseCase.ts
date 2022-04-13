@@ -4,6 +4,7 @@ import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { CreatePotentialIssueDto } from '../../../infra/dtos/createPotentialIssue/createPotentialIssue.dto';
+import { PotentialIssueResponseDto } from '../../../infra/dtos/createPotentialIssue/potentialIssueResponse.dto';
 import { IssueMap } from '../../../mappers/issueMap';
 import { IIssueRepo } from '../../../repos/issueRepo';
 import { IUserRepo } from '../../../repos/userRepo';
@@ -13,7 +14,7 @@ type Response = Either<
     | CreatePotentialIssueErrors.UserNotFound
     | CreatePotentialIssueErrors.BadRequest
     | CreatePotentialIssueErrors.Forbidden,
-    Result<CreatePotentialIssueDto>
+    Result<PotentialIssueResponseDto>
 >;
 
 @Injectable()
@@ -49,6 +50,7 @@ export class CreatePotentialIssueUseCase
                 status,
                 note,
                 firstDateOfWeek,
+                picId,
             );
             if (potentialIssue) {
                 const potentialIssueDto =
