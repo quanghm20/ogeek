@@ -8,6 +8,7 @@ import { User } from './user';
 interface IIssueProps {
     note: string;
     status: IssueStatus;
+    firstDateOfWeek: Date;
     user: User;
     createdBy?: number;
     updatedBy?: number;
@@ -35,11 +36,53 @@ export class Issue extends AggregateRoot<IIssueProps> {
     set note(note: string) {
         this.props.note = note;
     }
+    get firstDateOfWeek(): Date {
+        return this.props.firstDateOfWeek;
+    }
+    set firstDateOfWeek(firstDateOfWeek: Date) {
+        this.props.firstDateOfWeek = firstDateOfWeek;
+    }
     get user(): User {
         return this.props.user;
     }
     set user(user: User) {
         this.props.user = user;
+    }
+    get createdAt(): Date {
+        return this.props.createdAt;
+    }
+    set createdAt(createdAt: Date) {
+        this.props.createdAt = createdAt;
+    }
+    get updatedAt(): Date {
+        return this.props.createdAt;
+    }
+    set updatedAt(updatedAt: Date) {
+        this.props.updatedAt = updatedAt;
+    }
+    get deletedAt(): Date {
+        return this.props.deletedAt;
+    }
+    set deletedAt(deletedAt: Date) {
+        this.props.deletedAt = deletedAt;
+    }
+    get createdBy(): number {
+        return this.props.createdBy;
+    }
+    set createdBy(createdBy: number) {
+        this.props.createdBy = createdBy;
+    }
+    get updatedBy(): number {
+        return this.props.updatedBy;
+    }
+    set updatedBy(updatedBy: number) {
+        this.props.updatedBy = updatedBy;
+    }
+    get deletedBy(): number {
+        return this.props.deletedBy;
+    }
+    set deletedBy(deletedBy: number) {
+        this.props.deletedBy = deletedBy;
     }
     public static create(
         props: IIssueProps,
@@ -56,5 +99,11 @@ export class Issue extends AggregateRoot<IIssueProps> {
         defaultValues.updatedAt = new Date();
         const issue = new Issue(defaultValues, id);
         return Result.ok<Issue>(issue);
+    }
+    public markResolved(): void {
+        this.props.status = IssueStatus.RESOLVED;
+    }
+    public updateNote(note: string): void {
+        this.props.note = note;
     }
 }

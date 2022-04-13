@@ -1,30 +1,39 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, getConnection, Repository } from 'typeorm';
+import { Between, Equal, getConnection, Repository } from 'typeorm';
 
 import { IssueStatus } from '../../../common/constants/issueStatus';
 import { DomainId } from '../domain/domainId';
 import { Issue } from '../domain/issue';
 import { UserEntity } from '../infra/database/entities';
 import { IssueEntity } from '../infra/database/entities/issue.entity';
+import { InputPotentialIssueDto } from '../infra/dtos/getPotentialIssue/inputPotentialIssue.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { IssueMap } from '../mappers/issueMap';
 
 export interface IIssueRepo {
-    findById(valueStreamId: DomainId | number): Promise<Issue>;
+    findById(issueId: DomainId | number): Promise<Issue>;
     findAll(): Promise<Issue[]>;
     findAllByWeek({
         startDateOfWeek,
         endDateOfWeek,
     }: StartEndDateOfWeekWLInputDto): Promise<Issue[]>;
-    save(userId: number, week: number, type: IssueStatus): Promise<Issue>;
+    save(
+        userId: number,
+        status: IssueStatus,
+        note: string,
+        firstDateOfWeek: Date,
+    ): Promise<Issue>;
     findByUserId(
         startDateOfWeek: string,
         endDateOfWeek: string,
         userId: number,
     ): Promise<Issue>;
-    update(condition: any, update: any): Promise<void>;
+    findByUserIdAndWeek({
+        userId,
+        firstDateOfWeek,
+    }: InputPotentialIssueDto): Promise<Issue>;
+    update(potentialIssueEntity: IssueEntity): Promise<Issue>;
     createMany(entities: IssueEntity[]): Promise<Issue[]>;
 }
 
@@ -40,7 +49,12 @@ export class IssueRepository implements IIssueRepo {
             issueId instanceof DomainId
                 ? Number(issueId.id.toValue())
                 : issueId;
-        const entity = await this.repo.findOne(issueId);
+        const entity = await this.repo.findOne({
+            where: {
+                id: issueId,
+            },
+            relations: ['user'],
+        });
         return entity ? IssueMap.toDomain(entity) : null;
     }
 
@@ -81,14 +95,25 @@ export class IssueRepository implements IIssueRepo {
         return entity ? IssueMap.toDomain(entity) : null;
     }
 
-    async update(condition: any, update: any): Promise<void> {
-        await this.repo.update(condition, update);
+    async findByUserIdAndWeek({
+        userId,
+        firstDateOfWeek,
+    }: InputPotentialIssueDto): Promise<Issue> {
+        const entity = await this.repo.findOne({
+            where: {
+                user: { id: userId },
+                firstDateOfWeek: Equal(firstDateOfWeek),
+            },
+            relations: ['user'],
+        });
+        return entity ? IssueMap.toDomain(entity) : null;
     }
 
     async save(
         userId: number,
-        week: number,
-        type: IssueStatus,
+        status: IssueStatus,
+        note: string,
+        firstDateOfWeek: Date,
     ): Promise<Issue> {
         const queryRunner = getConnection().createQueryRunner();
         await queryRunner.connect();
@@ -96,17 +121,27 @@ export class IssueRepository implements IIssueRepo {
             const user = new UserEntity(userId);
 
             await queryRunner.startTransaction();
-            const issue = new IssueEntity();
-            await queryRunner.manager.save(issue);
+            const potentialIssue = new IssueEntity();
+            potentialIssue.user = user;
+            potentialIssue.status = status;
+            potentialIssue.note = note;
+            potentialIssue.firstDateOfWeek = firstDateOfWeek;
+            potentialIssue.createdAt = new Date();
+
+            await queryRunner.manager.save(potentialIssue);
             await queryRunner.commitTransaction();
-            // return HttpStatus.CREATED;
-            return issue ? IssueMap.toDomain(issue) : null;
+            return potentialIssue ? IssueMap.toDomain(potentialIssue) : null;
         } catch (error) {
             await queryRunner.rollbackTransaction();
-            // return HttpStatus.INTERNAL_SERVER_ERROR;
         } finally {
             await queryRunner.release();
         }
+    }
+
+    async update(potentialIssueEntity: IssueEntity): Promise<Issue> {
+        const entity = await this.repo.save(potentialIssueEntity);
+
+        return entity ? IssueMap.toDomain(entity) : null;
     }
 
     async createMany(entities: IssueEntity[]): Promise<Issue[]> {
