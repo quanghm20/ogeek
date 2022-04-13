@@ -156,7 +156,7 @@ export class SenteService {
         return this._getData<T>(endpoint);
     }
 
-    async getActualWorklogByProject<T>(
+    async getActualWorklogsRecent<T>(
         committedWorkloads: CommittedWorkload[],
         week: number,
     ) {
@@ -170,7 +170,25 @@ export class SenteService {
             return `${qString}committedWorkloads=${committedWorkloadId},${committedWorkload},${expertiseScopeId},${expertiseScopeName}&`;
         }, '');
         queryString += `week=${week}`;
-        const endpoint = `/overview/detail-committed-workload-by-project?${queryString}`;
+        const endpoint = `/overview/committed-workload/recent?${queryString}`;
+        return this._getData<T>(endpoint);
+    }
+
+    async getActualWorklogsByWeek<T>(
+        committedWorkloads: CommittedWorkload[],
+        week: number,
+    ) {
+        let queryString = committedWorkloads.reduce((qString, committedWl) => {
+            const committedWorkloadId = committedWl.id.toValue();
+            const committedWorkload = committedWl.committedWorkload;
+            const expertiseScopeId =
+                committedWl.contributedValue.expertiseScope.id.toValue();
+            const expertiseScopeName =
+                committedWl.contributedValue.expertiseScope.name;
+            return `${qString}committedWorkloads=${committedWorkloadId},${committedWorkload},${expertiseScopeId},${expertiseScopeName}&`;
+        }, '');
+        queryString += `week=${week}`;
+        const endpoint = `/overview/committed-workload/week?${queryString}`;
         return this._getData<T>(endpoint);
     }
 }
