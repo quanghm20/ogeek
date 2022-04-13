@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
+import { historyWorkloads as historyWorkloadsConst } from '../../../common/constants/history';
 import { DomainId } from '../domain/domainId';
 import { User } from '../domain/user';
 import { IssueEntity } from '../infra/database/entities';
@@ -128,7 +129,9 @@ export class UserRepository implements IUserRepo {
         const historyWorkloadsQuery = await historyWorkloads
             .orderBy(pagination.order)
             .offset(pagination.page * pagination.limit)
-            .limit(pagination.limit * 3)
+            .limit(
+                pagination.limit * historyWorkloadsConst.WORKLOAD_IN_THREE_WEEK,
+            )
             .getRawMany();
 
         const userItem = await this.repo

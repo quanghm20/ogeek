@@ -30,10 +30,6 @@ interface ServerResponse {
     data: HistoryActualWLResponse[];
 }
 
-interface IHashUserWorkloads {
-    [key: string]: HistoryWorkloadDto;
-}
-
 @Injectable()
 export class GetWorkloadListsUseCase
     implements IUseCase<PaginationDto, Promise<Response>>
@@ -56,13 +52,7 @@ export class GetWorkloadListsUseCase
                 await this.senteService.getOverviewHistoryActualWorkload<ServerResponse>();
             const response = request.data.data;
 
-            const allowSortColumnArray = [
-                'alias',
-                'id',
-                'note',
-                'status',
-                'committed',
-            ];
+            const allowSortColumnArray = ['alias', 'id', 'status', 'committed'];
 
             const sortDefault = {
                 status: Order.ASC,
@@ -87,8 +77,6 @@ export class GetWorkloadListsUseCase
                 query.q,
             );
 
-            const hashMap: IHashUserWorkloads = {};
-
             const actualWorkloads = new Array<HistoryActualWorkloadDto>();
 
             for (let i = 1; i <= historyWorkloads.WORKLOAD_IN_THREE_WEEK; i++) {
@@ -100,10 +88,10 @@ export class GetWorkloadListsUseCase
 
             const userWorkloadsData = listUserWorkloads.data;
 
-            // handle duplicate user and change status
+            const myMap = new Map<number, HistoryWorkloadDto>();
             userWorkloadsData.forEach((userWorkload) => {
                 let actualWorkloadsTemp = [...actualWorkloads];
-                if (!hashMap[userWorkload.userId]) {
+                if (!myMap.has(userWorkload.userId)) {
                     if (userWorkload.status) {
                         actualWorkloadsTemp = actualWorkloadsTemp.map(
                             (actual) => {
@@ -122,31 +110,42 @@ export class GetWorkloadListsUseCase
                             },
                         );
                     }
-
-                    hashMap[userWorkload.userId] = {
+                    myMap.set(userWorkload.userId, {
                         ...userWorkload,
                         actualWorkloads: actualWorkloadsTemp,
-                    };
+                    });
                     return;
                 }
 
-                hashMap[userWorkload.userId].actualWorkloads.forEach(
-                    (actual) => {
+                myMap
+                    .get(userWorkload.userId)
+                    .actualWorkloads.forEach((actual) => {
                         if (
                             actual.week ===
                             MomentService.convertDateToWeek(userWorkload.mark)
                         ) {
                             actual.status = userWorkload.status;
                         }
-                    },
-                );
+                    });
             });
 
-            let hashMapArray = Object.values(hashMap);
+            const myMapArray = new Array<HistoryWorkloadDto>();
 
-            hashMapArray = hashMapArray.slice(0, 10);
+            let itemCount = listUserWorkloads.itemCount;
 
-            const userWorkloads = hashMapArray.map((workloadItem) => {
+            if (query.q) {
+                itemCount = myMap.size;
+            }
+
+            let count = 1;
+            myMap.forEach((userWorkload) => {
+                if (count <= query.take) {
+                    myMapArray.push(userWorkload);
+                }
+                count++;
+            });
+
+            const userWorkloads = myMapArray.map((workloadItem) => {
                 for (const res of response) {
                     if (workloadItem.userId === res.userId) {
                         return {
@@ -168,7 +167,7 @@ export class GetWorkloadListsUseCase
             const paginationResponse = new PaginationResponseDto(
                 query.page,
                 pagination.limit,
-                listUserWorkloads.itemCount,
+                itemCount,
             );
 
             const userWorkloadsResponse = {
