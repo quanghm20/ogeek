@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
 import { DomainId } from '../domain/domainId';
@@ -9,7 +9,7 @@ import { IssueEntity } from '../infra/database/entities';
 import { UserEntity } from '../infra/database/entities/user.entity';
 import { PaginationRepoDto } from '../infra/dtos/pagination.dto';
 import { HistoryWorkloadDto } from '../infra/dtos/workloadListUsers/historyWorkload.dto';
-import { HistoryWorkloadDataDto } from '../infra/dtos/workloadListUsers/historyWorkloadData.dto';
+// import { HistoryWorkloadDataDto } from '../infra/dtos/workloadListUsers/historyWorkloadData.dto';
 import { UserMap } from '../mappers/userMap';
 
 export interface IUserRepo {
@@ -22,7 +22,7 @@ export interface IUserRepo {
         firstDateOfWeek: Date,
         endDateOfCurrentWeek: Date,
         search?: string,
-    ): Promise<HistoryWorkloadDataDto>;
+    ): Promise<HistoryWorkloadDto[]>;
 }
 
 @Injectable()
@@ -75,25 +75,26 @@ export class UserRepository implements IUserRepo {
         firstDateOfWeek: Date,
         endDateOfCurrentWeek: Date,
         search?: string,
-    ): Promise<HistoryWorkloadDataDto> {
+    ): Promise<HistoryWorkloadDto[]> {
         const subQuery = this.issueRepo
             .createQueryBuilder('issue')
             .select('issue.note', 'note')
             .addSelect('issue.status', 'status')
             .addSelect('issue.user_id', 'id')
-            .addSelect(
-                'row_number() over (partition by "user_id" order by "updated_at" desc) as rank',
-            )
+            // .addSelect('issue.first-date-of-week', 'markWeek')
+            // .addSelect(
+            //     'row_number() over (partition by "user_id" order by "updated_at" desc) as rank',
+            // )
             .where(
                 `issue.created_at >= '${firstDateOfWeek.toISOString()}' 
                 AND issue.created_at <= '${endDateOfCurrentWeek.toISOString()}'`,
             );
 
-        const issueQuery = getConnection()
-            .createQueryBuilder()
-            .select(['note', 'status', 'id'])
-            .from('(' + subQuery.getQuery() + ')', 'ranks')
-            .where('rank = 1');
+        // const issueQuery = getConnection()
+        //     .createQueryBuilder()
+        //     .select(['note', 'status', 'id'])
+        //     .from('(' + subQuery.getQuery() + ')', 'ranks')
+        //     .where('rank = 1');
 
         const historyWorkloads = this.repo
             .createQueryBuilder('user')
@@ -102,7 +103,7 @@ export class UserRepository implements IUserRepo {
             .addSelect('user.avatar', 'avatar')
             .leftJoin('user.committedWorkloads', 'committed_workload')
             .leftJoin(
-                '(' + issueQuery.getQuery() + ')',
+                '(' + subQuery.getQuery() + ')',
                 'issue',
                 '"user"."id" = "issue"."id"',
             )
@@ -130,8 +131,8 @@ export class UserRepository implements IUserRepo {
                 name2: CommittedWorkloadStatus.NOT_RENEW,
             });
 
-        const total = await historyWorkloads.getRawMany();
-        const count = total.length;
+        // const total = await historyWorkloads.getRawMany();
+        // const count = total.length;
 
         const historyWorkloadsQuery = await historyWorkloads
             .orderBy(pagination.order)
@@ -139,9 +140,8 @@ export class UserRepository implements IUserRepo {
             .limit(pagination.limit)
             .getRawMany();
 
-        return {
-            itemCount: count,
-            data: historyWorkloadsQuery as HistoryWorkloadDto[],
-        } as HistoryWorkloadDataDto;
+        // console.log(historyWorkloadsQuery);
+
+        return historyWorkloadsQuery as HistoryWorkloadDto[];
     }
 }

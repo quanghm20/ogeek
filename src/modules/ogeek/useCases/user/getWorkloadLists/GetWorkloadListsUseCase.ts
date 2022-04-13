@@ -15,6 +15,7 @@ import {
     PaginationResponseDto,
 } from '../../../infra/dtos/pagination.dto';
 import { HistoryActualWLResponse } from '../../../infra/dtos/workloadListUsers/historyActualWLResponse.dto';
+// import { HistoryWorkloadDto, HistoryWorkloadUseCaseDto } from '../../../infra/dtos/workloadListUsers/historyWorkload.dto';
 import { HistoryWorkloadResponseDto } from '../../../infra/dtos/workloadListUsers/historyWorkloadResponses.dto';
 import { IUserRepo } from '../../../repos/userRepo';
 import { GetWorkloadListsError } from './GetWorkloadListsErrors';
@@ -26,6 +27,10 @@ type Response = Either<
 
 interface ServerResponse {
     data: HistoryActualWLResponse[];
+}
+
+interface IHashUserWorkloads {
+    [key: string]: any;
 }
 
 @Injectable()
@@ -81,13 +86,45 @@ export class GetWorkloadListsUseCase
                 query.q,
             );
 
-            const listUserWorkloadData = listUserWorkloads.data;
+            // const hashMap: IHashUserWorkloads = {};
 
-            const paginationResponse = new PaginationResponseDto(
-                query.page,
-                pagination.limit,
-                listUserWorkloads.itemCount,
-            );
+            // const actualWorkloads = [];
+
+            // for (let i = 1; i <= historyWorkloads.WORKLOAD_IN_THREE_WEEK; i++) {
+            //     actualWorkloads.push({
+            //         week: week - i,
+            //         status: null,
+            //     });
+            // }
+
+            // handle duplicate user
+            // listUserWorkloads.forEach((userWorkload) => {
+            //     if (!hashMap[userWorkload.userId]) {
+            //         const actualWorkloadsTemp = actualWorkloads;
+            //         if (userWorkload.status) {
+            //             actualWorkloadsTemp.forEach(actual => {
+            //                 if (actual.week === userWorkload.) {
+            //                     actual.status = userWorkload.status;
+            //                 }
+            //             })
+            //         }
+            //             hashMap[userWorkload.userId] = {
+            //                 ...userWorkload,
+            //                 actualWorkloads: actualWorkloadsTemp,
+            //             };
+            //         return;
+            //     }
+
+            //     hashMap[userWorkload.userId].actualWorkloads.forEach((actual) => {
+            //         if (actual.week === userWorkload.) {
+            //             actual.status = userWorkload.status;
+            //         }
+            //     };
+            // });
+
+            // const hashMapArray = Object.values(hashMap) as HistoryWorkloadUseCaseDto[];
+
+            const listUserWorkloadData = listUserWorkloads;
 
             const userWorkloads = listUserWorkloadData.map((workloadItem) => {
                 for (const res of response) {
@@ -105,6 +142,14 @@ export class GetWorkloadListsUseCase
                     }
                 }
             });
+
+            const itemCount = 20;
+
+            const paginationResponse = new PaginationResponseDto(
+                query.page,
+                pagination.limit,
+                itemCount,
+            );
 
             const userWorkloadsResponse = {
                 meta: paginationResponse,
