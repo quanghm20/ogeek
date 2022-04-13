@@ -37,7 +37,10 @@ import { Roles } from '../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
-import { DataHistoryCommittedWorkload } from '../..//infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
+import {
+    DataHistoryCommittedWorkload,
+    FilterHistoryCommittedWorkload,
+} from '../..//infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
 import { CreateCommittedWorkloadDto } from '../../infra/dtos/createCommittedWorkload.dto';
 import { CommittedWorkloadShortDto } from '../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
 import { CreateCommittedWorkloadErrors } from './createCommittedWorkload/CreateCommittedWorkloadErrors';
@@ -233,6 +236,8 @@ export class CommittedWorkloadController {
 
     @Get('history')
     @HttpCode(HttpStatus.OK)
+    @Roles(RoleType.PP)
+    @UseGuards(JwtAuthGuard)
     @ApiOkResponse({
         type: DataHistoryCommittedWorkload,
     })
@@ -254,7 +259,7 @@ export class CommittedWorkloadController {
         }),
     )
     async getHistoryCommittedWorkload(
-        @Query() query: FilterCommittedWorkload,
+        @Query() query: FilterHistoryCommittedWorkload,
     ): Promise<DataHistoryCommittedWorkload> {
         const result = await this.getHistoryCommitUseCase.execute(query);
         if (result.isLeft()) {

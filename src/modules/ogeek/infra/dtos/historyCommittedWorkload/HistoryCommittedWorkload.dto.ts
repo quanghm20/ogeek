@@ -1,19 +1,35 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional } from 'class-validator';
 
-import { PageMetaDto } from '../../../../../common/dto/PageMetaDto';
-import { UserCompactDto } from '../getCommittedWorkload/getCommittedWorkloadShort.dto';
+import { CommittedWorkloadStatus } from '../../../../../common/constants/committedStatus';
 
 export class UserCommittedWorkload {
     @ApiProperty({
-        type: UserCompactDto,
+        example: 1,
     })
-    user: UserCompactDto;
+    userId: number;
+    @ApiProperty({
+        example: 'thai.ls',
+    })
+    alias: string;
+
+    @ApiProperty({
+        example: 'Sỹ Thái',
+    })
+    name: string;
 
     @ApiProperty({
         type: Number,
         description: 'Summary committed workload',
     })
     totalCommit: number;
+
+    @ApiProperty({
+        enum: CommittedWorkloadStatus,
+        example: CommittedWorkloadStatus.ACTIVE,
+    })
+    status: CommittedWorkloadStatus;
 
     @ApiProperty({ example: new Date() })
     startDate: Date;
@@ -29,11 +45,23 @@ export class DataHistoryCommittedWorkload {
     })
     data: UserCommittedWorkload[];
 
-    @ApiPropertyOptional()
-    meta?: PageMetaDto;
-
-    constructor(data: UserCommittedWorkload[], meta?: PageMetaDto) {
+    constructor(data: UserCommittedWorkload[]) {
         this.data = data;
-        this.meta = meta;
     }
+}
+export class FilterHistoryCommittedWorkload {
+    @ApiPropertyOptional({
+        description: 'Filter by User ID',
+    })
+    @Type(() => Number)
+    @IsOptional()
+    @IsInt()
+    userId?: number;
+
+    @ApiPropertyOptional({
+        description: 'Search data by alias',
+    })
+    @Type(() => String)
+    @IsOptional()
+    search?: string;
 }

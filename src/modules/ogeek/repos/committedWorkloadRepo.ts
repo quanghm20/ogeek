@@ -23,7 +23,10 @@ import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
-import { DataHistoryCommittedWorkload } from '../infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
+import {
+    DataHistoryCommittedWorkload,
+    FilterHistoryCommittedWorkload,
+} from '../infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
@@ -92,7 +95,7 @@ export interface ICommittedWorkloadRepo {
     findCommittedInComing(userId: number): Promise<CommittedWorkload>;
     findAllCommittedInComing(userId: number): Promise<CommittedWorkload[]>;
     findHistoryCommittedWorkload(
-        query?: FilterCommittedWorkload,
+        query?: FilterHistoryCommittedWorkload,
     ): Promise<DataHistoryCommittedWorkload>;
 }
 
@@ -579,32 +582,26 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     }
 
     async findHistoryCommittedWorkload(
-        query?: FilterCommittedWorkload,
+        query?: FilterHistoryCommittedWorkload,
     ): Promise<DataHistoryCommittedWorkload> {
         const queryBuilder = this.repo
             .createQueryBuilder('commit')
-            .select('user.id', 'user_id')
+            .select('user.id', 'userId')
             .addSelect('user.alias', 'alias')
             .addSelect('commit.startDate', 'startDate')
             .addSelect('commit.expiredDate', 'expiredDate')
+            .addSelect('commit.status', 'status')
             .addSelect('SUM(commit.committedWorkload)', 'totalCommit')
             .innerJoin('commit.user', 'user')
             .groupBy('user.id')
             .addGroupBy('user.alias')
             .addGroupBy('commit.startDate')
             .addGroupBy('commit.expiredDate')
-            .skip(query.skip)
-
-            .take(query.take);
+            .addGroupBy('commit.status');
 
         if (query.userId) {
             queryBuilder.andWhere('commit.user.id = :userId', {
                 userId: query.userId,
-            });
-        }
-        if (query.status) {
-            queryBuilder.andWhere('commit.status = :status', {
-                status: query.status.toUpperCase(),
             });
         }
         if (query.search) {
