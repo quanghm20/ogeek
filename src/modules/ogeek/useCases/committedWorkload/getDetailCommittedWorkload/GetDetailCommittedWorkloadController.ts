@@ -27,7 +27,7 @@ import { DetailCommittedWorkloadsDto } from '../../../../ogeek/infra/dtos/getDet
 import { GetDetailCommittedWorkloadErrors } from './GetDetailCommittedWorkloadErrors';
 import { GetDetailCommittedWorkloadUseCase } from './GetDetailCommittedWorkloadsUseCase';
 
-@Controller('api/admin/committed-workload/detail')
+@Controller('api/admin/committed-workload/recent')
 @ApiTags('Committed Workload')
 @ApiBearerAuth()
 export class GetDetailCommittedWorkloadController {
