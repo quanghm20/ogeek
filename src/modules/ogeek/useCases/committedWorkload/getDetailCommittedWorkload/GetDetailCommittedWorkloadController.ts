@@ -18,6 +18,9 @@ import {
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
+import { RoleType } from '../../../../../common/constants/roleType';
+import { Roles } from '../../../../../decorators/roles.decorator';
+import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { DetailCommittedWorkloadsDto } from '../../../../ogeek/infra/dtos/getDetailCommittedWorkload/DetailCommittedWorkloads.dto';
@@ -27,7 +30,6 @@ import { GetDetailCommittedWorkloadUseCase } from './GetDetailCommittedWorkloads
 @Controller('api/admin/committed-workload/detail')
 @ApiTags('Committed Workload')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 export class GetDetailCommittedWorkloadController {
     constructor(public readonly useCase: GetDetailCommittedWorkloadUseCase) {}
 
@@ -46,6 +48,8 @@ export class GetDetailCommittedWorkloadController {
     @ApiInternalServerErrorResponse({
         description: 'Interal Server Error',
     })
+    @Roles(RoleType.PP)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     async execute(@Req() req: Request): Promise<DetailCommittedWorkloadsDto> {
         const { userId } = req.user as JwtPayload;
         const result = await this.useCase.execute(userId);
