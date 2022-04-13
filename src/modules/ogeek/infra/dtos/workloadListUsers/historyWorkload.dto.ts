@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsNumber, IsString } from 'class-validator';
+import {
+    IsArray,
+    IsDate,
+    IsNumber,
+    IsOptional,
+    IsString,
+} from 'class-validator';
 
 import { IssueStatus } from '../../../../../common/constants/issueStatus';
 import { HistoryActualWorkloadDto } from './historyActualWorkload.dto';
@@ -30,6 +36,11 @@ export class HistoryWorkloadDto {
     @IsNumber()
     @Type(() => Number)
     committed: number;
+
+    @ApiProperty({ example: '2020-04-13 00:00:00' })
+    @IsDate()
+    @IsOptional()
+    mark?: Date;
 
     @ApiProperty({ type: HistoryActualWorkloadDto })
     @IsArray()
