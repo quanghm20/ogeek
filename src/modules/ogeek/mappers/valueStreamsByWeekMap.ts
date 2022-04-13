@@ -18,7 +18,7 @@ export class ValueStreamsByWeekMap {
         );
         return plannedWLStatus
             ? plannedWLStatus.status
-            : PlannedWorkloadStatus.ARCHIVE;
+            : PlannedWorkloadStatus.PLANNING;
     }
 
     public static addValueStreamEmpty(
