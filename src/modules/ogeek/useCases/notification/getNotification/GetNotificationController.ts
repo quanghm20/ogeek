@@ -61,8 +61,6 @@ export class GetNotificationController {
             switch (error.constructor) {
                 case GetNotificationErrors.UserNotFound:
                     throw new NotFoundException(error.errorValue());
-                case GetNotificationErrors.NotificationNotFound:
-                    throw new NotFoundException(error.errorValue());
                 case GetNotificationErrors.Forbidden:
                     throw new ForbiddenException(error.errorValue());
                 default:

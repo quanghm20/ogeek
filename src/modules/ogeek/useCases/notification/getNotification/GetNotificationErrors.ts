@@ -9,13 +9,6 @@ export namespace GetNotificationErrors {
             } as UseCaseError);
         }
     }
-    export class NotificationNotFound extends Result<UseCaseError> {
-        constructor() {
-            super(false, {
-                message: 'No Notification were found !',
-            } as UseCaseError);
-        }
-    }
     export class Forbidden extends Result<UseCaseError> {
         constructor() {
             super(false, {
