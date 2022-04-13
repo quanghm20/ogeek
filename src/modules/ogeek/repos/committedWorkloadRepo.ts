@@ -15,9 +15,7 @@ import {
 import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
 import { Order } from '../../../common/constants/order';
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
-import { SortBy } from '../../../common/constants/sortBy';
 import { PageMetaDto } from '../../../common/dto/PageMetaDto';
-import { PageOptionsDto } from '../../../common/dto/PageOptionsDto';
 import { MomentService } from '../../../providers/moment.service';
 import { CommittedWorkload } from '../domain/committedWorkload';
 import { DomainId } from '../domain/domainId';
@@ -65,7 +63,10 @@ export interface ICommittedWorkloadRepo {
         userId: DomainId | number,
         startDate: Date,
     ): Promise<CommittedWorkload[]>;
-    findByUserId(userId: DomainId | number): Promise<CommittedWorkload[]>;
+    findByUserId(
+        userId: DomainId | number,
+        status: CommittedWorkloadStatus,
+    ): Promise<CommittedWorkload[]>;
     findByUserIdOverview(
         userId: DomainId | number,
     ): Promise<CommittedWorkload[]>;
@@ -88,6 +89,7 @@ export interface ICommittedWorkloadRepo {
         endDateOfWeek: Date,
     ): Promise<CommittedWorkload[]>;
     findCommittedInComing(userId: number): Promise<CommittedWorkload>;
+    findAllCommittedInComing(userId: number): Promise<CommittedWorkload[]>;
 }
 
 @Injectable()
@@ -102,12 +104,14 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     ) {}
     async findByUserId(
         userId: DomainId | number,
+        status: CommittedWorkloadStatus = CommittedWorkloadStatus.ACTIVE,
     ): Promise<CommittedWorkload[]> {
         userId =
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+
         const entities = await this.repo.find({
             where: {
-                status: CommittedWorkloadStatus.ACTIVE,
+                status,
                 user: userId,
             },
             relations: [
@@ -312,18 +316,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         query?: FilterCommittedWorkload,
     ): Promise<PaginationCommittedWorkload> {
         try {
-            if (!query.order) {
-                query.order = Order.ASC;
-            }
-            if (!query.sortBy) {
-                query.sortBy = SortBy.ID;
-            }
-            if (!query.page) {
-                query.page = 1;
-            }
-            if (!query.take) {
-                query.take = 10;
-            }
             const queryBuilder = this.repo
                 .createQueryBuilder('commit')
                 .leftJoinAndSelect(
@@ -353,16 +345,16 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                     status: query.status.toUpperCase(),
                 });
             }
+            if (query.search) {
+                queryBuilder.andWhere('user.alias like :alias', {
+                    alias: `%${query.search}%`,
+                });
+            }
 
             const entities = await queryBuilder.getMany();
             const itemCount = await queryBuilder.getCount();
 
-            const pageOptionsDto = new PageOptionsDto(
-                query.order,
-                query.page,
-                query.take,
-            );
-            const meta = new PageMetaDto({ pageOptionsDto, itemCount });
+            const meta = new PageMetaDto(query, itemCount);
             const data = CommittedWorkloadMap.toDomainAll(entities);
             return new PaginationCommittedWorkload(meta, data);
         } catch (error) {
@@ -560,5 +552,25 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             ],
         });
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;
+    }
+
+    async findAllCommittedInComing(
+        userId: number,
+    ): Promise<CommittedWorkload[]> {
+        const entity = await this.repo.find({
+            where: {
+                user: {
+                    id: userId,
+                },
+                status: CommittedWorkloadStatus.INCOMING,
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'user',
+            ],
+        });
+        return entity ? CommittedWorkloadMap.toDomainAll(entity) : null;
     }
 }

@@ -28,6 +28,7 @@ import {
     CreateCommittedWorkloadUseCase,
     GetCommittedWorkloadUseCase,
     GetHistoryCommittedWorkloadUseCase,
+    UpdateCommittedWorkloadUseCase,
 } from './useCases/committedWorkload';
 import { CronCommittedWorkload } from './useCases/committedWorkload/cronCommittedWorkload.service';
 import { CommittedWorkloadCreatedListener } from './useCases/committedWorkload/listeners/CommittedWorkloadListeners';
@@ -75,6 +76,8 @@ import { GetUsersController } from './useCases/user/getUsers/GetUsersController'
 import { GetUsersUseCase } from './useCases/user/getUsers/GetUsersUseCase';
 import { GetWorkloadListController } from './useCases/user/getWorkloadList/GetWorkloadListController';
 import { GetWorkloadListUseCase } from './useCases/user/getWorkloadList/GetWorkloadListUseCase';
+import { GetWorkloadListsController } from './useCases/user/getWorkloadLists/GetWorkloadListsController';
+import { GetWorkloadListsUseCase } from './useCases/user/getWorkloadLists/GetWorkloadListsUseCase';
 import { GetValueStreamController } from './useCases/valueStream/getValueStream/GetValueStreamController';
 import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/GetValueStreamUseCase';
 @Module({
@@ -109,6 +112,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         CreatePotentialIssueController,
         StartWeekController,
         GetPotentialIssueController,
+        GetWorkloadListsController,
         GetNotificationController,
         CheckNotificationController,
         CreateUserController,
@@ -141,6 +145,8 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetPotentialIssueUseCase,
         CommittedWorkloadCreatedListener,
         UpdatePotentialIssueUseCase,
+        GetWorkloadListsUseCase,
+        UpdateCommittedWorkloadUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

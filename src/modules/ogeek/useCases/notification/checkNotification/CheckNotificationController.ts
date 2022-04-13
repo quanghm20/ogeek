@@ -6,7 +6,7 @@ import {
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
-    Put,
+    Patch,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -35,7 +35,7 @@ import { CheckNotificationUseCase } from './CheckNotificationUseCase';
 export class CheckNotificationController {
     constructor(public readonly useCase: CheckNotificationUseCase) {}
 
-    @Put()
+    @Patch()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: NotificationDto,

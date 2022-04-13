@@ -16,6 +16,13 @@ export class FilterCommittedWorkload extends PageOptionsDto {
     userId?: number;
 
     @ApiPropertyOptional({
+        description: 'Search data by alias',
+    })
+    @Type(() => String)
+    @IsOptional()
+    search?: string;
+
+    @ApiPropertyOptional({
         description: 'Filter by status of committed workload',
         enum: CommittedWorkloadStatus,
     })
