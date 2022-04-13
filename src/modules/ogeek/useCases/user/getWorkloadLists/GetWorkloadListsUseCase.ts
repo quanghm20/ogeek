@@ -15,7 +15,8 @@ import {
     PaginationResponseDto,
 } from '../../../infra/dtos/pagination.dto';
 import { HistoryActualWLResponse } from '../../../infra/dtos/workloadListUsers/historyActualWLResponse.dto';
-// import { HistoryWorkloadDto, HistoryWorkloadUseCaseDto } from '../../../infra/dtos/workloadListUsers/historyWorkload.dto';
+import { HistoryActualWorkloadDto } from '../../../infra/dtos/workloadListUsers/historyActualWorkload.dto';
+import { HistoryWorkloadDto } from '../../../infra/dtos/workloadListUsers/historyWorkload.dto';
 import { HistoryWorkloadResponseDto } from '../../../infra/dtos/workloadListUsers/historyWorkloadResponses.dto';
 import { IUserRepo } from '../../../repos/userRepo';
 import { GetWorkloadListsError } from './GetWorkloadListsErrors';
@@ -30,7 +31,7 @@ interface ServerResponse {
 }
 
 interface IHashUserWorkloads {
-    [key: string]: any;
+    [key: string]: HistoryWorkloadDto;
 }
 
 @Injectable()
@@ -86,56 +87,68 @@ export class GetWorkloadListsUseCase
                 query.q,
             );
 
-            // const hashMap: IHashUserWorkloads = {};
+            const hashMap: IHashUserWorkloads = {};
 
-            // const actualWorkloads = [];
+            const actualWorkloads = new Array<HistoryActualWorkloadDto>();
 
-            // for (let i = 1; i <= historyWorkloads.WORKLOAD_IN_THREE_WEEK; i++) {
-            //     actualWorkloads.push({
-            //         week: week - i,
-            //         status: null,
-            //     });
-            // }
+            for (let i = 1; i <= historyWorkloads.WORKLOAD_IN_THREE_WEEK; i++) {
+                actualWorkloads.push({
+                    week: week - i,
+                    status: null,
+                });
+            }
 
             // handle duplicate user
-            // listUserWorkloads.forEach((userWorkload) => {
-            //     if (!hashMap[userWorkload.userId]) {
-            //         const actualWorkloadsTemp = actualWorkloads;
-            //         if (userWorkload.status) {
-            //             actualWorkloadsTemp.forEach(actual => {
-            //                 if (actual.week === userWorkload.) {
-            //                     actual.status = userWorkload.status;
-            //                 }
-            //             })
-            //         }
-            //             hashMap[userWorkload.userId] = {
-            //                 ...userWorkload,
-            //                 actualWorkloads: actualWorkloadsTemp,
-            //             };
-            //         return;
-            //     }
+            listUserWorkloads.forEach((userWorkload) => {
+                if (!hashMap[userWorkload.userId]) {
+                    const actualWorkloadsTemp = actualWorkloads;
+                    // console.log('105', actualWorkloadsTemp);
+                    if (userWorkload.status) {
+                        actualWorkloadsTemp.forEach((actual) => {
+                            if (
+                                actual.week ===
+                                MomentService.convertDateToWeek(
+                                    userWorkload.mark,
+                                )
+                            ) {
+                                actual.status = userWorkload.status;
+                            }
+                        });
+                    }
+                    // console.log('118', actualWorkloadsTemp);
+                    hashMap[userWorkload.userId] = {
+                        ...userWorkload,
+                        actualWorkloads: actualWorkloadsTemp,
+                    };
+                    return;
+                }
 
-            //     hashMap[userWorkload.userId].actualWorkloads.forEach((actual) => {
-            //         if (actual.week === userWorkload.) {
-            //             actual.status = userWorkload.status;
-            //         }
-            //     };
-            // });
+                hashMap[userWorkload.userId].actualWorkloads.forEach(
+                    (actual) => {
+                        if (
+                            actual.week ===
+                            MomentService.convertDateToWeek(userWorkload.mark)
+                        ) {
+                            actual.status = userWorkload.status;
+                        }
+                    },
+                );
+            });
 
-            // const hashMapArray = Object.values(hashMap) as HistoryWorkloadUseCaseDto[];
+            const hashMapArray = Object.values(hashMap);
 
-            const listUserWorkloadData = listUserWorkloads;
-
-            const userWorkloads = listUserWorkloadData.map((workloadItem) => {
+            const userWorkloads = hashMapArray.map((workloadItem) => {
                 for (const res of response) {
                     if (workloadItem.userId === res.userId) {
                         return {
-                            ...workloadItem,
+                            userId: workloadItem.userId,
+                            alias: workloadItem.alias,
+                            avatar: workloadItem.avatar,
                             committed: Number(workloadItem.committed),
                             actualWorkloads: res.actualWorkloads.map(
-                                (actual) => ({
+                                (actual, index) => ({
                                     ...actual,
-                                    week: week + actual.week,
+                                    ...workloadItem.actualWorkloads[index],
                                 }),
                             ),
                         };
@@ -143,7 +156,7 @@ export class GetWorkloadListsUseCase
                 }
             });
 
-            const itemCount = 20;
+            const itemCount = hashMapArray.length;
 
             const paginationResponse = new PaginationResponseDto(
                 query.page,

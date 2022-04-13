@@ -81,13 +81,15 @@ export class UserRepository implements IUserRepo {
             .select('issue.note', 'note')
             .addSelect('issue.status', 'status')
             .addSelect('issue.user_id', 'id')
-            // .addSelect('issue.first-date-of-week', 'markWeek')
+            .addSelect('issue.first_date_of_week', 'mark')
             // .addSelect(
             //     'row_number() over (partition by "user_id" order by "updated_at" desc) as rank',
             // )
             .where(
-                `issue.created_at >= '${firstDateOfWeek.toISOString()}' 
-                AND issue.created_at <= '${endDateOfCurrentWeek.toISOString()}'`,
+                `issue.first_date_of_week >= '${firstDateOfWeek.toISOString()}'`,
+            )
+            .andWhere(
+                `issue.first_date_of_week <= '${endDateOfCurrentWeek.toISOString()}'`,
             );
 
         // const issueQuery = getConnection()
@@ -117,12 +119,13 @@ export class UserRepository implements IUserRepo {
         }
 
         historyWorkloads
-            .addSelect(['issue.note', 'issue.status'])
+            .addSelect(['issue.note', 'issue.status', 'issue.mark'])
             .groupBy('user.id')
             .addGroupBy('user.alias')
             .addGroupBy('user.avatar')
             .addGroupBy('issue.status')
             .addGroupBy('issue.note')
+            .addGroupBy('mark')
             .addGroupBy('committed_workload.status')
             .having('committed_workload.status = :name', {
                 name: CommittedWorkloadStatus.ACTIVE,
@@ -139,8 +142,6 @@ export class UserRepository implements IUserRepo {
             .offset(pagination.page * pagination.limit)
             .limit(pagination.limit)
             .getRawMany();
-
-        // console.log(historyWorkloadsQuery);
 
         return historyWorkloadsQuery as HistoryWorkloadDto[];
     }

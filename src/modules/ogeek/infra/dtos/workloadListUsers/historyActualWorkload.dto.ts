@@ -8,11 +8,9 @@ export class HistoryActualWorkloadDto {
 
     @ApiProperty({ example: 36 })
     @IsNumber()
-    actualWorkload: number;
-}
+    actualWorkload?: number;
 
-export class HistoryActualWorkloadResponseDto extends HistoryActualWorkloadDto {
     @ApiProperty({ example: 'Status mark of PP Ops' })
     @IsString()
-    status: string;
+    status?: string;
 }
