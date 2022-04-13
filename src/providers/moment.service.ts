@@ -10,6 +10,10 @@ export class MomentService {
         return moment().utcOffset('+07:00').week(week).toDate();
     }
 
+    public static getCurrentWeek(): number {
+        return moment().week();
+    }
+
     public static getNumOfWeek(injectedDate: Date): string {
         return moment(injectedDate).format('e');
     }
@@ -126,9 +130,5 @@ export class MomentService {
             return numOfWeekInYear;
         }
         return startWeekChart + weekAmountInChart;
-    }
-
-    public static getCurrentWeek(): number {
-        return moment().week();
     }
 }
