@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+    IsDateString,
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsString,
+} from 'class-validator';
 
 import { IssueStatus } from '../../../../../common/constants/issueStatus';
 
@@ -9,23 +15,23 @@ export class PotentialIssueDto {
     @ApiProperty({ example: 56 })
     userId: number;
 
-    @ApiProperty({ enum: IssueStatus, example: 'POTENTIAL ISSUE' })
-    @IsString()
+    @ApiProperty({ enum: IssueStatus, example: IssueStatus.POTENTIAL_ISSUE })
+    @IsEnum(IssueStatus)
     @IsNotEmpty()
     status: IssueStatus;
 
-    @ApiProperty()
+    @ApiProperty({ example: 'Potential issue.' })
     @IsString()
     @IsNotEmpty()
     note: string;
 
-    @IsDate()
-    @ApiProperty()
+    @ApiProperty({ example: new Date() })
+    @IsDateString()
     @IsNotEmpty()
     firstDateOfWeek: Date;
 
-    @ApiProperty()
-    @IsDate()
+    @ApiProperty({ example: new Date() })
+    @IsDateString()
     @IsNotEmpty()
     createdAt: Date;
 }

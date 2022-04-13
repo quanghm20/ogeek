@@ -31,5 +31,5 @@ export class CreatePotentialIssueDto {
     })
     @IsString()
     @IsOptional()
-    note: string;
+    note?: string;
 }

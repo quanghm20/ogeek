@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Equal, getConnection, Repository } from 'typeorm';
@@ -34,7 +33,7 @@ export interface IIssueRepo {
         userId,
         firstDateOfWeek,
     }: InputPotentialIssueDto): Promise<Issue>;
-    saveUpdate(potentialIssueEntity: IssueEntity): Promise<Issue>;
+    update(potentialIssueEntity: IssueEntity): Promise<Issue>;
     createMany(entities: IssueEntity[]): Promise<Issue[]>;
 }
 
@@ -123,6 +122,7 @@ export class IssueRepository implements IIssueRepo {
 
             await queryRunner.startTransaction();
             const potentialIssue = new IssueEntity();
+            potentialIssue.user = user;
             potentialIssue.status = status;
             potentialIssue.note = note;
             potentialIssue.firstDateOfWeek = firstDateOfWeek;
@@ -138,7 +138,7 @@ export class IssueRepository implements IIssueRepo {
         }
     }
 
-    async saveUpdate(potentialIssueEntity: IssueEntity): Promise<Issue> {
+    async update(potentialIssueEntity: IssueEntity): Promise<Issue> {
         const entity = await this.repo.save(potentialIssueEntity);
 
         return entity ? IssueMap.toDomain(entity) : null;

@@ -73,19 +73,16 @@ export class Issue extends AggregateRoot<IIssueProps> {
         this.props.createdBy = createdBy;
     }
     get updatedBy(): number {
-        return this.props.createdBy;
+        return this.props.updatedBy;
     }
     set updatedBy(updatedBy: number) {
         this.props.updatedBy = updatedBy;
     }
     get deletedBy(): number {
-        return this.props.createdBy;
+        return this.props.deletedBy;
     }
     set deletedBy(deletedBy: number) {
         this.props.deletedBy = deletedBy;
-    }
-    public isResolve(): boolean {
-        return this.status === IssueStatus.RESOLVED;
     }
     public static create(
         props: IIssueProps,
@@ -103,7 +100,7 @@ export class Issue extends AggregateRoot<IIssueProps> {
         const issue = new Issue(defaultValues, id);
         return Result.ok<Issue>(issue);
     }
-    public markResolve(): void {
+    public markResolved(): void {
         this.props.status = IssueStatus.RESOLVED;
     }
     public updateNote(note: string): void {

@@ -27,8 +27,6 @@ import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { DataPotentialIssueDto } from '../../../infra/dtos/getPotentialIssue/dataPotentialIssue.dto';
 import { InputPotentialIssueDto } from '../../../infra/dtos/getPotentialIssue/inputPotentialIssue.dto';
-// import { JwtPayload } from "../../../../jwtAuth/jwtAuth.strategy";
-// import { PotentialIssueDto } from "../../../infra/dtos/getPotentialIssue/getPotentialIssue.dto";
 import { GetPotentialIssueErrors } from './GetPotentialIssueErrors';
 import { GetPotentialIssueUseCase } from './GetPotentialIssueUseCases';
 
@@ -61,7 +59,6 @@ export class GetPotentialIssueController {
         @Query('userId') userId: number,
         @Query('firstDateOfWeek') firstDateOfWeek: Date,
     ): Promise<DataPotentialIssueDto> {
-        // const { id } = req.user as JwtPayload;
         const inputPotentialIssue = {
             userId,
             firstDateOfWeek,
@@ -71,15 +68,9 @@ export class GetPotentialIssueController {
             const error = result.value;
             switch (error.constructor) {
                 case GetPotentialIssueErrors.NotFound:
-                    throw new NotFoundException(
-                        error.errorValue(),
-                        'Not found',
-                    );
+                    throw new NotFoundException(error.errorValue());
                 default:
-                    throw new InternalServerErrorException(
-                        error.errorValue(),
-                        'Internal Server Error',
-                    );
+                    throw new InternalServerErrorException(error.errorValue());
             }
         }
         return result.value.getValue();

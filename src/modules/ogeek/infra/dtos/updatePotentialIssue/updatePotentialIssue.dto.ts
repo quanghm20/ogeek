@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+} from 'class-validator';
 
 import { IssueStatus } from '../../../../../common/constants/issueStatus';
 
@@ -10,7 +16,7 @@ export class UpdatePotentialIssueDto {
     id: number;
 
     @ApiProperty({ enum: IssueStatus, example: IssueStatus.RESOLVED })
-    @IsString()
+    @IsEnum(IssueStatus)
     @IsOptional()
     status?: IssueStatus;
 

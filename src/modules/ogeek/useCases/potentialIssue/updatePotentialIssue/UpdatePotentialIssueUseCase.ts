@@ -41,13 +41,13 @@ export class UpdatePotentialIssueUseCase
                 return left(new UpdatePotentialIssueErrors.NotFound(id));
             }
             if (status) {
-                potentialIssue.markResolve();
+                potentialIssue.markResolved();
             }
             if (note) {
                 potentialIssue.updateNote(note);
             }
             const potentialIssueEntity = IssueMap.toEntity(potentialIssue);
-            await this.issueRepo.saveUpdate(potentialIssueEntity);
+            await this.issueRepo.update(potentialIssueEntity);
             if (potentialIssue) {
                 const potentialIssueDto =
                     IssueMap.fromDomainUpdateIssue(potentialIssue);

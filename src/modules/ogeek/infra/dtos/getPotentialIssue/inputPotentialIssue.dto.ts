@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class InputPotentialIssueDto {
+    @ApiProperty({ example: 56 })
     @IsNumber()
     @IsNotEmpty()
-    @ApiProperty({ example: 56 })
     userId: number;
 
-    @IsDate()
-    @ApiProperty()
+    @ApiProperty({ example: new Date() })
+    @IsDateString()
     @IsNotEmpty()
     firstDateOfWeek: Date;
 }
