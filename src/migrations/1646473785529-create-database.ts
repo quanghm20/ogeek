@@ -4,6 +4,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
     name = 'createDatabase1646473785529';
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`SET TIMEZONE=${process.env.TIMEZONE}`);
         await queryRunner.query(
             `CREATE TYPE "public"."user_role_enum" AS 
             ENUM('USER', 'PEOPLE_OPS')`,
@@ -147,13 +148,14 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "id" SERIAL NOT NULL, 
                 "status" "public"."issue_status_enum" NULL, 
                 "note" text NULL,
+                "first_date_of_week" TIMESTAMPTZ NOT NULL,
                 "user_id" integer, 
                 "created_by" integer,
                 "updated_by" integer,
                 "deleted_by" integer,
-                "created_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
-                "deleted_at" TIMESTAMP,
+                "created_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "updated_at" TIMESTAMPTZ NOT NULL DEFAULT now(),
+                "deleted_at" TIMESTAMPTZ,
                 CONSTRAINT "PK_ISSUE" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_ISSUE_DELETED_BY" 
                     FOREIGN KEY ("deleted_by") REFERENCES "user"("id")

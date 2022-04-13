@@ -7,7 +7,7 @@ import {
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
-    Post,
+    Patch,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -24,25 +24,25 @@ import { Request } from 'express';
 
 import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
+import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { CreateIssueDto } from '../../../infra/dtos/createIssue/createIssue.dto';
-import { MessageDto } from '../../../infra/dtos/message.dto';
-import { CreateIssueErrors } from './CreateIssueErrors';
-import { CreateIssueUseCase } from './CreateIssueUseCase';
+import { UpdatePotentialIssueDto } from '../../../infra/dtos/updatePotentialIssue/updatePotentialIssue.dto';
+import { UpdatePotentialIssueErrors } from './UpdatePotentialIssueErrors';
+import { UpdatePotentialIssueUseCase } from './UpdatePotentialIssueUseCase';
 
 @Controller('api/admin/user/potential-issue')
-@ApiTags('Potential Issue')
+@ApiTags('User')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
-export class CreateIssueController {
-    constructor(public readonly useCase: CreateIssueUseCase) {}
+@UseGuards(JwtAuthGuard, RolesGuard)
+export class UpdatePotentialIssueController {
+    constructor(public readonly useCase: UpdatePotentialIssueUseCase) {}
 
-    @Post()
+    @Patch()
     @HttpCode(HttpStatus.CREATED)
     @Roles(RoleType.PP)
     @ApiCreatedResponse({
-        type: MessageDto,
+        type: UpdatePotentialIssueDto,
         description: 'Created',
     })
     @ApiUnauthorizedResponse({
@@ -58,33 +58,29 @@ export class CreateIssueController {
         description: 'Interal Server Error',
     })
     async execute(
-        @Body() body: CreateIssueDto,
+        @Body() updatePotentialIssue: UpdatePotentialIssueDto,
         @Req() req: Request,
-    ): Promise<MessageDto> {
+    ): Promise<UpdatePotentialIssueDto> {
         const { userId: picId } = req.user as JwtPayload;
-        const createIssueDto = { ...body, picId };
-        const result = await this.useCase.execute(createIssueDto);
+        const result = await this.useCase.execute(updatePotentialIssue, picId);
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {
-                case CreateIssueErrors.CreateIssueFailed:
-                    throw new NotFoundException(
-                        error.errorValue(),
-                        'Failed to create issue',
-                    );
-                case CreateIssueErrors.Forbidden:
-                    throw new ForbiddenException(error.errorValue());
-                case CreateIssueErrors.NotFound:
-                    throw new NotFoundException(error.errorValue());
-                case CreateIssueErrors.WeekError:
+                case UpdatePotentialIssueErrors.FailToUpdatePotentialIssue:
                     throw new BadRequestException(error.errorValue());
+                case UpdatePotentialIssueErrors.UserNotFound:
+                    throw new NotFoundException(error.errorValue());
+                case UpdatePotentialIssueErrors.NotFound:
+                    throw new NotFoundException(error.errorValue());
+                case UpdatePotentialIssueErrors.Forbidden:
+                    throw new ForbiddenException(error.errorValue());
+                case UpdatePotentialIssueErrors.BadRequest:
+                    throw new BadRequestException(error.errorValue());
+
                 default:
                     throw new InternalServerErrorException(error.errorValue());
             }
         }
-        return {
-            statusCode: HttpStatus.CREATED,
-            message: 'Update successfully',
-        } as MessageDto;
+        return result.value.getValue();
     }
 }
