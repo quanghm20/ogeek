@@ -23,6 +23,7 @@ import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
+import { DataHistoryCommittedWorkload } from '../infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
@@ -90,6 +91,9 @@ export interface ICommittedWorkloadRepo {
     ): Promise<CommittedWorkload[]>;
     findCommittedInComing(userId: number): Promise<CommittedWorkload>;
     findAllCommittedInComing(userId: number): Promise<CommittedWorkload[]>;
+    findHistoryCommittedWorkload(
+        query?: FilterCommittedWorkload,
+    ): Promise<DataHistoryCommittedWorkload>;
 }
 
 @Injectable()
@@ -572,5 +576,45 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             ],
         });
         return entity ? CommittedWorkloadMap.toDomainAll(entity) : null;
+    }
+
+    async findHistoryCommittedWorkload(
+        query?: FilterCommittedWorkload,
+    ): Promise<DataHistoryCommittedWorkload> {
+        const queryBuilder = this.repo
+            .createQueryBuilder('commit')
+            .select('user.id', 'user_id')
+            .addSelect('user.alias', 'alias')
+            .addSelect('commit.startDate', 'startDate')
+            .addSelect('commit.expiredDate', 'expiredDate')
+            .addSelect('SUM(commit.committedWorkload)', 'totalCommit')
+            .innerJoin('commit.user', 'user')
+            .groupBy('user.id')
+            .addGroupBy('user.alias')
+            .addGroupBy('commit.startDate')
+            .addGroupBy('commit.expiredDate')
+            .skip(query.skip)
+
+            .take(query.take);
+
+        if (query.userId) {
+            queryBuilder.andWhere('commit.user.id = :userId', {
+                userId: query.userId,
+            });
+        }
+        if (query.status) {
+            queryBuilder.andWhere('commit.status = :status', {
+                status: query.status.toUpperCase(),
+            });
+        }
+        if (query.search) {
+            queryBuilder.andWhere('user.alias like :alias', {
+                alias: `%${query.search}%`,
+            });
+        }
+
+        const entities = await queryBuilder.getRawMany();
+
+        return new DataHistoryCommittedWorkload(entities);
     }
 }

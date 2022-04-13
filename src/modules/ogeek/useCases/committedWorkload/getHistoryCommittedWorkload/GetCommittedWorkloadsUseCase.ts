@@ -3,38 +3,31 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
-import { CreateCommittedWorkloadDto } from '../../../infra/dtos/createCommittedWorkload.dto';
-import { CommittedWorkloadShortDto } from '../../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
-import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
+import { DataHistoryCommittedWorkload } from '../../..//infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
+import { FilterCommittedWorkload } from '../FilterCommittedWorkload';
 import { GetCommittedWorkloadErrors } from '../getCommittedWorkload/GetCommittedWorkloadErrors';
 type Response = Either<
     AppError.UnexpectedError | GetCommittedWorkloadErrors.NotFound,
-    Result<CommittedWorkloadShortDto[]>
+    Result<DataHistoryCommittedWorkload>
 >;
 
 @Injectable()
 export class GetHistoryCommittedWorkloadUseCase
-    implements IUseCase<CreateCommittedWorkloadDto | number, Promise<Response>>
+    implements IUseCase<FilterCommittedWorkload | number, Promise<Response>>
 {
     constructor(
         @Inject('ICommittedWorkloadRepo')
         public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
     ) {}
-    async execute(userId: number): Promise<Response> {
+    async execute(query?: FilterCommittedWorkload): Promise<Response> {
         try {
             const committedWorkloadsDomain =
-                await this.committedWorkloadRepo.findAllActiveCommittedWorkloadByUser(
-                    userId,
+                await this.committedWorkloadRepo.findHistoryCommittedWorkload(
+                    query,
                 );
-            if (committedWorkloadsDomain.length <= 0) {
-                return left(new GetCommittedWorkloadErrors.NotFound());
-            }
-            const committedWorkloadsDto =
-                CommittedWorkloadMap.fromCommittedWorkloadShortArray(
-                    committedWorkloadsDomain,
-                );
-            return right(Result.ok(committedWorkloadsDto));
+
+            return right(Result.ok(committedWorkloadsDomain));
         } catch (err) {
             return left(err);
         }
