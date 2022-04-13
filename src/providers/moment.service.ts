@@ -127,4 +127,8 @@ export class MomentService {
         }
         return startWeekChart + weekAmountInChart;
     }
+
+    public static getCurrentWeek() {
+        return moment().week();
+    }
 }

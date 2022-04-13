@@ -28,21 +28,21 @@ import {
     GetHistoryCommittedWorkloadUseCase,
 } from './useCases/committedWorkload';
 import { CronCommittedWorkload } from './useCases/committedWorkload/cronCommittedWorkload.service';
+import { GetDetailCommittedWorkloadController } from './useCases/committedWorkload/getDetailCommittedWorkload/GetDetailCommittedWorkloadController';
+import { GetDetailCommittedWorkloadUseCase } from './useCases/committedWorkload/getDetailCommittedWorkload/GetDetailCommittedWorkloadsUseCase';
 import { CommittedWorkloadCreatedListener } from './useCases/committedWorkload/listeners/CommittedWorkloadListeners';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,
 } from './useCases/contributedValue/getContributedValue';
-import {
-    GetDetailActualPlannedWorkloadController,
-    GetDetailActualPlannedWorkloadUseCase,
-} from './useCases/detailActualPlannedWorkload/getDetailActualPlannedWorkload';
-import { GetAverageActualWorkloadController } from './useCases/overview/getAverageActualWorkload/GetAverageActualWorkloadController';
-import { GetAverageActualWorkloadUseCase } from './useCases/overview/getAverageActualWorkload/GetAverageActualWorkloadUseCase';
 import { OverviewChartDataController } from './useCases/overview/overviewChartData/GetOverviewChartDataController';
 import { GetOverviewChartDataUseCase } from './useCases/overview/overviewChartData/GetOverviewChartDataUseCase';
 import { GetOverviewSummaryYearController } from './useCases/overview/overviewSummaryYear/GetOverviewSummaryYearController';
 import { GetOverviewSummaryYearUseCase } from './useCases/overview/overviewSummaryYear/GetOverviewSummaryYearUseCase';
+import {
+    GetDetailActualPlannedWorkloadController,
+    GetDetailActualPlannedWorkloadUseCase,
+} from './useCases/plannedWorkload/getDetailActualPlannedWorkload';
 import {
     PlanWorkloadController,
     PlanWorkloadUseCase,
@@ -88,7 +88,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetUserController,
         GetValueStreamController,
         OverviewChartDataController,
-        GetAverageActualWorkloadController,
         GetOverviewSummaryYearController,
         GetValueStreamController,
         GetUsersController,
@@ -99,11 +98,11 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         StartWeekController,
         CreateUserController,
         ReviewRetroController,
+        GetDetailCommittedWorkloadController,
     ],
     providers: [
         CreateUserUseCase,
         CreateCommittedWorkloadUseCase,
-        GetAverageActualWorkloadUseCase,
         GetContributedValueUseCase,
         GetOverviewSummaryYearUseCase,
         GetOverviewChartDataUseCase,
@@ -122,6 +121,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         ReviewRetroUseCase,
         CronCommittedWorkload,
         CommittedWorkloadCreatedListener,
+        GetDetailCommittedWorkloadUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

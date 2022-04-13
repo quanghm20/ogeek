@@ -56,10 +56,6 @@ export class ValueStreamsByWeekMap {
                 Number(committedWLDto.id.toString()),
         );
 
-        const plannedWorkload = foundPlannedWl
-            ? foundPlannedWl.plannedWorkload
-            : committedWLDto.committedWorkload;
-
         let actual = ASSIGNNUMBER;
 
         let worklog = ASSIGNNUMBER;
@@ -72,7 +68,7 @@ export class ValueStreamsByWeekMap {
         const results = expertiseScopeWithinValueStreamDtos;
         expertiseScopeWithinValueStreamDtos.push({
             worklog,
-            plannedWorkload,
+            plannedWorkload: foundPlannedWl.plannedWorkload,
             actualPlannedWorkload: actual,
             committedWorkloadId: Number(committedWLDto.id.toString()),
             contributedValueId: Number(
