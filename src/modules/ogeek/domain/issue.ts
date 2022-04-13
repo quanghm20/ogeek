@@ -103,4 +103,10 @@ export class Issue extends AggregateRoot<IIssueProps> {
         const issue = new Issue(defaultValues, id);
         return Result.ok<Issue>(issue);
     }
+    public markResolve(): void {
+        this.props.status = IssueStatus.RESOLVED;
+    }
+    public updateNote(note: string): void {
+        this.props.note = note;
+    }
 }

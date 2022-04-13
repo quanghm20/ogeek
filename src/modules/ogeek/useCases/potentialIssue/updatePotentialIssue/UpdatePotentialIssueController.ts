@@ -24,6 +24,7 @@ import { Request } from 'express';
 
 import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
+import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { UpdatePotentialIssueDto } from '../../../infra/dtos/updatePotentialIssue/updatePotentialIssue.dto';
@@ -33,7 +34,7 @@ import { UpdatePotentialIssueUseCase } from './UpdatePotentialIssueUseCase';
 @Controller('api/admin/user/potential-issue')
 @ApiTags('User')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UpdatePotentialIssueController {
     constructor(public readonly useCase: UpdatePotentialIssueUseCase) {}
 
@@ -75,6 +76,7 @@ export class UpdatePotentialIssueController {
                     throw new ForbiddenException(error.errorValue());
                 case UpdatePotentialIssueErrors.BadRequest:
                     throw new BadRequestException(error.errorValue());
+
                 default:
                     throw new InternalServerErrorException(error.errorValue());
             }

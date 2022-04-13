@@ -34,13 +34,20 @@ export class UpdatePotentialIssueUseCase
             if (!pic || !pic.isPeopleOps()) {
                 return left(new UpdatePotentialIssueErrors.Forbidden());
             }
-            const { id } = updatePotentialIssue;
+            const { id, status, note } = updatePotentialIssue;
 
             const potentialIssue = await this.issueRepo.findById(id);
             if (!potentialIssue) {
                 return left(new UpdatePotentialIssueErrors.NotFound(id));
             }
-
+            if (status) {
+                potentialIssue.markResolve();
+            }
+            if (note) {
+                potentialIssue.updateNote(note);
+            }
+            const potentialIssueEntity = IssueMap.toEntity(potentialIssue);
+            await this.issueRepo.saveUpdate(potentialIssueEntity);
             if (potentialIssue) {
                 const potentialIssueDto =
                     IssueMap.fromDomainUpdateIssue(potentialIssue);

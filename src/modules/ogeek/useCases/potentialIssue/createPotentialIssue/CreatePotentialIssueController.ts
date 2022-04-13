@@ -24,6 +24,7 @@ import { Request } from 'express';
 
 import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
+import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { CreatePotentialIssueDto } from '../../../infra/dtos/createPotentialIssue/createPotentialIssue.dto';
@@ -33,7 +34,7 @@ import { CreatePotentialIssueUseCase } from './CreatePotentialIssueUseCase';
 @Controller('api/admin/user/potential-issue')
 @ApiTags('User')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class CreatePotentialIssueController {
     constructor(public readonly useCase: CreatePotentialIssueUseCase) {}
 

@@ -13,7 +13,7 @@ import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/s
 import { IssueMap } from '../mappers/issueMap';
 
 export interface IIssueRepo {
-    findById(valueStreamId: DomainId | number): Promise<Issue>;
+    findById(issueId: DomainId | number): Promise<Issue>;
     findAll(): Promise<Issue[]>;
     findAllByWeek({
         startDateOfWeek,
@@ -34,7 +34,7 @@ export interface IIssueRepo {
         userId,
         firstDateOfWeek,
     }: InputPotentialIssueDto): Promise<Issue>;
-    update(condition: any, update: any): Promise<void>;
+    saveUpdate(potentialIssueEntity: IssueEntity): Promise<Issue>;
     createMany(entities: IssueEntity[]): Promise<Issue[]>;
 }
 
@@ -50,7 +50,12 @@ export class IssueRepository implements IIssueRepo {
             issueId instanceof DomainId
                 ? Number(issueId.id.toValue())
                 : issueId;
-        const entity = await this.repo.findOne(issueId);
+        const entity = await this.repo.findOne({
+            where: {
+                id: issueId,
+            },
+            relations: ['user'],
+        });
         return entity ? IssueMap.toDomain(entity) : null;
     }
 
@@ -105,10 +110,6 @@ export class IssueRepository implements IIssueRepo {
         return entity ? IssueMap.toDomain(entity) : null;
     }
 
-    async update(condition: any, update: any): Promise<void> {
-        await this.repo.update(condition, update);
-    }
-
     async save(
         userId: number,
         status: IssueStatus,
@@ -135,6 +136,12 @@ export class IssueRepository implements IIssueRepo {
         } finally {
             await queryRunner.release();
         }
+    }
+
+    async saveUpdate(potentialIssueEntity: IssueEntity): Promise<Issue> {
+        const entity = await this.repo.save(potentialIssueEntity);
+
+        return entity ? IssueMap.toDomain(entity) : null;
     }
 
     async createMany(entities: IssueEntity[]): Promise<Issue[]> {

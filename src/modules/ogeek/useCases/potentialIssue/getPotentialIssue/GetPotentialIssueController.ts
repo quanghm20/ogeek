@@ -23,6 +23,7 @@ import { Request } from 'express';
 
 import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
+import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { DataPotentialIssueDto } from '../../../infra/dtos/getPotentialIssue/dataPotentialIssue.dto';
 import { InputPotentialIssueDto } from '../../../infra/dtos/getPotentialIssue/inputPotentialIssue.dto';
@@ -34,7 +35,7 @@ import { GetPotentialIssueUseCase } from './GetPotentialIssueUseCases';
 @Controller('api/admin/user/potential-issue')
 @ApiTags('User')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class GetPotentialIssueController {
     constructor(public readonly useCase: GetPotentialIssueUseCase) {}
 

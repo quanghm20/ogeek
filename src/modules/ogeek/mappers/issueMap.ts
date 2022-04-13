@@ -109,15 +109,15 @@ export class IssueMap implements Mapper<Issue> {
         return issueArray;
     }
 
-    public static toEntity(issue: Issue): IssueEntity {
-        const issueEntity = new IssueEntity();
-        if (issue) {
-            const user = UserMap.toEntity(issue.user);
-            issueEntity.id = Number(issue.id.toValue());
-            issueEntity.note = issue.note;
-            issueEntity.status = issue.status;
-            issueEntity.user = user;
+    public static toEntity(potentialIssue: Issue): IssueEntity {
+        if (!potentialIssue) {
+            return null;
         }
+        const id = Number(potentialIssue.id?.toValue()) || null;
+        const issueEntity = new IssueEntity(id);
+        issueEntity.note = potentialIssue.note;
+        issueEntity.status = potentialIssue.status;
+        issueEntity.user = UserMap.toEntity(potentialIssue.user);
         return issueEntity;
     }
 }
