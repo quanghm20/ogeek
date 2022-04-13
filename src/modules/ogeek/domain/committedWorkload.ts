@@ -17,6 +17,8 @@ interface ICommittedWorkloadProps {
     contributedValue?: ContributedValue;
     user?: User;
     committedWorkload?: number;
+    sumCommittedWorkload?: number;
+    sumPlannedWorkload?: number;
     status?: CommittedWorkloadStatus;
     startDate?: Date;
     expiredDate?: Date;
@@ -88,6 +90,18 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     }
     set status(status: CommittedWorkloadStatus) {
         this.props.status = status;
+    }
+    get sumCommittedWorkload(): number {
+        return this.props.sumCommittedWorkload;
+    }
+    set sumCommittedWorkload(sum: number) {
+        this.props.sumCommittedWorkload = sum;
+    }
+    get sumPlannedWorkload(): number {
+        return this.props.sumPlannedWorkload;
+    }
+    set sumPlannedWorkload(sum: number) {
+        this.props.sumPlannedWorkload = sum;
     }
     get createdAt(): Date {
         return this.props.createdAt;
@@ -178,30 +192,37 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     public calculate(
         startDateOfYearString: string,
         endDateOfYearString: string,
-        valueStreamId: number,
     ): number {
-        if (this.getValueStreamId() === valueStreamId) {
-            const startDateOfYear = new Date(startDateOfYearString);
-            const endDateOfYear = new Date(endDateOfYearString);
-            if (this.startDate < startDateOfYear) {
-                return this.calculateExpiredDateOne(
-                    startDateOfYear,
-                    endDateOfYear,
-                    this.expiredDate,
-                );
-            } // startDate >= startDateOfYear
-            return this.calculateExpiredDateTwo(
-                this.startDate,
-                this.expiredDate,
+        const startDateOfYear = new Date(startDateOfYearString);
+        const endDateOfYear = new Date(endDateOfYearString);
+        if (this.startDate < startDateOfYear) {
+            this.sumCommittedWorkload = this.calculateExpiredDateOne(
+                startDateOfYear,
                 endDateOfYear,
+                this.expiredDate,
             );
+            return this.sumCommittedWorkload;
         }
+        // startDate >= startDateOfYear
+        this.sumCommittedWorkload = this.calculateExpiredDateTwo(
+            this.startDate,
+            this.expiredDate,
+            endDateOfYear,
+        );
+        return this.sumCommittedWorkload;
+    }
+    public changeStatus(status: CommittedWorkloadStatus): void {
+        this.props.status = status;
     }
 
     public handleExpiredDateOldCommittedWorkload(startDate: Date): void {
         if (this.expiredDate > startDate) {
             this.expiredDate = startDate;
         }
+    }
+
+    public checkExpiredDateWhenUpdate(expiredDate: Date): boolean {
+        return this.expiredDate < expiredDate;
     }
 
     public autoGeneratePlanned(): PlannedWorkload[] {

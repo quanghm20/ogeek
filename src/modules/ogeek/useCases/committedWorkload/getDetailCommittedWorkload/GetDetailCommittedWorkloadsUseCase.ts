@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
+import { CommittedWorkloadStatus } from '../../../../../common/constants/committedStatus';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
@@ -30,7 +31,10 @@ export class GetDetailCommittedWorkloadUseCase
     async execute(member: number): Promise<Response> {
         try {
             const committedWorkloads =
-                await this.committedWorkloadRepo.findByUserId(member);
+                await this.committedWorkloadRepo.findByUserId(
+                    member,
+                    CommittedWorkloadStatus.ACTIVE,
+                );
             if (!committedWorkloads || committedWorkloads.length === 0) {
                 return left(
                     new GetDetailCommittedWorkloadErrors.NotFoundCommittedWorkload(),

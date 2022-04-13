@@ -8,6 +8,7 @@ import {
     ContributedValueEntity,
     ExpertiseScopeEntity,
     IssueEntity,
+    NotificationEntity,
     PlannedWorkloadEntity,
     UserEntity,
     ValueStreamEntity,
@@ -17,6 +18,7 @@ import {
     ContributedValueRepository,
     ExpertiseScopeRepository,
     IssueRepository,
+    NotificationRepository,
     PlannedWorkloadRepository,
     UserRepository,
     ValueStreamRepository,
@@ -26,6 +28,7 @@ import {
     CreateCommittedWorkloadUseCase,
     GetCommittedWorkloadUseCase,
     GetHistoryCommittedWorkloadUseCase,
+    UpdateCommittedWorkloadUseCase,
 } from './useCases/committedWorkload';
 import { CronCommittedWorkload } from './useCases/committedWorkload/cronCommittedWorkload.service';
 import { GetDetailCommittedWorkloadController } from './useCases/committedWorkload/getDetailCommittedWorkload/GetDetailCommittedWorkloadController';
@@ -35,6 +38,10 @@ import {
     GetContributedValueController,
     GetContributedValueUseCase,
 } from './useCases/contributedValue/getContributedValue';
+import { CheckNotificationController } from './useCases/notification/checkNotification/CheckNotificationController';
+import { CheckNotificationUseCase } from './useCases/notification/checkNotification/CheckNotificationUseCase';
+import { GetNotificationController } from './useCases/notification/getNotification/GetNotificationController';
+import { GetNotificationUseCase } from './useCases/notification/getNotification/GetNotificationUseCase';
 import { OverviewChartDataController } from './useCases/overview/overviewChartData/GetOverviewChartDataController';
 import { GetOverviewChartDataUseCase } from './useCases/overview/overviewChartData/GetOverviewChartDataUseCase';
 import { GetOverviewSummaryYearController } from './useCases/overview/overviewSummaryYear/GetOverviewSummaryYearController';
@@ -55,8 +62,12 @@ import {
     StartWeekController,
     StartWeekUseCase,
 } from './useCases/plannedWorkload/startWeek';
-import { CreateIssueController } from './useCases/user/createIssue/CreateIssueController';
-import { CreateIssueUseCase } from './useCases/user/createIssue/CreateIssueUseCase';
+import { CreatePotentialIssueController } from './useCases/potentialIssue/createPotentialIssue/CreatePotentialIssueController';
+import { CreatePotentialIssueUseCase } from './useCases/potentialIssue/createPotentialIssue/CreatePotentialIssueUseCase';
+import { GetPotentialIssueController } from './useCases/potentialIssue/getPotentialIssue/GetPotentialIssueController';
+import { GetPotentialIssueUseCase } from './useCases/potentialIssue/getPotentialIssue/GetPotentialIssueUseCases';
+import { UpdatePotentialIssueController } from './useCases/potentialIssue/updatePotentialIssue/UpdatePotentialIssueController';
+import { UpdatePotentialIssueUseCase } from './useCases/potentialIssue/updatePotentialIssue/UpdatePotentialIssueUseCase';
 import { CreateUserController } from './useCases/user/createUser/CreateUserController';
 import { CreateUserUseCase } from './useCases/user/createUser/CreateUserUseCase';
 import { GetUserController } from './useCases/user/getUser/GetUserController';
@@ -65,6 +76,8 @@ import { GetUsersController } from './useCases/user/getUsers/GetUsersController'
 import { GetUsersUseCase } from './useCases/user/getUsers/GetUsersUseCase';
 import { GetWorkloadListController } from './useCases/user/getWorkloadList/GetWorkloadListController';
 import { GetWorkloadListUseCase } from './useCases/user/getWorkloadList/GetWorkloadListUseCase';
+import { GetWorkloadListsController } from './useCases/user/getWorkloadLists/GetWorkloadListsController';
+import { GetWorkloadListsUseCase } from './useCases/user/getWorkloadLists/GetWorkloadListsUseCase';
 import { GetValueStreamController } from './useCases/valueStream/getValueStream/GetValueStreamController';
 import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/GetValueStreamUseCase';
 @Module({
@@ -78,6 +91,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             PlannedWorkloadEntity,
             IssueEntity,
             ValueStreamEntity,
+            NotificationEntity,
         ]),
         ScheduleModule.forRoot(),
         EventEmitterModule.forRoot(),
@@ -94,14 +108,18 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         PlanWorkloadController,
         GetDetailActualPlannedWorkloadController,
         GetWorkloadListController,
-        CreateIssueController,
+        CreatePotentialIssueController,
         StartWeekController,
+        GetPotentialIssueController,
+        GetWorkloadListsController,
+        GetNotificationController,
+        CheckNotificationController,
         CreateUserController,
         ReviewRetroController,
         GetDetailCommittedWorkloadController,
+        UpdatePotentialIssueController,
     ],
     providers: [
-        CreateUserUseCase,
         CreateCommittedWorkloadUseCase,
         GetContributedValueUseCase,
         GetOverviewSummaryYearUseCase,
@@ -110,18 +128,23 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         PlanWorkloadUseCase,
         StartWeekUseCase,
         CreateUserUseCase,
-        GetUserUseCase,
         GetValueStreamUseCase,
         GetWorkloadListUseCase,
         GetUsersUseCase,
         GetDetailActualPlannedWorkloadUseCase,
-        CreateIssueUseCase,
+        CreatePotentialIssueUseCase,
         GetCommittedWorkloadUseCase,
         GetHistoryCommittedWorkloadUseCase,
+        GetNotificationUseCase,
+        CheckNotificationUseCase,
         ReviewRetroUseCase,
         CronCommittedWorkload,
+        GetPotentialIssueUseCase,
         CommittedWorkloadCreatedListener,
         GetDetailCommittedWorkloadUseCase,
+        UpdatePotentialIssueUseCase,
+        GetWorkloadListsUseCase,
+        UpdateCommittedWorkloadUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,
@@ -150,6 +173,10 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
             provide: 'IIssueRepo',
             useClass: IssueRepository,
         },
+        {
+            provide: 'INotificationRepo',
+            useClass: NotificationRepository,
+        },
     ],
     exports: [
         CreateUserUseCase,
@@ -157,7 +184,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetValueStreamUseCase,
         GetDetailActualPlannedWorkloadUseCase,
         GetWorkloadListUseCase,
-        CreateIssueUseCase,
         TypeOrmModule,
         CronCommittedWorkload,
     ],

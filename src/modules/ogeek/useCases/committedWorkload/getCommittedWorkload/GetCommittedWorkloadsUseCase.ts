@@ -27,9 +27,6 @@ export class GetCommittedWorkloadUseCase
                 await this.committedWorkloadRepo.findAllCommittedWorkload(
                     query,
                 );
-            if (committedWorkloadsDomain.meta.itemCount <= 0) {
-                return left(new GetCommittedWorkloadErrors.NotFound());
-            }
             const committedWorkloadsDto =
                 CommittedWorkloadMap.fromCommittedWorkloadShortArray(
                     committedWorkloadsDomain.data,

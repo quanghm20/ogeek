@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsOptional } from 'class-validator';
 
 import { IssueStatus } from '../../../../common/constants/issueStatus';
 import { UniqueEntityID } from '../../../../core/domain/UniqueEntityID';
@@ -9,7 +9,7 @@ export class IssueDto {
     @IsNotEmpty()
     id: UniqueEntityID | number;
 
-    @ApiProperty({ enum: IssueStatus, example: null })
+    @ApiProperty({ enum: IssueStatus, example: IssueStatus.POTENTIAL_ISSUE })
     @IsOptional()
     status?: IssueStatus;
 
@@ -17,15 +17,21 @@ export class IssueDto {
     @IsOptional()
     user?: UserDto;
 
-    @ApiProperty()
+    @ApiProperty({ example: new Date() })
+    @IsDateString()
+    firstDateOfWeek: Date;
+
+    @ApiProperty({ example: 'Potential issue of Geek' })
     @IsOptional()
     note?: string;
 
     @ApiProperty({ example: new Date() })
+    @IsDateString()
     @IsOptional()
     createdAt?: Date;
 
     @ApiProperty({ example: new Date() })
+    @IsDateString()
     @IsOptional()
     updatedAt?: Date;
 }
