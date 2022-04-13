@@ -2,7 +2,7 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { Issue } from '../domain/issue';
 import { IssueEntity } from '../infra/database/entities/issue.entity';
-import { CreatePotentialIssueDto } from '../infra/dtos/createPotentialIssue/createPotentialIssue.dto';
+import { PotentialIssueResponseDto } from '../infra/dtos/createPotentialIssue/potentialIssueResponse.dto';
 import { PotentialIssueDto } from '../infra/dtos/getPotentialIssue/getPotentialIssue.dto';
 import { IssueDto } from '../infra/dtos/issue.dto';
 import { UpdatePotentialIssueDto } from '../infra/dtos/updatePotentialIssue/updatePotentialIssue.dto';
@@ -20,9 +20,9 @@ export class IssueMap implements Mapper<Issue> {
     }
     public static fromDomainCreateIssue(
         potentialIssue: Issue,
-    ): CreatePotentialIssueDto {
+    ): PotentialIssueResponseDto {
         return {
-            userId: Number(potentialIssue.user.id),
+            id: Number(potentialIssue.id),
             status: potentialIssue.status,
             firstDateOfWeek: potentialIssue.firstDateOfWeek,
             note: potentialIssue.note,

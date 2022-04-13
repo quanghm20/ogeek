@@ -23,6 +23,10 @@ import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
+import {
+    DataHistoryCommittedWorkload,
+    FilterHistoryCommittedWorkload,
+} from '../infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
@@ -90,6 +94,9 @@ export interface ICommittedWorkloadRepo {
     ): Promise<CommittedWorkload[]>;
     findCommittedInComing(userId: number): Promise<CommittedWorkload>;
     findAllCommittedInComing(userId: number): Promise<CommittedWorkload[]>;
+    findHistoryCommittedWorkload(
+        query?: FilterHistoryCommittedWorkload,
+    ): Promise<DataHistoryCommittedWorkload>;
 }
 
 @Injectable()
@@ -313,7 +320,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     }
 
     async findAllCommittedWorkload(
-        query?: FilterCommittedWorkload,
+        query: FilterCommittedWorkload,
     ): Promise<PaginationCommittedWorkload> {
         try {
             const queryBuilder = this.repo
@@ -572,5 +579,39 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             ],
         });
         return entity ? CommittedWorkloadMap.toDomainAll(entity) : null;
+    }
+
+    async findHistoryCommittedWorkload(
+        query?: FilterHistoryCommittedWorkload,
+    ): Promise<DataHistoryCommittedWorkload> {
+        const queryBuilder = this.repo
+            .createQueryBuilder('commit')
+            .select('user.id', 'userId')
+            .addSelect('user.alias', 'alias')
+            .addSelect('commit.startDate', 'startDate')
+            .addSelect('commit.expiredDate', 'expiredDate')
+            .addSelect('commit.status', 'status')
+            .addSelect('SUM(commit.committedWorkload)', 'totalCommit')
+            .innerJoin('commit.user', 'user')
+            .groupBy('user.id')
+            .addGroupBy('user.alias')
+            .addGroupBy('commit.startDate')
+            .addGroupBy('commit.expiredDate')
+            .addGroupBy('commit.status');
+
+        if (query.userId) {
+            queryBuilder.andWhere('commit.user.id = :userId', {
+                userId: query.userId,
+            });
+        }
+        if (query.search) {
+            queryBuilder.andWhere('user.alias like :alias', {
+                alias: `%${query.search}%`,
+            });
+        }
+
+        const entities = await queryBuilder.getRawMany();
+
+        return new DataHistoryCommittedWorkload(entities);
     }
 }

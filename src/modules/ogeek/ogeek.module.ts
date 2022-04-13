@@ -33,6 +33,10 @@ import {
 import { CronCommittedWorkload } from './useCases/committedWorkload/cronCommittedWorkload.service';
 import { GetDetailCommittedWorkloadController } from './useCases/committedWorkload/getDetailCommittedWorkload/GetDetailCommittedWorkloadController';
 import { GetDetailCommittedWorkloadUseCase } from './useCases/committedWorkload/getDetailCommittedWorkload/GetDetailCommittedWorkloadsUseCase';
+import {
+    GetDetailCommittedWorkloadByWeekController,
+    GetDetailCommittedWorkloadByWeekUseCase,
+} from './useCases/committedWorkload/getDetailCommittedWorkloadByWeek';
 import { CommittedWorkloadCreatedListener } from './useCases/committedWorkload/listeners/CommittedWorkloadListeners';
 import {
     GetContributedValueController,
@@ -117,6 +121,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         CreateUserController,
         ReviewRetroController,
         GetDetailCommittedWorkloadController,
+        GetDetailCommittedWorkloadByWeekController,
         UpdatePotentialIssueController,
     ],
     providers: [
@@ -145,6 +150,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         UpdatePotentialIssueUseCase,
         GetWorkloadListsUseCase,
         UpdateCommittedWorkloadUseCase,
+        GetDetailCommittedWorkloadByWeekUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

@@ -23,6 +23,7 @@ export interface IIssueRepo {
         status: IssueStatus,
         note: string,
         firstDateOfWeek: Date,
+        picId: number,
     ): Promise<Issue>;
     findByUserId(
         startDateOfWeek: string,
@@ -114,6 +115,7 @@ export class IssueRepository implements IIssueRepo {
         status: IssueStatus,
         note: string,
         firstDateOfWeek: Date,
+        picId: number,
     ): Promise<Issue> {
         const queryRunner = getConnection().createQueryRunner();
         await queryRunner.connect();
@@ -127,6 +129,7 @@ export class IssueRepository implements IIssueRepo {
             potentialIssue.note = note;
             potentialIssue.firstDateOfWeek = firstDateOfWeek;
             potentialIssue.createdAt = new Date();
+            potentialIssue.createdBy = picId;
 
             await queryRunner.manager.save(potentialIssue);
             await queryRunner.commitTransaction();

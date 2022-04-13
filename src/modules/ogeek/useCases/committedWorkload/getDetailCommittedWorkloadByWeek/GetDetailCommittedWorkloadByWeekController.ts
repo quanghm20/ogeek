@@ -5,6 +5,7 @@ import {
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
+    Query,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -23,20 +24,23 @@ import { Roles } from '../../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { DetailCommittedWorkloadsDto } from '../../../../ogeek/infra/dtos/getDetailCommittedWorkload/DetailCommittedWorkloads.dto';
-import { GetDetailCommittedWorkloadErrors } from './GetDetailCommittedWorkloadErrors';
-import { GetDetailCommittedWorkloadUseCase } from './GetDetailCommittedWorkloadsUseCase';
+import { DetailCommittedWorkloadsByWeekDto } from '../../../../ogeek/infra/dtos/getDetailCommittedWorkloadByWeek/DetailCommittedWorkloads.dto';
+import { InputValueStreamByWeekDto } from '../../../../ogeek/infra/dtos/valueStreamsByWeek/inputValueStream.dto';
+import { GetDetailCommittedWorkloadByWeekErrors } from './GetDetailCommittedWorkloadByWeekErrors';
+import { GetDetailCommittedWorkloadByWeekUseCase } from './GetDetailCommittedWorkloadsByWeekUseCase';
 
-@Controller('api/admin/committed-workload/recent')
+@Controller('api/admin/committed-workload/week')
 @ApiTags('Committed Workload')
 @ApiBearerAuth()
-export class GetDetailCommittedWorkloadController {
-    constructor(public readonly useCase: GetDetailCommittedWorkloadUseCase) {}
+export class GetDetailCommittedWorkloadByWeekController {
+    constructor(
+        public readonly useCase: GetDetailCommittedWorkloadByWeekUseCase,
+    ) {}
 
     @Get()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
-        type: DetailCommittedWorkloadsDto,
+        type: DetailCommittedWorkloadsByWeekDto,
         description: 'OK',
     })
     @ApiUnauthorizedResponse({
@@ -50,16 +54,19 @@ export class GetDetailCommittedWorkloadController {
     })
     @Roles(RoleType.PP)
     @UseGuards(JwtAuthGuard, RolesGuard)
-    async execute(@Req() req: Request): Promise<DetailCommittedWorkloadsDto> {
+    async execute(
+        @Req() req: Request,
+        @Query() { week }: InputValueStreamByWeekDto,
+    ): Promise<DetailCommittedWorkloadsByWeekDto> {
         const { userId } = req.user as JwtPayload;
-        const result = await this.useCase.execute(userId);
+        const result = await this.useCase.execute(week, userId);
         if (result.isLeft()) {
             const error = result.value;
 
             switch (error.constructor) {
-                case GetDetailCommittedWorkloadErrors.NotFoundCommittedWorkload:
+                case GetDetailCommittedWorkloadByWeekErrors.NotFoundCommittedWorkload:
                     throw new NotFoundException(error.errorValue());
-                case GetDetailCommittedWorkloadErrors.NotFoundActualWorklogs:
+                case GetDetailCommittedWorkloadByWeekErrors.NotFoundActualWorklogs:
                     throw new NotFoundException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(error.errorValue());
