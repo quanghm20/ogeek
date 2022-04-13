@@ -23,6 +23,7 @@ import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
+import { WeekDto } from '../infra/dtos/week.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
@@ -45,6 +46,7 @@ export interface ICommittedWorkloadRepo {
         startDateOfWeek,
         endDateOfWeek,
     }: StartEndDateOfWeekWLInputDto): Promise<CommittedWorkload[]>;
+    findByWeek(userId: number, weekDto: WeekDto): Promise<CommittedWorkload[]>;
     findById(
         committedWorkloadId: DomainId | number,
     ): Promise<CommittedWorkload>;
@@ -124,6 +126,30 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         return entities
             ? CommittedWorkloadMap.toDomainAll(entities)
             : new Array<CommittedWorkload>();
+    }
+
+    async findByWeek(
+        userId: number,
+        weekDto: WeekDto,
+    ): Promise<CommittedWorkload[]> {
+        const { week, year } = weekDto;
+        const startDateOfWeek = MomentService.firstDateOfWeekByYear(week, year);
+        const endDateOfWeek = MomentService.lastDateOfWeekByYear(week, year);
+
+        const entities = await this.repo.find({
+            where: {
+                user: { id: userId },
+                startDate: LessThanOrEqual(endDateOfWeek),
+                expiredDate: MoreThanOrEqual(startDateOfWeek),
+            },
+            relations: [
+                'user',
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+            ],
+        });
+        return entities ? CommittedWorkloadMap.toArrayDomain(entities) : null;
     }
 
     async findCommittedActiveAndInComing(
