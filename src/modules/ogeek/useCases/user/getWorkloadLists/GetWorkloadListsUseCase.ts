@@ -15,6 +15,8 @@ import {
     PaginationResponseDto,
 } from '../../../infra/dtos/pagination.dto';
 import { HistoryActualWLResponse } from '../../../infra/dtos/workloadListUsers/historyActualWLResponse.dto';
+import { HistoryActualWorkloadDto } from '../../../infra/dtos/workloadListUsers/historyActualWorkload.dto';
+import { HistoryWorkloadDto } from '../../../infra/dtos/workloadListUsers/historyWorkload.dto';
 import { HistoryWorkloadResponseDto } from '../../../infra/dtos/workloadListUsers/historyWorkloadResponses.dto';
 import { IUserRepo } from '../../../repos/userRepo';
 import { GetWorkloadListsError } from './GetWorkloadListsErrors';
@@ -50,13 +52,7 @@ export class GetWorkloadListsUseCase
                 await this.senteService.getOverviewHistoryActualWorkload<ServerResponse>();
             const response = request.data.data;
 
-            const allowSortColumnArray = [
-                'alias',
-                'id',
-                'note',
-                'status',
-                'committed',
-            ];
+            const allowSortColumnArray = ['alias', 'id', 'status', 'committed'];
 
             const sortDefault = {
                 status: Order.ASC,
@@ -81,30 +77,98 @@ export class GetWorkloadListsUseCase
                 query.q,
             );
 
-            const listUserWorkloadData = listUserWorkloads.data;
+            const actualWorkloads = new Array<HistoryActualWorkloadDto>();
 
-            const paginationResponse = new PaginationResponseDto(
-                query.page,
-                pagination.limit,
-                listUserWorkloads.itemCount,
-            );
+            for (let i = 1; i <= historyWorkloads.WORKLOAD_IN_THREE_WEEK; i++) {
+                actualWorkloads.push({
+                    week: week - i,
+                    status: null,
+                });
+            }
 
-            const userWorkloads = listUserWorkloadData.map((workloadItem) => {
+            const userWorkloadsData = listUserWorkloads.data;
+
+            const myMap = new Map<number, HistoryWorkloadDto>();
+            userWorkloadsData.forEach((userWorkload) => {
+                let actualWorkloadsTemp = [...actualWorkloads];
+                if (!myMap.has(userWorkload.userId)) {
+                    if (userWorkload.status) {
+                        actualWorkloadsTemp = actualWorkloadsTemp.map(
+                            (actual) => {
+                                if (
+                                    actual.week ===
+                                    MomentService.convertDateToWeek(
+                                        userWorkload.mark,
+                                    )
+                                ) {
+                                    return {
+                                        ...actual,
+                                        status: userWorkload.status,
+                                    };
+                                }
+                                return { ...actual };
+                            },
+                        );
+                    }
+                    myMap.set(userWorkload.userId, {
+                        ...userWorkload,
+                        actualWorkloads: actualWorkloadsTemp,
+                    });
+                    return;
+                }
+
+                myMap
+                    .get(userWorkload.userId)
+                    .actualWorkloads.forEach((actual) => {
+                        if (
+                            actual.week ===
+                            MomentService.convertDateToWeek(userWorkload.mark)
+                        ) {
+                            actual.status = userWorkload.status;
+                        }
+                    });
+            });
+
+            const myMapArray = new Array<HistoryWorkloadDto>();
+
+            let itemCount = listUserWorkloads.itemCount;
+
+            if (query.q) {
+                itemCount = myMap.size;
+            }
+
+            let count = 1;
+            myMap.forEach((userWorkload) => {
+                if (count <= query.take) {
+                    myMapArray.push(userWorkload);
+                }
+                count++;
+            });
+
+            const userWorkloads = myMapArray.map((workloadItem) => {
                 for (const res of response) {
                     if (workloadItem.userId === res.userId) {
                         return {
-                            ...workloadItem,
+                            userId: workloadItem.userId,
+                            alias: workloadItem.alias,
+                            avatar: workloadItem.avatar,
                             committed: Number(workloadItem.committed),
                             actualWorkloads: res.actualWorkloads.map(
-                                (actual) => ({
+                                (actual, index) => ({
                                     ...actual,
-                                    week: week + actual.week,
+                                    ...workloadItem.actualWorkloads[index],
                                 }),
                             ),
                         };
                     }
                 }
             });
+
+            const paginationResponse = new PaginationResponseDto(
+                query.page,
+                pagination.limit,
+                itemCount,
+            );
 
             const userWorkloadsResponse = {
                 meta: paginationResponse,
