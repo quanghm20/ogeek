@@ -1,6 +1,7 @@
 import * as moment from 'moment';
 
 import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
+import { CommittingWorkloadStatus } from '../../../common/constants/committingStatus';
 import { dateRange } from '../../../common/constants/dateRange';
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { SYSTEM } from '../../../common/constants/system';
@@ -22,6 +23,7 @@ interface ICommittedWorkloadProps {
     sumCommittedWorkload?: number;
     sumPlannedWorkload?: number;
     status?: CommittedWorkloadStatus;
+    statusCommitting?: CommittingWorkloadStatus;
     startDate?: Date;
     expiredDate?: Date;
     createdBy?: number;
@@ -128,6 +130,12 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     }
     set deletedAt(deletedAt: Date) {
         this.props.deletedAt = deletedAt;
+    }
+    get statusCommitting(): CommittingWorkloadStatus {
+        return this.props.statusCommitting;
+    }
+    set statusCommitting(status: CommittingWorkloadStatus) {
+        this.props.statusCommitting = status;
     }
     public isActive(): boolean {
         return this.props.status === CommittedWorkloadStatus.ACTIVE;
