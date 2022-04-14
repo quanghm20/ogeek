@@ -1,15 +1,17 @@
 import {
     BadRequestException,
-    Body,
     Controller,
+    Get,
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
     Param,
-    Post,
+    Query,
     Req,
     UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
     ApiBadRequestResponse,
@@ -26,26 +28,25 @@ import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
-import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkload/createPlannedWorkloadsList.dto';
-// import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-// import { FindUserDto } from '../../../infra/dtos/findUser.dto';
+import { DataPotentialIssuesDto } from '../../..//infra/dtos/getPotentialIssues/dataPotentialIssues.dto';
 import { GetPotentialIssuesInputDto } from '../../../infra/dtos/getPotentialIssues/getPotentialIssuesInput.dto';
 import { MessageDto } from '../../../infra/dtos/message.dto';
 import { GetPotentialIssuesErrors } from './GetPotentialIssuesErrors';
 import { GetPotentialIssuesUseCase } from './GetPotentialIssuesUseCase';
 
-@Controller('api/admin/user/:userId/potential-issue')
-@ApiTags('Potential Issue')
+@Controller('api/admin/user/:userId/potential-issue/history')
+@ApiTags('User')
+@ApiBearerAuth()
+@Roles(RoleType.PP)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class GetPotentialIssuesController {
     constructor(public readonly useCase: GetPotentialIssuesUseCase) {}
 
-    @Roles(RoleType.PP)
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @ApiBearerAuth()
-    @Post('history')
+    @Get()
     @HttpCode(HttpStatus.OK)
+    @UsePipes(new ValidationPipe({ transform: true }))
     @ApiOkResponse({
-        type: [CreatePlannedWorkloadsListDto],
+        type: DataPotentialIssuesDto,
         description: 'OK',
     })
     @ApiUnauthorizedResponse({
@@ -58,49 +59,42 @@ export class GetPotentialIssuesController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async execute(
         @Req() req: Request,
         @Param('userId') userId: number,
-        @Body() getPotentialIssuesInputDto: GetPotentialIssuesInputDto,
+        @Query('startWeek') startWeek: number,
+        @Query('startYear') startYear: number,
+        @Query('endWeek') endWeek: number,
+        @Query('endYear') endYear: number,
     ): Promise<MessageDto> {
-        // const jwtPayload = req.user as JwtPayload;
-        // const findUserDto = { ...jwtPayload } as FindUserDto;
-        // const picId = findUserDto.userId;
+        const getPotentialIssuesInputDto = {
+            userId,
+            startWeek,
+            startYear,
+            endWeek,
+            endYear,
+        } as GetPotentialIssuesInputDto;
 
-        getPotentialIssuesInputDto.userId = userId;
-        const result = await this.useCase.execute(
-            getPotentialIssuesInputDto,
-            // picId,
-        );
+        const result = await this.useCase.execute(getPotentialIssuesInputDto);
 
         if (result.isLeft()) {
             const error = result.value;
 
             switch (error.constructor) {
                 case GetPotentialIssuesErrors.UserNotFound:
-                    throw new NotFoundException(
-                        error.errorValue(),
-                        'User cannot be found',
-                    );
+                    throw new NotFoundException(error.errorValue());
                 case GetPotentialIssuesErrors.GetPotentialIssuesFailed:
-                    throw new BadRequestException(
-                        error.errorValue(),
-                        'Failed to get potential issues',
-                    );
+                    throw new BadRequestException(error.errorValue());
                 default:
-                    throw new InternalServerErrorException(
-                        error.errorValue(),
-                        'Something went wrong',
-                    );
+                    throw new InternalServerErrorException(error.errorValue());
             }
         }
-
         return {
             statusCode: HttpStatus.OK,
-            message: 'Get potential issues sucessfully',
-            // data: result.value.getValue(),
+            message: 'Get potential issue history successfully',
+            data: result.value.getValue(),
         } as MessageDto;
     }
 }

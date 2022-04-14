@@ -39,6 +39,13 @@ export interface IIssueRepo {
     }: InputPotentialIssueDto): Promise<Issue>;
     update(potentialIssueEntity: IssueEntity): Promise<Issue>;
     createMany(entities: IssueEntity[]): Promise<Issue[]>;
+    findHistoryByUserIdAndWeek({
+        userId,
+        startWeek,
+        startYear,
+        endWeek,
+        endYear,
+    }: GetPotentialIssuesInputDto): Promise<Issue[]>;
 }
 
 @Injectable()

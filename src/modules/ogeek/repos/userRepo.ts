@@ -86,11 +86,12 @@ export class UserRepository implements IUserRepo {
             .select('user.id', 'userId')
             .addSelect('user.alias', 'alias')
             .where('user.id = :userId', { userId })
-            .leftJoin('user.issue', 'issue')
+            .innerJoinAndSelect('user.issue', 'issue')
             .addSelect('issue.created_at', 'created_at')
             .addSelect('issue.updated_at', 'updated_at')
             .addSelect('issue.first_date_of_week', 'first_date_of_week')
             .addSelect('issue.status', 'status')
+            .addSelect('issue.note', 'note')
             .andWhere(
                 'issue.first_date_of_week >= :startDateOfStartWeek AND issue.first_date_of_week <= :startDateOfEndWeek',
                 {

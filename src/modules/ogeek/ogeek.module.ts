@@ -70,10 +70,8 @@ import { CreatePotentialIssueController } from './useCases/potentialIssue/create
 import { CreatePotentialIssueUseCase } from './useCases/potentialIssue/createPotentialIssue/CreatePotentialIssueUseCase';
 import { GetPotentialIssueController } from './useCases/potentialIssue/getPotentialIssue/GetPotentialIssueController';
 import { GetPotentialIssueUseCase } from './useCases/potentialIssue/getPotentialIssue/GetPotentialIssueUseCases';
-// import {
-//     GetPotentialIssuesController,
-//     GetPotentialIssuesUseCase,
-// } from './useCases/potentialIssue/getPotentialIssuesHistory';
+import { GetPotentialIssuesController } from './useCases/potentialIssue/getPotentialIssuesHistory/GetPotentialIssuesController';
+import { GetPotentialIssuesUseCase } from './useCases/potentialIssue/getPotentialIssuesHistory/GetPotentialIssuesUseCase';
 import { UpdatePotentialIssueController } from './useCases/potentialIssue/updatePotentialIssue/UpdatePotentialIssueController';
 import { UpdatePotentialIssueUseCase } from './useCases/potentialIssue/updatePotentialIssue/UpdatePotentialIssueUseCase';
 import { CreateUserController } from './useCases/user/createUser/CreateUserController';
@@ -127,6 +125,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetDetailCommittedWorkloadController,
         GetDetailCommittedWorkloadByWeekController,
         UpdatePotentialIssueController,
+        GetPotentialIssuesController,
     ],
     providers: [
         CreateCommittedWorkloadUseCase,
@@ -155,6 +154,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetWorkloadListsUseCase,
         UpdateCommittedWorkloadUseCase,
         GetDetailCommittedWorkloadByWeekUseCase,
+        GetPotentialIssuesUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

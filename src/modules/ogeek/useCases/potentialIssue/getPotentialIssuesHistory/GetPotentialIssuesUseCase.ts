@@ -1,22 +1,22 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
+import * as moment from 'moment';
 
-// import * as moment from 'moment';
-// import { Equal } from 'typeorm';
-// import { v4 as uuidv4 } from 'uuid';
-// import { PlannedWorkloadStatus } from '../../../../../common/constants/plannedStatus';
-// import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { MomentService } from '../../../../../providers/moment.service';
-// import { PlannedWorkload } from '../../../domain/plannedWorkload';
-// import { PlannedWorkloadEntity } from '../../../infra/database/entities/plannedWorkload.entity';
-// import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkload/createPlannedWorkloadsList.dto';
+import { SenteService } from '../../../../../shared/services/sente.service';
+import { DataPotentialIssuesDto, RawDataPotentialIssuesDto } from '../../../infra/dtos/getPotentialIssues/dataPotentialIssues.dto';
+import { FromWeekToWeekWLInputDto } from '../../../infra/dtos/getPotentialIssues/getCommittedWorkloadByIssue.dto';
 import { GetPotentialIssuesInputDto } from '../../../infra/dtos/getPotentialIssues/getPotentialIssuesInput.dto';
-// import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
+import { HistoryActualWorkloadDto } from '../../../infra/dtos/getPotentialIssues/historyActualWorkload.dto';
+import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
+import { IssueMap } from '../../../mappers/issueMap';
+import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IContributedValueRepo } from '../../../repos/contributedValueRepo';
+import { IIssueRepo } from '../../../repos/issueRepo';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
 import { IUserRepo } from '../../../repos/userRepo';
 import { GetPotentialIssuesErrors } from './GetPotentialIssuesErrors';
@@ -26,7 +26,9 @@ type Response = Either<
   // Result<GetPotentialIssuesInputDto>
   Result<any>
 >;
-
+interface ServerResponse {
+    data: HistoryActualWorkloadDto[];
+}
 @Injectable()
 export class GetPotentialIssuesUseCase
   implements IUseCase<GetPotentialIssuesInputDto, Promise<Response>>
@@ -39,61 +41,106 @@ export class GetPotentialIssuesUseCase
     @Inject('IContributedValueRepo')
     public readonly contributedValueloadRepo: IContributedValueRepo,
     @Inject('IUserRepo') public readonly userRepo: IUserRepo,
+    @Inject('IIssueRepo')
+    public readonly issueRepo: IIssueRepo,
+    public readonly senteService: SenteService,
   ) { }
 
   async execute(
-    getPotentialIssuesInputDto: GetPotentialIssuesInputDto,
+    query: GetPotentialIssuesInputDto,
     // picId: number,
   ): Promise<Response> {
-    const { startWeek, startYear, endWeek, endYear, userId } = getPotentialIssuesInputDto;
 
-    const user = await this.userRepo.findById(userId);
+    const user = await this.userRepo.findById(query.userId);
     if (!user) {
       return left(
         new GetPotentialIssuesErrors.UserNotFound(),
       ) as Response;
     }
 
-    const startDateOfStartWeek = MomentService.firstDateOfWeekByYear(startWeek, startYear);
-    const startDateOfEndWeek = MomentService.firstDateOfWeekByYear(endWeek, endYear);
-    const potentialIssuesHistoryInTimeRange = await this.userRepo.findPotentialIssuesHistoryInTimeRange(
-      userId,
-      startDateOfStartWeek,
-      startDateOfEndWeek,
-    );
-
+    const startDateOfWeek = MomentService.firstDateOfWeekByYear(query.startWeek, query.startYear);
+    const lastDateOfWeek = MomentService.lastDateOfWeekByYear(query.endWeek, query.endYear);
+    const userId = query.userId;
     try {
-      //   // create planned workload based on createPlannedWorkloadDtos
-      //   for (const plannedWorkloadDto of plannedWorkloads) {
-      //     const { contributedValueId, committedWorkloadId, workload } = plannedWorkloadDto;
 
-      //     const committedWorkload = await this.committedWorkloadRepo.findById(committedWorkloadId);
-      //     const contributedValue = await this.contributedValueloadRepo.findById(contributedValueId);
+      const potentialIssuesList = await this.issueRepo.findHistoryByUserIdAndWeek(query);
 
-      //     const plannedWorkload = PlannedWorkload.create(
-      //       {
-      //         reason,
-      //         user,
-      //         contributedValue,
-      //         committedWorkload,
-      //         startDate: new Date(formattedStartDate.toISOString()),
-      //         plannedWorkload: workload,
-      //         status: newPlannedWorkloadStatus,
-      //         createdBy: userId,
-      //       },
-      //       new UniqueEntityID(uuidv4()),
-      //     );
+      const committedWorkloadList = await this.committedWorkloadRepo.findAllByWeekAndYear({
+        userId,
+        startDateOfWeek,
+        lastDateOfWeek,
+      } as FromWeekToWeekWLInputDto);
 
-      //     const plannedWorkloadEntity = PlannedWorkloadMap.toEntity(plannedWorkload.getValue());
-      //     plannedWorkloadEntitiesList.push(plannedWorkloadEntity);
-      //   }
-      //   const savedPlannedWorkloads = await this.plannedWorkloadRepo.createMany(plannedWorkloadEntitiesList);
+      const plannedWorkloadList = await this.plannedWorkloadRepo.findAllByWeekAndYear({
+        userId, startDateOfWeek, lastDateOfWeek } as FromWeekToWeekWLInputDto);
 
-      // if (potentialIssuesHistory) {
-      // }
-      return right(Result.ok(potentialIssuesHistoryInTimeRange));
+      const committedWorkloadDtos = CommittedWorkloadMap.fromDomainAll(committedWorkloadList);
+
+      const plannedWorkloadDtos = PlannedWorkloadMap.fromDomainAll(plannedWorkloadList);
+      const issueDtos = IssueMap.fromDomainAll(potentialIssuesList);
+
+      let issueCount = 0;
+      const rawDataDtos = new Array<RawDataPotentialIssuesDto>();
+      issueDtos.forEach((issue) => {
+        // console.log(issue);
+
+        rawDataDtos.push({
+          dayOfWeek: issue.firstDateOfWeek,
+          issueStatus: issue.status,
+          note: issue.note,
+          committedWorkloads: [],
+          plannedWorkloads: [],
+          actualWorkloads: [],
+        });
+        issueCount++;
+      });
+
+      committedWorkloadDtos.forEach((committedWL) => {
+        rawDataDtos.forEach((raw) => {
+          if (raw.dayOfWeek <= committedWL.expiredDate && raw.dayOfWeek >= committedWL.startDate) {
+            raw.committedWorkloads.push({
+              ...committedWL,
+            });
+          }
+        });
+      });
+
+      plannedWorkloadDtos.forEach((plannedWl) => {
+        rawDataDtos.forEach((raw) => {
+          if (moment(raw.dayOfWeek).year() === moment(plannedWl.startDate).year()
+          && MomentService.convertDateToWeek(raw.dayOfWeek) === MomentService.convertDateToWeek(plannedWl.startDate)) {
+            raw.plannedWorkloads.push({
+              ...plannedWl,
+            });
+          }
+        });
+      });
+      const request = await this.senteService.getActualWLforHistoryPotentialIssue<ServerResponse>(
+                    issueCount,
+                  );
+      const response = request.data;
+
+      const dataHistoryPotentialIssue = new Array<DataPotentialIssuesDto>();
+      rawDataDtos.forEach((raw, index) => {
+        const totalCommittedWLByWeek = raw.committedWorkloads.reduce(
+                    (sum, current) => sum + current.committedWorkload,
+                    0);
+        const totalPlannedWLByWeek = raw.plannedWorkloads.reduce(
+                    (sum, current) => sum + current.plannedWorkload,
+                    0);
+        dataHistoryPotentialIssue.push({
+          week: MomentService.convertDateToWeek(raw.dayOfWeek),
+          committedWorkload: totalCommittedWLByWeek,
+          plannedWorkload: totalPlannedWLByWeek,
+          actualWorkload: Number(response[index]?.actualWorkload),
+          issueStatus: raw.issueStatus,
+          note: raw.note,
+        } as DataPotentialIssuesDto);
+      });
+      return right(Result.ok(dataHistoryPotentialIssue));
+
     } catch (err) {
-      return left(new AppError.UnexpectedError(err));
+        return left(new AppError.UnexpectedError(err));
     }
   }
 }

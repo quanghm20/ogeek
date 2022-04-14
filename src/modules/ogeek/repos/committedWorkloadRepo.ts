@@ -23,6 +23,7 @@ import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
+import { FromWeekToWeekWLInputDto } from '../infra/dtos/getPotentialIssues/getCommittedWorkloadByIssue.dto';
 import {
     DataHistoryCommittedWorkload,
     FilterHistoryCommittedWorkload,
@@ -98,6 +99,11 @@ export interface ICommittedWorkloadRepo {
     findHistoryCommittedWorkload(
         query?: FilterHistoryCommittedWorkload,
     ): Promise<DataHistoryCommittedWorkload>;
+    findAllByWeekAndYear({
+        userId,
+        startDateOfWeek,
+        lastDateOfWeek,
+    }: FromWeekToWeekWLInputDto): Promise<CommittedWorkload[]>;
 }
 
 @Injectable()
@@ -384,6 +390,28 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
 
         return entities ? CommittedWorkloadMap.toArrayDomain(entities) : null;
     }
+    async findAllByWeekAndYear({
+        userId,
+        startDateOfWeek,
+        lastDateOfWeek,
+    }: FromWeekToWeekWLInputDto): Promise<CommittedWorkload[]> {
+        const entities = await this.repo.find({
+            where: {
+                user: { id: userId },
+                startDate: MoreThanOrEqual(startDateOfWeek),
+                expiredDate: LessThanOrEqual(lastDateOfWeek),
+            },
+            relations: [
+                'user',
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+            ],
+        });
+
+        return entities ? CommittedWorkloadMap.toArrayDomain(entities) : null;
+    }
+
     async findAllExpertiseScope(
         userId: number,
         startDate: string,
