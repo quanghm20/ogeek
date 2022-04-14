@@ -10,10 +10,13 @@ import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
 import { IUserRepo } from '../../../repos/userRepo';
+import { GetPlannedWorkloadHistoryErrors } from '../getPlannedWorkloadHistory/GetPlannedWorkloadHistoryErrors';
 import { ReviewRetroErrors } from './ReviewRetroErrors';
 
 type Response = Either<
-  AppError.UnexpectedError,
+  AppError.UnexpectedError
+  | GetPlannedWorkloadHistoryErrors.GetPlannedWorkloadHistoryFailed
+  | GetPlannedWorkloadHistoryErrors.UserNotFound,
   Result<void>
 >;
 

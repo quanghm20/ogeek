@@ -4,6 +4,7 @@ import {
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
+    NotFoundException,
     Query,
     Req,
     UseGuards,
@@ -24,7 +25,7 @@ import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlanned
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { MessageDto } from '../../../infra/dtos/message.dto';
 import { WeekDto } from '../../../infra/dtos/week.dto';
-// import { GetPlannedWorkloadHistoryErrors } from './GetPlannedWorkloadHistoryErrors';
+import { GetPlannedWorkloadHistoryErrors } from './GetPlannedWorkloadHistoryErrors';
 import { GetPlannedWorkloadHistoryUseCase } from './GetPlannedWorkloadHistoryUseCase';
 
 @Controller('api/planned-workload')
@@ -65,10 +66,17 @@ export class GetPlannedWorkloadHistoryController {
         if (result.isLeft()) {
             const error = result.value;
 
-            throw new InternalServerErrorException(
-                error.errorValue(),
-                'Something went wrong',
-            );
+            switch (error.constructor) {
+                case GetPlannedWorkloadHistoryErrors.GetPlannedWorkloadHistoryFailed:
+                    throw new NotFoundException(error.errorValue());
+                case GetPlannedWorkloadHistoryErrors.UserNotFound:
+                    throw new NotFoundException(error.errorValue());
+                default:
+                    throw new InternalServerErrorException(
+                        error.errorValue(),
+                        'Something went wrong',
+                    );
+            }
         }
         const { notes, valueStreams } = result.value.getValue();
         return {
