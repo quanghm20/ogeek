@@ -134,7 +134,7 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         return this.contributedValue.expertiseScope.name;
     }
 
-    isBelongToExpertiseScope(expertiseScopeId: number | string) {
+    isBelongToExpertiseScope(expertiseScopeId: number | string): boolean {
         return this.id.toValue() === expertiseScopeId;
     }
 
@@ -231,7 +231,7 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         const expiredDate = moment(this.expiredDate);
         const plannedAutoGen = new Array<PlannedWorkload>();
         if (startDate.weekday() !== 0) {
-            startDate = startDate.add(-startDate.weekday() - 1, 'd');
+            startDate = startDate.add(-startDate.weekday(), 'd');
         }
 
         for (
