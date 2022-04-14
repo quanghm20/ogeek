@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as moment from 'moment';
 import {
     Between,
+    Equal,
     getConnection,
     LessThan,
     LessThanOrEqual,
@@ -27,6 +28,7 @@ import {
     DataHistoryCommittedWorkload,
     FilterHistoryCommittedWorkload,
 } from '../infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
+import { WeekDto } from '../infra/dtos/week.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
@@ -49,6 +51,7 @@ export interface ICommittedWorkloadRepo {
         startDateOfWeek,
         endDateOfWeek,
     }: StartEndDateOfWeekWLInputDto): Promise<CommittedWorkload[]>;
+    findByWeek(userId: number, weekDto: WeekDto): Promise<CommittedWorkload[]>;
     findById(
         committedWorkloadId: DomainId | number,
     ): Promise<CommittedWorkload>;
@@ -100,6 +103,10 @@ export interface ICommittedWorkloadRepo {
     ): Promise<CommittedWorkload[]>;
     findCommittedInComing(userId: number): Promise<CommittedWorkload>;
     findAllCommittedInComing(userId: number): Promise<CommittedWorkload[]>;
+    findCommittedWorkloadOfUser(
+        id: number,
+        userId: number,
+    ): Promise<CommittedWorkload>;
     findHistoryCommittedWorkload(
         query?: FilterHistoryCommittedWorkload,
     ): Promise<DataHistoryCommittedWorkload>;
@@ -164,6 +171,53 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         return entities
             ? CommittedWorkloadMap.toDomainAll(entities)
             : new Array<CommittedWorkload>();
+    }
+    async findCommittedWorkloadOfUser(
+        id: number,
+        userId: DomainId | number,
+    ): Promise<CommittedWorkload> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        const entity = await this.repo.find({
+            where: {
+                id,
+                user: {
+                    id: userId,
+                },
+                status: Equal(CommittedWorkloadStatus.ACTIVE),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+                'user',
+            ],
+        });
+        return entity[0] ? CommittedWorkloadMap.toDomain(entity[0]) : null;
+    }
+
+    async findByWeek(
+        userId: number,
+        weekDto: WeekDto,
+    ): Promise<CommittedWorkload[]> {
+        const { week, year } = weekDto;
+        const startDateOfWeek = MomentService.firstDateOfWeekByYear(week, year);
+        const endDateOfWeek = MomentService.lastDateOfWeekByYear(week, year);
+
+        const entities = await this.repo.find({
+            where: {
+                user: { id: userId },
+                startDate: LessThanOrEqual(endDateOfWeek),
+                expiredDate: MoreThanOrEqual(startDateOfWeek),
+            },
+            relations: [
+                'user',
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+            ],
+        });
+        return entities ? CommittedWorkloadMap.toArrayDomain(entities) : null;
     }
 
     async findCommittedActiveAndInComing(
@@ -511,9 +565,9 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entities = await this.repo.find({
             where: {
-                status:
-                    CommittedWorkloadStatus.ACTIVE ||
-                    CommittedWorkloadStatus.NOT_RENEW,
+                // status:
+                //     CommittedWorkloadStatus.ACTIVE ||
+                //     CommittedWorkloadStatus.NOT_RENEW,
                 user: userId,
                 startDate: LessThan(endDateOfWeek),
                 expiredDate: MoreThan(startDateOfWeek),
@@ -525,6 +579,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'user',
             ],
         });
+
         return entities
             ? CommittedWorkloadMap.toDomainAll(entities)
             : new Array<CommittedWorkload>();

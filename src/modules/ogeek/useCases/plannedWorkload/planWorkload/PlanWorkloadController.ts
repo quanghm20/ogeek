@@ -72,6 +72,16 @@ export class PlanWorkloadController {
                         error.errorValue(),
                         'Failed to validate input',
                     );
+                case PlanWorkloadErrors.NotCommitYet:
+                    throw new BadRequestException(
+                        error.errorValue(),
+                        'Need commiting before planning',
+                    );
+                case PlanWorkloadErrors.NonExistentContributedValue:
+                    throw new BadRequestException(
+                        error.errorValue(),
+                        'Contributed value does not exist',
+                    );
                 case PlanWorkloadErrors.PlanWorkloadFailed:
                     throw new BadRequestException(
                         error.errorValue(),
