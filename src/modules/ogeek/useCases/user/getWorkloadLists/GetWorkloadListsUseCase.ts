@@ -142,7 +142,7 @@ export class GetWorkloadListsUseCase
 
             let count = 1;
             myMap.forEach((userWorkload) => {
-                if (count <= query.take) {
+                if (count <= pagination.limit) {
                     myMapArray.push(userWorkload);
                 }
                 count++;
