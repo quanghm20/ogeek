@@ -12,7 +12,9 @@ export class CronCommittedWorkload {
         @Inject('ICommittedWorkloadRepo')
         public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
     ) {}
-    @Cron('0 0 0 * * *') // update everyday at 00:00
+    @Cron('0 0 0 * * *', {
+        timeZone: process.env.TIMEZONE,
+    }) // update everyday at 00:00 TIMEZONE System
     async autoUpdateStatusCommitted(): Promise<void> {
         try {
             await this.committedWorkloadRepo.updateCommittedWorkloadExpired();

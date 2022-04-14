@@ -65,9 +65,11 @@ export class DataCommittedWorkload {
         this.meta = meta;
     }
 }
-@Controller('api/committed-workloads')
+@Controller('api/admin/committed-workloads')
 @ApiTags('Committed Workload')
 @ApiBearerAuth()
+@Roles(RoleType.PP)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class CommittedWorkloadController {
     constructor(
         public readonly createCommitUseCase: CreateCommittedWorkloadUseCase,
@@ -78,8 +80,6 @@ export class CommittedWorkloadController {
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    @Roles(RoleType.PP)
-    @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiCreatedResponse({
         type: DataCommittedWorkload,
     })
@@ -180,8 +180,6 @@ export class CommittedWorkloadController {
 
     @Patch()
     @HttpCode(HttpStatus.CREATED)
-    @Roles(RoleType.PP)
-    @UseGuards(JwtAuthGuard)
     @ApiCreatedResponse({
         type: DataCommittedWorkload,
     })
@@ -236,8 +234,6 @@ export class CommittedWorkloadController {
 
     @Get('history')
     @HttpCode(HttpStatus.OK)
-    @Roles(RoleType.PP)
-    @UseGuards(JwtAuthGuard)
     @ApiOkResponse({
         type: DataHistoryCommittedWorkload,
     })
