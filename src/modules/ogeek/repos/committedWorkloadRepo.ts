@@ -98,6 +98,12 @@ export interface ICommittedWorkloadRepo {
     findHistoryCommittedWorkload(
         query?: FilterHistoryCommittedWorkload,
     ): Promise<DataHistoryCommittedWorkload>;
+    findCommittingAndIncomingByUserId(
+        userId: number,
+    ): Promise<CommittedWorkload[]>;
+    updateMany(
+        committedWorkloadEntities: CommittedWorkloadEntity[],
+    ): Promise<CommittedWorkload[]>;
 }
 
 @Injectable()
@@ -612,5 +618,45 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         const entities = await queryBuilder.getRawMany();
 
         return new DataHistoryCommittedWorkload(entities);
+    }
+
+    async findCommittingAndIncomingByUserId(
+        userId: number,
+    ): Promise<CommittedWorkload[]> {
+        const entities = await this.repo
+            .createQueryBuilder('commit')
+            .where('commit.user.id = :userId', { userId })
+            .andWhere('commit.status in (:status1, :status2)', {
+                status1: CommittedWorkloadStatus.ACTIVE,
+                status2: CommittedWorkloadStatus.INCOMING,
+            })
+            .innerJoinAndSelect('commit.user', 'user')
+            .innerJoinAndSelect('commit.contributedValue', 'contribute')
+            .innerJoinAndSelect('contribute.valueStream', 'valueStream')
+            .innerJoinAndSelect('contribute.expertiseScope', 'expertiseScope')
+            .getMany();
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
+    }
+
+    async updateMany(
+        committedWorkloads: CommittedWorkloadEntity[],
+    ): Promise<CommittedWorkload[]> {
+        const queryRunner = getConnection().createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            const committedWorkloadEntities = await queryRunner.manager.save(
+                committedWorkloads,
+            );
+            await queryRunner.commitTransaction();
+            return CommittedWorkloadMap.toDomainAll(committedWorkloadEntities);
+        } catch (error) {
+            await queryRunner.rollbackTransaction();
+            return null;
+        } finally {
+            await queryRunner.release();
+        }
     }
 }

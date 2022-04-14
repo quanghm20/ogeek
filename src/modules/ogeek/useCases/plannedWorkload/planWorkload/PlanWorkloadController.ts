@@ -52,7 +52,6 @@ export class PlanWorkloadController {
     async execute(
         @Req() req: Request,
         @Body() createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
-        // ): Promise<CreatePlannedWorkloadsListDto> {
     ): Promise<MessageDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;

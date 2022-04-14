@@ -77,3 +77,14 @@ export class CommittingWorkloadDto {
         this.expiredDate = expiredDate;
     }
 }
+
+export class DataCommittingWorkload {
+    @ApiProperty({
+        type: CommittingWorkloadDto,
+        isArray: true,
+    })
+    data: CommittingWorkloadDto[];
+    constructor(data: CommittingWorkloadDto[]) {
+        this.data = data;
+    }
+}

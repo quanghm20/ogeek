@@ -8,12 +8,15 @@ import {
     Query,
     Req,
     UseGuards,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
     ApiForbiddenResponse,
     ApiInternalServerErrorResponse,
+    ApiNotFoundResponse,
     ApiOkResponse,
     ApiTags,
     ApiUnauthorizedResponse,
@@ -25,13 +28,12 @@ import { Roles } from '../../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { NotificationDto } from '../../../infra/dtos/notification/getNotifications/getNotification.dto';
-import { CommittingWorkloadDto } from '../../../infra/dtos/updateCommittingWorkload/updateCommittingWorkload.dto';
+import { DataCommittingWorkload } from '../../../infra/dtos/updateCommittingWorkload/updateCommittingWorkload.dto';
 import { UpdateCommittingWorkloadErrors } from './UpdateCommittingWorkloadErrors';
 import { UpdateCommittingWorkloadUseCase } from './UpdateCommittingWorkloadUseCase';
 
-@Controller('api/user/notification')
-@ApiTags('User')
+@Controller('api/admin/committed-workload/committing')
+@ApiTags('Committed Workload')
 @ApiBearerAuth()
 @Roles(RoleType.PP)
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -41,8 +43,7 @@ export class UpdateCommittingWorkloadController {
     @Patch()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
-        type: NotificationDto,
-        isArray: false,
+        type: DataCommittingWorkload,
         description: 'OK',
     })
     @ApiUnauthorizedResponse({
@@ -51,16 +52,20 @@ export class UpdateCommittingWorkloadController {
     @ApiForbiddenResponse({
         description: 'Forbidden',
     })
+    @ApiNotFoundResponse({
+        description: 'Could not find User :userId .',
+    })
     @ApiBadRequestResponse({
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
         description: 'Internal Server Error',
     })
+    @UsePipes(new ValidationPipe({ transform: true }))
     async execute(
-        @Query() userId: number,
+        @Query('userId') userId: number,
         @Req() req: Request,
-    ): Promise<CommittingWorkloadDto[]> {
+    ): Promise<DataCommittingWorkload> {
         const updatedBy = req.user as JwtPayload;
         const result = await this.useCase.execute(userId, updatedBy.userId);
         if (result.isLeft()) {

@@ -3,7 +3,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
-import { CommittingWorkloadDto } from '../../../infra/dtos/updateCommittingWorkload/updateCommittingWorkload.dto';
+import { CommittedWorkload } from '../../../domain/committedWorkload';
+import { DataCommittingWorkload } from '../../../infra/dtos/updateCommittingWorkload/updateCommittingWorkload.dto';
+import { CommittedWorkloadMap } from '../../../mappers/committedWorkloadMap';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { IContributedValueRepo } from '../../../repos/contributedValueRepo';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
@@ -14,7 +16,7 @@ type Response = Either<
     | AppError.UnexpectedError
     | UpdateCommittingWorkloadErrors.UserNotFound
     | UpdateCommittingWorkloadErrors.NotFound,
-    Result<CommittingWorkloadDto[]>
+    Result<DataCommittingWorkload>
 >;
 
 @Injectable()
@@ -33,20 +35,46 @@ export class UpdateCommittingWorkloadUseCase
     async execute(userId: number, member: number): Promise<Response> {
         try {
             const user = await this.userRepo.findById(userId);
-            const userUpdated = await this.userRepo.findById(member);
-            // const createdBy = UserMap.toEntity(userUpdated);
+            const updatedBy = await this.userRepo.findById(member);
             if (!user) {
                 return left(
                     new UpdateCommittingWorkloadErrors.UserNotFound(userId),
                 ) as Response;
             }
-            if (!userUpdated) {
+            if (!updatedBy) {
                 return left(
                     new UpdateCommittingWorkloadErrors.UserNotFound(member),
                 ) as Response;
             }
-            const data = new Array<CommittingWorkloadDto>();
-            return right(Result.ok(data));
+
+            const committedWorkloads =
+                await this.committedWorkloadRepo.findCommittingAndIncomingByUserId(
+                    userId,
+                );
+            if (!committedWorkloads) {
+                return left(new UpdateCommittingWorkloadErrors.NotFound());
+            }
+            const changedCommittingWorkload =
+                CommittedWorkload.changeStatusActiveAndIncoming(
+                    committedWorkloads,
+                );
+
+            const committedWorkloadEntities = CommittedWorkloadMap.toEntities(
+                changedCommittingWorkload,
+            );
+            const updatedArray = await this.committedWorkloadRepo.updateMany(
+                committedWorkloadEntities,
+            );
+            const committingWorkloadDto =
+                CommittedWorkloadMap.fromDomainCommittingWorkloadArray(
+                    updatedArray,
+                );
+
+            const dataCommittingWorkload = new DataCommittingWorkload(
+                committingWorkloadDto,
+            );
+
+            return right(Result.ok(dataCommittingWorkload));
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
         }
