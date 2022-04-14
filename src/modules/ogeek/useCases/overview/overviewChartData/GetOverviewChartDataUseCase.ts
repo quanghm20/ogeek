@@ -45,13 +45,15 @@ export class GetOverviewChartDataUseCase
         public readonly senteService: SenteService,
     ) {}
 
-    getArrayWeekChart(startWeekChart: number) {
+    getArrayWeekChart(startWeekChart: number): number[] {
         return [...Array(MAX_VIEWCHART_LENGTH).keys()].map(
             (item) => item + startWeekChart,
         );
     }
 
-    getTotalPlannedWorkloadByExp(plannedWorkloads: PlannedWorkload[]) {
+    getTotalPlannedWorkloadByExp(
+        plannedWorkloads: PlannedWorkload[],
+    ): PlannedWorkload[] {
         const totalPlannedWorkloadsByExpArray = new Array<PlannedWorkload>();
         const totalPlannedWorkloadsByExpObj = _.groupBy(
             plannedWorkloads,
@@ -113,7 +115,8 @@ export class GetOverviewChartDataUseCase
             const committedWorkloads =
                 await this.committedWorkloadRepo.findByUserIdInTimeRange(
                     member,
-                    startDate,
+                    MomentService.firstDateOfWeek(startWeekChart),
+                    MomentService.lastDateOfWeek(endWeekChart),
                 );
 
             const overviewChartDataDtos = OverViewChartMap.combineAllToDto(
