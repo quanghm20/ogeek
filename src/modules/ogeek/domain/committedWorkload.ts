@@ -11,8 +11,10 @@ import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
 import { ContributedValue } from './contributedValue';
 import { DomainId } from './domainId';
+import { ExpertiseScope } from './expertiseScope';
 import { PlannedWorkload } from './plannedWorkload';
 import { User } from './user';
+import { ValueStream } from './valueStream';
 
 interface ICommittedWorkloadProps {
     contributedValue?: ContributedValue;
@@ -44,6 +46,12 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     }
     set contributedValue(contributedValue: ContributedValue) {
         this.props.contributedValue = contributedValue;
+    }
+    get expertiseScope(): ExpertiseScope {
+        return this.props.contributedValue.expertiseScope;
+    }
+    get valueStream(): ValueStream {
+        return this.props.contributedValue.valueStream;
     }
     get createdBy(): number {
         return this.props.createdBy;

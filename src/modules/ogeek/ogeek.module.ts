@@ -57,6 +57,10 @@ import {
     GetDetailActualPlannedWorkloadUseCase,
 } from './useCases/plannedWorkload/getDetailActualPlannedWorkload';
 import {
+    GetPlannedWorkloadHistoryController,
+    GetPlannedWorkloadHistoryUseCase,
+} from './useCases/plannedWorkload/getPlannedWorkloadHistory';
+import {
     PlanWorkloadController,
     PlanWorkloadUseCase,
 } from './useCases/plannedWorkload/planWorkload';
@@ -126,6 +130,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetDetailCommittedWorkloadByWeekController,
         UpdatePotentialIssueController,
         GetListCommittingController,
+        GetPlannedWorkloadHistoryController,
     ],
     providers: [
         CreateCommittedWorkloadUseCase,
@@ -153,6 +158,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         UpdatePotentialIssueUseCase,
         GetWorkloadListsUseCase,
         UpdateCommittedWorkloadUseCase,
+        GetPlannedWorkloadHistoryUseCase,
         GetDetailCommittedWorkloadByWeekUseCase,
         GetListCommittingUseCase,
         {
