@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class ExpertiseScopeDto {
+export class ExpertiseScopeShortDto {
     @IsNumber()
     @IsNotEmpty()
     @ApiProperty({ example: 1 })

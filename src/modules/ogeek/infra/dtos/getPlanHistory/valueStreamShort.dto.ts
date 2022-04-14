@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-import { ExpertiseScopeDto } from './expertiseScope.dto';
+import { ExpertiseScopeShortDto } from './expertiseScopeShort.dto';
 
-export class ValueStreamDto {
+export class ValueStreamShortDto {
     @IsNumber()
     @IsNotEmpty()
     @ApiProperty({ example: 1 })
@@ -15,8 +15,8 @@ export class ValueStreamDto {
     name: string;
 
     @IsArray()
-    @ApiProperty({ type: ExpertiseScopeDto, isArray: true })
-    expertiseScopes: ExpertiseScopeDto[];
+    @ApiProperty({ type: ExpertiseScopeShortDto, isArray: true })
+    expertiseScopes: ExpertiseScopeShortDto[];
 
     // constructor(id: number, name: string, expertiseScopes: ExpertiseScopeDto[]) {
     //   this.id = id;
