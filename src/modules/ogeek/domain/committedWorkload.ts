@@ -153,9 +153,7 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         return this.contributedValue.expertiseScope.name;
     }
 
-    public isBelongToExpertiseScope(
-        expertiseScopeId: number | string,
-    ): boolean {
+    public belongToExpertiseScope(expertiseScopeId: number | string): boolean {
         return (
             this.contributedValue.expertiseScope.id.toValue() ===
             expertiseScopeId
