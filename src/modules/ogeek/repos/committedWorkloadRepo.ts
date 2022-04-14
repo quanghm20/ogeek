@@ -448,11 +448,12 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 CommittedWorkloadEntity,
                 {
                     expiredDate: now,
-                    status: CommittedWorkloadStatus.ACTIVE,
+                    status:
+                        CommittedWorkloadStatus.ACTIVE ||
+                        CommittedWorkloadStatus.NOT_RENEW,
                 },
                 {
                     status: CommittedWorkloadStatus.INACTIVE,
-                    updatedAt: new Date(),
                 },
             );
             await queryRunner.manager.update(
@@ -463,7 +464,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 },
                 {
                     status: CommittedWorkloadStatus.ACTIVE,
-                    updatedAt: new Date(),
                 },
             );
             await queryRunner.commitTransaction();
