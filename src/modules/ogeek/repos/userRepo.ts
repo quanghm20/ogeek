@@ -81,7 +81,8 @@ export class UserRepository implements IUserRepo {
             .createQueryBuilder('issue')
             .select('issue.note', 'note')
             .addSelect('issue.status', 'status')
-            .addSelect('issue.user_id', 'id')
+            .addSelect('issue.user_id', 'userId')
+            .addSelect('issue.id', 'id')
             .addSelect('issue.first_date_of_week', 'mark')
             .where(
                 `issue.first_date_of_week >= '${firstDateOfWeek.toISOString()}'`,
@@ -99,7 +100,7 @@ export class UserRepository implements IUserRepo {
             .leftJoin(
                 '(' + subQuery.getQuery() + ')',
                 'issue',
-                '"user"."id" = "issue"."id"',
+                '"user"."id" = "issue"."userId"',
             )
             .addSelect(
                 'SUM("committed_workload"."committed_workload")',

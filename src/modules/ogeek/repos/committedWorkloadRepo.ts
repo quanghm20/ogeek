@@ -479,9 +479,9 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entities = await this.repo.find({
             where: {
-                status:
-                    CommittedWorkloadStatus.ACTIVE ||
-                    CommittedWorkloadStatus.NOT_RENEW,
+                // status:
+                //     CommittedWorkloadStatus.ACTIVE ||
+                //     CommittedWorkloadStatus.NOT_RENEW,
                 user: userId,
                 startDate: LessThan(endDateOfWeek),
                 expiredDate: MoreThan(startDateOfWeek),
@@ -493,6 +493,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'user',
             ],
         });
+
         return entities
             ? CommittedWorkloadMap.toDomainAll(entities)
             : new Array<CommittedWorkload>();
