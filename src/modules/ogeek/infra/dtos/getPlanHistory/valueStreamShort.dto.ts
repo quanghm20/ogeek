@@ -17,10 +17,4 @@ export class ValueStreamShortDto {
     @IsArray()
     @ApiProperty({ type: ExpertiseScopeShortDto, isArray: true })
     expertiseScopes: ExpertiseScopeShortDto[];
-
-    // constructor(id: number, name: string, expertiseScopes: ExpertiseScopeDto[]) {
-    //   this.id = id;
-    //   this.name = name;
-    //   this.expertiseScopes = [...expertiseScopes];
-    // }
 }
