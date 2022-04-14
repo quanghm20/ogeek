@@ -61,7 +61,8 @@ export interface ICommittedWorkloadRepo {
     ): Promise<CommittedWorkload[]>;
     findByUserIdInTimeRange(
         userId: DomainId | number,
-        startDateInWeek: Date,
+        startDateChart: Date,
+        endDateChart: Date,
     ): Promise<CommittedWorkload[]>;
     findByIdInPrecedingWeeks(
         userId: DomainId | number,
@@ -265,20 +266,16 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     }
     async findByUserIdInTimeRange(
         userId: DomainId | number,
-        startDateInWeek: Date,
+        startDateChart: Date,
+        endDateChart: Date,
     ): Promise<CommittedWorkload[]> {
         userId =
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entities = await this.repo.find({
             where: {
                 user: { id: userId },
-                startDate:
-                    MoreThanOrEqual(
-                        MomentService.shiftFirstDateChart(startDateInWeek),
-                    ) &&
-                    LessThanOrEqual(
-                        MomentService.shiftLastDateChart(startDateInWeek),
-                    ),
+                startDate: LessThan(endDateChart),
+                expiredDate: MoreThan(startDateChart),
                 status: CommittedWorkloadStatus.ACTIVE,
             },
             relations: [
@@ -448,11 +445,12 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 CommittedWorkloadEntity,
                 {
                     expiredDate: now,
-                    status: CommittedWorkloadStatus.ACTIVE,
+                    status:
+                        CommittedWorkloadStatus.ACTIVE ||
+                        CommittedWorkloadStatus.NOT_RENEW,
                 },
                 {
                     status: CommittedWorkloadStatus.INACTIVE,
-                    updatedAt: new Date(),
                 },
             );
             await queryRunner.manager.update(
@@ -463,7 +461,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 },
                 {
                     status: CommittedWorkloadStatus.ACTIVE,
-                    updatedAt: new Date(),
                 },
             );
             await queryRunner.commitTransaction();
@@ -593,12 +590,14 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             .addSelect('commit.status', 'status')
             .addSelect('SUM(commit.committedWorkload)', 'totalCommit')
             .innerJoin('commit.user', 'user')
+            .where('commit.status = :status', {
+                status: CommittedWorkloadStatus.INACTIVE,
+            })
             .groupBy('user.id')
             .addGroupBy('user.alias')
             .addGroupBy('commit.startDate')
             .addGroupBy('commit.expiredDate')
             .addGroupBy('commit.status');
-
         if (query.userId) {
             queryBuilder.andWhere('commit.user.id = :userId', {
                 userId: query.userId,
