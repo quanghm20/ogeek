@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import * as moment from 'moment';
 
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
@@ -53,13 +52,12 @@ export class GetValueStreamUseCase
             startDateOfWeek: MomentService.firstDateOfWeek(week),
         } as InputGetPlanWLDto);
         if (planNotClosed) {
+            const weekOfUser = MomentService.convertDateToWeek(
+                planNotClosed.startDate,
+            );
             return {
                 startDateOfWeek: planNotClosed.startDate,
-                endDateOfWeek: moment(planNotClosed.startDate)
-                    .add(7, 'days')
-                    .add(24, 'hours')
-                    .add(-1, 'second')
-                    .toDate(),
+                endDateOfWeek: MomentService.lastDateOfWeek(weekOfUser),
             };
         }
         return {

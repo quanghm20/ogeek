@@ -14,6 +14,7 @@ import { Request } from 'express';
 
 import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
+import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { PaginationDto } from '../../../infra/dtos/pagination.dto';
@@ -21,15 +22,15 @@ import { HistoryWorkloadResponseDto } from '../../../infra/dtos/workloadListUser
 import { GetWorkloadListsError } from './GetWorkloadListsErrors';
 import { GetWorkloadListsUseCase } from './GetWorkloadListsUseCase';
 
+@ApiBearerAuth()
 @Controller('api/admin/user/history-workloads')
-@ApiTags('List workload table')
+@Roles(RoleType.PP)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@ApiTags('Workloads')
 export class GetWorkloadListsController {
     constructor(public readonly useCase: GetWorkloadListsUseCase) {}
 
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Get()
-    @Roles(RoleType.PP)
     @UsePipes(new ValidationPipe({ transform: true }))
     @ApiOkResponse({
         type: HistoryWorkloadResponseDto,

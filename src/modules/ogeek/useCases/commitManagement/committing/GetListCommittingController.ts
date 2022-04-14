@@ -34,13 +34,13 @@ import { GetListCommittingUseCase } from './GetListCommittingUseCase';
 @Controller('api/admin/committed-workload/committing')
 @ApiTags('Committed Workload')
 @ApiBearerAuth()
+@Roles(RoleType.PP)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class GetListCommittingController {
     constructor(public readonly useCase: GetListCommittingUseCase) {}
 
     @Get()
     @HttpCode(HttpStatus.OK)
-    @Roles(RoleType.PP)
-    @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiOkResponse({
         type: DataListCommittingWorkload,
         description: 'OK',

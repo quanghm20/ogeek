@@ -28,6 +28,8 @@ import { GetDetailCommittedWorkloadByWeekUseCase } from './GetDetailCommittedWor
 
 @Controller('api/admin/committed-workload/week')
 @ApiTags('Committed Workload')
+@Roles(RoleType.PP)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
 export class GetDetailCommittedWorkloadByWeekController {
     constructor(
@@ -49,8 +51,6 @@ export class GetDetailCommittedWorkloadByWeekController {
     @ApiInternalServerErrorResponse({
         description: 'Interal Server Error',
     })
-    @Roles(RoleType.PP)
-    @UseGuards(JwtAuthGuard, RolesGuard)
     async execute(
         @Query() { week }: InputValueStreamByWeekDto,
         @Query('userId') userId: number,

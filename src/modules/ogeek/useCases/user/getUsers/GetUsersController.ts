@@ -24,12 +24,12 @@ import { GetUserErrors } from './GetUsersErrors';
 import { GetUsersUseCase } from './GetUsersUseCase';
 
 @ApiTags('User')
+@Roles(RoleType.PP)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('api/admin/users')
 export class GetUsersController {
     constructor(public readonly useCase: GetUsersUseCase) {}
 
-    @Roles(RoleType.PP)
-    @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
     @Get()
     @ApiOkResponse({
