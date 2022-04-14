@@ -39,6 +39,7 @@ export class IssueMap implements Mapper<Issue> {
     }
     public static fromDomainOne(issue: Issue): PotentialIssueDto {
         return {
+            id: Number(issue.id),
             userId: Number(issue.user.id),
             status: issue.status,
             note: issue.note,
