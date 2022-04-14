@@ -28,6 +28,7 @@ import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { CreatePotentialIssueDto } from '../../../infra/dtos/createPotentialIssue/createPotentialIssue.dto';
+import { PotentialIssueResponseDto } from '../../../infra/dtos/createPotentialIssue/potentialIssueResponse.dto';
 import { CreatePotentialIssueErrors } from './CreatePotentialIssueErrors';
 import { CreatePotentialIssueUseCase } from './CreatePotentialIssueUseCase';
 
@@ -42,8 +43,8 @@ export class CreatePotentialIssueController {
     @HttpCode(HttpStatus.CREATED)
     @Roles(RoleType.PP)
     @ApiCreatedResponse({
-        type: CreatePotentialIssueDto,
-        description: 'Created',
+        type: PotentialIssueResponseDto,
+        description: 'OK',
     })
     @ApiUnauthorizedResponse({
         description: 'Unauthorized',
@@ -60,7 +61,7 @@ export class CreatePotentialIssueController {
     async execute(
         @Body() createPotentialIssue: CreatePotentialIssueDto,
         @Req() req: Request,
-    ): Promise<CreatePotentialIssueDto> {
+    ): Promise<PotentialIssueResponseDto> {
         const { userId: picId } = req.user as JwtPayload;
         const result = await this.useCase.execute(createPotentialIssue, picId);
         if (result.isLeft()) {

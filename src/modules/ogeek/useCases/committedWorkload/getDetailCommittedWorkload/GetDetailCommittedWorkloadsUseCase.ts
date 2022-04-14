@@ -41,7 +41,7 @@ export class GetDetailCommittedWorkloadUseCase
                 ) as Response;
             }
             const currentWeek = MomentService.getCurrentWeek();
-            const response = await this.senteService.getActualWorklogByProject<
+            const response = await this.senteService.getActualWorklogsRecent<
                 DetailCommittedWorkloadsByExpDto[]
             >(committedWorkloads, currentWeek);
             const detialCommittedWorkloadsByExpDto = response.data;

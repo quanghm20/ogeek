@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
+import { historyWorkloads as historyWorkloadsConst } from '../../../common/constants/history';
 import { DomainId } from '../domain/domainId';
 import { User } from '../domain/user';
 import { IssueEntity } from '../infra/database/entities';
@@ -81,19 +82,13 @@ export class UserRepository implements IUserRepo {
             .select('issue.note', 'note')
             .addSelect('issue.status', 'status')
             .addSelect('issue.user_id', 'id')
-            .addSelect(
-                'row_number() over (partition by "user_id" order by "updated_at" desc) as rank',
-            )
+            .addSelect('issue.first_date_of_week', 'mark')
             .where(
-                `issue.created_at >= '${firstDateOfWeek.toISOString()}' 
-                AND issue.created_at <= '${endDateOfCurrentWeek.toISOString()}'`,
+                `issue.first_date_of_week >= '${firstDateOfWeek.toISOString()}'`,
+            )
+            .andWhere(
+                `issue.first_date_of_week <= '${endDateOfCurrentWeek.toISOString()}'`,
             );
-
-        const issueQuery = getConnection()
-            .createQueryBuilder()
-            .select(['note', 'status', 'id'])
-            .from('(' + subQuery.getQuery() + ')', 'ranks')
-            .where('rank = 1');
 
         const historyWorkloads = this.repo
             .createQueryBuilder('user')
@@ -102,7 +97,7 @@ export class UserRepository implements IUserRepo {
             .addSelect('user.avatar', 'avatar')
             .leftJoin('user.committedWorkloads', 'committed_workload')
             .leftJoin(
-                '(' + issueQuery.getQuery() + ')',
+                '(' + subQuery.getQuery() + ')',
                 'issue',
                 '"user"."id" = "issue"."id"',
             )
@@ -116,12 +111,13 @@ export class UserRepository implements IUserRepo {
         }
 
         historyWorkloads
-            .addSelect(['issue.note', 'issue.status'])
+            .addSelect(['issue.note', 'issue.status', 'issue.mark'])
             .groupBy('user.id')
             .addGroupBy('user.alias')
             .addGroupBy('user.avatar')
             .addGroupBy('issue.status')
             .addGroupBy('issue.note')
+            .addGroupBy('mark')
             .addGroupBy('committed_workload.status')
             .having('committed_workload.status = :name', {
                 name: CommittedWorkloadStatus.ACTIVE,
@@ -130,17 +126,27 @@ export class UserRepository implements IUserRepo {
                 name2: CommittedWorkloadStatus.NOT_RENEW,
             });
 
-        const total = await historyWorkloads.getRawMany();
-        const count = total.length;
-
         const historyWorkloadsQuery = await historyWorkloads
             .orderBy(pagination.order)
             .offset(pagination.page * pagination.limit)
-            .limit(pagination.limit)
+            .limit(
+                pagination.limit * historyWorkloadsConst.WORKLOAD_IN_THREE_WEEK,
+            )
             .getRawMany();
 
+        const userItem = await this.repo
+            .createQueryBuilder('user')
+            .innerJoin('user.committedWorkloads', 'committedWorkload')
+            .where('committedWorkload.status = :status1', {
+                status1: CommittedWorkloadStatus.ACTIVE,
+            })
+            .orWhere('committedWorkload.status = :status2', {
+                status2: CommittedWorkloadStatus.NOT_RENEW,
+            })
+            .getMany();
+
         return {
-            itemCount: count,
+            itemCount: userItem.length,
             data: historyWorkloadsQuery as HistoryWorkloadDto[],
         } as HistoryWorkloadDataDto;
     }

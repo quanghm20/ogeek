@@ -25,6 +25,10 @@ import { PlannedWorkloadEntity } from '../infra/database/entities';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
 import { WeekDto } from '../infra/dtos/week.dto';
+import {
+    DataHistoryCommittedWorkload,
+    FilterHistoryCommittedWorkload,
+} from '../infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
@@ -60,7 +64,8 @@ export interface ICommittedWorkloadRepo {
     ): Promise<CommittedWorkload[]>;
     findByUserIdInTimeRange(
         userId: DomainId | number,
-        startDateInWeek: Date,
+        startDateChart: Date,
+        endDateChart: Date,
     ): Promise<CommittedWorkload[]>;
     findByIdInPrecedingWeeks(
         userId: DomainId | number,
@@ -93,10 +98,16 @@ export interface ICommittedWorkloadRepo {
     ): Promise<CommittedWorkload[]>;
     findCommittedInComing(userId: number): Promise<CommittedWorkload>;
     findAllCommittedInComing(userId: number): Promise<CommittedWorkload[]>;
+<<<<<<< src/modules/ogeek/repos/committedWorkloadRepo.ts
     findCommittedWorkloadOfUser(
         id: number,
         userId: number,
     ): Promise<CommittedWorkload>;
+=======
+    findHistoryCommittedWorkload(
+        query?: FilterHistoryCommittedWorkload,
+    ): Promise<DataHistoryCommittedWorkload>;
+>>>>>>> src/modules/ogeek/repos/committedWorkloadRepo.ts
 }
 
 @Injectable()
@@ -313,20 +324,16 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     }
     async findByUserIdInTimeRange(
         userId: DomainId | number,
-        startDateInWeek: Date,
+        startDateChart: Date,
+        endDateChart: Date,
     ): Promise<CommittedWorkload[]> {
         userId =
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entities = await this.repo.find({
             where: {
                 user: { id: userId },
-                startDate:
-                    MoreThanOrEqual(
-                        MomentService.shiftFirstDateChart(startDateInWeek),
-                    ) &&
-                    LessThanOrEqual(
-                        MomentService.shiftLastDateChart(startDateInWeek),
-                    ),
+                startDate: LessThan(endDateChart),
+                expiredDate: MoreThan(startDateChart),
                 status: CommittedWorkloadStatus.ACTIVE,
             },
             relations: [
@@ -496,11 +503,12 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 CommittedWorkloadEntity,
                 {
                     expiredDate: now,
-                    status: CommittedWorkloadStatus.ACTIVE,
+                    status:
+                        CommittedWorkloadStatus.ACTIVE ||
+                        CommittedWorkloadStatus.NOT_RENEW,
                 },
                 {
                     status: CommittedWorkloadStatus.INACTIVE,
-                    updatedAt: new Date(),
                 },
             );
             await queryRunner.manager.update(
@@ -511,7 +519,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 },
                 {
                     status: CommittedWorkloadStatus.ACTIVE,
-                    updatedAt: new Date(),
                 },
             );
             await queryRunner.commitTransaction();
@@ -627,5 +634,41 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             ],
         });
         return entity ? CommittedWorkloadMap.toDomainAll(entity) : null;
+    }
+
+    async findHistoryCommittedWorkload(
+        query?: FilterHistoryCommittedWorkload,
+    ): Promise<DataHistoryCommittedWorkload> {
+        const queryBuilder = this.repo
+            .createQueryBuilder('commit')
+            .select('user.id', 'userId')
+            .addSelect('user.alias', 'alias')
+            .addSelect('commit.startDate', 'startDate')
+            .addSelect('commit.expiredDate', 'expiredDate')
+            .addSelect('commit.status', 'status')
+            .addSelect('SUM(commit.committedWorkload)', 'totalCommit')
+            .innerJoin('commit.user', 'user')
+            .where('commit.status = :status', {
+                status: CommittedWorkloadStatus.INACTIVE,
+            })
+            .groupBy('user.id')
+            .addGroupBy('user.alias')
+            .addGroupBy('commit.startDate')
+            .addGroupBy('commit.expiredDate')
+            .addGroupBy('commit.status');
+        if (query.userId) {
+            queryBuilder.andWhere('commit.user.id = :userId', {
+                userId: query.userId,
+            });
+        }
+        if (query.search) {
+            queryBuilder.andWhere('user.alias like :alias', {
+                alias: `%${query.search}%`,
+            });
+        }
+
+        const entities = await queryBuilder.getRawMany();
+
+        return new DataHistoryCommittedWorkload(entities);
     }
 }

@@ -18,7 +18,7 @@ export class ValueStreamsByWeekMap {
         );
         return plannedWLStatus
             ? plannedWLStatus.status
-            : PlannedWorkloadStatus.ARCHIVE;
+            : PlannedWorkloadStatus.PLANNING;
     }
 
     public static addValueStreamEmpty(
@@ -55,7 +55,9 @@ export class ValueStreamsByWeekMap {
                 Number(planned.committedWorkload.id.toString()) ===
                 Number(committedWLDto.id.toString()),
         );
-
+        const plannedWorkload = foundPlannedWl
+            ? foundPlannedWl.plannedWorkload
+            : committedWLDto.committedWorkload;
         let actual = ASSIGN_NUMBER;
 
         let worklog = ASSIGN_NUMBER;
@@ -68,7 +70,7 @@ export class ValueStreamsByWeekMap {
         const results = expertiseScopeWithinValueStreamDtos;
         expertiseScopeWithinValueStreamDtos.push({
             worklog,
-            plannedWorkload: foundPlannedWl.plannedWorkload,
+            plannedWorkload,
             actualPlannedWorkload: actual,
             committedWorkloadId: Number(committedWLDto.id.toString()),
             contributedValueId: Number(
