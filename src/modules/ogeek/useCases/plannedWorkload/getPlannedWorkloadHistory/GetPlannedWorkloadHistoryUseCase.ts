@@ -1,12 +1,13 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
-import { Equal } from 'typeorm';
+import { Equal, MoreThan } from 'typeorm';
 
 import { RADIX } from '../../../../../common/constants/number';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { MomentService } from '../../../../../providers/moment.service';
+import { PlannedWorkload } from '../../../domain/plannedWorkload';
 import { PlannedWorkloadHistoryDto } from '../../../infra/dtos/getPlanHistory/plannedWorkloadHistory.dto';
 import { ValueStreamShortDto } from '../../../infra/dtos/getPlanHistory/valueStreamShort.dto';
 import { WeekDto } from '../../../infra/dtos/week.dto';
@@ -18,7 +19,9 @@ import { IUserRepo } from '../../../repos/userRepo';
 import { GetPlannedWorkloadHistoryErrors } from './GetPlannedWorkloadHistoryErrors';
 
 type Response = Either<
-  AppError.UnexpectedError | GetPlannedWorkloadHistoryErrors.GetPlannedWorkloadHistoryFailed,
+  AppError.UnexpectedError
+  | GetPlannedWorkloadHistoryErrors.GetPlannedWorkloadHistoryFailed
+  | GetPlannedWorkloadHistoryErrors.UserNotFound,
   Result<PlannedWorkloadHistoryDto>
 >;
 
@@ -41,14 +44,24 @@ export class GetPlannedWorkloadHistoryUseCase
     userId: number,
   ): Promise<Response> {
     try {
+      const user = await this.userRepo.findById(userId);
+      if (!user) {
+        return left(
+          new GetPlannedWorkloadHistoryErrors.UserNotFound(),
+        ) as Response;
+      }
+
       const notes = [] as string[];
       const committedWorkloads = await this.committedWorkloadRepo.findByWeek(userId, weekDto);
       const plannedWorkloads = await this.plannedWorkloadRepo.find(
         {
           user: { id: userId },
           startDate: Equal(MomentService.firstDateOfWeekByYear(weekDto.week, weekDto.year)),
+          createdBy: MoreThan(0),
         },
       );
+      const sortedPlannedWorkloadsByCreatedAt = plannedWorkloads
+        .sort((a: PlannedWorkload, b: PlannedWorkload) => a.createdAt > b.createdAt ? 1 : -1);
 
       const valueStreamsHashedMap = new Map<number, ValueStreamShortDto>();
       for (const committedWorkload of committedWorkloads) {
@@ -62,7 +75,7 @@ export class GetPlannedWorkloadHistoryUseCase
           valueStreamDto.name = committedWorkload.valueStream.name;
 
           const expertiseScopeDto = ExpertiseScopeMap.fromCommittedWLAndPlannedWLsByWeek(
-            committedWorkload, plannedWorkloads, weekDto,
+            committedWorkload, sortedPlannedWorkloadsByCreatedAt, weekDto,
             function(plannedWL) {
               notes.push(plannedWL.reason);
             },
@@ -71,7 +84,7 @@ export class GetPlannedWorkloadHistoryUseCase
           valueStreamsHashedMap.set(valueStreamId, valueStreamDto);
         } else {
           const expertiseScopeDto = ExpertiseScopeMap.fromCommittedWLAndPlannedWLsByWeek(
-            committedWorkload, plannedWorkloads, weekDto,
+            committedWorkload, sortedPlannedWorkloadsByCreatedAt, weekDto,
           );
           const valueStreamHashedMap = valueStreamsHashedMap.get(valueStreamId);
           valueStreamHashedMap.expertiseScopes.push(expertiseScopeDto);
