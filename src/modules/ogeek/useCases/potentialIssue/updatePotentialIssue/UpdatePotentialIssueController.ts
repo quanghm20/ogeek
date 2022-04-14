@@ -34,13 +34,13 @@ import { UpdatePotentialIssueUseCase } from './UpdatePotentialIssueUseCase';
 @Controller('api/admin/user/potential-issue')
 @ApiTags('User')
 @ApiBearerAuth()
+@Roles(RoleType.PP)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UpdatePotentialIssueController {
     constructor(public readonly useCase: UpdatePotentialIssueUseCase) {}
 
     @Patch()
     @HttpCode(HttpStatus.CREATED)
-    @Roles(RoleType.PP)
     @ApiCreatedResponse({
         type: UpdatePotentialIssueDto,
         description: 'Created',

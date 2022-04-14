@@ -2,18 +2,21 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
+import { Order } from '../../../../common/constants/order';
 import { SortDefault } from '../../../../shared/services/pagination.service';
 
 export class PaginationDto {
+    @ApiPropertyOptional({
+        enum: Order,
+    })
+    @IsString()
+    @IsOptional()
+    order?: string;
+
     @ApiPropertyOptional()
     @IsString()
     @IsOptional()
     sort?: string;
-
-    @ApiPropertyOptional()
-    @IsString()
-    @IsOptional()
-    order?: string;
 
     @ApiPropertyOptional()
     @IsNumber()

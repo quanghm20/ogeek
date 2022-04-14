@@ -33,6 +33,7 @@ import { GetPotentialIssueUseCase } from './GetPotentialIssueUseCases';
 @Controller('api/admin/user/potential-issue')
 @ApiTags('User')
 @ApiBearerAuth()
+@Roles(RoleType.PP)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class GetPotentialIssueController {
     constructor(public readonly useCase: GetPotentialIssueUseCase) {}
@@ -40,7 +41,6 @@ export class GetPotentialIssueController {
     @Get()
     @HttpCode(HttpStatus.OK)
     @UsePipes(new ValidationPipe({ transform: true }))
-    @Roles(RoleType.PP)
     @ApiOkResponse({
         type: DataPotentialIssueDto,
         description: 'OK',

@@ -16,4 +16,18 @@ export namespace PlanWorkloadErrors {
             } as UseCaseError);
         }
     }
+    export class NotCommitYet extends Result<UseCaseError> {
+        constructor() {
+            super(false, {
+                message: 'User does not commit for this contributed value yet!',
+            } as UseCaseError);
+        }
+    }
+    export class NonExistentContributedValue extends Result<UseCaseError> {
+        constructor() {
+            super(false, {
+                message: 'Contributed value does not exist!',
+            } as UseCaseError);
+        }
+    }
 }

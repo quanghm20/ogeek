@@ -23,6 +23,8 @@ import {
     UserRepository,
     ValueStreamRepository,
 } from './repos/index';
+import { GetListCommittingController } from './useCases/commitManagement/committing/GetListCommittingController';
+import { GetListCommittingUseCase } from './useCases/commitManagement/committing/GetListCommittingUseCase';
 import {
     CommittedWorkloadController,
     CreateCommittedWorkloadUseCase,
@@ -57,6 +59,10 @@ import {
     GetDetailActualPlannedWorkloadUseCase,
 } from './useCases/plannedWorkload/getDetailActualPlannedWorkload';
 import {
+    GetPlannedWorkloadHistoryController,
+    GetPlannedWorkloadHistoryUseCase,
+} from './useCases/plannedWorkload/getPlannedWorkloadHistory';
+import {
     PlanWorkloadController,
     PlanWorkloadUseCase,
 } from './useCases/plannedWorkload/planWorkload';
@@ -80,8 +86,6 @@ import { GetUserController } from './useCases/user/getUser/GetUserController';
 import { GetUserUseCase } from './useCases/user/getUser/GetUserUseCase';
 import { GetUsersController } from './useCases/user/getUsers/GetUsersController';
 import { GetUsersUseCase } from './useCases/user/getUsers/GetUsersUseCase';
-import { GetWorkloadListController } from './useCases/user/getWorkloadList/GetWorkloadListController';
-import { GetWorkloadListUseCase } from './useCases/user/getWorkloadList/GetWorkloadListUseCase';
 import { GetWorkloadListsController } from './useCases/user/getWorkloadLists/GetWorkloadListsController';
 import { GetWorkloadListsUseCase } from './useCases/user/getWorkloadLists/GetWorkloadListsUseCase';
 import { GetValueStreamController } from './useCases/valueStream/getValueStream/GetValueStreamController';
@@ -113,7 +117,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetUsersController,
         PlanWorkloadController,
         GetDetailActualPlannedWorkloadController,
-        GetWorkloadListController,
         CreatePotentialIssueController,
         StartWeekController,
         GetPotentialIssueController,
@@ -126,6 +129,8 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetDetailCommittedWorkloadByWeekController,
         UpdatePotentialIssueController,
         UpdateCommittingWorkloadController,
+        GetListCommittingController,
+        GetPlannedWorkloadHistoryController,
     ],
     providers: [
         CreateCommittedWorkloadUseCase,
@@ -137,7 +142,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         StartWeekUseCase,
         CreateUserUseCase,
         GetValueStreamUseCase,
-        GetWorkloadListUseCase,
         GetUsersUseCase,
         GetDetailActualPlannedWorkloadUseCase,
         CreatePotentialIssueUseCase,
@@ -153,8 +157,10 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         UpdatePotentialIssueUseCase,
         GetWorkloadListsUseCase,
         UpdateCommittedWorkloadUseCase,
+        GetPlannedWorkloadHistoryUseCase,
         GetDetailCommittedWorkloadByWeekUseCase,
         UpdateCommittingWorkloadUseCase,
+        GetListCommittingUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,
@@ -193,7 +199,6 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetUserUseCase,
         GetValueStreamUseCase,
         GetDetailActualPlannedWorkloadUseCase,
-        GetWorkloadListUseCase,
         TypeOrmModule,
         CronCommittedWorkload,
     ],

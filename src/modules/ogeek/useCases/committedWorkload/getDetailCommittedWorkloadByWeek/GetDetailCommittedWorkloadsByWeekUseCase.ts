@@ -30,8 +30,9 @@ export class GetDetailCommittedWorkloadByWeekUseCase
     async execute(week: number, member: number): Promise<Response> {
         try {
             const committedWorkloads =
-                await this.committedWorkloadRepo.findByUserId(
+                await this.committedWorkloadRepo.findInWeekAndByUserId(
                     member,
+                    week,
                     CommittedWorkloadStatus.ACTIVE,
                 );
             if (!committedWorkloads || committedWorkloads.length === 0) {

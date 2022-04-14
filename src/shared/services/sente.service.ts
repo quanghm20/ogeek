@@ -93,13 +93,19 @@ export class SenteService {
     async getDetailedActualWorkload(
         inputDetailPlannedWorkloadAndWorklog: InputDetailPlannedWorkloadAndWorklogDto,
     ) {
-        const queryString =
-            inputDetailPlannedWorkloadAndWorklog.expertiseScopes.reduce(
-                (qString, expertiseScope) =>
-                    `${qString}data=${expertiseScope}&`,
-                '',
-            );
-
+        let queryString = '';
+        if (
+            Array.isArray(inputDetailPlannedWorkloadAndWorklog.expertiseScopes)
+        ) {
+            queryString =
+                inputDetailPlannedWorkloadAndWorklog.expertiseScopes.reduce(
+                    (qString, expertiseScope) =>
+                        `${qString}data=${expertiseScope}&`,
+                    '',
+                );
+        } else {
+            queryString = `data=${inputDetailPlannedWorkloadAndWorklog.expertiseScopes}&`;
+        }
         const endpoint = `/overview/detail-actual-workload?${queryString}userId=${inputDetailPlannedWorkloadAndWorklog.userId}`;
         return this._getData(endpoint);
     }
