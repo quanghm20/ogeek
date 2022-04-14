@@ -46,7 +46,7 @@ export class GetDetailCommittedWorkloadController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     @Roles(RoleType.PP)
     @UseGuards(JwtAuthGuard, RolesGuard)

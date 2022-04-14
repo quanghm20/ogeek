@@ -1,22 +1,20 @@
 import {
-    BadRequestException,
-    Body,
     Controller,
-    ForbiddenException,
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
-    Post,
+    Patch,
+    Query,
     Req,
     UseGuards,
 } from '@nestjs/common';
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
-    ApiCreatedResponse,
     ApiForbiddenResponse,
     ApiInternalServerErrorResponse,
+    ApiOkResponse,
     ApiTags,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -27,23 +25,24 @@ import { Roles } from '../../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { CreatePotentialIssueDto } from '../../../infra/dtos/createPotentialIssue/createPotentialIssue.dto';
-import { PotentialIssueResponseDto } from '../../../infra/dtos/createPotentialIssue/potentialIssueResponse.dto';
-import { CreatePotentialIssueErrors } from './CreatePotentialIssueErrors';
-import { CreatePotentialIssueUseCase } from './CreatePotentialIssueUseCase';
+import { NotificationDto } from '../../../infra/dtos/notification/getNotifications/getNotification.dto';
+import { CommittingWorkloadDto } from '../../../infra/dtos/updateCommittingWorkload/updateCommittingWorkload.dto';
+import { UpdateCommittingWorkloadErrors } from './UpdateCommittingWorkloadErrors';
+import { UpdateCommittingWorkloadUseCase } from './UpdateCommittingWorkloadUseCase';
 
-@Controller('api/admin/user/potential-issue')
+@Controller('api/user/notification')
 @ApiTags('User')
 @ApiBearerAuth()
+@Roles(RoleType.PP)
 @UseGuards(JwtAuthGuard, RolesGuard)
-export class CreatePotentialIssueController {
-    constructor(public readonly useCase: CreatePotentialIssueUseCase) {}
+export class UpdateCommittingWorkloadController {
+    constructor(public readonly useCase: UpdateCommittingWorkloadUseCase) {}
 
-    @Post()
-    @HttpCode(HttpStatus.CREATED)
-    @Roles(RoleType.PP)
-    @ApiCreatedResponse({
-        type: PotentialIssueResponseDto,
+    @Patch()
+    @HttpCode(HttpStatus.OK)
+    @ApiOkResponse({
+        type: NotificationDto,
+        isArray: false,
         description: 'OK',
     })
     @ApiUnauthorizedResponse({
@@ -59,22 +58,19 @@ export class CreatePotentialIssueController {
         description: 'Internal Server Error',
     })
     async execute(
-        @Body() createPotentialIssue: CreatePotentialIssueDto,
+        @Query() userId: number,
         @Req() req: Request,
-    ): Promise<PotentialIssueResponseDto> {
-        const { userId: picId } = req.user as JwtPayload;
-        const result = await this.useCase.execute(createPotentialIssue, picId);
+    ): Promise<CommittingWorkloadDto[]> {
+        const updatedBy = req.user as JwtPayload;
+        const result = await this.useCase.execute(userId, updatedBy.userId);
         if (result.isLeft()) {
             const error = result.value;
             switch (error.constructor) {
-                case CreatePotentialIssueErrors.FailToCreatePotentialIssue:
-                    throw new BadRequestException(error.errorValue());
-                case CreatePotentialIssueErrors.UserNotFound:
+                case UpdateCommittingWorkloadErrors.UserNotFound:
                     throw new NotFoundException(error.errorValue());
-                case CreatePotentialIssueErrors.Forbidden:
-                    throw new ForbiddenException(error.errorValue());
-                case CreatePotentialIssueErrors.BadRequest:
-                    throw new BadRequestException(error.errorValue());
+                case UpdateCommittingWorkloadErrors.NotFound:
+                    throw new NotFoundException(error.errorValue());
+
                 default:
                     throw new InternalServerErrorException(error.errorValue());
             }

@@ -50,7 +50,7 @@ export class GetNotificationController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async execute(@Req() req: Request): Promise<NotificationDto[]> {
         const { userId } = req.user as JwtPayload;
