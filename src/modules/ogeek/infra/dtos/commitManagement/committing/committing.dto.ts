@@ -1,35 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-    IsInt,
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 import { CommittingWorkloadStatus } from '../../../../../../common/constants/committingStatus';
-
-export class UserCommittingWorkload {
-    @ApiProperty({ example: 1 })
-    @IsNotEmpty({ message: 'ERROR_EMPTY_ID_FIELD' })
-    @IsNumber()
-    id: number;
-
-    @ApiProperty({ example: 'quang.hm' })
-    @IsNotEmpty({ message: 'ERROR_EMPTY_ALIAS_FIELD' })
-    @IsString()
-    alias: string;
-
-    @ApiProperty({ example: 'Minh Quang' })
-    @IsNotEmpty({ message: 'ERROR_EMPTY_NAME_FIELD' })
-    @IsString()
-    name: string;
-}
-
-export class ListCommttingWorkload {
-    @ApiProperty({ type: UserCommittingWorkload })
-    user: UserCommittingWorkload;
+import { UserCompactDto } from '../../getCommittedWorkload/getCommittedWorkloadShort.dto';
+export class CommittingWorkload {
+    @ApiProperty({ type: UserCompactDto })
+    user: UserCompactDto;
 
     @ApiProperty({
         type: Number,
@@ -59,26 +36,18 @@ export class ListCommttingWorkload {
     @IsNotEmpty({ message: 'ERROR_EMPTY_EXPIRED_DATE_FIELD' })
     expiredDate: Date;
 }
-
 export class DataListCommittingWorkload {
     @ApiProperty({
-        type: ListCommttingWorkload,
+        type: CommittingWorkload,
     })
-    data: UserCommittingWorkload[];
+    data: CommittingWorkload[];
 
-    constructor(data: UserCommittingWorkload[]) {
+    constructor(data: CommittingWorkload[]) {
         this.data = data;
     }
 }
-export class FilterListCommittingWorkload {
-    @ApiPropertyOptional({
-        description: 'Filter by Status',
-    })
-    @Type(() => String)
-    @IsOptional()
-    @IsInt()
-    status?: CommittingWorkloadStatus;
 
+export class FilterListCommittingWorkload {
     @ApiPropertyOptional({
         description: 'Search data by alias',
     })

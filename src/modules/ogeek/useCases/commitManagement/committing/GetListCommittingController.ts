@@ -32,7 +32,7 @@ import { GetListCommittingErrors } from './GetListCommittingErrors';
 import { GetListCommittingUseCase } from './GetListCommittingUseCase';
 
 @Controller('api/admin/committed-workload/committing')
-@ApiTags('Admin')
+@ApiTags('Committed Workload')
 @ApiBearerAuth()
 export class GetListCommittingController {
     constructor(public readonly useCase: GetListCommittingUseCase) {}
@@ -55,7 +55,7 @@ export class GetListCommittingController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     @UsePipes(
         new ValidationPipe({

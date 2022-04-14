@@ -12,6 +12,11 @@ import { IssueStatus } from '../../../../../common/constants/issueStatus';
 export class PotentialIssueDto {
     @IsNumber()
     @IsNotEmpty()
+    @ApiProperty({ example: 23 })
+    id: number;
+
+    @IsNumber()
+    @IsNotEmpty()
     @ApiProperty({ example: 56 })
     userId: number;
 

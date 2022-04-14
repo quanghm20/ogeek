@@ -1,12 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
 
+import { CommittedWorkloadStatus } from '../../../../../common/constants/committedStatus';
+import { CommittingWorkloadStatus } from '../../../../../common/constants/committingStatus';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import {
+    CommittingWorkload,
     DataListCommittingWorkload,
     FilterListCommittingWorkload,
 } from '../../../infra/dtos/commitManagement/committing/committing.dto';
+import { UserCompactDto } from '../../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { GetListCommittingErrors } from './GetListCommittingErrors';
 
@@ -25,16 +29,55 @@ export class GetListCommittingUseCase
     ) {}
     async execute(query: FilterListCommittingWorkload): Promise<Response> {
         try {
-            const committedWorkloads =
+            const committing =
                 await this.committedWorkloadRepo.findListCommittingWorkload(
                     query,
                 );
-            if (!committedWorkloads) {
+            if (!committing) {
                 return left(
                     new GetListCommittingErrors.ListCommittingNotFound(),
                 );
             }
-            return right(Result.ok(committedWorkloads));
+
+            const commits = new Array<CommittingWorkload>();
+            for (const item of committing.data) {
+                const user = new UserCompactDto(
+                    item.userId,
+                    item.alias,
+                    item.name,
+                );
+                const commit = new CommittingWorkload();
+                commit.user = user;
+                commit.daysUntilExpire = item.daysUntilExpire;
+                commit.startDate = item.startDate;
+                commit.totalCommit = item.totalCommit;
+                commit.expiredDate = item.expiredDate;
+                const index = commits.findIndex(
+                    (element) => element.user.id === user.id,
+                );
+                if (index >= 0) {
+                    switch (item.status) {
+                        case CommittedWorkloadStatus.INCOMING:
+                            commits[index].status =
+                                CommittingWorkloadStatus.WILL_CONTINUE;
+                            break;
+                        case CommittedWorkloadStatus.NOT_RENEW:
+                            commits[index].status =
+                                CommittingWorkloadStatus.WILL_NOT_CONTINUE;
+                            break;
+                        case CommittedWorkloadStatus.ACTIVE:
+                            commits[index].status =
+                                CommittingWorkloadStatus.UNHANDLED;
+                    }
+                } else if (item.daysUntilExpire > 60) {
+                    commit.status = CommittingWorkloadStatus.NORMAL;
+                    commits.push(commit);
+                } else {
+                    commit.status = CommittingWorkloadStatus.UNHANDLED;
+                    commits.push(commit);
+                }
+            }
+            return right(Result.ok(new DataListCommittingWorkload(commits)));
         } catch (err) {
             return left(new AppError.UnexpectedError(err));
         }

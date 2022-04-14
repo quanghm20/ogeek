@@ -1,6 +1,7 @@
 import * as moment from 'moment';
 
 import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
+import { CommittingWorkloadStatus } from '../../../common/constants/committingStatus';
 import { dateRange } from '../../../common/constants/dateRange';
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { SYSTEM } from '../../../common/constants/system';
@@ -20,6 +21,7 @@ interface ICommittedWorkloadProps {
     sumCommittedWorkload?: number;
     sumPlannedWorkload?: number;
     status?: CommittedWorkloadStatus;
+    statusCommitting?: CommittingWorkloadStatus;
     startDate?: Date;
     expiredDate?: Date;
     createdBy?: number;
@@ -121,6 +123,12 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     set deletedAt(deletedAt: Date) {
         this.props.deletedAt = deletedAt;
     }
+    get statusCommitting(): CommittingWorkloadStatus {
+        return this.props.statusCommitting;
+    }
+    set statusCommitting(status: CommittingWorkloadStatus) {
+        this.props.statusCommitting = status;
+    }
     public isActive(): boolean {
         return this.props.status === CommittedWorkloadStatus.ACTIVE;
     }
@@ -134,8 +142,11 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         return this.contributedValue.expertiseScope.name;
     }
 
-    isBelongToExpertiseScope(expertiseScopeId: number | string) {
-        return this.id.toValue() === expertiseScopeId;
+    isBelongToExpertiseScope(expertiseScopeId: number | string): boolean {
+        return (
+            this.contributedValue.expertiseScope.id.toValue() ===
+            expertiseScopeId
+        );
     }
 
     public durationDay(startDate: Date, endDate: Date): number {
@@ -231,7 +242,7 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         const expiredDate = moment(this.expiredDate);
         const plannedAutoGen = new Array<PlannedWorkload>();
         if (startDate.weekday() !== 0) {
-            startDate = startDate.add(-startDate.weekday() - 1, 'd');
+            startDate = startDate.add(-startDate.weekday(), 'd');
         }
 
         for (
