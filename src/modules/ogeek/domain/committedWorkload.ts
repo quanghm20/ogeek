@@ -135,7 +135,10 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     }
 
     isBelongToExpertiseScope(expertiseScopeId: number | string): boolean {
-        return this.id.toValue() === expertiseScopeId;
+        return (
+            this.contributedValue.expertiseScope.id.toValue() ===
+            expertiseScopeId
+        );
     }
 
     public durationDay(startDate: Date, endDate: Date): number {
