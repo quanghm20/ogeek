@@ -99,7 +99,9 @@ export class CommittedWorkloadCreatedListener {
             }
         }
 
-        const committedWorkload = committedEvent.committedWorkloads.pop();
+        const committedWorkload = committedEvent.committedWorkloads.find(
+            (committedWl) => committedWl,
+        );
         const user = committedWorkload.user;
         const sumCommit = committedEvent.committedWorkloads.reduce(
             (prev, curr) => prev + curr.committedWorkload,
