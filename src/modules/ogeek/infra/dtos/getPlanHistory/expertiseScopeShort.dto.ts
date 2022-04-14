@@ -20,11 +20,4 @@ export class ExpertiseScopeShortDto {
     @IsNumber()
     @ApiProperty({ example: [18, 20, 22] })
     plannedWorkloads: number[];
-
-    // constructor(id: number, name: string, committedWorkload: number, plannedWorkloads: number[]) {
-    //   this.id = id;
-    //   this.name = name;
-    //   this.committedWorkload = committedWorkload;
-    //   this.plannedWorkloads = [...plannedWorkloads];
-    // }
 }
