@@ -47,12 +47,11 @@ export class PlanWorkloadController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async execute(
         @Req() req: Request,
         @Body() createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
-        // ): Promise<CreatePlannedWorkloadsListDto> {
     ): Promise<MessageDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;

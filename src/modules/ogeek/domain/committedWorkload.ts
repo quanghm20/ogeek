@@ -140,6 +140,9 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     public isActive(): boolean {
         return this.props.status === CommittedWorkloadStatus.ACTIVE;
     }
+    public isComing(): boolean {
+        return this.status === CommittedWorkloadStatus.INCOMING;
+    }
     public getValueStreamId(): number {
         return Number(this.contributedValue.valueStream.id);
     }
@@ -150,7 +153,9 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         return this.contributedValue.expertiseScope.name;
     }
 
-    isBelongToExpertiseScope(expertiseScopeId: number | string): boolean {
+    public isBelongToExpertiseScope(
+        expertiseScopeId: number | string,
+    ): boolean {
         return (
             this.contributedValue.expertiseScope.id.toValue() ===
             expertiseScopeId
@@ -284,10 +289,6 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         }
         return plannedWorkloads;
     }
-
-    public isComing(): boolean {
-        return this.status === CommittedWorkloadStatus.INCOMING;
-    }
     public static create(
         props: ICommittedWorkloadProps,
         id?: UniqueEntityID,
@@ -308,5 +309,23 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         }
         const committedWorkload = new CommittedWorkload(defaultValues, id);
         return Result.ok<CommittedWorkload>(committedWorkload);
+    }
+
+    public static changeStatusActiveAndIncoming(
+        committingWorkloads: CommittedWorkload[],
+    ): CommittedWorkload[] {
+        return committingWorkloads.map((committingWorkload) => {
+            if (committingWorkload.isActive()) {
+                committingWorkload.changeStatus(
+                    CommittedWorkloadStatus.NOT_RENEW,
+                );
+            }
+            if (committingWorkload.isComing()) {
+                committingWorkload.changeStatus(
+                    CommittedWorkloadStatus.INACTIVE,
+                );
+            }
+            return committingWorkload;
+        });
     }
 }

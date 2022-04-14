@@ -48,7 +48,7 @@ export class GetContributedValueController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async getContributed(): Promise<GetContributedValueShortDto> {
         const result = await this.useCase.execute();

@@ -5,10 +5,10 @@ import { ExpertiseScopeShortDto } from '../getContributedValue/expertiseScopeSho
 import { ValueStreamShortDto } from '../overviewSummaryYear/valueStreamShort.dto';
 export class UserCompactDto {
     @ApiProperty({ example: 1 })
-    id?: number;
+    id: number;
 
     @ApiProperty({ example: 'thai.ls' })
-    alias?: string;
+    alias: string;
 
     @ApiProperty({ example: 'Sỹ Thái' })
     name: string;

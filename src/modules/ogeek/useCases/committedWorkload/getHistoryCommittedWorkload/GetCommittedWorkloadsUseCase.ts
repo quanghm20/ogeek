@@ -6,7 +6,7 @@ import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import {
     DataHistoryCommittedWorkload,
     FilterHistoryCommittedWorkload,
-} from '../../..//infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
+} from '../../../infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
 import { GetCommittedWorkloadErrors } from '../getCommittedWorkload/GetCommittedWorkloadErrors';
 type Response = Either<
