@@ -1,1 +1,1 @@
-export const ASSIGNNUMBER = 0;
+export const ASSIGN_NUMBER = 0;

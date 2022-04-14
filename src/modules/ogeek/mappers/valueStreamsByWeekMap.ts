@@ -1,4 +1,4 @@
-import { ASSIGNNUMBER } from '../../../common/constants/number';
+import { ASSIGN_NUMBER } from '../../../common/constants/number';
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { ActualPlanAndWorkLogDto } from '../infra/dtos/actualPlansAndWorkLogs.dto';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
@@ -18,7 +18,7 @@ export class ValueStreamsByWeekMap {
         );
         return plannedWLStatus
             ? plannedWLStatus.status
-            : PlannedWorkloadStatus.ARCHIVE;
+            : PlannedWorkloadStatus.PLANNING;
     }
 
     public static addValueStreamEmpty(
@@ -55,14 +55,12 @@ export class ValueStreamsByWeekMap {
                 Number(planned.committedWorkload.id.toString()) ===
                 Number(committedWLDto.id.toString()),
         );
-
         const plannedWorkload = foundPlannedWl
             ? foundPlannedWl.plannedWorkload
             : committedWLDto.committedWorkload;
+        let actual = ASSIGN_NUMBER;
 
-        let actual = ASSIGNNUMBER;
-
-        let worklog = ASSIGNNUMBER;
+        let worklog = ASSIGN_NUMBER;
 
         if (actualPlanAndWorkLog) {
             actual = actualPlanAndWorkLog.actualPlannedWorkload;

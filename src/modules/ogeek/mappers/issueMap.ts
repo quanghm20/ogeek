@@ -2,8 +2,9 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { Issue } from '../domain/issue';
 import { IssueEntity } from '../infra/database/entities/issue.entity';
-import { CreatePotentialIssueDto } from '../infra/dtos/createPotentialIssue/createPotentialIssue.dto';
+import { PotentialIssueResponseDto } from '../infra/dtos/createPotentialIssue/potentialIssueResponse.dto';
 import { PotentialIssueDto } from '../infra/dtos/getPotentialIssue/getPotentialIssue.dto';
+import { PotentialIssuesDto } from '../infra/dtos/getPotentialIssues/getPotentialIssue.dto';
 import { IssueDto } from '../infra/dtos/issue.dto';
 import { UpdatePotentialIssueDto } from '../infra/dtos/updatePotentialIssue/updatePotentialIssue.dto';
 import { UserMap } from './userMap';
@@ -20,9 +21,9 @@ export class IssueMap implements Mapper<Issue> {
     }
     public static fromDomainCreateIssue(
         potentialIssue: Issue,
-    ): CreatePotentialIssueDto {
+    ): PotentialIssueResponseDto {
         return {
-            userId: Number(potentialIssue.user.id),
+            id: Number(potentialIssue.id),
             status: potentialIssue.status,
             firstDateOfWeek: potentialIssue.firstDateOfWeek,
             note: potentialIssue.note,
@@ -45,6 +46,25 @@ export class IssueMap implements Mapper<Issue> {
             firstDateOfWeek: issue.firstDateOfWeek,
             createdAt: issue.createdAt,
         };
+    }
+
+    public static fromDomainHistoryIssue(issue: Issue): PotentialIssuesDto {
+        return {
+            status: issue.status,
+            note: issue.note,
+        };
+    }
+
+    public static fromDomainAllHistoryIssue(
+        issues: Issue[],
+    ): PotentialIssuesDto[] {
+        const issueArrayDto = new Array<PotentialIssuesDto>();
+        if (issues) {
+            issues.forEach((issue) => {
+                issueArrayDto.push(IssueMap.fromDomainHistoryIssue(issue));
+            });
+        }
+        return issueArrayDto;
     }
 
     public static fromDomainAll(issues: Issue[]): IssueDto[] {

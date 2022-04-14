@@ -37,6 +37,10 @@ import { Roles } from '../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
+import {
+    DataHistoryCommittedWorkload,
+    FilterHistoryCommittedWorkload,
+} from '../..//infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
 import { CreateCommittedWorkloadDto } from '../../infra/dtos/createCommittedWorkload.dto';
 import { CommittedWorkloadShortDto } from '../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
 import { CreateCommittedWorkloadErrors } from './createCommittedWorkload/CreateCommittedWorkloadErrors';
@@ -228,5 +232,44 @@ export class CommittedWorkloadController {
             }
         }
         return new DataCommittedWorkload(result.value.getValue());
+    }
+
+    @Get('history')
+    @HttpCode(HttpStatus.OK)
+    @Roles(RoleType.PP)
+    @UseGuards(JwtAuthGuard)
+    @ApiOkResponse({
+        type: DataHistoryCommittedWorkload,
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiForbiddenResponse({
+        description: 'Forbidden',
+    })
+    @ApiBadRequestResponse({
+        description: 'Bad Request',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Internal Server Error',
+    })
+    @UsePipes(
+        new ValidationPipe({
+            transform: true,
+        }),
+    )
+    async getHistoryCommittedWorkload(
+        @Query() query: FilterHistoryCommittedWorkload,
+    ): Promise<DataHistoryCommittedWorkload> {
+        const result = await this.getHistoryCommitUseCase.execute(query);
+        if (result.isLeft()) {
+            const error = result.value;
+            switch (error.constructor) {
+                default:
+                    throw new InternalServerErrorException(error.errorValue());
+            }
+        }
+
+        return result.value.getValue();
     }
 }

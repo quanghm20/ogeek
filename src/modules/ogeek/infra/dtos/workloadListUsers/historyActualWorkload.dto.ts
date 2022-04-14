@@ -3,10 +3,14 @@ import { IsNumber, IsString } from 'class-validator';
 
 export class HistoryActualWorkloadDto {
     @ApiProperty({ example: -1 })
-    @IsString()
+    @IsNumber()
     week: number;
 
     @ApiProperty({ example: 36 })
     @IsNumber()
-    actualWorkload: number;
+    actualWorkload?: number;
+
+    @ApiProperty({ example: 'Status mark of PP Ops' })
+    @IsString()
+    status?: string;
 }
