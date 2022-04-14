@@ -70,15 +70,11 @@ export class GetPlannedWorkloadHistoryController {
                 'Something went wrong',
             );
         }
-        const plannedWorkloadHistory = Array.from(
-            result.value.getValue().values(),
-        );
+        const { notes, valueStreams } = result.value.getValue();
         return {
             statusCode: HttpStatus.OK,
             message: 'Get planned workload history successfully',
-            data: {
-                plannedWorkloadHistory,
-            },
+            data: { notes, valueStreams },
         } as MessageDto;
     }
 }

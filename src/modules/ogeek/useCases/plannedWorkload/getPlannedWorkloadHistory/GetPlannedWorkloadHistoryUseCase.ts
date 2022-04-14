@@ -9,6 +9,7 @@ import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { MomentService } from '../../../../../providers/moment.service';
 import { ExpertiseScopeDto } from '../../../infra/dtos/getPlanHistory/expertiseScope.dto';
+import { PlannedWorkloadHistoryDto } from '../../../infra/dtos/getPlanHistory/plannedWorkloadHistory.dto';
 import { ValueStreamDto } from '../../../infra/dtos/getPlanHistory/valueStream.dto';
 import { WeekDto } from '../../../infra/dtos/week.dto';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
@@ -19,7 +20,7 @@ import { GetPlannedWorkloadHistoryErrors } from './GetPlannedWorkloadHistoryErro
 
 type Response = Either<
   AppError.UnexpectedError | GetPlannedWorkloadHistoryErrors.GetPlannedWorkloadHistoryFailed,
-  Result<Map<number, ValueStreamDto>>
+  Result<PlannedWorkloadHistoryDto>
 >;
 
 @Injectable()
@@ -42,6 +43,7 @@ export class GetPlannedWorkloadHistoryUseCase
   ): Promise<Response> {
     const { week, year } = weekDto;
     try {
+      const notes = [] as string[];
       const committedWorkloads = await this.committedWorkloadRepo.findByWeek(userId, weekDto);
       const plannedWorkloads = await this.plannedWorkloadRepo.find(
         {
@@ -50,9 +52,9 @@ export class GetPlannedWorkloadHistoryUseCase
         },
       );
 
-      const committedWorkloadHashedMap = new Map<number, ValueStreamDto>();
+      const valueStreamsHashedMap = new Map<number, ValueStreamDto>();
       for (const committedWorkload of committedWorkloads) {
-        if (!committedWorkloadHashedMap[committedWorkload.getValueStreamId()]) {
+        if (!valueStreamsHashedMap.get(committedWorkload.getValueStreamId())) {
 
           const valueStreamDto = new ValueStreamDto();
           const valueStreamDtoId = committedWorkload.valueStream.id.toString();
@@ -60,33 +62,48 @@ export class GetPlannedWorkloadHistoryUseCase
           valueStreamDto.name = committedWorkload.valueStream.name;
 
           const expertiseScopeDto = new ExpertiseScopeDto();
-          const expertiseScopeDtoId = committedWorkload.expertiseScope.id.toString();
-          expertiseScopeDto.id = parseInt(expertiseScopeDtoId, RADIX);
+          const expertiseScopeId = committedWorkload.expertiseScope.id.toString();
+          expertiseScopeDto.id = parseInt(expertiseScopeId, RADIX);
           expertiseScopeDto.name = committedWorkload.expertiseScope.name;
-          expertiseScopeDto.plannedWorkloads = plannedWorkloads.filter(function(plannedWL) {
-            return moment(plannedWL.startDate).week() === week && moment(plannedWL.startDate).year() === year;
-          }).map(function(plannedWL) {
-            return plannedWL.plannedWorkload;
-          });
+          expertiseScopeDto.committedWorkload = committedWorkload.committedWorkload;
+          expertiseScopeDto.plannedWorkloads =
+            plannedWorkloads
+              .filter(function(plannedWL) {
+                return moment(plannedWL.startDate).week() === week
+                  && moment(plannedWL.startDate).year() === year
+                  && plannedWL.expertiseScope.id.toString() === expertiseScopeId;
 
+              }).map(function(plannedWL) {
+                notes.push(plannedWL.reason);
+                return plannedWL.plannedWorkload;
+              });
           valueStreamDto.expertiseScopes = [expertiseScopeDto];
-          committedWorkloadHashedMap.set(committedWorkload.getValueStreamId(), valueStreamDto);
+          valueStreamsHashedMap.set(committedWorkload.getValueStreamId(), valueStreamDto);
         } else {
+
           const expertiseScopeDto = new ExpertiseScopeDto();
           const expertiseScopeId = committedWorkload.expertiseScope.id.toString();
           expertiseScopeDto.id = parseInt(expertiseScopeId, RADIX);
           expertiseScopeDto.name = committedWorkload.expertiseScope.name;
-          expertiseScopeDto.plannedWorkloads = plannedWorkloads.filter(function(plannedWL) {
-            return moment(plannedWL.startDate).week() === week && moment(plannedWL.startDate).year() === year;
-          }).map(function(plannedWL) {
-            return plannedWL.plannedWorkload;
-          });
+          expertiseScopeDto.committedWorkload = committedWorkload.committedWorkload;
+          expertiseScopeDto.plannedWorkloads =
+            plannedWorkloads
+              .filter(function(plannedWL) {
+                return moment(plannedWL.startDate).week() === week
+                  && moment(plannedWL.startDate).year() === year
+                  && plannedWL.expertiseScope.id.toString() === expertiseScopeId;
+              }).map(function(plannedWL) {
+                return plannedWL.plannedWorkload;
+              });
 
-          committedWorkloadHashedMap.get(committedWorkload.getValueStreamId()).expertiseScopes.push(expertiseScopeDto);
+          const hashedMapValueStream = valueStreamsHashedMap.get(committedWorkload.getValueStreamId());
+          hashedMapValueStream.expertiseScopes.push(expertiseScopeDto);
         }
       }
+      const valueStreams = Array.from(valueStreamsHashedMap.values());
+      const plannedWorkloadHistoryDto = new PlannedWorkloadHistoryDto(notes, valueStreams);
 
-      return right(Result.ok(committedWorkloadHashedMap));
+      return right(Result.ok(plannedWorkloadHistoryDto));
     } catch (err) {
       return left(new AppError.UnexpectedError(err));
     }

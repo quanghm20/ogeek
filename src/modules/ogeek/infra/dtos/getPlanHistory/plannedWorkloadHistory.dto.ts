@@ -14,8 +14,8 @@ export class PlannedWorkloadHistoryDto {
     @ApiProperty({ example: ['Early bird', 'Early bird', 'Early bird'] })
     notes: string[];
 
-    // constructor(notes: string[], valueStreams: ValueStreamDto[]) {
-    //   this.notes = notes;
-    //   this.valueStreams = { ...valueStreams };
-    // }
+    constructor(notes: string[], valueStreams: ValueStreamDto[]) {
+        this.notes = notes;
+        this.valueStreams = { ...valueStreams };
+    }
 }

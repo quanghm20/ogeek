@@ -181,7 +181,7 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
         this.status = PlannedWorkloadStatus.EXECUTING;
         this.updatedBy = userId;
     }
-    public deactive(userId: number): void {
+    public deActivate(userId: number): void {
         if (this.status === PlannedWorkloadStatus.ARCHIVE) {
             return;
         }

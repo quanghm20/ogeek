@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as moment from 'moment';
 import {
     Between,
+    Equal,
     getConnection,
     LessThan,
     LessThanOrEqual,
@@ -92,6 +93,10 @@ export interface ICommittedWorkloadRepo {
     ): Promise<CommittedWorkload[]>;
     findCommittedInComing(userId: number): Promise<CommittedWorkload>;
     findAllCommittedInComing(userId: number): Promise<CommittedWorkload[]>;
+    findCommittedWorkloadOfUser(
+        id: number,
+        userId: number,
+    ): Promise<CommittedWorkload>;
 }
 
 @Injectable()
@@ -126,6 +131,30 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         return entities
             ? CommittedWorkloadMap.toDomainAll(entities)
             : new Array<CommittedWorkload>();
+    }
+
+    async findCommittedWorkloadOfUser(
+        id: number,
+        userId: DomainId | number,
+    ): Promise<CommittedWorkload> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        const entity = await this.repo.find({
+            where: {
+                id,
+                user: {
+                    id: userId,
+                },
+                status: Equal(CommittedWorkloadStatus.ACTIVE),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+                'user',
+            ],
+        });
+        return entity[0] ? CommittedWorkloadMap.toDomain(entity[0]) : null;
     }
 
     async findByWeek(
