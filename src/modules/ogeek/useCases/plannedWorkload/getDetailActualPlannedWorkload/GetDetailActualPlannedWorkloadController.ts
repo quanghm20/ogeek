@@ -64,7 +64,6 @@ export class GetDetailActualPlannedWorkloadController {
             expertiseScopes,
             week: Number(week),
         } as InputDetailPlannedWorkloadAndWorklogDto;
-
         const result = await this.useCase.execute(
             inputDetailPlannedWorkloadAndWorklog,
         );

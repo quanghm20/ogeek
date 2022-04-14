@@ -99,7 +99,6 @@ export class SenteService {
                     `${qString}data=${expertiseScope}&`,
                 '',
             );
-
         const endpoint = `/overview/detail-actual-workload?${queryString}userId=${inputDetailPlannedWorkloadAndWorklog.userId}`;
         return this._getData(endpoint);
     }
