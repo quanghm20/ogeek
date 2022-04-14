@@ -83,6 +83,7 @@ export class GetWorkloadListsUseCase
                 actualWorkloads.push({
                     week: week - i,
                     status: null,
+                    note: '',
                 });
             }
 
@@ -104,6 +105,7 @@ export class GetWorkloadListsUseCase
                                     return {
                                         ...actual,
                                         status: userWorkload.status,
+                                        note: userWorkload.note,
                                     };
                                 }
                                 return { ...actual };
@@ -125,6 +127,7 @@ export class GetWorkloadListsUseCase
                             MomentService.convertDateToWeek(userWorkload.mark)
                         ) {
                             actual.status = userWorkload.status;
+                            actual.note = userWorkload.note;
                         }
                     });
             });
