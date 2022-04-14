@@ -106,14 +106,6 @@ export class GetOverviewSummaryYearUseCase
                     );
                 data.push(valueStreamsDto);
             });
-
-            // get actual plans and worklogs
-            // const url = `${process.env.MOCK_URL}/api/overview/summary-year?userId=${userId.toString()}`;
-            // const request = await Axios.post<ValueStreamsDto[]>(url, data, {
-            //     headers: {
-            //         'x-api-key': process.env.MOCK_API_KEY,
-            //     },
-            // });
             const request =
                 await this.senteService.getOverviewSumaryYearWorkload<ValueStreamsDto[]>(data, userId.toString());
             const response = request.data;

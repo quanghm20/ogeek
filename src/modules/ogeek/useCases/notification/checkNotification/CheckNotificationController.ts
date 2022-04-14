@@ -21,9 +21,9 @@ import {
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { CheckNotificationDto } from '../../../..//ogeek/infra/dtos/notification/checkNotification/checkNotification.dto';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
+import { CheckNotificationDto } from '../../../../ogeek/infra/dtos/notification/checkNotification/checkNotification.dto';
 import { NotificationDto } from '../../../infra/dtos/notification/getNotifications/getNotification.dto';
 import { CheckNotificationErrors } from './CheckNotificationErrors';
 import { CheckNotificationUseCase } from './CheckNotificationUseCase';
@@ -52,7 +52,7 @@ export class CheckNotificationController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async execute(
         @Body() checkNotification: CheckNotificationDto,

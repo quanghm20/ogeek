@@ -6,7 +6,6 @@ import {
     InternalServerErrorException,
     NotFoundException,
     Query,
-    Req,
     UseGuards,
 } from '@nestjs/common';
 import {
@@ -17,13 +16,11 @@ import {
     ApiTags,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Request } from 'express';
 
 import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
-import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { DetailCommittedWorkloadsByWeekDto } from '../../../../ogeek/infra/dtos/getDetailCommittedWorkloadByWeek/DetailCommittedWorkloads.dto';
 import { InputValueStreamByWeekDto } from '../../../../ogeek/infra/dtos/valueStreamsByWeek/inputValueStream.dto';
 import { GetDetailCommittedWorkloadByWeekErrors } from './GetDetailCommittedWorkloadByWeekErrors';
@@ -31,6 +28,8 @@ import { GetDetailCommittedWorkloadByWeekUseCase } from './GetDetailCommittedWor
 
 @Controller('api/admin/committed-workload/week')
 @ApiTags('Committed Workload')
+@Roles(RoleType.PP)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
 export class GetDetailCommittedWorkloadByWeekController {
     constructor(
@@ -50,15 +49,12 @@ export class GetDetailCommittedWorkloadByWeekController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
-    @Roles(RoleType.PP)
-    @UseGuards(JwtAuthGuard, RolesGuard)
     async execute(
-        @Req() req: Request,
         @Query() { week }: InputValueStreamByWeekDto,
+        @Query('userId') userId: number,
     ): Promise<DetailCommittedWorkloadsByWeekDto> {
-        const { userId } = req.user as JwtPayload;
         const result = await this.useCase.execute(week, userId);
         if (result.isLeft()) {
             const error = result.value;

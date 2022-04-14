@@ -19,9 +19,7 @@ export class OverViewChartMap {
             let myPlannedLength = 0;
             const myCommittedWorkload = committedWorkloads.find(
                 (committedWorkload) =>
-                    committedWorkload.isBelongToExpertiseScope(
-                        expertiseScopeId,
-                    ),
+                    committedWorkload.belongToExpertiseScope(expertiseScopeId),
             );
             if (myCommittedWorkload) {
                 const contributedValue = Array<WorkloadOverviewDto>();

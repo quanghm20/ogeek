@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import { Equal } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
+import { RADIX } from '../../../../../common/constants/number';
 import { PlannedWorkloadStatus } from '../../../../../common/constants/plannedStatus';
 import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
 import { IUseCase } from '../../../../../core/domain/UseCase';
@@ -56,6 +57,26 @@ export class PlanWorkloadUseCase
     }
 
     try {
+      // validate if user plans without committing
+      for (const plannedWorkloadDto of plannedWorkloads) {
+        const { committedWorkloadId } = plannedWorkloadDto;
+
+        const committedWorkload = await this.committedWorkloadRepo.findCommittedWorkloadOfUser(committedWorkloadId, userId);
+        if (!committedWorkload) {
+          return left(
+            new PlanWorkloadErrors.NotCommitYet(),
+          ) as Response;
+        }
+
+        const contributedValue =
+          await this.contributedValueloadRepo.findById(parseInt(committedWorkload.contributedValue.id.toString(), RADIX));
+        if (!contributedValue) {
+          return left(
+            new PlanWorkloadErrors.NonExistentContributedValue(),
+          ) as Response;
+        }
+      }
+
       // format startDate
       const formattedStartDate = moment(startDateOfWeek).toDate();
 
@@ -95,7 +116,7 @@ export class PlanWorkloadUseCase
         });
 
         const currentWeekPlannedWorkloadEntites = currentWeekPlannedWorkloads.map(plannedWL => {
-          plannedWL.deactive(userId);
+          plannedWL.deActivate(userId);
           return PlannedWorkloadMap.toEntity(plannedWL);
         });
 
@@ -104,10 +125,12 @@ export class PlanWorkloadUseCase
 
       // create planned workload based on createPlannedWorkloadDtos
       for (const plannedWorkloadDto of plannedWorkloads) {
-        const { contributedValueId, committedWorkloadId, workload } = plannedWorkloadDto;
+        const { committedWorkloadId, workload } = plannedWorkloadDto;
 
-        const committedWorkload = await this.committedWorkloadRepo.findById(committedWorkloadId);
-        const contributedValue = await this.contributedValueloadRepo.findById(contributedValueId);
+        const committedWorkload =
+          await this.committedWorkloadRepo.findCommittedWorkloadOfUser(committedWorkloadId, userId);
+        const contributedValue =
+          await this.contributedValueloadRepo.findById(parseInt(committedWorkload.contributedValue.id.toString(), RADIX));
 
         const plannedWorkload = PlannedWorkload.create(
           {

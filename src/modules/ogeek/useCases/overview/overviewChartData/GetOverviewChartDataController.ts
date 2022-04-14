@@ -44,7 +44,7 @@ export class OverviewChartDataController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async execute(@Req() req: Request): Promise<OverviewChartDataDto[]> {
         const currentWeek = moment(new Date()).week();

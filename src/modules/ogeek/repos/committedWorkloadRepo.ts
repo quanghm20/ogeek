@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as moment from 'moment';
 import {
     Between,
+    Equal,
     getConnection,
     LessThan,
     LessThanOrEqual,
@@ -24,16 +25,18 @@ import { PlannedWorkloadEntity } from '../infra/database/entities';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
 import { FromWeekToWeekWLInputDto } from '../infra/dtos/getPotentialIssues/getCommittedWorkloadByIssue.dto';
+import { FilterListCommittingWorkload } from '../infra/dtos/commitManagement/committing/committing.dto';
+import { DataListCommittingWorkloadRaw } from '../infra/dtos/commitManagement/committing/committing.raw';
 import {
     DataHistoryCommittedWorkload,
     FilterHistoryCommittedWorkload,
 } from '../infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
+import { WeekDto } from '../infra/dtos/week.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
 import { FilterCommittedWorkload } from '../useCases/committedWorkload/FilterCommittedWorkload';
 import { IPlannedWorkloadRepo } from './plannedWorkloadRepo';
-
 export class PaginationCommittedWorkload {
     meta?: PageMetaDto;
 
@@ -50,6 +53,7 @@ export interface ICommittedWorkloadRepo {
         startDateOfWeek,
         endDateOfWeek,
     }: StartEndDateOfWeekWLInputDto): Promise<CommittedWorkload[]>;
+    findByWeek(userId: number, weekDto: WeekDto): Promise<CommittedWorkload[]>;
     findById(
         committedWorkloadId: DomainId | number,
     ): Promise<CommittedWorkload>;
@@ -71,6 +75,11 @@ export interface ICommittedWorkloadRepo {
     ): Promise<CommittedWorkload[]>;
     findByUserId(
         userId: DomainId | number,
+        status: CommittedWorkloadStatus,
+    ): Promise<CommittedWorkload[]>;
+    findInWeekAndByUserId(
+        userId: DomainId | number,
+        week: number,
         status: CommittedWorkloadStatus,
     ): Promise<CommittedWorkload[]>;
     findByUserIdOverview(
@@ -96,6 +105,13 @@ export interface ICommittedWorkloadRepo {
     ): Promise<CommittedWorkload[]>;
     findCommittedInComing(userId: number): Promise<CommittedWorkload>;
     findAllCommittedInComing(userId: number): Promise<CommittedWorkload[]>;
+    findListCommittingWorkload(
+        query?: FilterListCommittingWorkload,
+    ): Promise<DataListCommittingWorkloadRaw>;
+    findCommittedWorkloadOfUser(
+        id: number,
+        userId: number,
+    ): Promise<CommittedWorkload>;
     findHistoryCommittedWorkload(
         query?: FilterHistoryCommittedWorkload,
     ): Promise<DataHistoryCommittedWorkload>;
@@ -104,6 +120,12 @@ export interface ICommittedWorkloadRepo {
         startDateOfWeek,
         lastDateOfWeek,
     }: FromWeekToWeekWLInputDto): Promise<CommittedWorkload[]>;
+    findCommittingAndIncomingByUserId(
+        userId: number,
+    ): Promise<CommittedWorkload[]>;
+    updateMany(
+        committedWorkloadEntities: CommittedWorkloadEntity[],
+    ): Promise<CommittedWorkload[]>;
 }
 
 @Injectable()
@@ -138,6 +160,80 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         return entities
             ? CommittedWorkloadMap.toDomainAll(entities)
             : new Array<CommittedWorkload>();
+    }
+
+    async findInWeekAndByUserId(
+        userId: DomainId | number,
+        week: number,
+        status: CommittedWorkloadStatus = CommittedWorkloadStatus.ACTIVE,
+    ): Promise<CommittedWorkload[]> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+
+        const entities = await this.repo.find({
+            where: {
+                status,
+                user: userId,
+                startDate: LessThan(MomentService.lastDateOfWeek(week)),
+                expiredDate: MoreThan(MomentService.firstDateOfWeek(week)),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'user',
+            ],
+        });
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
+    }
+    async findCommittedWorkloadOfUser(
+        id: number,
+        userId: DomainId | number,
+    ): Promise<CommittedWorkload> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+        const entity = await this.repo.find({
+            where: {
+                id,
+                user: {
+                    id: userId,
+                },
+                status: Equal(CommittedWorkloadStatus.ACTIVE),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+                'user',
+            ],
+        });
+        return entity[0] ? CommittedWorkloadMap.toDomain(entity[0]) : null;
+    }
+
+    async findByWeek(
+        userId: number,
+        weekDto: WeekDto,
+    ): Promise<CommittedWorkload[]> {
+        const { week, year } = weekDto;
+        const startDateOfWeek = MomentService.firstDateOfWeekByYear(week, year);
+        const endDateOfWeek = MomentService.lastDateOfWeekByYear(week, year);
+
+        const entities = await this.repo.find({
+            where: {
+                user: { id: userId },
+                startDate: LessThanOrEqual(endDateOfWeek),
+                expiredDate: MoreThanOrEqual(startDateOfWeek),
+            },
+            relations: [
+                'user',
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+            ],
+        });
+        return entities ? CommittedWorkloadMap.toArrayDomain(entities) : null;
     }
 
     async findCommittedActiveAndInComing(
@@ -507,9 +603,9 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entities = await this.repo.find({
             where: {
-                status:
-                    CommittedWorkloadStatus.ACTIVE ||
-                    CommittedWorkloadStatus.NOT_RENEW,
+                // status:
+                //     CommittedWorkloadStatus.ACTIVE ||
+                //     CommittedWorkloadStatus.NOT_RENEW,
                 user: userId,
                 startDate: LessThan(endDateOfWeek),
                 expiredDate: MoreThan(startDateOfWeek),
@@ -521,6 +617,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'user',
             ],
         });
+
         return entities
             ? CommittedWorkloadMap.toDomainAll(entities)
             : new Array<CommittedWorkload>();
@@ -640,5 +737,78 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         const entities = await queryBuilder.getRawMany();
 
         return new DataHistoryCommittedWorkload(entities);
+    }
+
+    async findCommittingAndIncomingByUserId(
+        userId: number,
+    ): Promise<CommittedWorkload[]> {
+        const entities = await this.repo
+            .createQueryBuilder('commit')
+            .where('commit.user.id = :userId', { userId })
+            .andWhere('commit.status in (:status1, :status2)', {
+                status1: CommittedWorkloadStatus.ACTIVE,
+                status2: CommittedWorkloadStatus.INCOMING,
+            })
+            .innerJoinAndSelect('commit.user', 'user')
+            .innerJoinAndSelect('commit.contributedValue', 'contribute')
+            .innerJoinAndSelect('contribute.valueStream', 'valueStream')
+            .innerJoinAndSelect('contribute.expertiseScope', 'expertiseScope')
+            .getMany();
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
+    }
+
+    async updateMany(
+        committedWorkloads: CommittedWorkloadEntity[],
+    ): Promise<CommittedWorkload[]> {
+        const queryRunner = getConnection().createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            const committedWorkloadEntities = await queryRunner.manager.save(
+                committedWorkloads,
+            );
+            await queryRunner.commitTransaction();
+            return CommittedWorkloadMap.toDomainAll(committedWorkloadEntities);
+        } catch (error) {
+            await queryRunner.rollbackTransaction();
+            return null;
+        } finally {
+            await queryRunner.release();
+        }
+    }
+    async findListCommittingWorkload(
+        query?: FilterListCommittingWorkload,
+    ): Promise<DataListCommittingWorkloadRaw> {
+        const queryBuilder = this.repo
+            .createQueryBuilder('commit')
+            .select('user.id', 'userId')
+            .addSelect('user.alias', 'alias')
+            .addSelect('commit.startDate', 'startDate')
+            .addSelect('commit.expiredDate', 'expiredDate')
+            .addSelect(
+                'DATE_PART(\'day\',"commit"."expired_date" - now()) ',
+                'daysUntilExpire',
+            )
+            .addSelect('commit.status', 'status')
+            .addSelect('SUM(commit.committedWorkload)::integer', 'totalCommit')
+            .innerJoin('commit.user', 'user')
+            .groupBy('user.id')
+            .addGroupBy('user.alias')
+            .addGroupBy('commit.startDate')
+            .addGroupBy('commit.expiredDate')
+            .addGroupBy('commit.expiredDate - now()')
+            .addGroupBy('commit.status')
+            .where("commit.status not in ('INACTIVE')");
+
+        if (query.search) {
+            queryBuilder.andWhere('user.alias like :alias', {
+                alias: `%${query.search}%`,
+            });
+        }
+        const entities = await queryBuilder.getRawMany();
+
+        return new DataListCommittingWorkloadRaw(entities);
     }
 }

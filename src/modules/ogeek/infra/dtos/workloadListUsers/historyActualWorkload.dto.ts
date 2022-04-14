@@ -13,4 +13,8 @@ export class HistoryActualWorkloadDto {
     @ApiProperty({ example: 'Status mark of PP Ops' })
     @IsString()
     status?: string;
+
+    @ApiProperty({ example: 'Note mark of PP Ops' })
+    @IsString()
+    note?: string;
 }

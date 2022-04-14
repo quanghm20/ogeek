@@ -1,4 +1,4 @@
-@baseUrl=http://localhost:3000/api
+@baseUrl=https://api.o-geek.geekup.io/api
 @token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJpYXQiOjE2NDgzOTU3MDAsImV4cCI6MTY1MDk4NzcwMH0.PeyCmrQtcnyEWlB6QirUrADZ_TUUgvRMxZtMStDHv3w
 @productionToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTY0ODE0MDc5OSwiZXhwIjoxNjUwNzMyNzk5fQ.cS3yD6WjYzjjlPx8C2yORRqC1z-RYmGbP-9nt_VIAZ0
 @devToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJpYXQiOjE2NDgzOTU3MDAsImV4cCI6MTY1MDk4NzcwMH0.PeyCmrQtcnyEWlB6QirUrADZ_TUUgvRMxZtMStDHv3w
@@ -8,18 +8,16 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "startDate": "2022-04-30 00:00:00",
+    "startDate": "2022-04-14 00:00:00",
     "reason": "Owl Night",
     "plannedWorkloads": [
         {
-	        "workload": 13,
-            "contributedValueId": 1,
-            "committedWorkloadId": 1
+	        "workload": 22,
+            "committedWorkloadId": 14
         },
         {
-	        "workload": 12.5,
-            "contributedValueId": 2,
-            "committedWorkloadId": 1
+	        "workload": 22,
+            "committedWorkloadId": 68
         }
     ]
 }

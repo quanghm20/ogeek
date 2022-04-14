@@ -1,6 +1,7 @@
 import * as moment from 'moment';
 
 import { CommittedWorkloadStatus } from '../../../common/constants/committedStatus';
+import { CommittingWorkloadStatus } from '../../../common/constants/committingStatus';
 import { dateRange } from '../../../common/constants/dateRange';
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { SYSTEM } from '../../../common/constants/system';
@@ -10,8 +11,10 @@ import { Guard } from '../../../core/logic/Guard';
 import { Result } from '../../../core/logic/Result';
 import { ContributedValue } from './contributedValue';
 import { DomainId } from './domainId';
+import { ExpertiseScope } from './expertiseScope';
 import { PlannedWorkload } from './plannedWorkload';
 import { User } from './user';
+import { ValueStream } from './valueStream';
 
 interface ICommittedWorkloadProps {
     contributedValue?: ContributedValue;
@@ -20,6 +23,7 @@ interface ICommittedWorkloadProps {
     sumCommittedWorkload?: number;
     sumPlannedWorkload?: number;
     status?: CommittedWorkloadStatus;
+    statusCommitting?: CommittingWorkloadStatus;
     startDate?: Date;
     expiredDate?: Date;
     createdBy?: number;
@@ -42,6 +46,12 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     }
     set contributedValue(contributedValue: ContributedValue) {
         this.props.contributedValue = contributedValue;
+    }
+    get expertiseScope(): ExpertiseScope {
+        return this.props.contributedValue.expertiseScope;
+    }
+    get valueStream(): ValueStream {
+        return this.props.contributedValue.valueStream;
     }
     get createdBy(): number {
         return this.props.createdBy;
@@ -121,8 +131,17 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
     set deletedAt(deletedAt: Date) {
         this.props.deletedAt = deletedAt;
     }
+    get statusCommitting(): CommittingWorkloadStatus {
+        return this.props.statusCommitting;
+    }
+    set statusCommitting(status: CommittingWorkloadStatus) {
+        this.props.statusCommitting = status;
+    }
     public isActive(): boolean {
         return this.props.status === CommittedWorkloadStatus.ACTIVE;
+    }
+    public isComing(): boolean {
+        return this.status === CommittedWorkloadStatus.INCOMING;
     }
     public getValueStreamId(): number {
         return Number(this.contributedValue.valueStream.id);
@@ -134,7 +153,7 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         return this.contributedValue.expertiseScope.name;
     }
 
-    isBelongToExpertiseScope(expertiseScopeId: number | string): boolean {
+    public belongToExpertiseScope(expertiseScopeId: number | string): boolean {
         return (
             this.contributedValue.expertiseScope.id.toValue() ===
             expertiseScopeId
@@ -268,10 +287,6 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         }
         return plannedWorkloads;
     }
-
-    public isComing(): boolean {
-        return this.status === CommittedWorkloadStatus.INCOMING;
-    }
     public static create(
         props: ICommittedWorkloadProps,
         id?: UniqueEntityID,
@@ -292,5 +307,23 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         }
         const committedWorkload = new CommittedWorkload(defaultValues, id);
         return Result.ok<CommittedWorkload>(committedWorkload);
+    }
+
+    public static changeStatusActiveAndIncoming(
+        committingWorkloads: CommittedWorkload[],
+    ): CommittedWorkload[] {
+        return committingWorkloads.map((committingWorkload) => {
+            if (committingWorkload.isActive()) {
+                committingWorkload.changeStatus(
+                    CommittedWorkloadStatus.NOT_RENEW,
+                );
+            }
+            if (committingWorkload.isComing()) {
+                committingWorkload.changeStatus(
+                    CommittedWorkloadStatus.INACTIVE,
+                );
+            }
+            return committingWorkload;
+        });
     }
 }

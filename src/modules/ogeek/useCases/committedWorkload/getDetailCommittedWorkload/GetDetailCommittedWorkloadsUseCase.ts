@@ -30,9 +30,11 @@ export class GetDetailCommittedWorkloadUseCase
     ) {}
     async execute(member: number): Promise<Response> {
         try {
+            const currentWeek = MomentService.getCurrentWeek();
             const committedWorkloads =
-                await this.committedWorkloadRepo.findByUserId(
+                await this.committedWorkloadRepo.findInWeekAndByUserId(
                     member,
+                    currentWeek,
                     CommittedWorkloadStatus.ACTIVE,
                 );
             if (!committedWorkloads || committedWorkloads.length === 0) {
@@ -40,7 +42,6 @@ export class GetDetailCommittedWorkloadUseCase
                     new GetDetailCommittedWorkloadErrors.NotFoundCommittedWorkload(),
                 ) as Response;
             }
-            const currentWeek = MomentService.getCurrentWeek();
             const response = await this.senteService.getActualWorklogsRecent<
                 DetailCommittedWorkloadsByExpDto[]
             >(committedWorkloads, currentWeek);

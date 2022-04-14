@@ -47,7 +47,7 @@ export class CreateUserController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async execute(@Body() userDto: UserDto): Promise<UserDto> {
         const result = await this.useCase.execute(userDto);

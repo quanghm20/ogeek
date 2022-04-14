@@ -47,12 +47,11 @@ export class PlanWorkloadController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async execute(
         @Req() req: Request,
         @Body() createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
-        // ): Promise<CreatePlannedWorkloadsListDto> {
     ): Promise<MessageDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
@@ -71,6 +70,16 @@ export class PlanWorkloadController {
                     throw new BadRequestException(
                         error.errorValue(),
                         'Failed to validate input',
+                    );
+                case PlanWorkloadErrors.NotCommitYet:
+                    throw new BadRequestException(
+                        error.errorValue(),
+                        'Need commiting before planning',
+                    );
+                case PlanWorkloadErrors.NonExistentContributedValue:
+                    throw new BadRequestException(
+                        error.errorValue(),
+                        'Contributed value does not exist',
                     );
                 case PlanWorkloadErrors.PlanWorkloadFailed:
                     throw new BadRequestException(

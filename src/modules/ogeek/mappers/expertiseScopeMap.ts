@@ -1,9 +1,15 @@
+import * as moment from 'moment';
+
+import { RADIX } from '../../../common/constants/number';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
+import { CommittedWorkload } from '../domain/committedWorkload';
 import { ExpertiseScope } from '../domain/expertiseScope';
+import { PlannedWorkload } from '../domain/plannedWorkload';
 import { ExpertiseScopeEntity } from '../infra/database/entities/expertiseScope.entity';
 import { ExpertiseScopeDto } from '../infra/dtos/expertiseScope.dto';
-import { ExpertiseScopeShortDto } from '../infra/dtos/getContributedValue/expertiseScopeShort.dto';
+import { ExpertiseScopeShortDto } from '../infra/dtos/getPlanHistory/expertiseScopeShort.dto';
+import { WeekDto } from '../infra/dtos/week.dto';
 
 export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
     public static fromDomain(
@@ -84,5 +90,39 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
             });
         }
         return listExpertiseScopes;
+    }
+
+    public static fromCommittedWLAndPlannedWLsByWeek(
+        committedWorkload: CommittedWorkload,
+        plannedWorkloads: PlannedWorkload[],
+        weekDto: WeekDto,
+        callback?: (plannedWL: PlannedWorkload) => void,
+    ): ExpertiseScopeShortDto {
+        const { week, year } = weekDto;
+        const expertiseScopeDto = new ExpertiseScopeShortDto();
+        const expertiseScopeId = committedWorkload.expertiseScope.id.toString();
+        expertiseScopeDto.id = parseInt(expertiseScopeId, RADIX);
+        expertiseScopeDto.name = committedWorkload.expertiseScope.name;
+        expertiseScopeDto.committedWorkload =
+            committedWorkload.committedWorkload;
+
+        const isPlannedWLInWeek = (
+            plannedWL: PlannedWorkload,
+            expId: string,
+        ): boolean =>
+            moment(plannedWL.startDate).week() === week &&
+            moment(plannedWL.startDate).year() === year &&
+            plannedWL.expertiseScope.id.toString() === expId;
+        expertiseScopeDto.plannedWorkloads = plannedWorkloads
+            .filter((plannedWL) =>
+                isPlannedWLInWeek(plannedWL, expertiseScopeId),
+            )
+            .map((plannedWL) => {
+                if (callback) {
+                    callback(plannedWL);
+                }
+                return plannedWL.plannedWorkload;
+            });
+        return expertiseScopeDto;
     }
 }
