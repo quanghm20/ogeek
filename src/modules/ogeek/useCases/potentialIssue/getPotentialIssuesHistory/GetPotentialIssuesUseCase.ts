@@ -118,7 +118,10 @@ export class GetPotentialIssuesUseCase
       const request = await this.senteService.getActualWLforHistoryPotentialIssue<ServerResponse>(
                     issueCount,
                   );
-      const response = request.data;
+      const response = request?.data ;
+      if (!response) {
+        return left(new GetPotentialIssuesErrors.GetPotentialIssuesFailed());
+      }
 
       const dataHistoryPotentialIssue = new Array<DataPotentialIssuesDto>();
       rawDataDtos.forEach((raw, index) => {
@@ -128,11 +131,14 @@ export class GetPotentialIssuesUseCase
         const totalPlannedWLByWeek = raw.plannedWorkloads.reduce(
                     (sum, current) => sum + current.plannedWorkload,
                     0);
+        if (!response[index] || !response.data[index].actualWorkload) {
+          return left(new GetPotentialIssuesErrors.GetPotentialIssuesFailed());
+        }
         dataHistoryPotentialIssue.push({
           week: MomentService.convertDateToWeek(raw.dayOfWeek),
           committedWorkload: totalCommittedWLByWeek,
           plannedWorkload: totalPlannedWLByWeek,
-          actualWorkload: Number(response[index]?.actualWorkload),
+          actualWorkload: Number(response.data[index]?.actualWorkload),
           issueStatus: raw.issueStatus,
           note: raw.note,
         } as DataPotentialIssuesDto);
