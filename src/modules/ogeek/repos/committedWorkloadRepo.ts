@@ -593,12 +593,14 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             .addSelect('commit.status', 'status')
             .addSelect('SUM(commit.committedWorkload)', 'totalCommit')
             .innerJoin('commit.user', 'user')
+            .where('commit.status = :status', {
+                status: CommittedWorkloadStatus.INACTIVE,
+            })
             .groupBy('user.id')
             .addGroupBy('user.alias')
             .addGroupBy('commit.startDate')
             .addGroupBy('commit.expiredDate')
             .addGroupBy('commit.status');
-
         if (query.userId) {
             queryBuilder.andWhere('commit.user.id = :userId', {
                 userId: query.userId,

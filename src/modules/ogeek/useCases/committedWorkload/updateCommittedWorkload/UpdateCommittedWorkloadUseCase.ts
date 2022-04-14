@@ -1,9 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import * as moment from 'moment';
 
 import { CommittedWorkloadStatus } from '../../../../../common/constants/committedStatus';
-import { dateRange } from '../../../../../common/constants/dateRange';
 import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
@@ -50,12 +48,8 @@ export class UpdateCommittedWorkloadUseCase
         try {
             const userId = body.userId;
             const user = await this.userRepo.findById(userId);
-            const startDate = moment(new Date(body.startDate))
-                .add(dateRange.UTC, 'h')
-                .toDate();
-            const expiredDate = moment(new Date(body.expiredDate))
-                .add(dateRange.UTC, 'h')
-                .toDate();
+            const startDate = new Date(body.startDate);
+            const expiredDate = new Date(body.expiredDate);
             const userCreated = await this.userRepo.findById(member);
             const createdBy = UserMap.toEntity(userCreated);
             if (!user) {
