@@ -24,11 +24,11 @@ import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
-import { WeekDto } from '../infra/dtos/week.dto';
 import {
     DataHistoryCommittedWorkload,
     FilterHistoryCommittedWorkload,
 } from '../infra/dtos/historyCommittedWorkload/HistoryCommittedWorkload.dto';
+import { WeekDto } from '../infra/dtos/week.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
@@ -98,16 +98,13 @@ export interface ICommittedWorkloadRepo {
     ): Promise<CommittedWorkload[]>;
     findCommittedInComing(userId: number): Promise<CommittedWorkload>;
     findAllCommittedInComing(userId: number): Promise<CommittedWorkload[]>;
-<<<<<<< src/modules/ogeek/repos/committedWorkloadRepo.ts
     findCommittedWorkloadOfUser(
         id: number,
         userId: number,
     ): Promise<CommittedWorkload>;
-=======
     findHistoryCommittedWorkload(
         query?: FilterHistoryCommittedWorkload,
     ): Promise<DataHistoryCommittedWorkload>;
->>>>>>> src/modules/ogeek/repos/committedWorkloadRepo.ts
 }
 
 @Injectable()
