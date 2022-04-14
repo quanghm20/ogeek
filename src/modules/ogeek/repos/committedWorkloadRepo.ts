@@ -72,6 +72,11 @@ export interface ICommittedWorkloadRepo {
         userId: DomainId | number,
         status: CommittedWorkloadStatus,
     ): Promise<CommittedWorkload[]>;
+    findInWeekAndByUserId(
+        userId: DomainId | number,
+        week: number,
+        status: CommittedWorkloadStatus,
+    ): Promise<CommittedWorkload[]>;
     findByUserIdOverview(
         userId: DomainId | number,
     ): Promise<CommittedWorkload[]>;
@@ -121,6 +126,33 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             where: {
                 status,
                 user: userId,
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'user',
+            ],
+        });
+        return entities
+            ? CommittedWorkloadMap.toDomainAll(entities)
+            : new Array<CommittedWorkload>();
+    }
+
+    async findInWeekAndByUserId(
+        userId: DomainId | number,
+        week: number,
+        status: CommittedWorkloadStatus = CommittedWorkloadStatus.ACTIVE,
+    ): Promise<CommittedWorkload[]> {
+        userId =
+            userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
+
+        const entities = await this.repo.find({
+            where: {
+                status,
+                user: userId,
+                startDate: LessThan(MomentService.lastDateOfWeek(week)),
+                expiredDate: MoreThan(MomentService.firstDateOfWeek(week)),
             },
             relations: [
                 'contributedValue',
