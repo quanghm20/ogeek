@@ -23,6 +23,8 @@ import {
     UserRepository,
     ValueStreamRepository,
 } from './repos/index';
+import { GetListCommittingController } from './useCases/commitManagement/committing/GetListCommittingController';
+import { GetListCommittingUseCase } from './useCases/commitManagement/committing/GetListCommittingUseCase';
 import {
     CommittedWorkloadController,
     CreateCommittedWorkloadUseCase,
@@ -123,6 +125,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetDetailCommittedWorkloadController,
         GetDetailCommittedWorkloadByWeekController,
         UpdatePotentialIssueController,
+        GetListCommittingController,
     ],
     providers: [
         CreateCommittedWorkloadUseCase,
@@ -151,6 +154,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetWorkloadListsUseCase,
         UpdateCommittedWorkloadUseCase,
         GetDetailCommittedWorkloadByWeekUseCase,
+        GetListCommittingUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

@@ -23,12 +23,15 @@ import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
+import {
+    DataListCommittingWorkload,
+    FilterListCommittingWorkload,
+} from '../infra/dtos/commitManagement/committing/committing.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { CommittedWorkloadMap } from '../mappers/committedWorkloadMap';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
 import { FilterCommittedWorkload } from '../useCases/committedWorkload/FilterCommittedWorkload';
 import { IPlannedWorkloadRepo } from './plannedWorkloadRepo';
-
 export class PaginationCommittedWorkload {
     meta?: PageMetaDto;
 
@@ -90,6 +93,9 @@ export interface ICommittedWorkloadRepo {
     ): Promise<CommittedWorkload[]>;
     findCommittedInComing(userId: number): Promise<CommittedWorkload>;
     findAllCommittedInComing(userId: number): Promise<CommittedWorkload[]>;
+    findListCommittingWorkload(
+        query?: FilterListCommittingWorkload,
+    ): Promise<DataListCommittingWorkload>;
 }
 
 @Injectable()
@@ -572,5 +578,45 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             ],
         });
         return entity ? CommittedWorkloadMap.toDomainAll(entity) : null;
+    }
+
+    async findListCommittingWorkload(
+        query?: FilterListCommittingWorkload,
+    ): Promise<DataListCommittingWorkload> {
+        const queryBuilder = this.repo
+            .createQueryBuilder('commit')
+            .select('user.id', 'userId')
+            .addSelect('user.alias', 'alias')
+            .addSelect('commit.startDate', 'startDate')
+            .addSelect('commit.expiredDate', 'expiredDate')
+            .addSelect(
+                'DATE_PART(\'day\',"commit"."expired_date" - now()) ',
+                'dayUtilExpired',
+            )
+            .addSelect('commit.status', 'status')
+            .addSelect('SUM(commit.committedWorkload)', 'totalCommit')
+            .innerJoin('commit.user', 'user')
+            .groupBy('user.id')
+            .addGroupBy('user.alias')
+            .addGroupBy('commit.startDate')
+            .addGroupBy('commit.expiredDate')
+            .addGroupBy('commit.expiredDate - now()')
+            .addGroupBy('commit.status')
+            .where("commit.status not in ('INACTIVE')");
+
+        if (query.status) {
+            queryBuilder.andWhere('commit.status = :status', {
+                status: query.status,
+            });
+        }
+        if (query.search) {
+            queryBuilder.andWhere('user.alias like :alias', {
+                alias: `%${query.search}%`,
+            });
+        }
+
+        const entities = await queryBuilder.getRawMany();
+
+        return new DataListCommittingWorkload(entities);
     }
 }
