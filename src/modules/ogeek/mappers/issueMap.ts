@@ -4,6 +4,7 @@ import { Issue } from '../domain/issue';
 import { IssueEntity } from '../infra/database/entities/issue.entity';
 import { PotentialIssueResponseDto } from '../infra/dtos/createPotentialIssue/potentialIssueResponse.dto';
 import { PotentialIssueDto } from '../infra/dtos/getPotentialIssue/getPotentialIssue.dto';
+import { PotentialIssuesDto } from '../infra/dtos/getPotentialIssues/getPotentialIssue.dto';
 import { IssueDto } from '../infra/dtos/issue.dto';
 import { UpdatePotentialIssueDto } from '../infra/dtos/updatePotentialIssue/updatePotentialIssue.dto';
 import { UserMap } from './userMap';
@@ -46,6 +47,25 @@ export class IssueMap implements Mapper<Issue> {
             firstDateOfWeek: issue.firstDateOfWeek,
             createdAt: issue.createdAt,
         };
+    }
+
+    public static fromDomainHistoryIssue(issue: Issue): PotentialIssuesDto {
+        return {
+            status: issue.status,
+            note: issue.note,
+        };
+    }
+
+    public static fromDomainAllHistoryIssue(
+        issues: Issue[],
+    ): PotentialIssuesDto[] {
+        const issueArrayDto = new Array<PotentialIssuesDto>();
+        if (issues) {
+            issues.forEach((issue) => {
+                issueArrayDto.push(IssueMap.fromDomainHistoryIssue(issue));
+            });
+        }
+        return issueArrayDto;
     }
 
     public static fromDomainAll(issues: Issue[]): IssueDto[] {

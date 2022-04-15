@@ -101,7 +101,6 @@ export class MomentService {
 
         return new Date(firstDateOfWeek);
     }
-
     public static lastDateOfWeekByYear(week: number, year: number): Date {
         const date = moment().week(week).year(year).format();
 

@@ -26,6 +26,7 @@ import { CommittedWorkloadEntity } from '../infra/database/entities/committedWor
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
 import { FilterListCommittingWorkload } from '../infra/dtos/commitManagement/committing/committing.dto';
 import { DataListCommittingWorkloadRaw } from '../infra/dtos/commitManagement/committing/committing.raw';
+import { FromWeekToWeekWLInputDto } from '../infra/dtos/getPotentialIssues/getCommittedWorkloadByIssue.dto';
 import {
     DataHistoryCommittedWorkload,
     FilterHistoryCommittedWorkload,
@@ -113,6 +114,11 @@ export interface ICommittedWorkloadRepo {
     findHistoryCommittedWorkload(
         query?: FilterHistoryCommittedWorkload,
     ): Promise<DataHistoryCommittedWorkload>;
+    findAllByWeekAndYear({
+        userId,
+        startDateOfWeek,
+        lastDateOfWeek,
+    }: FromWeekToWeekWLInputDto): Promise<CommittedWorkload[]>;
     findCommittingAndIncomingByUserId(
         userId: number,
     ): Promise<CommittedWorkload[]>;
@@ -480,6 +486,28 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
 
         return entities ? CommittedWorkloadMap.toArrayDomain(entities) : null;
     }
+    async findAllByWeekAndYear({
+        userId,
+        startDateOfWeek,
+        lastDateOfWeek,
+    }: FromWeekToWeekWLInputDto): Promise<CommittedWorkload[]> {
+        const entities = await this.repo.find({
+            where: {
+                user: { id: userId },
+                startDate: LessThanOrEqual(lastDateOfWeek),
+                expiredDate: MoreThanOrEqual(startDateOfWeek),
+            },
+            relations: [
+                'user',
+                'contributedValue',
+                'contributedValue.valueStream',
+                'contributedValue.expertiseScope',
+            ],
+        });
+
+        return entities ? CommittedWorkloadMap.toArrayDomain(entities) : null;
+    }
+
     async findAllExpertiseScope(
         userId: number,
         startDate: string,

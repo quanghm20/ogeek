@@ -15,6 +15,7 @@ import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { DomainId } from '../domain/domainId';
 import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
+import { FromWeekToWeekWLInputDto } from '../infra/dtos/getPotentialIssues/getCommittedWorkloadByIssue.dto';
 import { InputGetPlanWLDto } from '../infra/dtos/valueStreamsByWeek/inputGetPlanWL.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { PlannedWorkloadMap } from '../mappers/plannedWorkloadMap';
@@ -55,6 +56,10 @@ export interface IPlannedWorkloadRepo {
         committedWorkloadId: string | number,
         startDate?: Date,
     ): Promise<PlannedWorkload[]>;
+    findAllByWeekAndYear({
+        startDateOfWeek,
+        lastDateOfWeek,
+    }: FromWeekToWeekWLInputDto): Promise<PlannedWorkload[]>;
 }
 
 @Injectable()
@@ -264,6 +269,29 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             where: {
                 status: Not(PlannedWorkloadStatus.ARCHIVE.toString()),
                 startDate: Between(startDateOfWeek, endDateOfWeek),
+            },
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'committedWorkload',
+                'committedWorkload.user',
+                'user',
+            ],
+        });
+
+        return entities
+            ? PlannedWorkloadMap.toDomainAll(entities)
+            : new Array<PlannedWorkload>();
+    }
+    async findAllByWeekAndYear({
+        startDateOfWeek,
+        lastDateOfWeek,
+    }: FromWeekToWeekWLInputDto): Promise<PlannedWorkload[]> {
+        const entities = await this.repo.find({
+            where: {
+                status: Not(PlannedWorkloadStatus.ARCHIVE.toString()),
+                startDate: Between(startDateOfWeek, lastDateOfWeek),
             },
             relations: [
                 'contributedValue',
