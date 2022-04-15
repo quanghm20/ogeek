@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { CommittedWorkloadStatus } from '../../../../../common/constants/committedStatus';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
@@ -35,7 +34,6 @@ export class GetDetailCommittedWorkloadUseCase
                 await this.committedWorkloadRepo.findInWeekAndByUserId(
                     member,
                     currentWeek,
-                    CommittedWorkloadStatus.ACTIVE,
                 );
             if (!committedWorkloads || committedWorkloads.length === 0) {
                 return left(

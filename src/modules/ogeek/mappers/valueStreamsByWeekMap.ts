@@ -105,7 +105,7 @@ export class ValueStreamsByWeekMap {
             );
             const actualPlanAndWorkLog = actualPlanAndWorkLogDtos.find(
                 (actualPlan) =>
-                    Number(actualPlan.contributedValueId.toString()) ===
+                    actualPlan.contributedValueId ===
                     Number(committedWLDto.contributedValue.id.toString()),
             );
             if (!valueStreamByWeekDto) {

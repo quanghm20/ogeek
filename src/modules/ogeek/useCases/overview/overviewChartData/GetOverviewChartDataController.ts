@@ -17,8 +17,8 @@ import {
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import * as moment from 'moment';
 
+import { MomentService } from '../../../../../providers/moment.service';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { OverviewChartDataDto } from '../../../infra/dtos/overviewChart/overviewChartData.dto';
@@ -47,7 +47,7 @@ export class OverviewChartDataController {
         description: 'Interal Server Error',
     })
     async execute(@Req() req: Request): Promise<OverviewChartDataDto[]> {
-        const currentWeek = moment(new Date()).week();
+        const currentWeek = MomentService.getCurrentWeek();
         const { userId } = req.user as JwtPayload;
 
         const result = await this.useCase.execute(currentWeek, userId);

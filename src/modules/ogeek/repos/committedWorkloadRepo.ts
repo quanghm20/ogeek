@@ -79,7 +79,6 @@ export interface ICommittedWorkloadRepo {
     findInWeekAndByUserId(
         userId: DomainId | number,
         week: number,
-        status: CommittedWorkloadStatus,
     ): Promise<CommittedWorkload[]>;
     findByUserIdOverview(
         userId: DomainId | number,
@@ -153,14 +152,15 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
     async findInWeekAndByUserId(
         userId: DomainId | number,
         week: number,
-        status: CommittedWorkloadStatus = CommittedWorkloadStatus.ACTIVE,
     ): Promise<CommittedWorkload[]> {
         userId =
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
 
         const entities = await this.repo.find({
             where: {
-                status,
+                status:
+                    CommittedWorkloadStatus.ACTIVE &&
+                    CommittedWorkloadStatus.NOT_RENEW,
                 user: userId,
                 startDate: LessThan(MomentService.lastDateOfWeek(week)),
                 expiredDate: MoreThan(MomentService.firstDateOfWeek(week)),

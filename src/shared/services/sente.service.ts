@@ -11,9 +11,11 @@ import { UniqueEntityID } from '../../core/domain/UniqueEntityID';
 import { UserDTO } from '../../core/infra/user.dto';
 import { Result } from '../../core/logic/Result';
 import { CommittedWorkload } from '../../modules/ogeek/domain/committedWorkload';
+import { CommittedWorkloadDto } from '../../modules/ogeek/infra/dtos/committedWorkload.dto';
 import { InputDetailPlannedWorkloadAndWorklogDto } from '../../modules/ogeek/infra/dtos/detailActualPlannedWorkloadAndWorklog';
 import { OverviewChartDataDto } from '../../modules/ogeek/infra/dtos/overviewChart/overviewChartData.dto';
 import { ValueStreamsDto } from '../../modules/ogeek/infra/dtos/overviewSummaryYear/valueStreams.dto';
+import { PlannedWorkloadDto } from '../../modules/ogeek/infra/dtos/plannedWorkload.dto';
 import { ConfigService } from './config.service';
 
 @Injectable()
@@ -147,8 +149,27 @@ export class SenteService {
     async getOverviewValueStreamCard<T>(
         week: number,
         userId: number,
+        committedWlDtos: CommittedWorkloadDto[],
+        plannedWlDtos: PlannedWorkloadDto[],
     ): Promise<AxiosResponse<T>> {
-        const endpoint = `/overview/value-stream?userid=${userId}&week=${week}`;
+        const queryString =
+            committedWlDtos.reduce((qString, committedWlDto) => {
+                const contributedValueId =
+                    committedWlDto.contributedValue.id.toValue();
+                const valueStreamId =
+                    committedWlDto.contributedValue.valueStream.id.toString();
+                const valueStream =
+                    committedWlDto.contributedValue.valueStream.name;
+                const expertiseScope =
+                    committedWlDto.contributedValue.expertiseScope.name;
+                const plannedWorkload = plannedWlDtos.find(
+                    (plannedWl) =>
+                        plannedWl.contributedValue.id.toValue() ===
+                        contributedValueId,
+                ).plannedWorkload;
+                return `${qString}contributedValue=${contributedValueId},${valueStreamId},${valueStream},${expertiseScope},${plannedWorkload}&`;
+            }, '') + `userId=${userId}&week=${week}`;
+        const endpoint = `/overview/value-stream?${queryString}`;
         return this._getData<T>(endpoint);
     }
 
@@ -166,16 +187,16 @@ export class SenteService {
         committedWorkloads: CommittedWorkload[],
         week: number,
     ) {
-        let queryString = committedWorkloads.reduce((qString, committedWl) => {
-            const committedWorkloadId = committedWl.id.toValue();
-            const committedWorkload = committedWl.committedWorkload;
-            const expertiseScopeId =
-                committedWl.contributedValue.expertiseScope.id.toValue();
-            const expertiseScopeName =
-                committedWl.contributedValue.expertiseScope.name;
-            return `${qString}committedWorkloads=${committedWorkloadId},${committedWorkload},${expertiseScopeId},${expertiseScopeName}&`;
-        }, '');
-        queryString += `week=${week}`;
+        const queryString =
+            committedWorkloads.reduce((qString, committedWl) => {
+                const committedWorkloadId = committedWl.id.toValue();
+                const committedWorkload = committedWl.committedWorkload;
+                const expertiseScopeId =
+                    committedWl.contributedValue.expertiseScope.id.toValue();
+                const expertiseScopeName =
+                    committedWl.contributedValue.expertiseScope.name;
+                return `${qString}committedWorkloads=${committedWorkloadId},${committedWorkload},${expertiseScopeId},${expertiseScopeName}&`;
+            }, '') + `week=${week}`;
         const endpoint = `/overview/committed-workload/recent?${queryString}`;
         return this._getData<T>(endpoint);
     }
@@ -184,16 +205,16 @@ export class SenteService {
         committedWorkloads: CommittedWorkload[],
         week: number,
     ) {
-        let queryString = committedWorkloads.reduce((qString, committedWl) => {
-            const committedWorkloadId = committedWl.id.toValue();
-            const committedWorkload = committedWl.committedWorkload;
-            const expertiseScopeId =
-                committedWl.contributedValue.expertiseScope.id.toValue();
-            const expertiseScopeName =
-                committedWl.contributedValue.expertiseScope.name;
-            return `${qString}committedWorkloads=${committedWorkloadId},${committedWorkload},${expertiseScopeId},${expertiseScopeName}&`;
-        }, '');
-        queryString += `week=${week}`;
+        const queryString =
+            committedWorkloads.reduce((qString, committedWl) => {
+                const committedWorkloadId = committedWl.id.toValue();
+                const committedWorkload = committedWl.committedWorkload;
+                const expertiseScopeId =
+                    committedWl.contributedValue.expertiseScope.id.toValue();
+                const expertiseScopeName =
+                    committedWl.contributedValue.expertiseScope.name;
+                return `${qString}committedWorkloads=${committedWorkloadId},${committedWorkload},${expertiseScopeId},${expertiseScopeName}&`;
+            }, '') + `week=${week}`;
         const endpoint = `/overview/committed-workload/week?${queryString}`;
         return this._getData<T>(endpoint);
     }
