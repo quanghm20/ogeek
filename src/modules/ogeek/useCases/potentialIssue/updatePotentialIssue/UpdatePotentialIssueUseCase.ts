@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { Issue } from '../../../domain/issue';
 import { UpdatePotentialIssueDto } from '../../../infra/dtos/updatePotentialIssue/updatePotentialIssue.dto';
 import { IssueMap } from '../../../mappers/issueMap';
 import { IIssueRepo } from '../../../repos/issueRepo';
@@ -40,12 +41,16 @@ export class UpdatePotentialIssueUseCase
             if (!potentialIssue) {
                 return left(new UpdatePotentialIssueErrors.NotFound(id));
             }
-            if (status) {
+            if (
+                Issue.checkStatusResolved(status) &&
+                potentialIssue.isPotentialIssue()
+            ) {
                 potentialIssue.markResolved();
+                if (note) {
+                    potentialIssue.updateNote(note);
+                }
             }
-            if (note) {
-                potentialIssue.updateNote(note);
-            }
+
             const potentialIssueEntity = IssueMap.toEntity(potentialIssue);
             await this.issueRepo.update(potentialIssueEntity);
             if (potentialIssue) {
