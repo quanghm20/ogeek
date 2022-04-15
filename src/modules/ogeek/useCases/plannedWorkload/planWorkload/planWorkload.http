@@ -1,5 +1,5 @@
 @baseUrl=http://localhost:3000/api
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMiIsInJvbGUiOiJQRU9QTEVfT1BTIiwiaWF0IjoxNjQ5OTQzOTIzLCJleHAiOjE2NTI1MzU5MjN9.JJW23YguO4XQ8si22uux9T0uNH7FPerMmUfrkD2WWYU
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMiIsInJvbGUiOiJQRU9QTEVfT1BTIiwiaWF0IjoxNjQ5OTkyMjY1LCJleHAiOjE2NTI1ODQyNjV9.10jJG0SW88RUhqKe5rel9h-9L7mHFIMz-c0AXh7ubqY
 @productionToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImlhdCI6MTY0ODE0MDc5OSwiZXhwIjoxNjUwNzMyNzk5fQ.cS3yD6WjYzjjlPx8C2yORRqC1z-RYmGbP-9nt_VIAZ0
 @devToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJpYXQiOjE2NDgzOTU3MDAsImV4cCI6MTY1MDk4NzcwMH0.PeyCmrQtcnyEWlB6QirUrADZ_TUUgvRMxZtMStDHv3w
 ###
@@ -8,19 +8,19 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "startDate": "2022-04-14 00:00:00",
+    "startDate": "2022-04-01 00:00:00",
     "reason": "Early Bird",
     "plannedWorkloads": [
         {
-	        "workload": 40,
+	        "workload": 20,
             "committedWorkloadId": 59
         },
         {
-	        "workload": 41,
+	        "workload": 21,
             "committedWorkloadId": 60
         },
         {
-	        "workload": 39,
+	        "workload": 30,
             "committedWorkloadId": 61
         }
     ]

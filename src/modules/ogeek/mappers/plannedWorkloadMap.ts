@@ -1,8 +1,16 @@
+import { v4 as uuidv4 } from 'uuid';
+
+import { RADIX } from '../../../common/constants/number';
+import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { PlannedWorkload } from '../domain/plannedWorkload';
+import { User } from '../domain/user';
 import { PlannedWorkloadEntity } from '../infra/database/entities/plannedWorkload.entity';
+import { CreatePlannedWorkloadsListDto } from '../infra/dtos/createPlannedWorkload/createPlannedWorkloadsList.dto';
 import { PlannedWorkloadDto } from '../infra/dtos/plannedWorkload.dto';
+import { ICommittedWorkloadRepo } from '../repos/committedWorkloadRepo';
+import { IContributedValueRepo } from '../repos/contributedValueRepo';
 import { CommittedWorkloadMap } from './committedWorkloadMap';
 import { ContributedValueMap } from './contributedValueMap';
 import { UserMap } from './userMap';
@@ -164,5 +172,52 @@ export class PlannedWorkloadMap implements Mapper<PlannedWorkload> {
             });
         }
         return arrPlannedWL;
+    }
+
+    public static async fromDtosToEntitiesList(
+        createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
+        user: User,
+        newPlannedWorkloadStatus: PlannedWorkloadStatus,
+        formattedStartDate: Date,
+        committedWorkloadRepo: ICommittedWorkloadRepo,
+        contributedValueloadRepo: IContributedValueRepo,
+    ) {
+        const { reason, plannedWorkloads } = createPlannedWorkloadsListDto;
+        const plannedWorkloadEntitiesList = [] as PlannedWorkloadEntity[];
+        for (const plannedWorkloadDto of plannedWorkloads) {
+            const { committedWorkloadId, workload } = plannedWorkloadDto;
+
+            const committedWorkload =
+                await committedWorkloadRepo.findCommittedWorkloadOfUser(
+                    committedWorkloadId,
+                    Number(user.id.toValue()),
+                );
+            const contributedValue = await contributedValueloadRepo.findById(
+                parseInt(
+                    committedWorkload.contributedValue.id.toString(),
+                    RADIX,
+                ),
+            );
+
+            const plannedWorkload = PlannedWorkload.create(
+                {
+                    reason,
+                    user,
+                    contributedValue,
+                    committedWorkload,
+                    startDate: new Date(formattedStartDate.toISOString()),
+                    plannedWorkload: workload,
+                    status: newPlannedWorkloadStatus,
+                    createdBy: Number(user.id.toValue()),
+                },
+                new UniqueEntityID(uuidv4()),
+            );
+
+            const plannedWorkloadEntity = PlannedWorkloadMap.toEntity(
+                plannedWorkload.getValue(),
+            );
+            plannedWorkloadEntitiesList.push(plannedWorkloadEntity);
+        }
+        return plannedWorkloadEntitiesList;
     }
 }

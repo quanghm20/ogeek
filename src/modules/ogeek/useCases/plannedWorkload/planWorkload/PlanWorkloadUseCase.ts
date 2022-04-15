@@ -2,16 +2,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
 import { Equal } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
 
 import { RADIX } from '../../../../../common/constants/number';
 import { PlannedWorkloadStatus } from '../../../../../common/constants/plannedStatus';
-import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { PlannedWorkload } from '../../../domain/plannedWorkload';
-import { PlannedWorkloadEntity } from '../../../infra/database/entities/plannedWorkload.entity';
+import { CreatePlannedWorkloadItemDto } from '../../../infra/dtos/createPlannedWorkload/createPlannedWorkloadItem.dto';
 import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkload/createPlannedWorkloadsList.dto';
 import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
 import { ICommittedWorkloadRepo } from '../../../repos/committedWorkloadRepo';
@@ -55,44 +53,22 @@ export class PlanWorkloadUseCase
       ) as Response;
     }
 
-    const { startDate, reason, plannedWorkloads } = createPlannedWorkloadsListDto;
-    // is start date start date of week?
+    const { startDate, plannedWorkloads } = createPlannedWorkloadsListDto;
+
+    // // is start date start date of week?
     const startDateOfWeek = moment(startDate).clone().startOf('week');
 
-    // validate cannot plan last week
-    const plannedWeek = moment(startDateOfWeek).week();
-    const currentWeek = moment(Date.now()).week();
-    if (plannedWeek < currentWeek) {
+    if (this.isPlanningPreviousWeeks(startDate)) {
       return left(
         new PlanWorkloadErrors.InputValidationFailed(),
       ) as Response;
     }
 
     try {
-      // validate if user plans without committing
-      for (const plannedWorkloadDto of plannedWorkloads) {
-        const { committedWorkloadId } = plannedWorkloadDto;
-
-        const committedWorkload = await this.committedWorkloadRepo.findCommittedWorkloadOfUser(committedWorkloadId, userId);
-        if (!committedWorkload) {
-          return left(
-            new PlanWorkloadErrors.NotCommitYet(),
-          ) as Response;
-        }
-
-        const contributedValue =
-          await this.contributedValueloadRepo.findById(parseInt(committedWorkload.contributedValue.id.toString(), RADIX));
-        if (!contributedValue) {
-          return left(
-            new PlanWorkloadErrors.NonExistentContributedValue(),
-          ) as Response;
-        }
-      }
+      await this.validateIfUserPlansWithoutCommitting(plannedWorkloads, userId);
 
       // format startDate
       const formattedStartDate = moment(startDateOfWeek).toDate();
-
-      const plannedWorkloadEntitiesList = [] as PlannedWorkloadEntity[];
 
       const oldPlannedWorkloads = await this.plannedWorkloadRepo.find({
         user: { id: userId },
@@ -135,31 +111,14 @@ export class PlanWorkloadUseCase
       }
 
       // create planned workload based on createPlannedWorkloadDtos
-      for (const plannedWorkloadDto of plannedWorkloads) {
-        const { committedWorkloadId, workload } = plannedWorkloadDto;
-
-        const committedWorkload =
-          await this.committedWorkloadRepo.findCommittedWorkloadOfUser(committedWorkloadId, userId);
-        const contributedValue =
-          await this.contributedValueloadRepo.findById(parseInt(committedWorkload.contributedValue.id.toString(), RADIX));
-
-        const plannedWorkload = PlannedWorkload.create(
-          {
-            reason,
-            user,
-            contributedValue,
-            committedWorkload,
-            startDate: new Date(formattedStartDate.toISOString()),
-            plannedWorkload: workload,
-            status: newPlannedWorkloadStatus,
-            createdBy: userId,
-          },
-          new UniqueEntityID(uuidv4()),
-        );
-
-        const plannedWorkloadEntity = PlannedWorkloadMap.toEntity(plannedWorkload.getValue());
-        plannedWorkloadEntitiesList.push(plannedWorkloadEntity);
-      }
+      const plannedWorkloadEntitiesList = await PlannedWorkloadMap.fromDtosToEntitiesList(
+        createPlannedWorkloadsListDto,
+        user,
+        newPlannedWorkloadStatus,
+        formattedStartDate,
+        this.committedWorkloadRepo,
+        this.contributedValueloadRepo,
+      );
       const savedPlannedWorkloads = await this.plannedWorkloadRepo.createMany(plannedWorkloadEntitiesList);
 
       if (savedPlannedWorkloads) {
@@ -168,5 +127,34 @@ export class PlanWorkloadUseCase
     } catch (err) {
       return left(new AppError.UnexpectedError(err));
     }
+  }
+
+  async validateIfUserPlansWithoutCommitting(plannedWorkloads: CreatePlannedWorkloadItemDto[], userId: number) {
+    for (const plannedWorkloadDto of plannedWorkloads) {
+      const { committedWorkloadId } = plannedWorkloadDto;
+
+      const committedWorkload = await this.committedWorkloadRepo.findCommittedWorkloadOfUser(committedWorkloadId, userId);
+      if (!committedWorkload) {
+        return left(
+          new PlanWorkloadErrors.NotCommitYet(),
+        ) as Response;
+      }
+
+      const contributedValue =
+        await this.contributedValueloadRepo.findById(parseInt(committedWorkload.contributedValue.id.toString(), RADIX));
+      if (!contributedValue) {
+        return left(
+          new PlanWorkloadErrors.NonExistentContributedValue(),
+        ) as Response;
+      }
+    }
+  }
+
+  isPlanningPreviousWeeks(startDate: Date): boolean {
+    const startDateOfWeek = moment(startDate).clone().startOf('week');
+
+    const plannedWeek = moment(startDateOfWeek).week();
+    const currentWeek = moment(Date.now()).week();
+    return plannedWeek < currentWeek;
   }
 }
