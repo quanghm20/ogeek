@@ -9,8 +9,8 @@ Content-Type: application/json
 
 {
   "userId": 1,
-  "startWeek": 1,
-  "startYear": 2022,
+  "startWeek": 2,
+  "startYear": 2021,
   "endWeek": 4,
   "endYear": 2023
 }

@@ -30,7 +30,7 @@ import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { DataPotentialIssuesDto } from '../../..//infra/dtos/getPotentialIssues/dataPotentialIssues.dto';
 import { GetPotentialIssuesInputDto } from '../../../infra/dtos/getPotentialIssues/getPotentialIssuesInput.dto';
-import { MessageDto } from '../../../infra/dtos/message.dto';
+import { MessageIssueDto } from '../../../infra/dtos/getPotentialIssues/messageIssues.dto';
 import { GetPotentialIssuesErrors } from './GetPotentialIssuesErrors';
 import { GetPotentialIssuesUseCase } from './GetPotentialIssuesUseCase';
 
@@ -68,7 +68,7 @@ export class GetPotentialIssuesController {
         @Query('startYear') startYear: number,
         @Query('endWeek') endWeek: number,
         @Query('endYear') endYear: number,
-    ): Promise<MessageDto> {
+    ): Promise<MessageIssueDto> {
         const getPotentialIssuesInputDto = {
             userId,
             startWeek,
@@ -91,10 +91,10 @@ export class GetPotentialIssuesController {
                     throw new InternalServerErrorException(error.errorValue());
             }
         }
-        return {
-            statusCode: HttpStatus.OK,
-            message: 'Get potential issue history successfully',
-            data: result.value.getValue(),
-        } as MessageDto;
+        return new MessageIssueDto(
+            HttpStatus.OK,
+            'Get history potential issue successfully',
+            result.value.getValue(),
+        );
     }
 }

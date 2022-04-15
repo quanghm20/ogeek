@@ -24,9 +24,9 @@ import { PlannedWorkload } from '../domain/plannedWorkload';
 import { PlannedWorkloadEntity } from '../infra/database/entities';
 import { CommittedWorkloadEntity } from '../infra/database/entities/committedWorkload.entity';
 import { ContributedValueEntity } from '../infra/database/entities/contributedValue.entity';
-import { FromWeekToWeekWLInputDto } from '../infra/dtos/getPotentialIssues/getCommittedWorkloadByIssue.dto';
 import { FilterListCommittingWorkload } from '../infra/dtos/commitManagement/committing/committing.dto';
 import { DataListCommittingWorkloadRaw } from '../infra/dtos/commitManagement/committing/committing.raw';
+import { FromWeekToWeekWLInputDto } from '../infra/dtos/getPotentialIssues/getCommittedWorkloadByIssue.dto';
 import {
     DataHistoryCommittedWorkload,
     FilterHistoryCommittedWorkload,
@@ -494,8 +494,8 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         const entities = await this.repo.find({
             where: {
                 user: { id: userId },
-                startDate: MoreThanOrEqual(startDateOfWeek),
-                expiredDate: LessThanOrEqual(lastDateOfWeek),
+                startDate: LessThanOrEqual(lastDateOfWeek),
+                expiredDate: MoreThanOrEqual(startDateOfWeek),
             },
             relations: [
                 'user',

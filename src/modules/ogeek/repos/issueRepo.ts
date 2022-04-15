@@ -9,7 +9,6 @@ import { Issue } from '../domain/issue';
 import { UserEntity } from '../infra/database/entities';
 import { IssueEntity } from '../infra/database/entities/issue.entity';
 import { InputPotentialIssueDto } from '../infra/dtos/getPotentialIssue/inputPotentialIssue.dto';
-// import { PotentialIssuesDto } from '../infra/dtos/getPotentialIssues/getPotentialIssue.dto';
 import { GetPotentialIssuesInputDto } from '../infra/dtos/getPotentialIssues/getPotentialIssuesInput.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { IssueMap } from '../mappers/issueMap';

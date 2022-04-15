@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-export class MessageDto {
+
+import { DataPotentialIssuesDto } from './dataPotentialIssues.dto';
+export class MessageIssueDto {
     @ApiProperty({ example: 200 })
     statusCode: number;
 
@@ -7,12 +9,12 @@ export class MessageDto {
     message: string;
 
     @ApiProperty({ isArray: true })
-    data?: Record<string, unknown>;
+    data?: DataPotentialIssuesDto[];
 
     constructor(
         statusCode: number,
         message: string,
-        data?: Record<string, unknown>,
+        data?: DataPotentialIssuesDto[],
     ) {
         this.statusCode = statusCode;
         this.message = message;
