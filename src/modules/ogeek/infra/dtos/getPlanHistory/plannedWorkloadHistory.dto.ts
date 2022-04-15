@@ -16,6 +16,6 @@ export class PlannedWorkloadHistoryDto {
 
     constructor(notes: string[], valueStreams: ValueStreamShortDto[]) {
         this.notes = notes;
-        this.valueStreams = { ...valueStreams };
+        this.valueStreams = [...valueStreams];
     }
 }

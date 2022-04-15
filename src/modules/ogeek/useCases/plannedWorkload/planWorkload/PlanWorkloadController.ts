@@ -5,6 +5,7 @@ import {
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
+    NotFoundException,
     Post,
     Req,
     UseGuards,
@@ -67,25 +68,16 @@ export class PlanWorkloadController {
 
             switch (error.constructor) {
                 case PlanWorkloadErrors.InputValidationFailed:
-                    throw new BadRequestException(
-                        error.errorValue(),
-                        'Failed to validate input',
-                    );
+                    throw new BadRequestException(error.errorValue());
                 case PlanWorkloadErrors.NotCommitYet:
-                    throw new BadRequestException(
-                        error.errorValue(),
-                        'Need commiting before planning',
-                    );
+                    throw new BadRequestException(error.errorValue());
                 case PlanWorkloadErrors.NonExistentContributedValue:
-                    throw new BadRequestException(
-                        error.errorValue(),
-                        'Contributed value does not exist',
-                    );
+                    throw new BadRequestException(error.errorValue());
                 case PlanWorkloadErrors.PlanWorkloadFailed:
-                    throw new BadRequestException(
-                        error.errorValue(),
-                        'Failed to plan workload',
-                    );
+                    throw new BadRequestException(error.errorValue());
+
+                case PlanWorkloadErrors.UserNotFound:
+                    throw new NotFoundException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(
                         error.errorValue(),

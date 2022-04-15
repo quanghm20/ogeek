@@ -1,3 +1,4 @@
+import { SYSTEM } from '../../../common/constants/system';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { Notification } from '../domain/notification';
@@ -28,6 +29,7 @@ export class NotificationMap implements Mapper<Notification> {
                 read: raw.read,
                 user: UserMap.toDomain(raw.user),
                 createdAt: raw.createdAt,
+                updatedBy: SYSTEM,
             },
             new UniqueEntityID(id),
         );
@@ -43,6 +45,7 @@ export class NotificationMap implements Mapper<Notification> {
         notificationEntity.user = UserMap.toEntity(notification.user);
         notificationEntity.createdBy = notification.createdBy;
         notificationEntity.createdAt = notification.createdAt;
+        notificationEntity.updatedBy = SYSTEM;
         return notificationEntity;
     }
 

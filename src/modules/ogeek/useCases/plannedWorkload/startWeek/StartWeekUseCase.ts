@@ -13,7 +13,10 @@ import { IUserRepo } from '../../../repos/userRepo';
 import { StartWeekErrors } from './StartWeekErrors';
 
 type Response = Either<
-  AppError.UnexpectedError,
+  AppError.UnexpectedError
+  | StartWeekErrors.NotPlan
+  | StartWeekErrors.PreviousWeekNotClose
+  | StartWeekErrors.UserNotFound,
   Result<void>
 >;
 
@@ -30,6 +33,13 @@ export class StartWeekUseCase
     userId: number,
   ): Promise<Response> {
     try {
+      const user = await this.userRepo.findById(userId);
+      if (!user) {
+        return left(
+          new StartWeekErrors.UserNotFound(),
+        ) as Response;
+      }
+
       const startDateOfCurrentWeek = moment(startDate).startOf('week').toDate();
       const newestPlannedWorkload = await this.plannedWorkloadRepo.findOne(
         {

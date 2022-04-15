@@ -68,16 +68,6 @@ export class GetValueStreamUseCase
 
     async execute(week: number, member: number): Promise<Response> {
         try {
-            // get actual plans and worklogs
-            const request =
-                await this.senteService.getOverviewValueStreamCard<ServerResponse>(
-                    week,
-                    member,
-                );
-            const response = request.data.data;
-
-            const actualPlanAndWorkLogDtos = response;
-
             const startAndEndDateOfWeek = await this.getWeekByEachUseCase(
                 week,
                 member,
@@ -93,10 +83,18 @@ export class GetValueStreamUseCase
                 ...startAndEndDateOfWeek,
                 userId: member,
             } as InputGetPlanWLDto);
-
             const committedWLDtos =
                 CommittedWorkloadMap.fromDomainAll(committedWLs);
             const plannedWLDtos = PlannedWorkloadMap.fromDomainAll(plannedWLs);
+            // get actual plans and worklogs
+            const request =
+                await this.senteService.getOverviewValueStreamCard<ServerResponse>(
+                    week,
+                    member,
+                    committedWLDtos,
+                    plannedWLDtos,
+                );
+            const actualPlanAndWorkLogDtos = request.data.data;
             const valueStreamDtos = ValueStreamMap.fromDomainAll(valueStreams);
             const valueStreamsByWeekDto = ValueStreamsByWeekMap.combineAllDto(
                 committedWLDtos,

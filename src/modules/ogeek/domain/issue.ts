@@ -100,10 +100,17 @@ export class Issue extends AggregateRoot<IIssueProps> {
         const issue = new Issue(defaultValues, id);
         return Result.ok<Issue>(issue);
     }
-    public markResolved(): void {
+    public isPotentialIssue(): boolean {
+        return this.props.status === IssueStatus.POTENTIAL_ISSUE;
+    }
+    public markResolvedAndNote(note: string): void {
         this.props.status = IssueStatus.RESOLVED;
+        this.props.note = note;
     }
     public updateNote(note: string): void {
         this.props.note = note;
+    }
+    public static checkStatusResolved(status: IssueStatus): boolean {
+        return status === IssueStatus.RESOLVED;
     }
 }

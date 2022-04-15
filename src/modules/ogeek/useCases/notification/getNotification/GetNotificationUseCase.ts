@@ -5,6 +5,7 @@ import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { NotificationMap } from '../../../..//ogeek/mappers/notificationMap';
 import { INotificationRepo } from '../../../../ogeek/repos/notificationRepo';
+import { Notification } from '../../../domain/notification';
 import { NotificationDto } from '../../../infra/dtos/notification/getNotifications/getNotification.dto';
 import { IUserRepo } from '../../../repos/userRepo';
 import { GetNotificationErrors } from './GetNotificationErrors';
@@ -34,6 +35,8 @@ export class GetNotificationUseCase
             const notifications = await this.notificationRepo.findByUserId(
                 userId,
             );
+
+            Notification.arrangeNotification(notifications);
 
             const notificationsDto = notifications.map((notification) =>
                 NotificationMap.fromDomain(notification),

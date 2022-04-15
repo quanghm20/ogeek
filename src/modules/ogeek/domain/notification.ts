@@ -98,4 +98,14 @@ export class Notification extends AggregateRoot<INotificationProps> {
     public markRead(): void {
         this.props.read = NotificationStatus.READ;
     }
+
+    public static arrangeNotification(
+        notifications: Notification[],
+    ): Notification[] {
+        return notifications.sort(
+            (preNotification, curNotification) =>
+                new Date(preNotification.props.createdAt).valueOf() -
+                new Date(curNotification.props.createdAt).valueOf(),
+        );
+    }
 }
