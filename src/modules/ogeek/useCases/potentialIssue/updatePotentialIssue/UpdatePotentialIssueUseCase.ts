@@ -45,10 +45,10 @@ export class UpdatePotentialIssueUseCase
                 Issue.checkStatusResolved(status) &&
                 potentialIssue.isPotentialIssue()
             ) {
-                potentialIssue.markResolved();
+                potentialIssue.markResolvedAndNote(note);
             }
-            if (note && potentialIssue.isPotentialIssue()) {
-                potentialIssue.updateNote(note);
+            if (potentialIssue.isPotentialIssue()) {
+                potentialIssue.note = note;
             }
 
             const potentialIssueEntity = IssueMap.toEntity(potentialIssue);

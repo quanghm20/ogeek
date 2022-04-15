@@ -24,6 +24,5 @@ export class UpdatePotentialIssueDto {
         example: 'Resolve potential issue.',
     })
     @IsString()
-    @IsOptional()
-    note?: string;
+    note: string;
 }
