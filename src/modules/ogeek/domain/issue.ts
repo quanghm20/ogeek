@@ -110,6 +110,6 @@ export class Issue extends AggregateRoot<IIssueProps> {
         this.props.note = note;
     }
     public static checkStatusResolved(status: IssueStatus): boolean {
-        return status === IssueStatus.POTENTIAL_ISSUE;
+        return status === IssueStatus.RESOLVED;
     }
 }

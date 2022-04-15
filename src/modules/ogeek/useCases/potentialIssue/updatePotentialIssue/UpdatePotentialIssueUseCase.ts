@@ -46,9 +46,9 @@ export class UpdatePotentialIssueUseCase
                 potentialIssue.isPotentialIssue()
             ) {
                 potentialIssue.markResolved();
-                if (note) {
-                    potentialIssue.updateNote(note);
-                }
+            }
+            if (note && potentialIssue.isPotentialIssue()) {
+                potentialIssue.updateNote(note);
             }
 
             const potentialIssueEntity = IssueMap.toEntity(potentialIssue);
