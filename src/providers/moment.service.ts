@@ -22,6 +22,10 @@ export class MomentService {
         return moment(injectedDate).week();
     }
 
+    public static getStartOfDay(injectedDate: Date): Date {
+        return moment(injectedDate).startOf('day').toDate();
+    }
+
     public static getFirstDateOfWeek(injectedDate: Date): string {
         const num = moment(injectedDate).day();
         return moment(injectedDate)
