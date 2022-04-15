@@ -1,5 +1,6 @@
 import { ASSIGN_NUMBER } from '../../../common/constants/number';
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
+import { MomentService } from '../../../providers/moment.service';
 import { ActualPlanAndWorkLogDto } from '../infra/dtos/actualPlansAndWorkLogs.dto';
 import { CommittedWorkloadDto } from '../infra/dtos/committedWorkload.dto';
 import { ExpertiseScopeDto } from '../infra/dtos/expertiseScope.dto';
@@ -151,7 +152,7 @@ export class ValueStreamsByWeekMap {
             week,
             status: ValueStreamsByWeekMap.getStatusWeek(plannedWLDtos),
             startDate: startDateOfWeek,
-            endDate: endDateOfWeek,
+            endDate: MomentService.getStartOfDay(endDateOfWeek),
             valueStreams: valueStreamByWeekDtos,
         } as ValueStreamsByWeekDto;
     }
