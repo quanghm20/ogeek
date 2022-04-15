@@ -48,8 +48,9 @@ export class CheckNotificationUseCase
                     ),
                 );
             }
-            const notificationDto = NotificationMap.fromDomain(notification);
             if (notification.isRead()) {
+                const notificationDto =
+                    NotificationMap.fromDomain(notification);
                 return right(Result.ok(notificationDto));
             }
             notification.markRead();
