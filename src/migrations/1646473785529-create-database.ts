@@ -32,7 +32,7 @@ export class CreateDatabase1646473785529 implements MigrationInterface {
                 "name" varchar(255) NOT NULL,
                 "phone" varchar(15) NOT NULL,
                 "email" varchar(255) NOT NULL,
-                "avatar" character varying(255) NOT NULL,
+                "avatar" character varying(500) NOT NULL,
                 "role" "public"."user_role_enum" NOT NULL DEFAULT 'USER', 
                 "created_by" integer,
                 "updated_by" integer,
