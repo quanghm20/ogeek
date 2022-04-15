@@ -45,7 +45,7 @@ export class GetOverviewSummaryYearController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async getOverviewSummaryYear(
         @Req() req: Request,

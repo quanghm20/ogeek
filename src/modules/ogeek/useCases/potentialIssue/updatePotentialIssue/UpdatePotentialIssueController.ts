@@ -55,7 +55,7 @@ export class UpdatePotentialIssueController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async execute(
         @Body() updatePotentialIssue: UpdatePotentialIssueDto,

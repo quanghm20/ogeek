@@ -49,7 +49,7 @@ export class GetDetailCommittedWorkloadByWeekController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async execute(
         @Query() { week }: InputValueStreamByWeekDto,

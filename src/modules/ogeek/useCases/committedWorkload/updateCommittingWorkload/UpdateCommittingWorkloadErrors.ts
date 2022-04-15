@@ -1,18 +1,18 @@
 import { Result } from '../../../../../core/logic/Result';
 import { UseCaseError } from '../../../../../core/logic/UseCaseError';
 
-export namespace ReviewRetroErrors {
+export namespace UpdateCommittingWorkloadErrors {
     export class UserNotFound extends Result<UseCaseError> {
-        constructor() {
+        constructor(userId: number) {
             super(false, {
-                message: 'User cannot be found!',
+                message: `Could not find User ${userId}.`,
             } as UseCaseError);
         }
     }
-    export class NotStartWeek extends Result<UseCaseError> {
+    export class NotFound extends Result<UseCaseError> {
         constructor() {
             super(false, {
-                message: 'Cannot review retro without starting week!',
+                message: 'Could not get data.',
             } as UseCaseError);
         }
     }

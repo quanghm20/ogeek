@@ -5,6 +5,7 @@ import {
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
+    NotFoundException,
     Patch,
     Req,
     UseGuards,
@@ -49,7 +50,7 @@ export class ReviewRetroController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async execute(
         @Req() req: Request,
@@ -68,6 +69,8 @@ export class ReviewRetroController {
             switch (error.constructor) {
                 case ReviewRetroErrors.NotStartWeek:
                     throw new BadRequestException(error.errorValue());
+                case ReviewRetroErrors.UserNotFound:
+                    throw new NotFoundException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(
                         error.errorValue(),

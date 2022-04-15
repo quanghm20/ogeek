@@ -21,7 +21,12 @@ import { IUserRepo } from '../../../repos/userRepo';
 import { PlanWorkloadErrors } from './PlanWorkloadErrors';
 
 type Response = Either<
-  AppError.UnexpectedError | PlanWorkloadErrors.PlanWorkloadFailed,
+  AppError.UnexpectedError
+  | PlanWorkloadErrors.PlanWorkloadFailed
+  | PlanWorkloadErrors.NotCommitYet
+  | PlanWorkloadErrors.NonExistentContributedValue
+  | PlanWorkloadErrors.UserNotFound
+  | PlanWorkloadErrors.InputValidationFailed,
   Result<PlannedWorkload[]>
 >;
 
@@ -43,6 +48,13 @@ export class PlanWorkloadUseCase
     createPlannedWorkloadsListDto: CreatePlannedWorkloadsListDto,
     userId: number,
   ): Promise<Response> {
+    const user = await this.userRepo.findById(userId);
+    if (!user) {
+      return left(
+        new PlanWorkloadErrors.UserNotFound(),
+      ) as Response;
+    }
+
     const { startDate, reason, plannedWorkloads } = createPlannedWorkloadsListDto;
     // is start date start date of week?
     const startDateOfWeek = moment(startDate).clone().startOf('week');
@@ -81,7 +93,6 @@ export class PlanWorkloadUseCase
       const formattedStartDate = moment(startDateOfWeek).toDate();
 
       const plannedWorkloadEntitiesList = [] as PlannedWorkloadEntity[];
-      const user = await this.userRepo.findById(userId);
 
       const oldPlannedWorkloads = await this.plannedWorkloadRepo.find({
         user: { id: userId },

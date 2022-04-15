@@ -5,6 +5,7 @@ import {
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
+    NotFoundException,
     Patch,
     Req,
     UseGuards,
@@ -49,7 +50,7 @@ export class StartWeekController {
         description: 'Bad Request',
     })
     @ApiInternalServerErrorResponse({
-        description: 'Interal Server Error',
+        description: 'Internal Server Error',
     })
     async execute(
         @Req() req: Request,
@@ -70,6 +71,8 @@ export class StartWeekController {
                     throw new BadRequestException(error.errorValue());
                 case StartWeekErrors.NotPlan:
                     throw new BadRequestException(error.errorValue());
+                case StartWeekErrors.UserNotFound:
+                    throw new NotFoundException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(
                         error.errorValue(),

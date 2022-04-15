@@ -40,6 +40,8 @@ import {
     GetDetailCommittedWorkloadByWeekUseCase,
 } from './useCases/committedWorkload/getDetailCommittedWorkloadByWeek';
 import { CommittedWorkloadCreatedListener } from './useCases/committedWorkload/listeners/CommittedWorkloadListeners';
+import { UpdateCommittingWorkloadController } from './useCases/committedWorkload/updateCommittingWorkload/UpdateCommittingWorkloadController';
+import { UpdateCommittingWorkloadUseCase } from './useCases/committedWorkload/updateCommittingWorkload/UpdateCommittingWorkloadUseCase';
 import {
     GetContributedValueController,
     GetContributedValueUseCase,
@@ -126,6 +128,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetDetailCommittedWorkloadController,
         GetDetailCommittedWorkloadByWeekController,
         UpdatePotentialIssueController,
+        UpdateCommittingWorkloadController,
         GetListCommittingController,
         GetPlannedWorkloadHistoryController,
     ],
@@ -156,6 +159,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         UpdateCommittedWorkloadUseCase,
         GetPlannedWorkloadHistoryUseCase,
         GetDetailCommittedWorkloadByWeekUseCase,
+        UpdateCommittingWorkloadUseCase,
         GetListCommittingUseCase,
         {
             provide: 'IUserRepo',
