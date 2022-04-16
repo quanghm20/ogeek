@@ -21,6 +21,11 @@ export class UserCommittedWorkload {
     name: string;
 
     @ApiProperty({
+        example: 'https://www.linkpicture.com/q/user_6.png',
+    })
+    avatar?: string;
+
+    @ApiProperty({
         type: Number,
         description: 'Summary committed workload',
     })

@@ -4,16 +4,24 @@ import { CommittedWorkloadStatus } from '../../../../../common/constants/committ
 import { ExpertiseScopeShortDto } from '../getContributedValue/expertiseScopeShort.dto';
 import { ValueStreamShortDto } from '../overviewSummaryYear/valueStreamShort.dto';
 export class UserCompactDto {
-    @ApiProperty({ example: 1 })
+    @ApiProperty({
+        example: 1,
+    })
     id: number;
 
-    @ApiProperty({ example: 'thai.ls' })
+    @ApiProperty({
+        example: 'thai.ls',
+    })
     alias: string;
 
-    @ApiProperty({ example: 'Sỹ Thái' })
+    @ApiProperty({
+        example: 'Sỹ Thái',
+    })
     name: string;
 
-    @ApiProperty({ example: 'https://www.linkpicture.com/q/user_6.png' })
+    @ApiProperty({
+        example: 'https://www.linkpicture.com/q/user_6.png',
+    })
     avatar?: string;
 
     constructor(id?: number, alias?: string, name?: string, avatar?: string) {

@@ -703,6 +703,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         const queryBuilder = this.repo
             .createQueryBuilder('commit')
             .select('user.id', 'userId')
+            .addSelect('user.avatar', 'avatar')
             .addSelect('user.alias', 'alias')
             .addSelect('commit.startDate', 'startDate')
             .addSelect('commit.expiredDate', 'expiredDate')
@@ -716,7 +717,8 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             .addGroupBy('user.alias')
             .addGroupBy('commit.startDate')
             .addGroupBy('commit.expiredDate')
-            .addGroupBy('commit.status');
+            .addGroupBy('commit.status')
+            .addGroupBy('user.alias');
         if (query.userId) {
             queryBuilder.andWhere('commit.user.id = :userId', {
                 userId: query.userId,
