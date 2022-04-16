@@ -45,6 +45,7 @@ export class GetListCommittingUseCase
                     item.userId,
                     item.alias,
                     item.name,
+                    item.avatar,
                 );
                 const commit = new CommittingWorkload();
                 commit.user = user;

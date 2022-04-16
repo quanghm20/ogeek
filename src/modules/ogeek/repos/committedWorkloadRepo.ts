@@ -779,6 +779,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             .createQueryBuilder('commit')
             .select('user.id', 'userId')
             .addSelect('user.alias', 'alias')
+            .addSelect('user.avatar', 'avatar')
             .addSelect('commit.startDate', 'startDate')
             .addSelect('commit.expiredDate', 'expiredDate')
             .addSelect(

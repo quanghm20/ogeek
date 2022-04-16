@@ -10,7 +10,7 @@ info:
 	$(info CURRENT_BRANCH: $(CURRENT_BRANCH))
 	$(info DOCKER_FILE: $(DOCKER_FILE))
 
-dev_up:
+dev-up:
 	docker-compose -f $(DOCKER_FILE) up -d --remove-orphans
 	npm run start:dev
 

@@ -13,10 +13,14 @@ export class UserCompactDto {
     @ApiProperty({ example: 'Sỹ Thái' })
     name: string;
 
-    constructor(id?: number, alias?: string, name?: string) {
+    @ApiProperty({ example: 'https://www.linkpicture.com/q/user_6.png' })
+    avatar?: string;
+
+    constructor(id?: number, alias?: string, name?: string, avatar?: string) {
         this.id = id;
         this.alias = alias;
         this.name = name;
+        this.avatar = avatar;
     }
 }
 

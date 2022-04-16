@@ -19,6 +19,10 @@ export class CommittingWorkloadRaw {
     @IsString()
     name: string;
 
+    @ApiProperty({ example: 'https://www.linkpicture.com/q/user_6.png' })
+    @IsString()
+    avatar: string;
+
     @ApiProperty({
         type: Number,
         description: 'Summary committed workload',
