@@ -211,6 +211,6 @@ export class UpdateCommittedWorkloadUseCase
     async checkCommittedInComing(userId: number): Promise<boolean> {
         const committed =
             await this.committedWorkloadRepo.findAllCommittedInComing(userId);
-        return committed ? true : false;
+        return committed ? false : true;
     }
 }

@@ -345,14 +345,8 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            for await (const oldCommit of oldCommittedWorkLoad) {
-                await queryRunner.manager.update(
-                    CommittedWorkloadEntity,
-                    {
-                        id: oldCommit.id,
-                    },
-                    oldCommit,
-                );
+            if (oldCommittedWorkLoad) {
+                await queryRunner.manager.save(oldCommittedWorkLoad);
             }
             const committedWorkloadEntities = await queryRunner.manager.save(
                 committedWorkload,
