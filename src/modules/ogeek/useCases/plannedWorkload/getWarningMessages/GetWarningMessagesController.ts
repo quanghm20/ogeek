@@ -15,6 +15,7 @@ import {
     ApiBearerAuth,
     ApiInternalServerErrorResponse,
     ApiOkResponse,
+    ApiQuery,
     ApiTags,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -37,6 +38,7 @@ export class GetWarningMessagesController {
     @ApiBearerAuth()
     @Get()
     @HttpCode(HttpStatus.OK)
+    @ApiQuery({ name: 'startDate', example: '2022-04-30 07:00:00+07' })
     @ApiOkResponse({
         type: [StartWeekResponseDto],
         description: 'OK',

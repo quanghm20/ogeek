@@ -70,7 +70,7 @@ export class GetWarningMessagesUseCases
         return right(Result.ok(new WarningMessagesDto(PlannedWorkloadStatus.PLANNING, true)));
       }
 
-      return right(Result.ok(new WarningMessagesDto(executingOrClosedPlannedWorkload.status, false)));
+      return right(Result.ok(new WarningMessagesDto(PlannedWorkloadStatus.PLANNING, false)));
     } catch (err) {
       return left(new AppError.UnexpectedError(err));
     }
