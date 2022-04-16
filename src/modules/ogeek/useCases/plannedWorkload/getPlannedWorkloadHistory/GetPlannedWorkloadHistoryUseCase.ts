@@ -2,7 +2,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Equal, MoreThan } from 'typeorm';
 
-import { RADIX } from '../../../../../common/constants/number';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
@@ -72,7 +71,7 @@ export class GetPlannedWorkloadHistoryUseCase
 
           const valueStreamDto = new ValueStreamShortDto();
           const valueStreamDtoId = committedWorkload.valueStream.id.toString();
-          valueStreamDto.id = parseInt(valueStreamDtoId, RADIX);
+          valueStreamDto.id = Number(valueStreamDtoId);
           valueStreamDto.name = committedWorkload.valueStream.name;
 
           const expertiseScopeDto = ExpertiseScopeMap.fromCommittedWLAndPlannedWLsByWeek(
