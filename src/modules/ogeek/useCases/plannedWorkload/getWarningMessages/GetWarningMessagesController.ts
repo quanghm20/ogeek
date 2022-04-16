@@ -1,12 +1,12 @@
 import {
     BadRequestException,
-    Body,
     Controller,
+    Get,
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
-    Patch,
+    Query,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -24,19 +24,18 @@ import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { MessageDto } from '../../../infra/dtos/message.dto';
-import { StartWeekDto } from '../../../infra/dtos/startWeek/startWeek.dto';
 import { StartWeekResponseDto } from '../../../infra/dtos/startWeek/startWeekResponse.dto';
 import { GetWarningMessagesErrors } from './GetWarningMessagesErrors';
 import { GetWarningMessagesUseCases } from './GetWarningMessagesUseCases';
 
-@Controller('api/planned-workload')
+@Controller('api/planned-workload/warning-messages')
 @ApiTags('Planned Workload')
 export class GetWarningMessagesController {
     constructor(public readonly useCase: GetWarningMessagesUseCases) {}
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Patch('start-week')
+    @Get()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
         type: [StartWeekResponseDto],
@@ -53,14 +52,13 @@ export class GetWarningMessagesController {
     })
     async execute(
         @Req() req: Request,
-        @Body() startWeekDto: StartWeekDto,
+        @Query('startDate') startDate: string,
     ): Promise<MessageDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
         const { userId } = findUserDto;
 
-        const { startDate } = startWeekDto;
-        const result = await this.useCase.execute(startDate, userId);
+        const result = await this.useCase.execute(new Date(startDate), userId);
 
         if (result.isLeft()) {
             const error = result.value;

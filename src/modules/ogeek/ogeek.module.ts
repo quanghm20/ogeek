@@ -63,6 +63,10 @@ import {
     GetPlannedWorkloadHistoryUseCase,
 } from './useCases/plannedWorkload/getPlannedWorkloadHistory';
 import {
+    GetWarningMessagesController,
+    GetWarningMessagesUseCases,
+} from './useCases/plannedWorkload/getWarningMessages';
+import {
     PlanWorkloadController,
     PlanWorkloadUseCase,
 } from './useCases/plannedWorkload/planWorkload';
@@ -134,6 +138,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         UpdateCommittingWorkloadController,
         GetListCommittingController,
         GetPlannedWorkloadHistoryController,
+        GetWarningMessagesController,
     ],
     providers: [
         CreateCommittedWorkloadUseCase,
@@ -165,6 +170,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetPotentialIssuesUseCase,
         UpdateCommittingWorkloadUseCase,
         GetListCommittingUseCase,
+        GetWarningMessagesUseCases,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,
