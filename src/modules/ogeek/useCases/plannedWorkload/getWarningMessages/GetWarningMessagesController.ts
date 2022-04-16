@@ -1,12 +1,12 @@
 import {
     BadRequestException,
-    Body,
     Controller,
+    Get,
     HttpCode,
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
-    Patch,
+    Query,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -19,27 +19,27 @@ import {
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import * as moment from 'moment';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { MessageDto } from '../../../infra/dtos/message.dto';
-import { StartWeekDto } from '../../../infra/dtos/startWeek/startWeek.dto';
-import { StartWeekErrors } from './StartWeekErrors';
-import { StartWeekUseCase } from './StartWeekUseCase';
+import { StartWeekResponseDto } from '../../../infra/dtos/startWeek/startWeekResponse.dto';
+import { WeekDto } from '../../../infra/dtos/week.dto';
+import { GetWarningMessagesErrors } from './GetWarningMessagesErrors';
+import { GetWarningMessagesUseCases } from './GetWarningMessagesUseCases';
 
-@Controller('api/planned-workload')
+@Controller('api/planned-workload/warning-messages')
 @ApiTags('Planned Workload')
-export class StartWeekController {
-    constructor(public readonly useCase: StartWeekUseCase) {}
+export class GetWarningMessagesController {
+    constructor(public readonly useCase: GetWarningMessagesUseCases) {}
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Patch('start-week')
+    @Get()
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
-        type: MessageDto,
+        type: [StartWeekResponseDto],
         description: 'OK',
     })
     @ApiUnauthorizedResponse({
@@ -53,25 +53,26 @@ export class StartWeekController {
     })
     async execute(
         @Req() req: Request,
-        @Body() startWeekDto: StartWeekDto,
+        @Query() weekDto: WeekDto,
     ): Promise<MessageDto> {
         const jwtPayload = req.user as JwtPayload;
         const findUserDto = { ...jwtPayload } as FindUserDto;
         const { userId } = findUserDto;
 
-        const { startDate } = startWeekDto;
-        const result = await this.useCase.execute(startDate, userId);
+        // const weekDto = new WeekDto(week, year);
+
+        const result = await this.useCase.execute(weekDto, userId);
 
         if (result.isLeft()) {
             const error = result.value;
 
             switch (error.constructor) {
-                case StartWeekErrors.PreviousWeekNotClose:
-                    throw new BadRequestException(error.errorValue());
-                case StartWeekErrors.NotPlan:
-                    throw new BadRequestException(error.errorValue());
-                case StartWeekErrors.UserNotFound:
+                case GetWarningMessagesErrors.UserNotFound:
                     throw new NotFoundException(error.errorValue());
+                case GetWarningMessagesErrors.LastWeekNotClosed:
+                    throw new BadRequestException(error.errorValue());
+                case GetWarningMessagesErrors.GetMessagesFailed:
+                    throw new InternalServerErrorException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(
                         error.errorValue(),
@@ -80,13 +81,14 @@ export class StartWeekController {
             }
         }
 
-        const executingWeek = moment(startDate).week();
+        const { hasPlannedWorkload, weekStatus } = result.value.getValue();
 
         return {
             statusCode: HttpStatus.OK,
-            message: 'Start week successfully',
+            message: 'Get warning messages successfully',
             data: {
-                week: executingWeek.toString(),
+                hasPlannedWorkload,
+                weekStatus,
             },
         } as MessageDto;
     }

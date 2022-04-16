@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumberString } from 'class-validator';
 
 export class WeekDto {
-    @IsNumber()
+    @IsNumberString()
     @IsNotEmpty()
     @ApiProperty({ example: 12 })
     week: number;
 
-    @IsNumber()
+    @IsNumberString()
     @IsNotEmpty()
     @ApiProperty({ example: 2022 })
     year: number;

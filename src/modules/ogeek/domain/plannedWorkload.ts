@@ -88,8 +88,17 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     get isClosed(): boolean {
         return this.props.status === PlannedWorkloadStatus.CLOSED;
     }
+    get isPlanning(): boolean {
+        return this.props.status === PlannedWorkloadStatus.PLANNING;
+    }
     get isActive(): boolean {
         return this.props.status !== PlannedWorkloadStatus.ARCHIVE;
+    }
+    get isExecutingOrClosed(): boolean {
+        return this.isActive && !this.isPlanning;
+    }
+    get isCreatedByUser(): boolean {
+        return this.props.createdBy > 0;
     }
 
     isBetweenWeek(week: number): boolean {
