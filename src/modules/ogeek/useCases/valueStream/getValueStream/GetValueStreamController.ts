@@ -19,7 +19,7 @@ import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { InputValueStreamByWeekDto } from '../../../infra/dtos/valueStreamsByWeek/inputValueStream.dto';
+import { InputWeekDto } from '../../../infra/dtos/valueStreamsByWeek/inputWeekDto';
 import { ValueStreamsByWeekDto } from '../../../infra/dtos/valueStreamsByWeek/valueStreamsByWeek.dto';
 import { GetValueStreamError } from './GetValueStreamErrors';
 import { GetValueStreamUseCase } from './GetValueStreamUseCase';
@@ -47,16 +47,20 @@ export class GetValueStreamController {
     })
     async execute(
         @Req() req: Request,
-        @Query() { week }: InputValueStreamByWeekDto,
+        @Query() { week }: InputWeekDto,
     ): Promise<ValueStreamsByWeekDto> {
         const { userId } = req.user as JwtPayload;
-
         const result = await this.useCase.execute(week, userId);
         if (result.isLeft()) {
             const error = result.value;
 
             switch (error.constructor) {
                 case GetValueStreamError.FailToGetValueStream:
+                    throw new NotFoundException(
+                        error.errorValue(),
+                        'Can not get value stream by week',
+                    );
+                case GetValueStreamError.NoCommittedWorkloadFound:
                     throw new NotFoundException(
                         error.errorValue(),
                         'Can not get value stream by week',

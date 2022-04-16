@@ -43,23 +43,7 @@ export class GetValueStreamUseCase
         public readonly senteService: SenteService,
     ) {}
 
-    async getWeekByEachUseCase(
-        week: number,
-        member: number,
-    ): Promise<StartAndEndDateOfWeekDto> {
-        const planNotClosed = await this.plannedWLRepo.getPlanWLNotClosed({
-            userId: member,
-            startDateOfWeek: MomentService.firstDateOfWeek(week),
-        } as InputGetPlanWLDto);
-        if (planNotClosed) {
-            const weekOfUser = MomentService.convertDateToWeek(
-                planNotClosed.startDate,
-            );
-            return {
-                startDateOfWeek: planNotClosed.startDate,
-                endDateOfWeek: MomentService.lastDateOfWeek(weekOfUser),
-            };
-        }
+    getWeekByEachUseCase(week: number): StartAndEndDateOfWeekDto {
         return {
             startDateOfWeek: MomentService.firstDateOfWeek(week),
             endDateOfWeek: MomentService.lastDateOfWeek(week),
@@ -68,10 +52,7 @@ export class GetValueStreamUseCase
 
     async execute(week: number, member: number): Promise<Response> {
         try {
-            const startAndEndDateOfWeek = await this.getWeekByEachUseCase(
-                week,
-                member,
-            );
+            const startAndEndDateOfWeek = this.getWeekByEachUseCase(week);
             const valueStreams = await this.valueStreamRepo.findAll();
             const committedWLs =
                 await this.committedWLRepo.findByUserIdValueStream(
@@ -79,8 +60,14 @@ export class GetValueStreamUseCase
                     startAndEndDateOfWeek.startDateOfWeek,
                     startAndEndDateOfWeek.endDateOfWeek,
                 );
+            if (!committedWLs || committedWLs.length === 0) {
+                return left(
+                    new GetValueStreamError.NoCommittedWorkloadFound(),
+                ) as Response;
+            }
             const plannedWLs = await this.plannedWLRepo.findByUserId({
-                ...startAndEndDateOfWeek,
+                startDateOfWeek: startAndEndDateOfWeek.startDateOfWeek,
+                endDateOfWeek: startAndEndDateOfWeek.endDateOfWeek,
                 userId: member,
             } as InputGetPlanWLDto);
             const committedWLDtos =
@@ -89,7 +76,9 @@ export class GetValueStreamUseCase
             // get actual plans and worklogs
             const request =
                 await this.senteService.getOverviewValueStreamCard<ServerResponse>(
-                    week,
+                    MomentService.convertDateToWeek(
+                        startAndEndDateOfWeek.startDateOfWeek,
+                    ),
                     member,
                     committedWLDtos,
                     plannedWLDtos,
