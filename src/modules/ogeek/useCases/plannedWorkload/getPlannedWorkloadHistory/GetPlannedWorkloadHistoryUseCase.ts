@@ -60,6 +60,7 @@ export class GetPlannedWorkloadHistoryUseCase
           createdBy: MoreThan(0),
         },
       );
+
       const sortedPlannedWorkloadsByCreatedAt = plannedWorkloads
         .sort((a: PlannedWorkload, b: PlannedWorkload) => a.createdAt > b.createdAt ? 1 : -1);
 

@@ -55,7 +55,7 @@ export class Issue extends AggregateRoot<IIssueProps> {
         this.props.createdAt = createdAt;
     }
     get updatedAt(): Date {
-        return this.props.createdAt;
+        return this.props.updatedAt;
     }
     set updatedAt(updatedAt: Date) {
         this.props.updatedAt = updatedAt;
@@ -103,8 +103,9 @@ export class Issue extends AggregateRoot<IIssueProps> {
     public isPotentialIssue(): boolean {
         return this.props.status === IssueStatus.POTENTIAL_ISSUE;
     }
-    public markResolved(): void {
+    public markResolvedAndNote(note: string): void {
         this.props.status = IssueStatus.RESOLVED;
+        this.props.note = note;
     }
     public updateNote(note: string): void {
         this.props.note = note;

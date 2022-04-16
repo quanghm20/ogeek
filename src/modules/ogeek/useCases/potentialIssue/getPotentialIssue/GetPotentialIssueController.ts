@@ -63,9 +63,12 @@ export class GetPotentialIssueController {
             userId,
             firstDateOfWeek,
         } as InputPotentialIssueDto;
+
         const result = await this.useCase.execute(inputPotentialIssue);
+
         if (result.isLeft()) {
             const error = result.value;
+
             switch (error.constructor) {
                 case GetPotentialIssueErrors.NotFound:
                     throw new NotFoundException(error.errorValue());
