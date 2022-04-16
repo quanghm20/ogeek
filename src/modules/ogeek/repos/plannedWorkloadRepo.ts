@@ -172,16 +172,17 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
     }: InputGetPlanWLDto): Promise<PlannedWorkload> {
         userId =
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
-        const entity = await this.repo.findOne({
+        const entities = await this.repo.find({
             where: {
                 status:
-                    PlannedWorkloadStatus.PLANNING ||
-                    PlannedWorkloadStatus.EXECUTING,
+                    PlannedWorkloadStatus.EXECUTING ||
+                    PlannedWorkloadStatus.PLANNING,
                 user: userId,
                 startDate: LessThan(startDateOfWeek),
             },
+            order: { startDate: 'ASC' },
         });
-        return entity ? PlannedWorkloadMap.toDomain(entity) : null;
+        return entities ? PlannedWorkloadMap.toDomain(entities[0]) : null;
     }
 
     async find(condition: any): Promise<PlannedWorkload[]> {

@@ -89,7 +89,9 @@ export class GetValueStreamUseCase
             // get actual plans and worklogs
             const request =
                 await this.senteService.getOverviewValueStreamCard<ServerResponse>(
-                    week,
+                    MomentService.convertDateToWeek(
+                        startAndEndDateOfWeek.startDateOfWeek,
+                    ),
                     member,
                     committedWLDtos,
                     plannedWLDtos,
@@ -101,7 +103,9 @@ export class GetValueStreamUseCase
                 plannedWLDtos,
                 actualPlanAndWorkLogDtos,
                 valueStreamDtos,
-                week,
+                MomentService.convertDateToWeek(
+                    startAndEndDateOfWeek.startDateOfWeek,
+                ),
                 startAndEndDateOfWeek.startDateOfWeek,
                 startAndEndDateOfWeek.endDateOfWeek,
             );
