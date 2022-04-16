@@ -177,6 +177,12 @@ export class SenteService {
         const endpoint = '/overview/history-workloads';
         return this._getData<T>(endpoint);
     }
+    async getActualWLforHistoryPotentialIssue<T>(
+        issue: number,
+    ): Promise<AxiosResponse<T>> {
+        const endpoint = `/overview/potential-issue/history?issue=${issue}`;
+        return this._getData<T>(endpoint);
+    }
 
     async getUser<T>(alias: string) {
         const endpoint = `/overview/user-info?alias=${alias}`;

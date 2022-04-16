@@ -56,21 +56,15 @@ export class GetListCommittingUseCase
                     (element) => element.user.id === user.id,
                 );
                 if (index >= 0) {
-                    switch (item.status) {
-                        case CommittedWorkloadStatus.INCOMING:
-                            commits[index].status =
-                                CommittingWorkloadStatus.WILL_CONTINUE;
-                            break;
-                        case CommittedWorkloadStatus.NOT_RENEW:
-                            commits[index].status =
-                                CommittingWorkloadStatus.WILL_NOT_CONTINUE;
-                            break;
-                        case CommittedWorkloadStatus.ACTIVE:
-                            commits[index].status =
-                                CommittingWorkloadStatus.UNHANDLED;
+                    if (item.status === CommittedWorkloadStatus.INCOMING) {
+                        commits[index].status =
+                            CommittingWorkloadStatus.WILL_CONTINUE;
                     }
                 } else if (item.daysUntilExpire > 60) {
                     commit.status = CommittingWorkloadStatus.NORMAL;
+                    commits.push(commit);
+                } else if (item.status === CommittedWorkloadStatus.NOT_RENEW) {
+                    commit.status = CommittingWorkloadStatus.WILL_NOT_CONTINUE;
                     commits.push(commit);
                 } else {
                     commit.status = CommittingWorkloadStatus.UNHANDLED;

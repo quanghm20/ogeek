@@ -78,6 +78,8 @@ import { CreatePotentialIssueController } from './useCases/potentialIssue/create
 import { CreatePotentialIssueUseCase } from './useCases/potentialIssue/createPotentialIssue/CreatePotentialIssueUseCase';
 import { GetPotentialIssueController } from './useCases/potentialIssue/getPotentialIssue/GetPotentialIssueController';
 import { GetPotentialIssueUseCase } from './useCases/potentialIssue/getPotentialIssue/GetPotentialIssueUseCases';
+import { GetPotentialIssuesController } from './useCases/potentialIssue/getPotentialIssuesHistory/GetPotentialIssuesController';
+import { GetPotentialIssuesUseCase } from './useCases/potentialIssue/getPotentialIssuesHistory/GetPotentialIssuesUseCase';
 import { UpdatePotentialIssueController } from './useCases/potentialIssue/updatePotentialIssue/UpdatePotentialIssueController';
 import { UpdatePotentialIssueUseCase } from './useCases/potentialIssue/updatePotentialIssue/UpdatePotentialIssueUseCase';
 import { CreateUserController } from './useCases/user/createUser/CreateUserController';
@@ -128,6 +130,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         GetDetailCommittedWorkloadController,
         GetDetailCommittedWorkloadByWeekController,
         UpdatePotentialIssueController,
+        GetPotentialIssuesController,
         UpdateCommittingWorkloadController,
         GetListCommittingController,
         GetPlannedWorkloadHistoryController,
@@ -159,6 +162,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         UpdateCommittedWorkloadUseCase,
         GetPlannedWorkloadHistoryUseCase,
         GetDetailCommittedWorkloadByWeekUseCase,
+        GetPotentialIssuesUseCase,
         UpdateCommittingWorkloadUseCase,
         GetListCommittingUseCase,
         {

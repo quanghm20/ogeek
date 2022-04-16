@@ -5,6 +5,7 @@ import {
     HttpStatus,
     InternalServerErrorException,
     NotFoundException,
+    Query,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -22,7 +23,6 @@ import { RoleType } from '../../../../../common/constants/roleType';
 import { Roles } from '../../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
-import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { DetailCommittedWorkloadsDto } from '../../../../ogeek/infra/dtos/getDetailCommittedWorkload/DetailCommittedWorkloads.dto';
 import { GetDetailCommittedWorkloadErrors } from './GetDetailCommittedWorkloadErrors';
 import { GetDetailCommittedWorkloadUseCase } from './GetDetailCommittedWorkloadsUseCase';
@@ -50,8 +50,10 @@ export class GetDetailCommittedWorkloadController {
     })
     @Roles(RoleType.PP)
     @UseGuards(JwtAuthGuard, RolesGuard)
-    async execute(@Req() req: Request): Promise<DetailCommittedWorkloadsDto> {
-        const { userId } = req.user as JwtPayload;
+    async execute(
+        @Req() req: Request,
+        @Query('userId') userId: number,
+    ): Promise<DetailCommittedWorkloadsDto> {
         const result = await this.useCase.execute(userId);
         if (result.isLeft()) {
             const error = result.value;

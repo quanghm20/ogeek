@@ -3,11 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Equal, getConnection, Repository } from 'typeorm';
 
 import { IssueStatus } from '../../../common/constants/issueStatus';
+import { MomentService } from '../../../providers/moment.service';
 import { DomainId } from '../domain/domainId';
 import { Issue } from '../domain/issue';
 import { UserEntity } from '../infra/database/entities';
 import { IssueEntity } from '../infra/database/entities/issue.entity';
 import { InputPotentialIssueDto } from '../infra/dtos/getPotentialIssue/inputPotentialIssue.dto';
+import { GetPotentialIssuesInputDto } from '../infra/dtos/getPotentialIssues/getPotentialIssuesInput.dto';
 import { StartEndDateOfWeekWLInputDto } from '../infra/dtos/workloadListByWeek/startEndDateOfWeekInput.dto';
 import { IssueMap } from '../mappers/issueMap';
 
@@ -36,6 +38,13 @@ export interface IIssueRepo {
     }: InputPotentialIssueDto): Promise<Issue>;
     update(potentialIssueEntity: IssueEntity): Promise<Issue>;
     createMany(entities: IssueEntity[]): Promise<Issue[]>;
+    findHistoryByUserIdAndWeek({
+        userId,
+        startWeek,
+        startYear,
+        endWeek,
+        endYear,
+    }: GetPotentialIssuesInputDto): Promise<Issue[]>;
 }
 
 @Injectable()
@@ -110,6 +119,25 @@ export class IssueRepository implements IIssueRepo {
         return entity ? IssueMap.toDomain(entity) : null;
     }
 
+    async findHistoryByUserIdAndWeek({
+        userId,
+        startWeek,
+        startYear,
+        endWeek,
+        endYear,
+    }: GetPotentialIssuesInputDto): Promise<Issue[]> {
+        const entities = await this.repo.find({
+            where: {
+                user: userId,
+                firstDateOfWeek: Between(
+                    MomentService.firstDateOfWeekByYear(startWeek, startYear),
+                    MomentService.lastDateOfWeekByYear(endWeek, endYear),
+                ),
+            },
+            relations: ['user'],
+        });
+        return entities ? IssueMap.toDomainAll(entities) : new Array<Issue>();
+    }
     async save(
         userId: number,
         status: IssueStatus,
