@@ -12,8 +12,8 @@ import {
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
-    ApiCreatedResponse,
     ApiInternalServerErrorResponse,
+    ApiOkResponse,
     ApiTags,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -21,7 +21,6 @@ import { Request } from 'express';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
-import { CreatePlannedWorkloadsListDto } from '../../../infra/dtos/createPlannedWorkload/createPlannedWorkloadsList.dto';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { MessageDto } from '../../../infra/dtos/message.dto';
 import { WeekDto } from '../../../infra/dtos/week.dto';
@@ -37,9 +36,9 @@ export class GetPlannedWorkloadHistoryController {
     @ApiBearerAuth()
     @Get('history')
     @HttpCode(HttpStatus.OK)
-    @ApiCreatedResponse({
-        type: [CreatePlannedWorkloadsListDto],
-        description: 'Created',
+    @ApiOkResponse({
+        type: MessageDto,
+        description: 'OKE',
     })
     @ApiUnauthorizedResponse({
         description: 'Unauthorized',

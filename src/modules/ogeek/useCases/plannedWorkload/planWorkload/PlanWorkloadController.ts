@@ -38,7 +38,7 @@ export class PlanWorkloadController {
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiCreatedResponse({
-        type: [CreatePlannedWorkloadsListDto],
+        type: MessageDto,
         description: 'Created',
     })
     @ApiUnauthorizedResponse({

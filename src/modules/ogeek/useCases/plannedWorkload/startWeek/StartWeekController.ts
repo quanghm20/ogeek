@@ -26,7 +26,6 @@ import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
 import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { MessageDto } from '../../../infra/dtos/message.dto';
 import { StartWeekDto } from '../../../infra/dtos/startWeek/startWeek.dto';
-import { StartWeekResponseDto } from '../../../infra/dtos/startWeek/startWeekResponse.dto';
 import { StartWeekErrors } from './StartWeekErrors';
 import { StartWeekUseCase } from './StartWeekUseCase';
 
@@ -40,7 +39,7 @@ export class StartWeekController {
     @Patch('start-week')
     @HttpCode(HttpStatus.OK)
     @ApiOkResponse({
-        type: [StartWeekResponseDto],
+        type: MessageDto,
         description: 'OK',
     })
     @ApiUnauthorizedResponse({
