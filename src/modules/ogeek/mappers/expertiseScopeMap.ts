@@ -1,6 +1,5 @@
 import * as moment from 'moment';
 
-import { RADIX } from '../../../common/constants/number';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Mapper } from '../../../core/infra/Mapper';
 import { CommittedWorkload } from '../domain/committedWorkload';
@@ -101,7 +100,8 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
         const { week, year } = weekDto;
         const expertiseScopeDto = new ExpertiseScopeShortDto();
         const expertiseScopeId = committedWorkload.expertiseScope.id.toString();
-        expertiseScopeDto.id = parseInt(expertiseScopeId, RADIX);
+        const valueStreamId = committedWorkload.valueStream.id.toString();
+        expertiseScopeDto.id = Number(expertiseScopeId);
         expertiseScopeDto.name = committedWorkload.expertiseScope.name;
         expertiseScopeDto.committedWorkload =
             committedWorkload.committedWorkload;
@@ -109,13 +109,16 @@ export class ExpertiseScopeMap implements Mapper<ExpertiseScope> {
         const isPlannedWLInWeek = (
             plannedWL: PlannedWorkload,
             expId: string,
+            vlsId: string,
         ): boolean =>
             moment(plannedWL.startDate).week() === week &&
             moment(plannedWL.startDate).year() === year &&
-            plannedWL.expertiseScope.id.toString() === expId;
+            plannedWL.expertiseScope.id.toString() === expId &&
+            plannedWL.valueStream.id.toString() === vlsId;
+
         expertiseScopeDto.plannedWorkloads = plannedWorkloads
             .filter((plannedWL) =>
-                isPlannedWLInWeek(plannedWL, expertiseScopeId),
+                isPlannedWLInWeek(plannedWL, expertiseScopeId, valueStreamId),
             )
             .map((plannedWL) => {
                 if (callback) {

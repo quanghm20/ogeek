@@ -13,8 +13,8 @@ export class CronCommittedWorkload {
         public readonly committedWorkloadRepo: ICommittedWorkloadRepo,
     ) {}
     @Cron('0 0 0 * * *', {
-        timeZone: process.env.TIMEZONE,
-    }) // update everyday at 00:00 TIMEZONE System
+        timeZone: process.env.TIMEZONE || 'Asia/Ho_Chi_Minh',
+    }) // update everyday at 00:00 TIMEZONE System or timezone +07:00 (HCMC)
     async autoUpdateStatusCommitted(): Promise<void> {
         try {
             await this.committedWorkloadRepo.updateCommittedWorkloadExpired();

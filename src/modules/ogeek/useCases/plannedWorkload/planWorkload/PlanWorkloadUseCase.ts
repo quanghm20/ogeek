@@ -3,7 +3,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import * as moment from 'moment';
 import { Equal } from 'typeorm';
 
-import { RADIX } from '../../../../../common/constants/number';
 import { PlannedWorkloadStatus } from '../../../../../common/constants/plannedStatus';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
@@ -129,7 +128,7 @@ export class PlanWorkloadUseCase
     }
   }
 
-  async validateIfUserPlansWithoutCommitting(plannedWorkloads: CreatePlannedWorkloadItemDto[], userId: number) {
+  async validateIfUserPlansWithoutCommitting(plannedWorkloads: CreatePlannedWorkloadItemDto[], userId: number): Promise<Response> {
     for (const plannedWorkloadDto of plannedWorkloads) {
       const { committedWorkloadId } = plannedWorkloadDto;
 
@@ -141,7 +140,7 @@ export class PlanWorkloadUseCase
       }
 
       const contributedValue =
-        await this.contributedValueloadRepo.findById(parseInt(committedWorkload.contributedValue.id.toString(), RADIX));
+        await this.contributedValueloadRepo.findById(Number(committedWorkload.contributedValue.id));
       if (!contributedValue) {
         return left(
           new PlanWorkloadErrors.NonExistentContributedValue(),
