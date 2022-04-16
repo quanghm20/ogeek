@@ -95,7 +95,9 @@ export class GetOverviewChartDataUseCase
             );
             const endWeekChart =
                 MomentService.shiftLastWeekChart(startWeekChart);
-            const startDate = new Date(MomentService.firstDateOfWeek(week));
+            const startDate = new Date(
+                MomentService.firstDateOfWeek(startWeekChart),
+            );
             const endDate = new Date(
                 MomentService.lastDateOfWeek(endWeekChart),
             );
