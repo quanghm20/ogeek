@@ -165,7 +165,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
         const entities = await this.repo.find({
             where: {
                 status:
-                    CommittedWorkloadStatus.ACTIVE &&
+                    CommittedWorkloadStatus.ACTIVE ||
                     CommittedWorkloadStatus.NOT_RENEW,
                 user: userId,
                 startDate: LessThan(MomentService.lastDateOfWeek(week)),
@@ -575,9 +575,6 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
             userId instanceof DomainId ? Number(userId.id.toValue()) : userId;
         const entities = await this.repo.find({
             where: {
-                // status:
-                //     CommittedWorkloadStatus.ACTIVE ||
-                //     CommittedWorkloadStatus.NOT_RENEW,
                 user: userId,
                 startDate: LessThan(endDateOfWeek),
                 expiredDate: MoreThan(startDateOfWeek),
