@@ -134,7 +134,10 @@ export class GetOverviewChartDataUseCase
                     MomentService.firstDateOfWeek(startWeekChart),
                     MomentService.lastDateOfWeek(endWeekChart),
                 );
-            const worklogLength = this.getWorklogLength();
+            const worklogLength = this.getWorklogLength(
+                user.createdAt,
+                startWeekChart,
+            );
             const overviewChartDataDtos = OverViewChartMap.combineAllToDto(
                 expertiseScopes,
                 committedWorkloads,
