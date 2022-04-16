@@ -86,7 +86,6 @@ export class PlanWorkloadController {
             }
         }
 
-        // return createPlannedWorkloadsListDto;
         return {
             statusCode: HttpStatus.CREATED,
             message: 'Plan workload successfully',

@@ -4,9 +4,6 @@ export class CreatePlannedWorkloadItemDto {
     @ApiProperty({ example: 20 })
     workload?: number;
 
-    @ApiProperty({ example: 'Product Backend' })
+    @ApiProperty({ example: 1 })
     committedWorkloadId?: number;
-
-    // @ApiProperty({ example: 1 })
-    // contributedValueId?: number;
 }
