@@ -25,7 +25,7 @@ export class UserMap implements Mapper<User> {
             return new UserCompactDto();
         }
         const id = Number(user.id.toValue());
-        return new UserCompactDto(id, user.alias, user.name);
+        return new UserCompactDto(id, user.alias, user.name, user.avatar);
     }
 
     public static toDomain(raw: UserEntity | UserDto): User {
