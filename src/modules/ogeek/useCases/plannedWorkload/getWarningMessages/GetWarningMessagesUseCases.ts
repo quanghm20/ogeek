@@ -7,7 +7,9 @@ import { PlannedWorkloadStatus } from '../../../../../common/constants/plannedSt
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
+import { MomentService } from '../../../../../providers/moment.service';
 import { WarningMessagesDto } from '../../../infra/dtos/getWarningMessages/warningMessages.dto';
+import { WeekDto } from '../../../infra/dtos/week.dto';
 import { IPlannedWorkloadRepo } from '../../../repos/plannedWorkloadRepo';
 import { IUserRepo } from '../../../repos/userRepo';
 import { GetWarningMessagesErrors } from './GetWarningMessagesErrors';
@@ -22,14 +24,14 @@ type Response = Either<
 
 @Injectable()
 export class GetWarningMessagesUseCases
-  implements IUseCase<Date, Promise<Response>> {
+  implements IUseCase<WeekDto, Promise<Response>> {
   constructor(
     @Inject('IUserRepo') public readonly userRepo: IUserRepo,
     @Inject('IPlannedWorkloadRepo') public readonly plannedWorkloadRepo: IPlannedWorkloadRepo,
   ) { }
 
   async execute(
-    startDate: Date,
+    weekDto: WeekDto,
     userId: number,
   ): Promise<Response> {
     try {
@@ -40,12 +42,14 @@ export class GetWarningMessagesUseCases
         ) as Response;
       }
 
-      const startDateOfCurrentWeek = moment(startDate).startOf('week').toDate();
+      const { week, year } = weekDto;
+      const date = MomentService.firstDateOfWeekByYear(week, year);
+      const startDateOfCurrentWeek = moment(date).startOf('week').toDate();
 
       const lastWeekPlannedWorkload = await this.plannedWorkloadRepo.findOne({
         user: { id: userId },
         status: Not(PlannedWorkloadStatus.ARCHIVE),
-        startDate: Equal(startDateOfCurrentWeek),
+        startDate: Equal(moment(startDateOfCurrentWeek).add(7, 'days').toDate()),
       });
       if (lastWeekPlannedWorkload && !lastWeekPlannedWorkload.isClosed) {
         return left(
