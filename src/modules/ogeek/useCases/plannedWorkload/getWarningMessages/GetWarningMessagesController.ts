@@ -19,7 +19,6 @@ import {
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import * as moment from 'moment';
 
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../../jwtAuth/jwtAuth.strategy';
@@ -27,13 +26,13 @@ import { FindUserDto } from '../../../infra/dtos/findUser.dto';
 import { MessageDto } from '../../../infra/dtos/message.dto';
 import { StartWeekDto } from '../../../infra/dtos/startWeek/startWeek.dto';
 import { StartWeekResponseDto } from '../../../infra/dtos/startWeek/startWeekResponse.dto';
-import { StartWeekErrors } from './StartWeekErrors';
-import { StartWeekUseCase } from './StartWeekUseCase';
+import { GetWarningMessagesErrors } from './GetWarningMessagesErrors';
+import { GetWarningMessagesUseCases } from './GetWarningMessagesUseCases';
 
 @Controller('api/planned-workload')
 @ApiTags('Planned Workload')
-export class StartWeekController {
-    constructor(public readonly useCase: StartWeekUseCase) {}
+export class GetWarningMessagesController {
+    constructor(public readonly useCase: GetWarningMessagesUseCases) {}
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -67,12 +66,12 @@ export class StartWeekController {
             const error = result.value;
 
             switch (error.constructor) {
-                case StartWeekErrors.PreviousWeekNotClose:
-                    throw new BadRequestException(error.errorValue());
-                case StartWeekErrors.NotPlan:
-                    throw new BadRequestException(error.errorValue());
-                case StartWeekErrors.UserNotFound:
+                case GetWarningMessagesErrors.UserNotFound:
                     throw new NotFoundException(error.errorValue());
+                case GetWarningMessagesErrors.LastWeekNotClosed:
+                    throw new BadRequestException(error.errorValue());
+                case GetWarningMessagesErrors.GetMessagesFailed:
+                    throw new InternalServerErrorException(error.errorValue());
                 default:
                     throw new InternalServerErrorException(
                         error.errorValue(),
@@ -81,13 +80,14 @@ export class StartWeekController {
             }
         }
 
-        const executingWeek = moment(startDate).week();
+        const { hasPlannedWorkload, weekStatus } = result.value.getValue();
 
         return {
             statusCode: HttpStatus.OK,
-            message: 'Start week successfully',
+            message: 'Get warning messages successfully',
             data: {
-                week: executingWeek.toString(),
+                hasPlannedWorkload,
+                weekStatus,
             },
         } as MessageDto;
     }
