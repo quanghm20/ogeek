@@ -20,7 +20,7 @@ export class SeedData1649174825788 implements MigrationInterface {
             )
         VALUES
             (
-                'phat.ct',
+                'user_314',
                 'short_name - 142',
                 'phone - 142',
                 'user_314@geekup.io',
@@ -48,9 +48,7 @@ export class SeedData1649174825788 implements MigrationInterface {
                 'Lộc Phạm',
                 '0372168817',
                 'loc.pt@geekup.vn',
-                'https://scontent-hkt1-1.xx.fbcdn.net/v/t1.6435-9/174282240_2005197576286372_
-                7776418637652040662_n.jpg?_nc_cat=108&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=T_TBPEqGY-QAX-B_vZr&_nc_ht
-                =scontent-hkt1-1.xx&oh=00_AT8Tc1bYxI8Nb0977KuPqW7d2R0hKvazNPQuQKyX2m8C8A&oe=62660A64',
+                'https://zpsocial-f50-org.zadn.vn/ac9c46871c08f356aa19.jpg',
                 'USER',
                 -2,
                 '2021-12-20 00:00:00',
@@ -86,9 +84,7 @@ export class SeedData1649174825788 implements MigrationInterface {
                 'Tuấn Phạm',
                 '0778821404',
                 'tuan.pa@geekup.vn',
-                'https://scontent-hkt1-1.xx.fbcdn.net/v/t1.6435-9/111256389_1473493699523949_527022904392109627_n.jpg?
-                _nc_cat=109&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=ykGIHOAgJwQAX_p1REx&_nc_ht=scontent-hkt1-1.xx&oh=
-                00_AT8bDOLNaM8zUvGpJVHADj0HQJjtcFuJbORJsOK8A7O26Q&oe=62645900',
+                'https://zpsocial-f47-org.zadn.vn/4e08a5eddf30306e6921.jpg',
                 'USER',
                 -2,
                 '2021-12-20 00:00:00',
@@ -100,9 +96,7 @@ export class SeedData1649174825788 implements MigrationInterface {
                 'Yến Nhi',
                 '0885502434',
                 'nhi.ny@geekup.vn',
-                'https://scontent.fsgn2-2.fna.fbcdn.net/v/t39.30808-1/274247006_2114412195379054_6228315636533222791_n.jpg
-                ?stp=dst-jpg_p200x200&_nc_cat=104&ccb=1-5&_nc_sid=7206a8&_nc_ohc=OEJbMMRjwQgAX-0iFlB&_nc_ht=scontent.fsgn2-2.fna&oh
-                =00_AT-nmAHoKamIWOqiFVaGO279l_ZFCd6VoZMLaUkEAqMlmg&oe=62437DCC',
+                'https://zpsocial-f46-org.zadn.vn/7a75e8194169ae37f778.jpg',
                 'USER',
                 -2,
                 '2021-12-20 00:00:00',
@@ -114,9 +108,7 @@ export class SeedData1649174825788 implements MigrationInterface {
                 'Nam Đỗ',
                 '0764641209',
                 'nam.dp@geekup.vn',
-                'https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/270125438_2733346436970339_522153303730195066_n.jpg
-                ?_nc_cat=106&ccb=1-5&_nc_sid=8bfeb9&_nc_ohc=XbIbKIcHF7UAX9GBNqy&tn=uuhkvByQSQxmfbAH&_nc_ht=
-                scontent.fsgn2-3.fna&oh=00_AT90j8WgH8WL71276JEVKNbnHvUuGW7WXgXx6aqPT4LDmA&oe=62445CA6',
+                'https://zpsocial-f47-org.zadn.vn/d196fed7afb640e819a7.jpg',
                 'USER',
                 -2,
                 '2021-12-20 00:00:00',
@@ -176,9 +168,7 @@ export class SeedData1649174825788 implements MigrationInterface {
                 'Thuong Nguyen',
                 '0381294934',
                 'thuong.nv@geekup.vn',
-                'https://scontent.fsgn2-4.fna.fbcdn.net/v/t1.6435-9/134483498_1556546424543763_8626964051540054060_n.jpg
-                ?_nc_cat=101&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=zif1M5Njtt4AX8ikm-q&_nc_ht=scontent.fsgn2-4.fna&oh=
-                00_AT9e_BW4Sz_3QP9BYFS73rOgAahNZdQU1Uq_lKGXLjU66g&oe=6264C5A6',
+                'https://zpsocial-f49-org.zadn.vn/f33a70ba0240ed1eb451.jpg',
                 'USER',
                 -2,
                 '2021-12-20 00:00:00',
@@ -190,7 +180,7 @@ export class SeedData1649174825788 implements MigrationInterface {
                 'Nguyen Tran',
                 '0933383823',
                 'nguyen.tk@geekup.vn',
-                'https://link21.com',
+                'https://f35-org-zp.zdn.vn/31a5fc489d20707e2931.jpg',
                 'USER',
                 -2,
                 '2021-12-20 00:00:00',
@@ -292,19 +282,7 @@ export class SeedData1649174825788 implements MigrationInterface {
                 '2021-12-20 00:00:00',
                 '2021-12-20 00:00:00',
                 -2
-            ),
-            (
-                'uyen.tn',
-                'Uyen Tran',
-                '0384884394',
-                'uyen.tn@geekup.vn',
-                'https://linkss.com',
-                'USER',
-                -2,
-                '2021-12-20 00:00:00',
-                '2021-12-20 00:00:00',
-                -2
-	);
+            );
             `,
         );
         await queryRunner.query(
@@ -429,9 +407,7 @@ export class SeedData1649174825788 implements MigrationInterface {
             (21, 4, 27, '2022-01-01 00:00:00', '2022-04-29 00:00:00', 'ACTIVE', 12, '2021-12-27 00:00:00'),
             (22, 18, 3, '2022-01-01 00:00:00', '2022-04-29 00:00:00', 'ACTIVE', 12, '2021-12-27 00:00:00'),
             (22, 3, 5, '2022-01-01 00:00:00', '2022-04-29 00:00:00', 'ACTIVE', 12, '2021-12-27 00:00:00'),
-            (22, 4, 35, '2022-01-01 00:00:00', '2022-04-29 00:00:00', 'ACTIVE', 12, '2021-12-27 00:00:00'),
-            (23, 18, 30, '2022-01-01 00:00:00', '2022-04-29 00:00:00', 'ACTIVE', 12, '2021-12-27 00:00:00'),
-            (23, 3, 15, '2022-01-01 00:00:00', '2022-04-29 00:00:00', 'ACTIVE', 12, '2021-12-27 00:00:00');
+            (22, 4, 35, '2022-01-01 00:00:00', '2022-04-29 00:00:00', 'ACTIVE', 12, '2021-12-27 00:00:00');
             `,
         );
 
@@ -505,10 +481,10 @@ export class SeedData1649174825788 implements MigrationInterface {
             ( 1, 3, 2, 12, '2022-04-02 00:00:00', 'CLOSED', 'create planned workload w14', 1, '2022-03-31 16:12:01'),
             ( 1, 10, 3, 5, '2022-04-02 00:00:00', 'CLOSED', 'create planned workload w14', 1, '2022-03-31 16:12:01'),
             ( 1, 17, 4, 3, '2022-04-02 00:00:00', 'CLOSED', 'create planned workload w14', 1, '2022-03-31 16:12:01'),
-            ( 1, 2, 1, 23, '2022-04-09 00:00:00', 'EXECUTING', 'create planned workload w15', 1, '2022-04-08 16:12:01'),
-            ( 1, 3, 2, 23, '2022-04-09 00:00:00', 'EXECUTING', 'create planned workload w15', 1, '2022-04-08 16:12:01'),
-            ( 1, 10, 3, 5, '2022-04-09 00:00:00', 'EXECUTING', 'create planned workload w15', 1, '2022-04-08 16:12:01'),
-            ( 1, 17, 4, 3, '2022-04-09 00:00:00', 'EXECUTING', 'create planned workload w15', 1, '2022-04-08 16:12:01'),
+            ( 1, 2, 1, 23, '2022-04-09 00:00:00', 'CLOSED', 'create planned workload w15', 1, '2022-04-08 16:12:01'),
+            ( 1, 3, 2, 23, '2022-04-09 00:00:00', 'CLOSED', 'create planned workload w15', 1, '2022-04-08 16:12:01'),
+            ( 1, 10, 3, 5, '2022-04-09 00:00:00', 'CLOSED', 'create planned workload w15', 1, '2022-04-08 16:12:01'),
+            ( 1, 17, 4, 3, '2022-04-09 00:00:00', 'CLOSED', 'create planned workload w15', 1, '2022-04-08 16:12:01'),
             ( 1, 2, 1, 23, '2022-04-16 00:00:00', 'PLANNING', 'create planned workload w16', 1, '2022-04-15 16:12:01'),
             ( 1, 3, 2, 10, '2022-04-16 00:00:00', 'PLANNING', 'create planned workload w16', 1, '2022-04-15 16:12:01'),
             ( 1, 10, 3, 5, '2022-04-16 00:00:00', 'PLANNING', 'create planned workload w16', 1, '2022-04-15 16:12:01'),
@@ -528,7 +504,27 @@ export class SeedData1649174825788 implements MigrationInterface {
             ( 1, 2, 1, 23, '2022-05-14 00:00:00', 'PLANNING', 'create planned workload w20', 1, '2022-04-17 18:02:01'),
             ( 1, 3, 2, 24, '2022-05-14 00:00:00', 'PLANNING', 'create planned workload w20', 1, '2022-04-17 18:02:01'),
             ( 1, 10, 3, 5, '2022-05-14 00:00:00', 'PLANNING', 'create planned workload w20', 1, '2022-03-10 16:12:01'),
-            ( 1, 17, 4, 3, '2022-05-14 00:00:00', 'PLANNING', 'create planned workload w20', 1, '2022-03-10 16:12:01');
+            ( 1, 17, 4, 3, '2022-05-14 00:00:00', 'PLANNING', 'create planned workload w20', 1, '2022-03-10 16:12:01'),
+            ( 12, 8, 20, 42, '2022-01-01 00:00:00', 'CLOSED', 'create planned workload w1', 1, '2022-01-01 06:02:01'),
+            ( 12, 8, 20, 40, '2022-01-08 00:00:00', 'CLOSED', 'create planned workload w2', 1, '2022-01-05 15:02:01'),
+            ( 12, 8, 20, 45, '2022-01-15 00:00:00', 'CLOSED', 'create planned workload w3', 1, '2022-01-12 07:02:01'),
+            ( 12, 8, 20, 40, '2022-01-22 00:00:00', 'CLOSED', 'create planned workload w4', 1, '2022-01-19 05:02:01'),
+            ( 12, 8, 20, 40, '2022-01-29 00:00:00', 'CLOSED', 'create planned workload w5', 1, '2022-01-27 08:02:01'),
+            ( 12, 8, 20, 40, '2022-02-05 00:00:00', 'CLOSED', 'create planned workload w6', 1, '2022-02-04 14:02:01'),
+            ( 12, 8, 20, 40, '2022-02-12 00:00:00', 'CLOSED', 'create planned workload w7', 1, '2022-02-10 16:12:01'),
+            ( 12, 8, 20, 40, '2022-02-19 00:00:00', 'CLOSED', 'create planned workload w8', 1, '2022-02-15 16:12:01'),
+            ( 12, 8, 20, 40, '2022-02-26 00:00:00', 'CLOSED', 'create planned workload w9', 1, '2022-02-24 16:12:01'),
+            ( 12, 8, 20, 40, '2022-03-05 00:00:00', 'CLOSED', 'create planned workload w10', 1, '2022-03-03 16:12:01'),
+            ( 12, 8, 20, 40, '2022-03-12 00:00:00', 'CLOSED', 'create planned workload w11', 1, '2022-03-10 16:12:01'),
+            ( 12, 8, 20, 40, '2022-03-19 00:00:00', 'CLOSED', 'create planned workload w12', 1, '2022-03-17 16:12:01'),
+            ( 12, 8, 20, 40, '2022-03-26 00:00:00', 'CLOSED', 'create planned workload w13', 1, '2022-03-24 16:12:01'),
+            ( 12, 8, 20, 40, '2022-04-02 00:00:00', 'CLOSED', 'create planned workload w14', 1, '2022-03-31 16:12:01'),
+            ( 12, 8, 20, 45, '2022-04-09 00:00:00', 'CLOSED', 'create planned workload w15', 1, '2022-04-08 16:12:01'),
+            ( 12, 8, 20, 40, '2022-04-16 00:00:00', 'PLANNING', 'create planned workload w16', 1, '2022-04-15 16:12:01'),
+            ( 12, 8, 20, 40, '2022-04-23 00:00:00', 'PLANNING', 'create planned workload w17', 1, '2022-04-15 16:12:01'),
+            ( 12, 8, 20, 38, '2022-04-30 00:00:00', 'PLANNING', 'create planned workload w18', 1, '2022-04-15 16:12:01'),
+            ( 12, 8, 20, 42, '2022-05-07 00:00:00', 'PLANNING', 'create planned workload w19', 1, '2022-04-15 16:12:01'),
+            ( 12, 8, 20, 48, '2022-05-14 00:00:00', 'PLANNING', 'create planned workload w20', 1, '2022-04-17 18:02:01');
             `,
         );
         await queryRunner.query(
@@ -550,8 +546,7 @@ export class SeedData1649174825788 implements MigrationInterface {
             (5, 'POTENTIAL ISSUE', 'Just a note 5 from PP Ops', '2022-04-02', '2022-04-02', 12),
             (9, 'POTENTIAL ISSUE', 'Just a note 9 from PP Ops', '2022-03-26', '2022-04-09', 12),
             (9, 'POTENTIAL ISSUE', 'Just a note 9 from PP Ops', '2022-04-02', '2022-04-09', 12),
-            (10, 'RESOLVED', 'Just a note 10 from PP Ops', '2022-03-26', '2022-04-09', 12),
-            (23, 'RESOLVED', 'Just a note 10 from PP Ops', '2022-03-26', '2022-04-09', 12);
+            (10, 'RESOLVED', 'Just a note 10 from PP Ops', '2022-03-26', '2022-04-09', 12);
             `,
         );
         await queryRunner.query(
