@@ -49,7 +49,7 @@ export class GetWarningMessagesUseCases
       const lastWeekPlannedWorkload = await this.plannedWorkloadRepo.findOne({
         user: { id: userId },
         status: Not(PlannedWorkloadStatus.ARCHIVE),
-        startDate: Equal(moment(startDateOfCurrentWeek).add(7, 'days').toDate()),
+        startDate: Equal(moment(startDateOfCurrentWeek).subtract(7, 'days').toDate()),
       });
       if (lastWeekPlannedWorkload && !lastWeekPlannedWorkload.isClosed) {
         return left(
