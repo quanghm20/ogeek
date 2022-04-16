@@ -12,11 +12,11 @@ export class OverViewChartMap {
         committedWorkloads: CommittedWorkload[],
         plannedWorkloads: PlannedWorkload[],
         weekChartArray: number[],
+        worklogLength: number,
     ): OverviewChartDataDto[] {
         const overviewChartDataDtos = new Array<OverviewChartDataDto>();
         expertiseScopes.forEach((expertiseScope) => {
             const expertiseScopeId = expertiseScope.id.toValue();
-            let myPlannedLength = 0;
             const myCommittedWorkload = committedWorkloads.find(
                 (committedWorkload) =>
                     committedWorkload.belongToExpertiseScope(expertiseScopeId),
@@ -37,8 +37,6 @@ export class OverViewChartMap {
                             plannedWorkload: plannedBetWeenWeek.plannedWorkload,
                             actualWorkload: ASSIGN_NUMBER,
                         } as WorkloadOverviewDto);
-
-                        myPlannedLength++;
                     } else {
                         contributedValue.push({
                             week: weekItem,
@@ -50,10 +48,11 @@ export class OverViewChartMap {
                 });
                 overviewChartDataDtos.push({
                     expertiseScopeId,
+                    worklogLength,
                     expertiseScopes: contributedValue,
                     expertiseScope: expertiseScope.name,
-                    worklogLength: MAX_VIEWCHART_LENGTH - myPlannedLength,
-                    actualPlannedWorkloadLength: myPlannedLength,
+                    actualPlannedWorkloadLength:
+                        MAX_VIEWCHART_LENGTH - worklogLength,
                 } as OverviewChartDataDto);
             }
         });

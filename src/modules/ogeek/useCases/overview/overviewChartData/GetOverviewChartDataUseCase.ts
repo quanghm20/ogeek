@@ -1,7 +1,10 @@
 import { Inject, Injectable, Response } from '@nestjs/common';
 import * as _ from 'lodash';
 
-import { MAX_VIEWCHART_LENGTH } from '../../../../../common/constants/chart';
+import {
+    MAX_VIEWCHART_LENGTH,
+    MAX_WORKLOG_LENGTH,
+} from '../../../../../common/constants/chart';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
@@ -44,7 +47,18 @@ export class GetOverviewChartDataUseCase
 
         public readonly senteService: SenteService,
     ) {}
-
+    getWorklogLength(createdAt: Date, startWeekChart: number): number {
+        const currentDate = new Date();
+        if (createdAt.getFullYear() < currentDate.getFullYear()) {
+            return MAX_WORKLOG_LENGTH;
+        }
+        {
+            const createdWeek = MomentService.convertDateToWeek(createdAt);
+            return startWeekChart >= createdWeek
+                ? 12
+                : createdWeek - startWeekChart;
+        }
+    }
     getArrayWeekChart(startWeekChart: number): number[] {
         return [...Array(MAX_VIEWCHART_LENGTH).keys()].map(
             (item) => item + startWeekChart,
@@ -120,12 +134,13 @@ export class GetOverviewChartDataUseCase
                     MomentService.firstDateOfWeek(startWeekChart),
                     MomentService.lastDateOfWeek(endWeekChart),
                 );
-
+            const worklogLength = this.getWorklogLength();
             const overviewChartDataDtos = OverViewChartMap.combineAllToDto(
                 expertiseScopes,
                 committedWorkloads,
                 totalPlannedWorkloadsByExpArray,
                 weekChartArray,
+                worklogLength,
             );
 
             const request =
