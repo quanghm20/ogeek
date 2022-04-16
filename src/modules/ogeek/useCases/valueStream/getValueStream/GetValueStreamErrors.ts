@@ -10,4 +10,12 @@ export namespace GetValueStreamError {
             } as UseCaseError);
         }
     }
+
+    export class NoCommittedWorkloadFound extends Result<UseCaseError> {
+        constructor() {
+            super(false, {
+                message: 'Can not find any committed workload',
+            } as UseCaseError);
+        }
+    }
 }

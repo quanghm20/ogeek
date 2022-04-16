@@ -22,7 +22,7 @@ import { Roles } from '../../../../../decorators/roles.decorator';
 import { RolesGuard } from '../../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../../jwtAuth/jwtAuth.guard';
 import { DetailCommittedWorkloadsByWeekDto } from '../../../../ogeek/infra/dtos/getDetailCommittedWorkloadByWeek/DetailCommittedWorkloads.dto';
-import { InputValueStreamByWeekDto } from '../../../../ogeek/infra/dtos/valueStreamsByWeek/inputValueStream.dto';
+import { InputWeekDto } from '../../../../ogeek/infra/dtos/valueStreamsByWeek/inputWeekDto';
 import { GetDetailCommittedWorkloadByWeekErrors } from './GetDetailCommittedWorkloadByWeekErrors';
 import { GetDetailCommittedWorkloadByWeekUseCase } from './GetDetailCommittedWorkloadsByWeekUseCase';
 
@@ -52,7 +52,7 @@ export class GetDetailCommittedWorkloadByWeekController {
         description: 'Internal Server Error',
     })
     async execute(
-        @Query() { week }: InputValueStreamByWeekDto,
+        @Query() { week }: InputWeekDto,
         @Query('userId') userId: number,
     ): Promise<DetailCommittedWorkloadsByWeekDto> {
         const result = await this.useCase.execute(week, userId);
