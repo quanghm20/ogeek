@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import {
     MAX_VIEWCHART_LENGTH,
     MAX_WORKLOG_LENGTH,
+    NEAR_MAX_WORKLOG_LENGTH,
 } from '../../../../../common/constants/chart';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
@@ -47,17 +48,26 @@ export class GetOverviewChartDataUseCase
 
         public readonly senteService: SenteService,
     ) {}
-    getWorklogLength(createdAt: Date, startWeekChart: number): number {
+    getWorklogLength(
+        createdAt: Date,
+        startWeekChart: number,
+        totalPlannedWorkloadsByExpArray: PlannedWorkload[],
+    ): number {
         const currentDate = new Date();
-        if (createdAt.getFullYear() < currentDate.getFullYear()) {
+        const currentPlanWeekly = totalPlannedWorkloadsByExpArray.find(
+            (plannedWorkload) => plannedWorkload.isClosedInCurrentWeek(),
+        );
+        if (currentPlanWeekly) {
             return MAX_WORKLOG_LENGTH;
         }
-        {
-            const createdWeek = MomentService.convertDateToWeek(createdAt);
-            return startWeekChart >= createdWeek
-                ? 12
-                : createdWeek - startWeekChart;
+        if (createdAt.getFullYear() < currentDate.getFullYear()) {
+            return NEAR_MAX_WORKLOG_LENGTH;
         }
+
+        const createdWeek = MomentService.convertDateToWeek(createdAt);
+        return startWeekChart >= createdWeek
+            ? NEAR_MAX_WORKLOG_LENGTH
+            : createdWeek - startWeekChart;
     }
     getArrayWeekChart(startWeekChart: number): number[] {
         return [...Array(MAX_VIEWCHART_LENGTH).keys()].map(
@@ -137,6 +147,7 @@ export class GetOverviewChartDataUseCase
             const worklogLength = this.getWorklogLength(
                 user.createdAt,
                 startWeekChart,
+                totalPlannedWorkloadsByExpArray,
             );
             const overviewChartDataDtos = OverViewChartMap.combineAllToDto(
                 expertiseScopes,

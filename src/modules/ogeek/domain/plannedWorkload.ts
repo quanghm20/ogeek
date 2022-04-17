@@ -101,6 +101,16 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
         return this.props.createdBy > 0;
     }
 
+    isClosedInCurrentWeek(): boolean {
+        const currentWeek = MomentService.getCurrentWeek();
+        return this.props.startDate <=
+            MomentService.firstDateOfWeek(currentWeek) &&
+            this.props.startDate >= MomentService.lastDateOfWeek(currentWeek) &&
+            this.props.status === PlannedWorkloadStatus.CLOSED
+            ? true
+            : false;
+    }
+
     isBetweenWeek(week: number): boolean {
         const startDateOfWeek = new Date(MomentService.firstDateOfWeek(week));
         const endDateOfWeek = new Date(MomentService.lastDateOfWeek(week));
@@ -113,15 +123,15 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
         return false;
     }
 
-    isBelongToCommit(committedWlId: number | string) {
+    isBelongToCommit(committedWlId: number | string): boolean {
         return this.committedWorkload.id.toValue() === committedWlId;
     }
 
-    isBelongToExpScope(expScopeId: number | string) {
+    isBelongToExpScope(expScopeId: number | string): boolean {
         return this.contributedValue.expertiseScope.id.toValue() === expScopeId;
     }
 
-    plusPlanWorkload(planWorkload: number) {
+    plusPlanWorkload(planWorkload: number): void {
         this.props.plannedWorkload += planWorkload;
     }
 

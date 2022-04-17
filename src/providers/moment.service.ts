@@ -14,6 +14,10 @@ export class MomentService {
         return moment().week();
     }
 
+    public static getCurrentDay(): number {
+        return moment().toDate().getDay();
+    }
+
     public static getNumOfWeek(injectedDate: Date): string {
         return moment(injectedDate).format('e');
     }
