@@ -14,11 +14,18 @@ export class WarningMessagesDto {
     @ApiProperty({ example: true })
     hasPlannedWorkload: boolean;
 
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({ example: true })
+    hasReviewedRetro: boolean;
+
     constructor(
         weekStatus: PlannedWorkloadStatus,
         hasPlannedWorkload: boolean,
+        hasReviewedRetro: boolean,
     ) {
         this.weekStatus = weekStatus;
         this.hasPlannedWorkload = hasPlannedWorkload;
+        this.hasReviewedRetro = hasReviewedRetro;
     }
 }

@@ -65,16 +65,19 @@ export class GetWarningMessagesUseCases
       // filter all EXECUTING and CLOSED
       const executingOrClosedPlannedWorkload = currentWeekPlannedWorkloads.find(plannedWL => plannedWL.isExecutingOrClosed);
       if (executingOrClosedPlannedWorkload) {
-        return right(Result.ok(new WarningMessagesDto(executingOrClosedPlannedWorkload.status, true)));
+        return right(Result.ok(new WarningMessagesDto(
+          executingOrClosedPlannedWorkload.status, true,
+          !executingOrClosedPlannedWorkload.notReviewRetroAtTheEndOfTheWeek,
+        )));
       }
 
       // remain only PLANNING => filter created by system
       const plannedWorkloadCreatedByUser = currentWeekPlannedWorkloads.find(plannedWL => plannedWL.isCreatedByUser);
       if (plannedWorkloadCreatedByUser) {
-        return right(Result.ok(new WarningMessagesDto(PlannedWorkloadStatus.PLANNING, true)));
+        return right(Result.ok(new WarningMessagesDto(PlannedWorkloadStatus.PLANNING, true, false)));
       }
 
-      return right(Result.ok(new WarningMessagesDto(PlannedWorkloadStatus.PLANNING, false)));
+      return right(Result.ok(new WarningMessagesDto(PlannedWorkloadStatus.PLANNING, false, false)));
     } catch (err) {
       return left(new AppError.UnexpectedError(err));
     }
