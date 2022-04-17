@@ -706,13 +706,9 @@ VALUES
                     created_by,
                     created_at
                 )
-            VALUES
-                ('Admin has added 45 hr(s) committed workload for you.', 'UNREAD', 1, 12, '2022-04-12 00:00:00'),
-                ('Admin has added 40 hr(s) committed workload for you.', 'READ', 1, 12, '2022-12-20 00:00:00'),
-                ('Admin has added 30 hr(s) committed workload for you.', 'READ', 1, 12, '2022-10-30 00:00:00'),
-                ('Admin has added 45 hr(s) committed workload for you.', 'UNREAD', 10, 12, '2022-04-12 00:00:00'),
-                ('Admin has added 40 hr(s) committed workload for you.', 'READ', 10, 12, '2022-12-20 00:00:00'),
-                ('Admin has added 30 hr(s) committed workload for you.', 'READ', 10, 12, '2022-10-30 00:00:00');
+                VALUES
+                ('Admin has added 45 hr(s) committed workload for you.', 'UNREAD', 1, -2, '2022-04-12 00:00:00'),
+                ('Admin has added 45 hr(s) committed workload for you.', 'UNREAD', 10, -2, '2022-04-12 00:00:00');
             `,
         );
     }
