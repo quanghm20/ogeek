@@ -81,13 +81,15 @@ export class GetWarningMessagesController {
             }
         }
 
-        const { hasPlannedWorkload, weekStatus } = result.value.getValue();
+        const { hasPlannedWorkload, hasReviewedRetro, weekStatus } =
+            result.value.getValue();
 
         return {
             statusCode: HttpStatus.OK,
             message: 'Get warning messages successfully',
             data: {
                 hasPlannedWorkload,
+                hasReviewedRetro,
                 weekStatus,
             },
         } as MessageDto;

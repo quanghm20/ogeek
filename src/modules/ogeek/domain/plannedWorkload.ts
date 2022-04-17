@@ -1,3 +1,5 @@
+import * as moment from 'moment';
+
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
@@ -94,11 +96,14 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
     get isActive(): boolean {
         return this.props.status !== PlannedWorkloadStatus.ARCHIVE;
     }
+    get isExecuting(): boolean {
+        return this.props.status === PlannedWorkloadStatus.EXECUTING;
+    }
     get isExecutingOrClosed(): boolean {
         return this.isActive && !this.isPlanning;
     }
     get isCreatedByUser(): boolean {
-        return this.props.createdBy > 0;
+        return this.props.createdBys > 0;
     }
 
     isClosedInCurrentWeek(): boolean {
@@ -111,6 +116,12 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
             : false;
     }
 
+    get notReviewRetroAtTheEndOfTheWeek(): boolean {
+        return (
+            this.props.status === PlannedWorkloadStatus.EXECUTING &&
+            moment(this.props.startDate).week() < moment().week()
+        );
+    }
     isBetweenWeek(week: number): boolean {
         const startDateOfWeek = new Date(MomentService.firstDateOfWeek(week));
         const endDateOfWeek = new Date(MomentService.lastDateOfWeek(week));
