@@ -108,9 +108,9 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
 
     isClosedInCurrentWeek(): boolean {
         const currentWeek = MomentService.getCurrentWeek();
-        return this.props.startDate <=
+        return this.props.startDate >=
             MomentService.firstDateOfWeek(currentWeek) &&
-            this.props.startDate >= MomentService.lastDateOfWeek(currentWeek) &&
+            this.props.startDate <= MomentService.lastDateOfWeek(currentWeek) &&
             this.props.status === PlannedWorkloadStatus.CLOSED
             ? true
             : false;

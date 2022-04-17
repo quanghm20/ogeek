@@ -11,6 +11,7 @@ import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { MomentService } from '../../../../../providers/moment.service';
 import { SenteService } from '../../../../../shared/services/sente.service';
+import { CommittedWorkload } from '../../../../ogeek/domain/committedWorkload';
 import { PlannedWorkload } from '../../../../ogeek/domain/plannedWorkload';
 import { OverViewChartMap } from '../../../../ogeek/mappers/overViewChartMap';
 import { OverviewChartDataDto } from '../../../infra/dtos/overviewChart/overviewChartData.dto';
@@ -74,6 +75,40 @@ export class GetOverviewChartDataUseCase
             (item) => item + startWeekChart,
         );
     }
+    getTotalCommittedWorkloadByExp(
+        committedWorkloads: CommittedWorkload[],
+    ): CommittedWorkload[] {
+        const totalCommittedWorkloadsByExpArray =
+            new Array<CommittedWorkload>();
+        const totalCommittedWorkloadsByExpObj = _.groupBy(
+            committedWorkloads,
+            (committedWorkload) => [
+                committedWorkload.contributedValue.expertiseScope.id.toValue(),
+                committedWorkload.startDate,
+            ],
+        );
+        _.forOwn(
+            totalCommittedWorkloadsByExpObj,
+            (totalCommittedWorkloadByExpObj) => {
+                const firstElementTotalCommittedWorkload = _.head(
+                    totalCommittedWorkloadByExpObj,
+                );
+                const totalPlannedWl = _.reduce(
+                    totalCommittedWorkloadByExpObj,
+                    (sum, current) => sum + current.props.committedWorkload,
+                    0,
+                );
+                if (firstElementTotalCommittedWorkload) {
+                    firstElementTotalCommittedWorkload.committedWorkload =
+                        totalPlannedWl;
+                    totalCommittedWorkloadsByExpArray.push(
+                        firstElementTotalCommittedWorkload,
+                    );
+                }
+            },
+        );
+        return totalCommittedWorkloadsByExpArray;
+    }
 
     getTotalPlannedWorkloadByExp(
         plannedWorkloads: PlannedWorkload[],
@@ -108,7 +143,6 @@ export class GetOverviewChartDataUseCase
         );
         return totalPlannedWorkloadsByExpArray;
     }
-
     async execute(week: number, member: number): Promise<Response> {
         try {
             // get date week
@@ -144,6 +178,8 @@ export class GetOverviewChartDataUseCase
                     MomentService.firstDateOfWeek(startWeekChart),
                     MomentService.lastDateOfWeek(endWeekChart),
                 );
+            const totalCommittedWorkloadsByExpArray =
+                this.getTotalCommittedWorkloadByExp(committedWorkloads);
             const worklogLength = this.getWorklogLength(
                 user.createdAt,
                 startWeekChart,
@@ -151,7 +187,7 @@ export class GetOverviewChartDataUseCase
             );
             const overviewChartDataDtos = OverViewChartMap.combineAllToDto(
                 expertiseScopes,
-                committedWorkloads,
+                totalCommittedWorkloadsByExpArray,
                 totalPlannedWorkloadsByExpArray,
                 weekChartArray,
                 worklogLength,
