@@ -27,9 +27,7 @@ export class OverViewChartMap {
                     const plannedBetWeenWeek = plannedWorkloads.find(
                         (plannedWl) =>
                             plannedWl.isBetweenWeek(weekItem) &&
-                            plannedWl.isBelongToCommit(
-                                myCommittedWorkload.id.toValue(),
-                            ),
+                            plannedWl.isBelongToExpScope(expertiseScopeId),
                     );
                     if (plannedBetWeenWeek) {
                         contributedValue.push({

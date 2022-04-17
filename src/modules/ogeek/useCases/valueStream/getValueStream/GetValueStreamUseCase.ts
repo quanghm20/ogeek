@@ -43,7 +43,7 @@ export class GetValueStreamUseCase
         public readonly senteService: SenteService,
     ) {}
 
-    getWeekByEachUseCase(week: number): StartAndEndDateOfWeekDto {
+    getStartAndEndDateOfWeek(week: number): StartAndEndDateOfWeekDto {
         return {
             startDateOfWeek: MomentService.firstDateOfWeek(week),
             endDateOfWeek: MomentService.lastDateOfWeek(week),
@@ -52,7 +52,7 @@ export class GetValueStreamUseCase
 
     async execute(week: number, member: number): Promise<Response> {
         try {
-            const startAndEndDateOfWeek = this.getWeekByEachUseCase(week);
+            const startAndEndDateOfWeek = this.getStartAndEndDateOfWeek(week);
             const valueStreams = await this.valueStreamRepo.findAll();
             const committedWLs =
                 await this.committedWLRepo.findByUserIdValueStream(

@@ -6,6 +6,7 @@ import {
     FindManyOptions,
     getConnection,
     LessThan,
+    LessThanOrEqual,
     MoreThanOrEqual,
     Not,
     Repository,
@@ -231,7 +232,8 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
         const entities = await this.repo.find({
             where: {
                 user: userId,
-                startDate: Between(startDate, endDate),
+                startDate:
+                    MoreThanOrEqual(startDate) && LessThanOrEqual(endDate),
                 status: Not(PlannedWorkloadStatus.ARCHIVE.toString()),
             },
 
@@ -241,7 +243,6 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 'committedWorkload',
             ],
         });
-
         return entities ? PlannedWorkloadMap.toDomainAll(entities) : null;
     }
 
