@@ -19,14 +19,15 @@ export namespace CreateCommittedWorkloadErrors {
     export class DateError extends Result<UseCaseError> {
         constructor() {
             super(false, {
-                message: 'StartDate or ExpiredDate is not valid !',
+                message: 'StartDate or expiredDate is not valid !',
             } as UseCaseError);
         }
     }
     export class ExistCommittedWorkloadInComing extends Result<UseCaseError> {
         constructor() {
             super(false, {
-                message: 'This user existing committed workload upcoming!',
+                message:
+                    'This user has already had upcoming committed workload',
             } as UseCaseError);
         }
     }

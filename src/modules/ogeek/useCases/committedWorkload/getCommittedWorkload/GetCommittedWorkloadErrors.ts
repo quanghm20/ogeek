@@ -5,7 +5,7 @@ export namespace GetCommittedWorkloadErrors {
     export class NotFound extends Result<UseCaseError> {
         constructor() {
             super(false, {
-                message: 'No CommittedWorkload were found !',
+                message: 'No committedWorkload were found !',
             } as UseCaseError);
         }
     }
