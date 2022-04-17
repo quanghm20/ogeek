@@ -506,7 +506,7 @@ VALUES
   ( 12, 8, 20, 45, '2022-01-15 00:00:00', 'CLOSED', 'create planned workload w3', 1, '2022-01-12 07:02:01'),
   ( 12, 8, 20, 40, '2022-01-22 00:00:00', 'CLOSED', 'create planned workload w4', 1, '2022-01-19 05:02:01'),
   ( 12, 8, 20, 40, '2022-01-29 00:00:00', 'CLOSED', 'create planned workload w5', 1, '2022-01-27 08:02:01'),
-  ( 12, 8, 20, 40, '2022-02-05 00:00:00', 'CLOSED', 'create planned workload w6', 1, '2022-02-04 14:02:01'),
+  ( 12, 8, 20, 0, '2022-02-05 00:00:00', 'CLOSED', 'create planned workload w6', 1, '2022-02-04 14:02:01'),
   ( 12, 8, 20, 40, '2022-02-12 00:00:00', 'CLOSED', 'create planned workload w7', 1, '2022-02-10 16:12:01'),
   ( 12, 8, 20, 40, '2022-02-19 00:00:00', 'CLOSED', 'create planned workload w8', 1, '2022-02-15 16:12:01'),
   ( 12, 8, 20, 40, '2022-02-26 00:00:00', 'CLOSED', 'create planned workload w9', 1, '2022-02-24 16:12:01'),
