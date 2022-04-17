@@ -36,7 +36,7 @@ export class GetNotificationUseCase
                 userId,
             );
 
-            Notification.arrangeNotification(notifications);
+            Notification.sortNotificationByTime(notifications);
 
             const notificationsDto = notifications.map((notification) =>
                 NotificationMap.fromDomain(notification),
