@@ -103,7 +103,7 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
         return this.isActive && !this.isPlanning;
     }
     get isCreatedByUser(): boolean {
-        return this.props.createdBys > 0;
+        return this.props.createdBy > 0;
     }
 
     isClosedInCurrentWeek(): boolean {
