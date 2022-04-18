@@ -3,3 +3,4 @@ export { CreateCommittedWorkloadUseCase } from './createCommittedWorkload/Create
 export { GetHistoryCommittedWorkloadUseCase } from './getHistoryCommittedWorkload/GetCommittedWorkloadsUseCase';
 export { GetCommittedWorkloadUseCase } from './getCommittedWorkload/GetCommittedWorkloadsUseCase';
 export { UpdateCommittedWorkloadUseCase } from './updateCommittedWorkload/UpdateCommittedWorkloadUseCase';
+export { DeleteCommittedWorkloadUseCase } from './deleteCommittedWorkload/DeleteCommittedWorkloadUseCase';

@@ -1,6 +1,8 @@
 import * as moment from 'moment';
 
 import { PlannedWorkloadStatus } from '../../../common/constants/plannedStatus';
+import { ReasonPlanEnum } from '../../../common/constants/reasonPlan';
+import { SYSTEM } from '../../../common/constants/system';
 import { AggregateRoot } from '../../../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { Guard } from '../../../core/logic/Guard';
@@ -224,8 +226,16 @@ export class PlannedWorkload extends AggregateRoot<IPlannedWorkloadProps> {
             this.status === PlannedWorkloadStatus.PLANNING
         ) {
             this.status = PlannedWorkloadStatus.ARCHIVE;
-            this.reason = `Auto update old planned workload after add committed ${this.committedWorkload.id.toValue()} `;
+            this.reason = `${
+                ReasonPlanEnum.UPDATE_OLD_COMMITMENT
+            } ${this.committedWorkload.id.toValue()} `;
         }
+    }
+    public setArchive(): void {
+        this.status = PlannedWorkloadStatus.ARCHIVE;
+        this.reason = ReasonPlanEnum.DELETE_AUTO;
+        this.deletedAt = new Date();
+        this.deletedBy = SYSTEM;
     }
     public static create(
         props: IPlannedWorkloadProps,

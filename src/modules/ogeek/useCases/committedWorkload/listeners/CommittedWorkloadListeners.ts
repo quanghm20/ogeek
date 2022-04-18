@@ -3,6 +3,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 
 import { NotificationStatus } from '../../../../../common/constants/notificationStatus';
 import { SYSTEM } from '../../../../../common/constants/system';
+import { CommittedWorkload } from '../../../../ogeek/domain/committedWorkload';
 import { Notification } from '../../../../ogeek/domain/notification';
 import { NotificationMap } from '../../../mappers/notificationMap';
 import { PlannedWorkloadMap } from '../../../mappers/plannedWorkloadMap';
@@ -30,10 +31,11 @@ export class CommittedWorkloadCreatedListener {
         }
 
         for (const oldCommit of committedEvent.oldCommittedWorkloads) {
-            let plans = await this.plannedWorkloadRepo.findByCommittedId(
-                oldCommit.id.toValue(),
-                committedEvent.startDate,
-            );
+            let plans =
+                await this.plannedWorkloadRepo.findByCommittedIdAndStartDate(
+                    oldCommit.id.toValue(),
+                    committedEvent.startDate,
+                );
 
             if (plans) {
                 plans = oldCommit.autoArchivePlannedWorkload(
@@ -83,10 +85,11 @@ export class CommittedWorkloadCreatedListener {
         }
 
         for (const oldCommit of committedEvent.oldCommittedWorkloads) {
-            let plans = await this.plannedWorkloadRepo.findByCommittedId(
-                oldCommit.id.toValue(),
-                committedEvent.startDate,
-            );
+            let plans =
+                await this.plannedWorkloadRepo.findByCommittedIdAndStartDate(
+                    oldCommit.id.toValue(),
+                    committedEvent.startDate,
+                );
 
             if (plans) {
                 plans = oldCommit.autoArchivePlannedWorkload(
@@ -110,6 +113,37 @@ export class CommittedWorkloadCreatedListener {
         const notification = Notification.create({
             notificationMessage,
             user,
+            read: NotificationStatus.UNREAD,
+            createdBy: SYSTEM,
+            updatedBy: SYSTEM,
+        });
+
+        const notificationEntity = NotificationMap.toEntity(
+            notification.getValue(),
+        );
+
+        await this.notificationRepo.save(notificationEntity);
+    }
+
+    @OnEvent('committed-workload.deleted')
+    async handleCommittedWorkloadDeletedEvent(
+        commitment: CommittedWorkload,
+    ): Promise<void> {
+        let plans = await this.plannedWorkloadRepo.findByCommittedId(
+            commitment.id.toValue(),
+        );
+
+        if (plans) {
+            plans = commitment.setArchivePlannedWorkload(plans);
+            const plannedEntities = PlannedWorkloadMap.toEntities(plans);
+            await this.plannedWorkloadRepo.createMany(plannedEntities);
+        }
+
+        const notificationMessage = `${commitment.committedWorkload} hrs of your commitment for
+		${commitment.contributedValue.expertiseScope.name} (${commitment.contributedValue.valueStream.name}) has been deleted.`;
+        const notification = Notification.create({
+            notificationMessage,
+            user: commitment.props.user,
             read: NotificationStatus.UNREAD,
             createdBy: SYSTEM,
             updatedBy: SYSTEM,

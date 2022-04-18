@@ -330,6 +330,7 @@ export class CommittedWorkloadRepository implements ICommittedWorkloadRepo {
                 'contributedValue.expertiseScope',
                 'user',
             ],
+            withDeleted: true,
         });
 
         return entity ? CommittedWorkloadMap.toDomain(entity) : null;

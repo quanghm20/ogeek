@@ -53,7 +53,7 @@ export interface IPlannedWorkloadRepo {
     updateOne(plannedWorkloadEntity: PlannedWorkloadEntity): Promise<void>;
     updateMany(plannedWorkloadEntity: PlannedWorkloadEntity[]): Promise<void>;
     update(plannedEntities: PlannedWorkloadEntity[]): Promise<void>;
-    findByCommittedId(
+    findByCommittedIdAndStartDate(
         committedWorkloadId: string | number,
         startDate?: Date,
     ): Promise<PlannedWorkload[]>;
@@ -61,6 +61,9 @@ export interface IPlannedWorkloadRepo {
         startDateOfWeek,
         lastDateOfWeek,
     }: FromWeekToWeekWLInputDto): Promise<PlannedWorkload[]>;
+    findByCommittedId(
+        committedWorkloadId: string | number,
+    ): Promise<PlannedWorkload[]>;
 }
 
 @Injectable()
@@ -310,7 +313,7 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
             : new Array<PlannedWorkload>();
     }
 
-    async findByCommittedId(
+    async findByCommittedIdAndStartDate(
         committedWorkloadId: string | number,
         startDate?: Date,
     ): Promise<PlannedWorkload[]> {
@@ -322,6 +325,31 @@ export class PlannedWorkloadRepository implements IPlannedWorkloadRepo {
                 startDate: MoreThanOrEqual(startDate),
             },
             loadEagerRelations: true,
+            relations: [
+                'contributedValue',
+                'contributedValue.expertiseScope',
+                'contributedValue.valueStream',
+                'committedWorkload',
+                'committedWorkload.user',
+                'committedWorkload.contributedValue',
+                'committedWorkload.contributedValue.expertiseScope',
+                'committedWorkload.contributedValue.valueStream',
+                'user',
+            ],
+        });
+        return entities
+            ? PlannedWorkloadMap.toDomainAll(entities)
+            : new Array<PlannedWorkload>();
+    }
+    async findByCommittedId(
+        committedWorkloadId: string | number,
+    ): Promise<PlannedWorkload[]> {
+        const entities = await this.repo.find({
+            where: {
+                committedWorkload: {
+                    id: committedWorkloadId,
+                },
+            },
             relations: [
                 'contributedValue',
                 'contributedValue.expertiseScope',
