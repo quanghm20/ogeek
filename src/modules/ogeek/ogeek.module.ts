@@ -28,6 +28,7 @@ import { GetListCommittingUseCase } from './useCases/commitManagement/committing
 import {
     CommittedWorkloadController,
     CreateCommittedWorkloadUseCase,
+    DeleteCommittedWorkloadUseCase,
     GetCommittedWorkloadUseCase,
     GetHistoryCommittedWorkloadUseCase,
     UpdateCommittedWorkloadUseCase,
@@ -171,6 +172,7 @@ import { GetValueStreamUseCase } from './useCases/valueStream/getValueStream/Get
         UpdateCommittingWorkloadUseCase,
         GetListCommittingUseCase,
         GetWarningMessagesUseCases,
+        DeleteCommittedWorkloadUseCase,
         {
             provide: 'IUserRepo',
             useClass: UserRepository,

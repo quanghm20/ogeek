@@ -287,6 +287,22 @@ export class CommittedWorkload extends AggregateRoot<ICommittedWorkloadProps> {
         }
         return plannedWorkloads;
     }
+
+    public setArchivePlannedWorkload(
+        plannedWorkloads: PlannedWorkload[],
+    ): PlannedWorkload[] {
+        for (const plan of plannedWorkloads) {
+            plan.setArchive();
+        }
+        return plannedWorkloads;
+    }
+
+    public delete(deletedBy: number): void {
+        this.props.status = CommittedWorkloadStatus.INACTIVE;
+        this.props.deletedBy = deletedBy;
+        this.props.deletedAt = new Date();
+    }
+
     public static create(
         props: ICommittedWorkloadProps,
         id?: UniqueEntityID,

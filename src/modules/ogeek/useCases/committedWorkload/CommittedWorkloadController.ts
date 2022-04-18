@@ -2,6 +2,7 @@ import {
     BadRequestException,
     Body,
     Controller,
+    Delete,
     ForbiddenException,
     Get,
     HttpCode,
@@ -45,6 +46,8 @@ import { CreateCommittedWorkloadDto } from '../../infra/dtos/createCommittedWork
 import { CommittedWorkloadShortDto } from '../../infra/dtos/getCommittedWorkload/getCommittedWorkloadShort.dto';
 import { CreateCommittedWorkloadErrors } from './createCommittedWorkload/CreateCommittedWorkloadErrors';
 import { CreateCommittedWorkloadUseCase } from './createCommittedWorkload/CreateCommittedWorkloadUseCase';
+import { DeleteCommittedWorkloadErrors } from './deleteCommittedWorkload/DeleteCommittedWorkloadErrors';
+import { DeleteCommittedWorkloadUseCase } from './deleteCommittedWorkload/DeleteCommittedWorkloadUseCase';
 import { FilterCommittedWorkload } from './FilterCommittedWorkload';
 import { GetCommittedWorkloadUseCase } from './getCommittedWorkload/GetCommittedWorkloadsUseCase';
 import { GetHistoryCommittedWorkloadUseCase } from './getHistoryCommittedWorkload/GetCommittedWorkloadsUseCase';
@@ -76,6 +79,7 @@ export class CommittedWorkloadController {
         public readonly getCommitUseCase: GetCommittedWorkloadUseCase,
         public readonly getHistoryCommitUseCase: GetHistoryCommittedWorkloadUseCase,
         public readonly patchCommitUseCase: UpdateCommittedWorkloadUseCase,
+        public readonly deleteCommitUseCase: DeleteCommittedWorkloadUseCase,
     ) {}
 
     @Post()
@@ -230,6 +234,55 @@ export class CommittedWorkloadController {
             }
         }
         return new DataCommittedWorkload(result.value.getValue());
+    }
+
+    @Delete()
+    @HttpCode(HttpStatus.CREATED)
+    @ApiCreatedResponse({
+        type: CommittedWorkloadShortDto,
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+    })
+    @ApiForbiddenResponse({
+        description: 'Forbidden',
+    })
+    @ApiNotFoundResponse({
+        description: 'Could not find committed workload :idCommitment.',
+    })
+    @ApiBadRequestResponse({
+        description: 'Can not delete committed workload :idCommitment.',
+    })
+    @ApiBadRequestResponse({
+        description: 'Can not delete committed workload active.',
+    })
+    @ApiInternalServerErrorResponse({
+        description: 'Internal Server Error',
+    })
+    @UsePipes(new ValidationPipe({ transform: true }))
+    async deleteCommitted(
+        @Query('commitmentId') commitmentId: number,
+        @Req() req: Request,
+    ): Promise<CommittedWorkloadShortDto> {
+        const createBy = req.user as JwtPayload;
+        const result = await this.deleteCommitUseCase.execute(
+            commitmentId,
+            createBy.userId,
+        );
+        if (result.isLeft()) {
+            const error = result.value;
+            switch (error.constructor) {
+                case DeleteCommittedWorkloadErrors.NotFound:
+                    throw new NotFoundException(error.errorValue());
+                case DeleteCommittedWorkloadErrors.CanNotDelete:
+                    throw new BadRequestException(error.errorValue());
+                case DeleteCommittedWorkloadErrors.CanNotDeleteCommitment:
+                    throw new BadRequestException(error.errorValue());
+                default:
+                    throw new InternalServerErrorException(error.errorValue());
+            }
+        }
+        return result.value.getValue();
     }
 
     @Get('history')
