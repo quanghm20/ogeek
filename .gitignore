@@ -81,4 +81,3 @@ db-data
 launch.json
 .production.env
 .staging.env
-*.env
